@@ -4,7 +4,8 @@
       "WebFetch(domain:vercel.com)",
       "WebFetch(domain:r3f.docs.pmnd.rs)",
       "WebFetch(domain:medium.com)",
-      "WebFetch(domain:blog.maximeheckel.com)"
+      "WebFetch(domain:blog.maximeheckel.com)",
+      "Bash(npm install:*)"
     ]
   }
 }
