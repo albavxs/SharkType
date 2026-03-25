@@ -1,15 +1,19 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { CharStatus, TypingState } from '@/lib/types'
 import { calculateWPM, calculateAccuracy } from '@/lib/utils'
 
 interface UseTypingEngineReturn {
   state: TypingState
   wpm: number
+  rawWpm: number
   accuracy: number
+  wpmSamples: number[]
+  rawWpmSamples: number[]
   handleKey: (key: string) => void
   reset: () => void
+  wpmRef: React.RefObject<number>
 }
 
 function createInitialState(codeLength: number): TypingState {
@@ -30,18 +34,95 @@ export function useTypingEngine(
   const [state, setState] = useState<TypingState>(() =>
     createInitialState(code.length)
   )
+  const [wpm, setWpm] = useState(0)
+  const [rawWpm, setRawWpm] = useState(0)
+  const [accuracy, setAccuracy] = useState(100)
+  const [wpmSamples, setWpmSamples] = useState<number[]>([])
+  const [rawWpmSamples, setRawWpmSamples] = useState<number[]>([])
+
   const codeRef = useRef(code)
   const errorsRef = useRef(0)
   const totalKeypressesRef = useRef(0)
   const correctCharsRef = useRef(0)
+  const rawCharsRef = useRef(0)
+  const startTimeRef = useRef<number | null>(null)
+  const wpmRef = useRef(0)
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const samplerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // Reset when code changes
   if (codeRef.current !== code) {
     codeRef.current = code
     errorsRef.current = 0
     totalKeypressesRef.current = 0
     correctCharsRef.current = 0
+    rawCharsRef.current = 0
+    startTimeRef.current = null
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (samplerRef.current) clearInterval(samplerRef.current)
+    intervalRef.current = null
+    samplerRef.current = null
     setState(createInitialState(code.length))
+    setWpm(0)
+    setRawWpm(0)
+    setAccuracy(100)
+    setWpmSamples([])
+    setRawWpmSamples([])
   }
+
+  // Stable WPM update interval (fixes flicker)
+  useEffect(() => {
+    if (state.status === 'running' && !intervalRef.current) {
+      intervalRef.current = setInterval(() => {
+        const elapsed = startTimeRef.current ? Date.now() - startTimeRef.current : 0
+        const net = calculateWPM(correctCharsRef.current, elapsed)
+        const raw = calculateWPM(rawCharsRef.current, elapsed)
+        const acc = calculateAccuracy(correctCharsRef.current, totalKeypressesRef.current)
+        setWpm(net)
+        setRawWpm(raw)
+        setAccuracy(acc)
+        wpmRef.current = net
+      }, 500)
+
+      // WPM sampler for graph (every 1s)
+      samplerRef.current = setInterval(() => {
+        const elapsed = startTimeRef.current ? Date.now() - startTimeRef.current : 0
+        const net = calculateWPM(correctCharsRef.current, elapsed)
+        const raw = calculateWPM(rawCharsRef.current, elapsed)
+        setWpmSamples(prev => [...prev, net])
+        setRawWpmSamples(prev => [...prev, raw])
+      }, 1000)
+    }
+
+    if (state.status === 'finished' || state.status === 'idle') {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+      if (samplerRef.current) {
+        clearInterval(samplerRef.current)
+        samplerRef.current = null
+      }
+      // Final calculation
+      if (state.status === 'finished') {
+        const elapsed = startTimeRef.current ? Date.now() - startTimeRef.current : 0
+        const net = calculateWPM(correctCharsRef.current, elapsed)
+        const raw = calculateWPM(rawCharsRef.current, elapsed)
+        const acc = calculateAccuracy(correctCharsRef.current, totalKeypressesRef.current)
+        setWpm(net)
+        setRawWpm(raw)
+        setAccuracy(acc)
+        wpmRef.current = net
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (samplerRef.current) clearInterval(samplerRef.current)
+      intervalRef.current = null
+      samplerRef.current = null
+    }
+  }, [state.status])
 
   const handleKey = useCallback(
     (key: string) => {
@@ -64,12 +145,10 @@ export function useTypingEngine(
           }
         }
 
-        // Ignore special keys
         if (key.length > 1 && key !== 'Tab' && key !== 'Enter') return prev
 
         const actualKey = key === 'Enter' ? '\n' : key === 'Tab' ? '  ' : key
 
-        // For Tab (2 spaces), handle each space
         if (key === 'Tab') {
           let newState = { ...prev }
           for (const char of actualKey) {
@@ -79,10 +158,15 @@ export function useTypingEngine(
             const newStatuses = [...newState.charStatuses]
             newStatuses[idx] = isCorrect ? 'correct' : 'incorrect'
             totalKeypressesRef.current++
+            rawCharsRef.current++
             if (isCorrect) {
               correctCharsRef.current++
             } else {
               errorsRef.current++
+            }
+            const isFirst = newState.status === 'idle'
+            if (isFirst) {
+              startTimeRef.current = Date.now()
             }
             newState = {
               ...newState,
@@ -90,8 +174,8 @@ export function useTypingEngine(
               charStatuses: newStatuses,
               currentIndex: idx + 1,
               errors: errorsRef.current,
-              status: newState.status === 'idle' ? 'running' : newState.status,
-              startTime: newState.startTime ?? Date.now(),
+              status: isFirst ? 'running' : newState.status,
+              startTime: startTimeRef.current,
             }
           }
           if (newState.currentIndex >= codeRef.current.length) {
@@ -110,10 +194,16 @@ export function useTypingEngine(
         newStatuses[idx] = isCorrect ? 'correct' : 'incorrect'
 
         totalKeypressesRef.current++
+        rawCharsRef.current++
         if (isCorrect) {
           correctCharsRef.current++
         } else {
           errorsRef.current++
+        }
+
+        const isFirst = prev.status === 'idle'
+        if (isFirst) {
+          startTimeRef.current = Date.now()
         }
 
         const newIndex = idx + 1
@@ -129,12 +219,8 @@ export function useTypingEngine(
           charStatuses: newStatuses,
           currentIndex: newIndex,
           errors: errorsRef.current,
-          status: isFinished
-            ? 'finished'
-            : prev.status === 'idle'
-              ? 'running'
-              : prev.status,
-          startTime: prev.startTime ?? Date.now(),
+          status: isFinished ? 'finished' : isFirst ? 'running' : prev.status,
+          startTime: startTimeRef.current,
         }
       })
     },
@@ -145,15 +231,20 @@ export function useTypingEngine(
     errorsRef.current = 0
     totalKeypressesRef.current = 0
     correctCharsRef.current = 0
+    rawCharsRef.current = 0
+    startTimeRef.current = null
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (samplerRef.current) clearInterval(samplerRef.current)
+    intervalRef.current = null
+    samplerRef.current = null
     setState(createInitialState(codeRef.current.length))
+    setWpm(0)
+    setRawWpm(0)
+    setAccuracy(100)
+    setWpmSamples([])
+    setRawWpmSamples([])
+    wpmRef.current = 0
   }, [])
 
-  const elapsed = state.startTime ? Date.now() - state.startTime : 0
-  const wpm = calculateWPM(correctCharsRef.current, elapsed)
-  const accuracy = calculateAccuracy(
-    correctCharsRef.current,
-    totalKeypressesRef.current
-  )
-
-  return { state, wpm, accuracy, handleKey, reset }
+  return { state, wpm, rawWpm, accuracy, wpmSamples, rawWpmSamples, handleKey, reset, wpmRef }
 }

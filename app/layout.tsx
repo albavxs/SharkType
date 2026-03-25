@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Syntax.lang.IO',
+  title: 'GorillaType',
   description: 'Practice typing code syntax across programming languages',
 }
 
@@ -28,19 +28,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
+      <head suppressHydrationWarning>
         <script
           dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                var t = localStorage.getItem('theme');
-                if (t === 'light') document.documentElement.classList.add('light');
-              })();
-            `,
+            __html: `(function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.add('light')})()`,
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-black light:bg-white text-white light:text-black">
+      <body className="min-h-full flex flex-col bg-[#323437] light:bg-[#f5f5f5] text-[#d1d0c5] light:text-[#1a1a1a]" suppressHydrationWarning>
         {children}
       </body>
     </html>

@@ -10,70 +10,51 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Cursor blink */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Cursor */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
-.cursor-char::before {
+.cursor-char::after {
   content: '';
   position: absolute;
   left: 0;
   top: 0.1em;
   bottom: 0.1em;
   width: 2px;
+  background-color: #a78bfa;
   animation: blink 1s ease-in-out infinite;
 }
 
+.cursor-char-solid::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  bottom: 0.1em;
+  width: 2px;
+  background-color: #a78bfa;
+}
+
 /* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  75% { transform: translateX(2px); }
-}
-
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 200ms ease-out;
-}
-
-.animate-slide-up {
-  animation: slideUp 300ms ease-out;
-}
-
-.animate-shake {
-  animation: shake 200ms ease-out;
-}
-
-.animate-count-up {
-  animation: countUp 300ms ease-out;
-}
+.animate-fade-in { animation: fadeIn 200ms ease-out; }
+.animate-slide-up { animation: slideUp 300ms ease-out; }
+.animate-shake { animation: shake 200ms ease-out; }
 
 /* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #4a4d52; border-radius: 3px; }
+.light ::-webkit-scrollbar-thumb { background: #ccc; }

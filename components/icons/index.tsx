@@ -97,3 +97,29 @@ export const ShareIcon = ({ size = 16, className = '' }: IconProps) => (
     <line x1="8" y1="2" x2="8" y2="10" />
   </svg>
 )
+
+export const GearIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <circle cx="8" cy="8" r="2" />
+    <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" />
+  </svg>
+)
+
+export const ChartIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <polyline points="2,12 6,6 10,9 14,3" />
+    <polyline points="11,3 14,3 14,6" />
+  </svg>
+)
+
+export const ChevronDownIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <polyline points="4,6 8,10 12,6" />
+  </svg>
+)
