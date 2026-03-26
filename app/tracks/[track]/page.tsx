@@ -187,7 +187,7 @@ export default function TrackPracticePage() {
   const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); engine.handleKey(key) }, [engine])
 
   if (!track) {
-    return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>Trilha não encontrada.</p></main>
+    return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>{t('trackNotFound', locale)}</p></main>
   }
 
   return (
@@ -209,10 +209,10 @@ export default function TrackPracticePage() {
         {/* Breadcrumb + progress */}
         <div className={`px-3 sm:px-6 py-2 flex items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
           <Link href="/tracks" className="flex items-center gap-1.5 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--sub)' }}>
-            <ArrowLeftIcon size={14} /> Trilhas
+            <ArrowLeftIcon size={14} /> {t('pageTracks', locale)}
           </Link>
           <span style={{ color: 'var(--sub)', opacity: 0.4 }}>/</span>
-          <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{track.name}</span>
+          <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{track.name[locale]}</span>
           {snippet && (
             <span className="text-xs ml-auto" style={{ color: 'var(--sub)' }}>{seqIndex + 1}/{trackSnippets.length}</span>
           )}
@@ -240,7 +240,7 @@ export default function TrackPracticePage() {
 
         <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6">
           {!snippet ? (
-            <p style={{ color: 'var(--sub)' }}>Carregando...</p>
+            <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
           ) : showResult && finalStats ? (
             <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
               duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} wpmSamples={finalStats.wpmSamples}
@@ -252,13 +252,13 @@ export default function TrackPracticePage() {
             <>
               {/* Prompt — hide when typing */}
               <div className={`w-full max-w-3xl mb-6 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
-                <SnippetInfo snippet={snippet} languageLabel={selectedLang?.label ?? ''} languageColor={selectedLang?.color ?? '#888'} current={seqIndex + 1} total={trackSnippets.length} />
+                <SnippetInfo snippet={snippet} languageLabel={selectedLang?.label ?? ''} languageColor={selectedLang?.color ?? '#888'} current={seqIndex + 1} total={trackSnippets.length} locale={locale} />
               </div>
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
               {isTyping && (
                 <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
-                  shift + tab — reiniciar
+                  {t('hintShiftTab', locale)}
                 </div>
               )}
               {/* Nav buttons — icon-only, hide when typing */}
@@ -291,7 +291,7 @@ export default function TrackPracticePage() {
           )}
         </div>
 
-        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={isTyping} />
+        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={isTyping} locale={locale} />
       </div>
 
       {showThemeSelector && (

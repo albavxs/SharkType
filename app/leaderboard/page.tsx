@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { loadProgress, UserProgress, getLevel, SessionRecord } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
+import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { getLanguageById } from '@/data'
 import Toolbar from '@/components/typing/Toolbar'
@@ -77,12 +78,12 @@ export default function LeaderboardPage() {
           <div className="w-full max-w-3xl">
             <div className="flex items-end justify-between mb-2">
               <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
-                Ranking
+                {t('pageRanking', locale)}
               </h1>
-              <span className="text-[10px] sm:text-xs pb-1" style={{ color: 'var(--sub)' }}>ranking global em breve</span>
+              <span className="text-[10px] sm:text-xs pb-1" style={{ color: 'var(--sub)' }}>{t('globalSoon', locale)}</span>
             </div>
             <p className="text-xs sm:text-sm mb-4 sm:mb-6" style={{ color: 'var(--sub)' }}>
-              Suas melhores sessões, ordenadas por WPM.
+              {t('bestSessions', locale)}
             </p>
 
             {/* Personal best cards */}
@@ -99,7 +100,7 @@ export default function LeaderboardPage() {
                         <span className="text-xs" style={{ color: 'var(--sub)' }}>{getLangLabel(langId)}</span>
                       </div>
                       <div className="text-2xl font-bold tabular-nums" style={{ color: 'var(--main)' }}>{lp.bestWPM}</div>
-                      <div className="text-[10px]" style={{ color: 'var(--sub)' }}>melhor wpm · {lp.totalSessions} sessões</div>
+                      <div className="text-[10px]" style={{ color: 'var(--sub)' }}>{t('bestWpm', locale)} · {lp.totalSessions} {t('sessions', locale)}</div>
                     </div>
                   ))}
               </div>
@@ -116,7 +117,7 @@ export default function LeaderboardPage() {
                     color: filterLang === 'all' ? 'var(--bg)' : 'var(--sub)',
                   }}
                 >
-                  Todas
+                  {t('allFilter', locale)}
                 </button>
                 {usedLangIds.map(id => (
                   <button
@@ -138,8 +139,8 @@ export default function LeaderboardPage() {
             {/* History table */}
             {filtered.length === 0 ? (
               <div className="text-center py-16" style={{ color: 'var(--sub)' }}>
-                <p className="text-sm">Nenhuma sessão ainda.</p>
-                <p className="text-xs mt-1">Complete alguns treinos para ver seu histórico aqui.</p>
+                <p className="text-sm">{t('noSessions', locale)}</p>
+                <p className="text-xs mt-1">{t('noSessionsHint', locale)}</p>
               </div>
             ) : (
               <div className="overflow-x-auto -mx-3 sm:mx-0">
@@ -148,12 +149,12 @@ export default function LeaderboardPage() {
                   <div className="grid text-[10px] uppercase tracking-wider px-3 sm:px-4 py-2"
                     style={{ gridTemplateColumns: '1.5rem 1fr 3.5rem 3.5rem 2.5rem 2.5rem 3.5rem', backgroundColor: 'var(--sub-alt)', color: 'var(--sub)' }}>
                     <span>#</span>
-                    <span>linguagem</span>
+                    <span>{t('colLanguage', locale)}</span>
                     <span className="text-right">wpm</span>
-                    <span className="text-right">precisão</span>
-                    <span className="text-right">erros</span>
-                    <span className="text-right">tempo</span>
-                    <span className="text-right">data</span>
+                    <span className="text-right">{t('colAccuracy', locale)}</span>
+                    <span className="text-right">{t('colErrors', locale)}</span>
+                    <span className="text-right">{t('colTime', locale)}</span>
+                    <span className="text-right">{t('colDate', locale)}</span>
                   </div>
 
                   {filtered.map((record, i) => (
@@ -184,7 +185,7 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} />
+        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} locale={locale} />
       </div>
 
       {showThemeSelector && (

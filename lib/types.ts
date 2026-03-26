@@ -4,12 +4,14 @@ export type Difficulty = 'easy' | 'medium' | 'hard'
 
 export type Mode = 'timed_30' | 'timed_60' | 'snippet'
 
+export type I18nString = { pt: string; en: string }
+
 export interface Snippet {
   id: string
   code: string
-  concept: string
+  concept: I18nString
   difficulty: Difficulty
-  prompt?: string
+  prompt?: I18nString
 }
 
 export interface Language {

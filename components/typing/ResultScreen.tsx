@@ -34,7 +34,7 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
   const diff = t(snippet.difficulty === 'easy' ? 'easy' : snippet.difficulty === 'medium' ? 'medium' : 'hard', locale)
 
   function handleShare() {
-    const text = `SharkType - ${languageLabel}\nWPM: ${wpm} | Raw: ${rawWpm} | Acc: ${accuracy}% | Consistency: ${consistency}%\n${snippet.concept} | ${duration}s`
+    const text = `SharkType - ${languageLabel}\nWPM: ${wpm} | Raw: ${rawWpm} | Acc: ${accuracy}% | Consistency: ${consistency}%\n${snippet.concept[locale]} | ${duration}s`
     navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
   }
 
@@ -95,7 +95,7 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
       <div className="text-center text-sm mb-6">
         <span className="font-medium" style={{ color: 'var(--main)' }}>{languageLabel}</span>
         <span className="mx-2" style={{ color: 'var(--sub)', opacity: 0.3 }}>/</span>
-        <span className="font-medium" style={{ color: 'var(--text)' }}>{snippet.concept}</span>
+        <span className="font-medium" style={{ color: 'var(--text)' }}>{snippet.concept[locale]}</span>
         <span className="mx-2" style={{ color: 'var(--sub)', opacity: 0.3 }}>/</span>
         <span style={{ color: 'var(--sub)' }}>{diff}</span>
       </div>

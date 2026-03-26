@@ -1,12 +1,14 @@
 'use client'
 
 import { XIcon } from '@/components/icons'
+import { t, Locale } from '@/lib/i18n'
 
 interface HelpModalProps {
   onClose: () => void
+  locale: Locale
 }
 
-export default function HelpModal({ onClose }: HelpModalProps) {
+export default function HelpModal({ onClose, locale }: HelpModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div
@@ -16,7 +18,7 @@ export default function HelpModal({ onClose }: HelpModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--sub)' }}>
           <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
-            Como usar o SharkType
+            {t('helpTitle', locale)}
           </h2>
           <button onClick={onClose} style={{ color: 'var(--sub)' }} className="hover:opacity-80">
             <XIcon size={18} />
@@ -26,48 +28,48 @@ export default function HelpModal({ onClose }: HelpModalProps) {
         <div className="px-6 py-4 space-y-6 text-sm" style={{ color: 'var(--text)' }}>
           {/* Shortcuts */}
           <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Atalhos de teclado</h3>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>{t('helpShortcuts', locale)}</h3>
             <div className="space-y-1" style={{ color: 'var(--sub)' }}>
-              <div><Kbd>shift + tab</Kbd> reiniciar snippet (funciona durante a digitação)</div>
-              <div><Kbd>tab</Kbd> reiniciar teste / próximo snippet</div>
-              <div><Kbd>enter</Kbd> nova linha (no código)</div>
-              <div><Kbd>backspace</Kbd> apagar caractere</div>
-              <div><Kbd>esc</Kbd> fechar modais</div>
+              <div><Kbd>shift + tab</Kbd> {t('helpShiftTab', locale)}</div>
+              <div><Kbd>tab</Kbd> {t('helpTab', locale)}</div>
+              <div><Kbd>enter</Kbd> {t('helpEnter', locale)}</div>
+              <div><Kbd>backspace</Kbd> {t('helpBackspace', locale)}</div>
+              <div><Kbd>esc</Kbd> {t('helpEsc', locale)}</div>
             </div>
           </div>
 
           {/* Difficulty */}
           <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Dificuldade</h3>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>{t('helpDifficulty', locale)}</h3>
             <div className="space-y-1" style={{ color: 'var(--sub)' }}>
-              <div><strong>default</strong> — Todos os snippets, sem cronômetro</div>
-              <div><strong>fácil</strong> — Variáveis, declarações simples, one-liners (60s)</div>
-              <div><strong>médio</strong> — Funções, loops, tratamento de erros (45s)</div>
-              <div><strong>difícil</strong> — Patterns avançados, generics, closures (30s)</div>
+              <div><strong>default</strong> — {t('helpDefault', locale)}</div>
+              <div><strong>{t('easy', locale)}</strong> — {t('helpEasy', locale)}</div>
+              <div><strong>{t('medium', locale)}</strong> — {t('helpMedium', locale)}</div>
+              <div><strong>{t('hard', locale)}</strong> — {t('helpHard', locale)}</div>
             </div>
           </div>
 
           {/* Tracks */}
           <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Trilhas</h3>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>{t('helpTracks', locale)}</h3>
             <p style={{ color: 'var(--sub)' }}>
-              Acesse as trilhas educacionais pelo ícone de livro no header. Pratique conceitos específicos como Variáveis, Funções, Objetos e mais, em qualquer linguagem.
+              {t('helpTracksDesc', locale)}
             </p>
           </div>
 
           {/* XP */}
           <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>XP e Níveis</h3>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>{t('helpXP', locale)}</h3>
             <p style={{ color: 'var(--sub)' }}>
-              Ganhe XP ao completar snippets. Quanto maior o WPM e accuracy, mais XP. Snippets difíceis dão bônus multiplicador. Mantenha um streak diário para motivação.
+              {t('helpXPDesc', locale)}
             </p>
           </div>
 
           {/* Themes */}
           <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Temas</h3>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>{t('helpThemes', locale)}</h3>
             <p style={{ color: 'var(--sub)' }}>
-              Clique no nome do tema no canto inferior direito para trocar. Mais de 30 temas disponíveis. As cores do tema também afetam o syntax highlighting do código.
+              {t('helpThemesDesc', locale)}
             </p>
           </div>
         </div>
