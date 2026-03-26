@@ -117,9 +117,16 @@ const profiles: Record<Exclude<SoundProfile, 'off'>, ProfileSounds> = {
 
 // ── Preferences ───────────────────────────────────────────────────────────
 
+const DEFAULTS: Record<SoundEvent, SoundProfile> = {
+  key: 'pop',
+  space: 'pop',
+  error: 'hitmarker',
+  complete: 'off',
+}
+
 export function getSoundPref(event: SoundEvent): SoundProfile {
-  if (typeof window === 'undefined') return 'off'
-  return (localStorage.getItem(KEYS[event]) as SoundProfile) || 'off'
+  if (typeof window === 'undefined') return DEFAULTS[event]
+  return (localStorage.getItem(KEYS[event]) as SoundProfile) || DEFAULTS[event]
 }
 
 export function setSoundPref(event: SoundEvent, profile: SoundProfile) {

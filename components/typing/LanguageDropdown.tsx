@@ -45,7 +45,7 @@ export default function LanguageDropdown({ selected, onSelect }: LanguageDropdow
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-48 py-1 rounded-lg shadow-xl animate-fade-in max-h-80 overflow-y-auto"
+        <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-40 sm:w-48 py-1 rounded-lg shadow-xl animate-fade-in max-h-80 overflow-y-auto"
           style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}>
           <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Codigo</div>
           {codeLanguages.map(renderItem)}

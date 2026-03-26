@@ -127,7 +127,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
   const isIdle = currentIndex === 0 && !isTyping
 
   return (
-    <div className={`w-full mx-auto cursor-text ${isTextMode ? 'max-w-2xl' : 'max-w-3xl'}`} onClick={() => textareaRef.current?.focus()}>
+    <div className={`w-full mx-auto cursor-text overflow-hidden ${isTextMode ? 'max-w-2xl' : 'max-w-3xl'}`} onClick={() => textareaRef.current?.focus()}>
       <textarea
         ref={textareaRef}
         className="absolute opacity-0 w-0 h-0"
@@ -148,15 +148,15 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
 
       {isTyping && (
         <div className="mb-2 tabular-nums" style={{ color: 'var(--main)' }}>
-          <span className="text-2xl font-bold">{currentIndex}</span>
-          <span className="text-sm mx-1" style={{ color: 'var(--sub)', opacity: 0.5 }}>/</span>
-          <span className="text-sm" style={{ color: 'var(--sub)' }}>{code.length}</span>
+          <span className="text-xl sm:text-2xl font-bold">{currentIndex}</span>
+          <span className="text-xs sm:text-sm mx-1" style={{ color: 'var(--sub)', opacity: 0.5 }}>/</span>
+          <span className="text-xs sm:text-sm" style={{ color: 'var(--sub)' }}>{code.length}</span>
         </div>
       )}
 
       {isTextMode ? (
         /* Text mode: centered prose, word wrap, MonkeyType style */
-        <div className="font-[family-name:var(--font-geist-sans)] text-[1.75rem] leading-[2.4] w-full mx-auto" style={{ overflowWrap: 'break-word', wordBreak: 'normal' }}>
+        <div className="font-[family-name:var(--font-geist-sans)] text-base sm:text-xl md:text-[1.75rem] leading-[1.8] sm:leading-[2.2] md:leading-[2.4] w-full mx-auto" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
           {code.split('').map((char, i) => (
             <span key={i} className={getCharClass(charStatuses[i], i)} style={getCharStyle(charStatuses[i], i)}>
               {char}
@@ -165,13 +165,13 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
         </div>
       ) : (
         /* Code mode: line numbers, monospace, wraps long lines */
-        <div className="font-[family-name:var(--font-geist-mono)] text-[1.5rem] leading-[1.8]">
+        <div className="font-[family-name:var(--font-geist-mono)] text-sm sm:text-lg md:text-[1.5rem] leading-[1.6] sm:leading-[1.8]">
           {lines.map((line, lineIdx) => (
             <div key={lineIdx} className="flex min-w-0">
-              <span className="select-none w-10 text-right pr-4 text-xs leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>
+              <span className="select-none w-6 sm:w-10 text-right pr-2 sm:pr-4 text-[10px] sm:text-xs leading-[1.6] sm:leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>
                 {lineIdx + 1}
               </span>
-              <span className="whitespace-pre-wrap break-words flex-1 min-w-0">
+              <span className="whitespace-pre-wrap flex-1 min-w-0" style={{ overflowWrap: 'anywhere', wordBreak: 'break-all' }}>
                 {line.text.split('').map((char, charIdx) => {
                   const globalIdx = line.startIndex + charIdx
                   return (

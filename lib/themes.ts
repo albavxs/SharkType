@@ -150,7 +150,7 @@ export const themes: Theme[] = [
   },
 ]
 
-export const DEFAULT_THEME = 'serika dark'
+export const DEFAULT_THEME = 'dracula'
 
 export function getTheme(name: string): Theme {
   return themes.find(t => t.name === name) || themes[0]

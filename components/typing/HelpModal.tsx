@@ -8,7 +8,7 @@ interface HelpModalProps {
 
 export default function HelpModal({ onClose }: HelpModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div
         className="w-full max-w-lg rounded-xl shadow-2xl overflow-hidden animate-fade-in max-h-[80vh] overflow-y-auto"
         style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}

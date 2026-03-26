@@ -45,7 +45,7 @@ export default function ThemeSelector({ currentTheme, onSelect, onClose }: Theme
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div
         className="w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-fade-in"
         style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}
@@ -59,7 +59,7 @@ export default function ThemeSelector({ currentTheme, onSelect, onClose }: Theme
             placeholder="Theme..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-sm font-[family-name:var(--font-geist-mono)]"
+            className="flex-1 bg-transparent outline-none text-base sm:text-sm font-[family-name:var(--font-geist-mono)]"
             style={{ color: 'var(--text)' }}
           />
           <button onClick={onClose} style={{ color: 'var(--sub)' }} className="hover:opacity-80">

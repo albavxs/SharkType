@@ -39,15 +39,19 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
   }
 
   return (
-    <div className="w-full mx-auto px-6 animate-slide-up">
+    <div className="w-full mx-auto px-3 sm:px-6 animate-slide-up">
       {/* Top: WPM/ACC left + Graph right */}
-      <div className="flex gap-6 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-6">
         {/* Left stats */}
-        <div className="shrink-0 flex flex-col justify-center">
-          <div className="text-xs mb-1" style={{ color: 'var(--sub)' }}>wpm</div>
-          <div className="text-7xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>{animatedWpm}</div>
-          <div className="text-xs mt-4 mb-1" style={{ color: 'var(--sub)' }}>acc</div>
-          <div className="text-5xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>{accuracy}%</div>
+        <div className="shrink-0 flex flex-row sm:flex-col items-center sm:items-start gap-4 sm:gap-0 justify-center">
+          <div>
+            <div className="text-xs mb-1" style={{ color: 'var(--sub)' }}>wpm</div>
+            <div className="text-5xl sm:text-7xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>{animatedWpm}</div>
+          </div>
+          <div>
+            <div className="text-xs sm:mt-4 mb-1" style={{ color: 'var(--sub)' }}>acc</div>
+            <div className="text-3xl sm:text-5xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>{accuracy}%</div>
+          </div>
         </div>
 
         {/* Graph */}
@@ -57,7 +61,7 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-6 gap-4 text-center mb-6">
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 text-center mb-6">
         {[
           { v: wpm,               l: t('netWpm', locale),      c: 'var(--text)' },
           { v: rawWpm,            l: t('rawWpm', locale),      c: 'var(--sub)' },
@@ -74,7 +78,7 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
       </div>
 
       {/* XP / Level / Streak */}
-      <div className="flex items-center justify-center gap-6 mb-6">
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mb-6">
         <span className="text-sm font-bold" style={{ color: 'var(--main)' }}>+{animatedXP} XP</span>
         {leveledUp && <span className="text-xs font-bold animate-fade-in" style={{ color: 'var(--main)' }}>{t('levelUp', locale)}</span>}
         <div className="flex items-center gap-1.5">

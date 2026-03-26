@@ -10,13 +10,12 @@ export default function WPMGraph({ netSamples, rawSamples }: WPMGraphProps) {
   const maxWPM = Math.max(...allValues, 1)
   const width = 400
   const height = 200
-  const padX = 32
-  const padY = 12
+  const pad = 4
 
   function toPath(samples: number[]): string {
     const points = samples.map((wpm, i) => {
-      const x = padX + (i / (samples.length - 1)) * (width - padX * 2)
-      const y = height - padY - (wpm / maxWPM) * (height - padY * 2)
+      const x = pad + (i / (samples.length - 1)) * (width - pad * 2)
+      const y = height - pad - (wpm / maxWPM) * (height - pad * 2)
       return { x, y }
     })
 
@@ -33,46 +32,51 @@ export default function WPMGraph({ netSamples, rawSamples }: WPMGraphProps) {
   const netPath = toPath(netSamples)
   const rawPath = rawSamples.length >= 2 ? toPath(rawSamples) : ''
 
-  const lastNetX = padX + ((netSamples.length - 1) / (netSamples.length - 1)) * (width - padX * 2)
-  const firstNetX = padX
-  const areaPath = `${netPath} L ${lastNetX} ${height - padY} L ${firstNetX} ${height - padY} Z`
+  const lastNetX = pad + ((netSamples.length - 1) / (netSamples.length - 1)) * (width - pad * 2)
+  const firstNetX = pad
+  const areaPath = `${netPath} L ${lastNetX} ${height - pad} L ${firstNetX} ${height - pad} Z`
 
   const yLabels = [0, Math.round(maxWPM / 2), maxWPM]
 
   return (
-    <div className="w-full animate-fade-in">
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-96">
-        {yLabels.map((v, i) => {
-          const y = height - padY - (v / maxWPM) * (height - padY * 2)
-          return (
-            <g key={i}>
-              <line x1={padX} y1={y} x2={width - padX} y2={y} stroke="currentColor" className="text-neutral-800" strokeWidth="0.5" />
-              <text x={padX - 4} y={y + 3} textAnchor="end" className="text-neutral-600 fill-current" fontSize="8">{v}</text>
-            </g>
-          )
-        })}
+    <div className="w-full animate-fade-in relative">
+      {/* Y-axis labels as HTML to avoid SVG distortion */}
+      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-1 pointer-events-none" style={{ width: '2rem' }}>
+        {[...yLabels].reverse().map((v, i) => (
+          <span key={i} className="text-[10px] text-right pr-1 leading-none" style={{ color: 'var(--sub)' }}>{v}</span>
+        ))}
+      </div>
 
-        <path d={areaPath} fill="url(#netGradient)" />
+      {/* Grid lines + chart */}
+      <div className="ml-8">
+        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-28 sm:h-40 md:h-48 block">
+          {yLabels.map((v, i) => {
+            const y = height - pad - (v / maxWPM) * (height - pad * 2)
+            return <line key={i} x1={0} y1={y} x2={width} y2={y} stroke="var(--sub)" strokeWidth="0.5" strokeOpacity="0.3" />
+          })}
 
-        <defs>
-          <linearGradient id="netGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
-          </linearGradient>
-        </defs>
+          <path d={areaPath} fill="url(#netGradient)" />
 
-        {rawPath && (
-          <path d={rawPath} fill="none" stroke="#525252" strokeWidth="1" strokeDasharray="4 2" />
-        )}
+          <defs>
+            <linearGradient id="netGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--main)" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="var(--main)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
 
-        <path d={netPath} fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" />
+          {rawPath && (
+            <path d={rawPath} fill="none" stroke="var(--sub)" strokeWidth="1.5" strokeDasharray="6 3" strokeOpacity="0.4" />
+          )}
 
-        {netSamples.length > 0 && (() => {
-          const lastX = padX + ((netSamples.length - 1) / (netSamples.length - 1)) * (width - padX * 2)
-          const lastY = height - padY - (netSamples[netSamples.length - 1] / maxWPM) * (height - padY * 2)
-          return <circle cx={lastX} cy={lastY} r="4" fill="#6366f1" />
-        })()}
-      </svg>
+          <path d={netPath} fill="none" stroke="var(--main)" strokeWidth="2.5" strokeLinecap="round" />
+
+          {netSamples.length > 0 && (() => {
+            const lastX = pad + ((netSamples.length - 1) / (netSamples.length - 1)) * (width - pad * 2)
+            const lastY = height - pad - (netSamples[netSamples.length - 1] / maxWPM) * (height - pad * 2)
+            return <circle cx={lastX} cy={lastY} r="5" fill="var(--main)" />
+          })()}
+        </svg>
+      </div>
     </div>
   )
 }

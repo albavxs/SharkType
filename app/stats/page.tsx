@@ -19,33 +19,33 @@ export default function StatsPage() {
   const langEntries = Object.entries(progress.languages)
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen">
-      <div className="px-6 py-4">
-        <Link href="/" className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-white light:hover:text-black transition-colors">
+    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+      <div className="px-3 sm:px-6 py-4">
+        <Link href="/" className="flex items-center gap-1.5 text-sm transition-all duration-150 hover:scale-105 active:scale-95" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
           Voltar
         </Link>
       </div>
 
-      <div className="flex-1 flex flex-col items-center px-6 py-8">
-        <div className="w-full max-w-lg space-y-8">
-          <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]">
+      <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
+        <div className="w-full max-w-lg space-y-6 sm:space-y-8">
+          <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
             Estatísticas
           </h1>
 
           {/* Profile */}
-          <div className="flex items-center gap-6 py-4 border-b border-neutral-800 light:border-neutral-200">
-            <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center">
-              <span className="text-lg font-bold text-indigo-400">{levelInfo.level}</span>
+          <div className="flex items-center gap-4 sm:gap-6 py-4" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 20%, transparent)' }}>
+              <span className="text-base sm:text-lg font-bold" style={{ color: 'var(--main)' }}>{levelInfo.level}</span>
             </div>
             <div>
-              <div className="text-sm font-medium">{progress.totalXP} XP</div>
-              <div className="w-24 h-1.5 rounded-full bg-neutral-800 light:bg-neutral-200 mt-1">
-                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${levelInfo.percent}%` }} />
+              <div className="text-sm font-medium" style={{ color: 'var(--text)' }}>{progress.totalXP} XP</div>
+              <div className="w-20 sm:w-24 h-1.5 rounded-full mt-1" style={{ backgroundColor: 'var(--sub-alt)' }}>
+                <div className="h-full rounded-full" style={{ width: `${levelInfo.percent}%`, backgroundColor: 'var(--main)' }} />
               </div>
             </div>
             {progress.streak.current > 0 && (
-              <div className="flex items-center gap-1 text-sm text-orange-400">
+              <div className="flex items-center gap-1 text-xs sm:text-sm" style={{ color: 'var(--main)' }}>
                 <FlameIcon size={14} />
                 {progress.streak.current}d streak
               </div>
@@ -54,9 +54,9 @@ export default function StatsPage() {
 
           {/* Per language */}
           <div className="space-y-3">
-            <h2 className="text-xs text-neutral-600 uppercase tracking-wider">Por linguagem</h2>
+            <h2 className="text-xs uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Por linguagem</h2>
             {langEntries.length === 0 && (
-              <p className="text-sm text-neutral-600">Nenhuma sessao ainda. Comece a praticar!</p>
+              <p className="text-sm" style={{ color: 'var(--sub)' }}>Nenhuma sessao ainda. Comece a praticar!</p>
             )}
             {langEntries.map(([langId, langProg]) => {
               const lang = languages.find(l => l.id === langId)
@@ -65,15 +65,15 @@ export default function StatsPage() {
               const total = lang.snippets.length
               const pct = Math.round((completed / total) * 100)
               return (
-                <div key={langId} className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: lang.color }} />
-                  <span className="text-sm w-20">{lang.label}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-neutral-800 light:bg-neutral-200">
+                <div key={langId} className="flex items-center gap-2 sm:gap-3">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: lang.color }} />
+                  <span className="text-xs sm:text-sm w-16 sm:w-20 shrink-0" style={{ color: 'var(--text)' }}>{lang.label}</span>
+                  <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: 'var(--sub-alt)' }}>
                     <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: lang.color }} />
                   </div>
-                  <span className="text-xs text-neutral-500 w-12 text-right">{completed}/{total}</span>
+                  <span className="text-[10px] sm:text-xs w-10 sm:w-12 text-right shrink-0" style={{ color: 'var(--sub)' }}>{completed}/{total}</span>
                   {langProg.bestWPM > 0 && (
-                    <span className="text-xs text-neutral-600 w-16 text-right">{langProg.bestWPM} wpm</span>
+                    <span className="text-[10px] sm:text-xs w-14 sm:w-16 text-right shrink-0" style={{ color: 'var(--sub)' }}>{langProg.bestWPM} wpm</span>
                   )}
                 </div>
               )
@@ -83,17 +83,17 @@ export default function StatsPage() {
           {/* Recent sessions */}
           {progress.history.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs text-neutral-600 uppercase tracking-wider">Historico recente</h2>
+              <h2 className="text-xs uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Historico recente</h2>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {progress.history.slice(0, 20).map((session, i) => {
                   const lang = languages.find(l => l.id === session.languageId)
                   return (
-                    <div key={i} className="flex items-center gap-3 text-xs py-1.5 border-b border-neutral-900 light:border-neutral-100">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: lang?.color || '#666' }} />
-                      <span className="text-neutral-400 w-16">{session.date}</span>
-                      <span className="text-white light:text-black tabular-nums">{session.wpm} wpm</span>
-                      <span className="text-neutral-500">{session.accuracy}%</span>
-                      <span className="text-indigo-400 ml-auto">+{session.xpEarned} XP</span>
+                    <div key={i} className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs py-1.5" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 15%, transparent)' }}>
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: lang?.color || '#666' }} />
+                      <span className="w-14 sm:w-16 shrink-0" style={{ color: 'var(--sub)' }}>{session.date}</span>
+                      <span className="tabular-nums" style={{ color: 'var(--text)' }}>{session.wpm} wpm</span>
+                      <span style={{ color: 'var(--sub)' }}>{session.accuracy}%</span>
+                      <span className="ml-auto" style={{ color: 'var(--main)' }}>+{session.xpEarned} XP</span>
                     </div>
                   )
                 })}
