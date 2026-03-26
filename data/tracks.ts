@@ -11,8 +11,8 @@ export const tracks: Track[] = [
   // ── Existing tracks (updated with new languages) ─────────────────────────
   {
     id: 'variables',
-    name: 'Variaveis',
-    description: 'Declaracao e uso de variaveis, constantes e tipos basicos',
+    name: 'Variáveis',
+    description: 'Declaração e uso de variáveis, constantes e tipos básicos',
     snippetIds: [
       'js-002', 'js-003', 'js-008', 'js-009',
       'ts-001', 'ts-002', 'ts-004', 'ts-009',
@@ -30,8 +30,8 @@ export const tracks: Track[] = [
   },
   {
     id: 'functions',
-    name: 'Funcoes',
-    description: 'Funcoes, arrow functions, lambdas, closures e callbacks',
+    name: 'Funções',
+    description: 'Funções, arrow functions, lambdas, closures e callbacks',
     snippetIds: [
       'js-001', 'js-005', 'js-007',
       'ts-003', 'ts-007', 'ts-010',
@@ -67,7 +67,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'loops',
-    name: 'Loops e Iteracao',
+    name: 'Loops e Iteração',
     description: 'For, while, iteradores, map, filter e array methods',
     snippetIds: [
       'js-006',
@@ -119,7 +119,7 @@ export const tracks: Track[] = [
   {
     id: 'classes',
     name: 'Classes e OOP',
-    description: 'Classes, heranca, interfaces, impl blocks',
+    description: 'Classes, herança, interfaces, impl blocks',
     snippetIds: [
       'js-010',
       'ts-009',
@@ -136,8 +136,8 @@ export const tracks: Track[] = [
   },
   {
     id: 'advanced',
-    name: 'Avancado',
-    description: 'Patterns idiomaticos, async, generics avancados, macros',
+    name: 'Avançado',
+    description: 'Patterns idiomáticos, async, generics avançados, macros',
     snippetIds: [
       'js-007',
       'ts-007', 'ts-008',
@@ -171,7 +171,7 @@ export const tracks: Track[] = [
   {
     id: 'scripting',
     name: 'Scripting',
-    description: 'Bash, Python, Ruby e Lua: linguagens de script e automacao',
+    description: 'Bash, Python, Ruby e Lua: linguagens de script e automação',
     snippetIds: [
       'bash-001', 'bash-002', 'bash-003', 'bash-005', 'bash-006', 'bash-007',
       'py-003', 'py-004', 'py-005', 'py-007',
@@ -182,7 +182,7 @@ export const tracks: Track[] = [
   {
     id: 'mobile',
     name: 'Mobile',
-    description: 'Swift (iOS) e Kotlin (Android): padrao mobile moderno',
+    description: 'Swift (iOS) e Kotlin (Android): padrão mobile moderno',
     snippetIds: [
       'swift-001', 'swift-002', 'swift-003', 'swift-004', 'swift-005',
       'swift-006', 'swift-007', 'swift-008', 'swift-009', 'swift-010',
@@ -192,7 +192,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'functional',
-    name: 'Programacao Funcional',
+    name: 'Programação Funcional',
     description: 'Pattern matching, monads, closures e imutabilidade',
     snippetIds: [
       'scala-005', 'scala-006', 'scala-007', 'scala-009',
@@ -205,7 +205,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'concurrency',
-    name: 'Concorrencia e Async',
+    name: 'Concorrência e Async',
     description: 'Goroutines, coroutines, promises, async/await e channels',
     snippetIds: [
       'go-004', 'go-005', 'go-007',
@@ -220,7 +220,7 @@ export const tracks: Track[] = [
   {
     id: 'devops',
     name: 'DevOps',
-    description: 'Docker, Linux, Git e Bash para infra e automacao de deploys',
+    description: 'Docker, Linux, Git e Bash para infra e automação de deploys',
     snippetIds: [
       'docker-001', 'docker-002', 'docker-003', 'docker-004', 'docker-005',
       'linux-004', 'linux-005', 'linux-006', 'linux-007', 'linux-008',
@@ -231,7 +231,7 @@ export const tracks: Track[] = [
   {
     id: 'database',
     name: 'Banco de Dados',
-    description: 'SQL completo: SELECT, JOIN, agregacoes, CTEs e window functions',
+    description: 'SQL completo: SELECT, JOIN, agregações, CTEs e window functions',
     snippetIds: [
       'sql-001', 'sql-002', 'sql-003', 'sql-004', 'sql-005',
       'sql-006', 'sql-007', 'sql-008', 'sql-009', 'sql-010',
@@ -240,7 +240,7 @@ export const tracks: Track[] = [
   {
     id: 'strings',
     name: 'Strings e Texto',
-    description: 'Interpolacao, formatacao e manipulacao de strings em multiplas linguagens',
+    description: 'Interpolação, formatação e manipulação de strings em múltiplas linguagens',
     snippetIds: [
       'py-007',
       'ruby-002',
@@ -259,7 +259,7 @@ export const tracks: Track[] = [
   {
     id: 'git',
     name: 'Git',
-    description: 'Controle de versao: commits, branches, merge, rebase e workflows',
+    description: 'Controle de versão: commits, branches, merge, rebase e workflows',
     snippetIds: [
       'git-001', 'git-002', 'git-003', 'git-004', 'git-005',
       'git-006', 'git-007', 'git-008', 'git-009', 'git-010',
@@ -288,23 +288,23 @@ export const tracks: Track[] = [
   {
     id: 'idioma-iniciante',
     name: 'Idiomas — Iniciante',
-    description: 'Frases curtas e vocabulario basico para comecar a digitar rapido',
+    description: 'Frases curtas e vocabulário básico para começar a digitar rápido',
     snippetIds: [],
     textLanguages: true,
     difficultyFilter: 'easy',
   },
   {
     id: 'idioma-medio',
-    name: 'Idiomas — Medio',
-    description: 'Paragrafos sobre ciencia, tecnologia e cultura para ganhar velocidade',
+    name: 'Idiomas — Médio',
+    description: 'Parágrafos sobre ciência, tecnologia e cultura para ganhar velocidade',
     snippetIds: [],
     textLanguages: true,
     difficultyFilter: 'medium',
   },
   {
     id: 'idioma-dificil',
-    name: 'Idiomas — Dificil',
-    description: 'Textos densos de filosofia, historia e literatura para alta precisao',
+    name: 'Idiomas — Difícil',
+    description: 'Textos densos de filosofia, história e literatura para alta precisão',
     snippetIds: [],
     textLanguages: true,
     difficultyFilter: 'hard',

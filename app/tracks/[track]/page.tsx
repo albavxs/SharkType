@@ -187,7 +187,7 @@ export default function TrackPracticePage() {
   const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); engine.handleKey(key) }, [engine])
 
   if (!track) {
-    return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>Trilha nao encontrada.</p></main>
+    return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>Trilha não encontrada.</p></main>
   }
 
   return (

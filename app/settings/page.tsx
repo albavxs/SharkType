@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 const soundEvents: { key: SoundEvent; label: string }[] = [
   { key: 'key', label: 'Tecla' },
-  { key: 'space', label: 'Espaco' },
+  { key: 'space', label: 'Espaço' },
   { key: 'error', label: 'Erro' },
   { key: 'complete', label: 'Completo' },
 ]
@@ -51,7 +51,7 @@ export default function SettingsPage() {
       <div className="flex-1 flex flex-col items-center px-6 py-8">
         <div className="w-full max-w-lg space-y-8">
           <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
-            Configuracoes
+            Configurações
           </h1>
 
           {/* Quick set all */}
@@ -109,7 +109,7 @@ export default function SettingsPage() {
 
           <div className="pt-4">
             <Link href="/stats" className="text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--sub)' }}>
-              Ver estatisticas →
+              Ver estatísticas →
             </Link>
           </div>
         </div>

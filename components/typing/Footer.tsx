@@ -20,7 +20,7 @@ export default function Footer({ onHelpClick, onThemeClick, currentThemeName, is
       <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--text)' }}>
         <button onClick={onHelpClick} className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">help</button>
         <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">github</a>
-        <Link href="/settings" className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">configuracoes</Link>
+        <Link href="/settings" className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">configurações</Link>
       </div>
 
       {/* Right: theme selector button */}

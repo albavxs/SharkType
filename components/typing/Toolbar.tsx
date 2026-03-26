@@ -50,7 +50,7 @@ export default function Toolbar({
           <button onClick={onHelpClick} className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Ajuda">
             <HelpIcon size={22} />
           </button>
-          <Link href="/settings" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Configuracoes">
+          <Link href="/settings" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Configurações">
             <SlidersIcon size={22} />
           </Link>
         </div>
