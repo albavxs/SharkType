@@ -28,19 +28,11 @@ export default function HelpModal({ onClose }: HelpModalProps) {
           <div>
             <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Atalhos de teclado</h3>
             <div className="space-y-1" style={{ color: 'var(--sub)' }}>
-              <div><Kbd>tab</Kbd> reiniciar teste / proximo snippet</div>
-              <div><Kbd>enter</Kbd> nova linha (no codigo)</div>
+              <div><Kbd>shift + tab</Kbd> reiniciar snippet (funciona durante a digitação)</div>
+              <div><Kbd>tab</Kbd> reiniciar teste / próximo snippet</div>
+              <div><Kbd>enter</Kbd> nova linha (no código)</div>
               <div><Kbd>backspace</Kbd> apagar caractere</div>
               <div><Kbd>esc</Kbd> fechar modais</div>
-            </div>
-          </div>
-
-          {/* Modes */}
-          <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Modos</h3>
-            <div className="space-y-1" style={{ color: 'var(--sub)' }}>
-              <div><strong>30 / 60</strong> — Modo cronometrado. Digite o maximo que conseguir no tempo.</div>
-              <div><strong>snippet</strong> — Modo livre. Complete o snippet no seu ritmo.</div>
             </div>
           </div>
 
@@ -48,9 +40,10 @@ export default function HelpModal({ onClose }: HelpModalProps) {
           <div>
             <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Dificuldade</h3>
             <div className="space-y-1" style={{ color: 'var(--sub)' }}>
-              <div><strong>facil</strong> — Variaveis, declaracoes simples, one-liners</div>
-              <div><strong>medio</strong> — Funcoes, loops, tratamento de erros</div>
-              <div><strong>dificil</strong> — Patterns avancados, generics, closures</div>
+              <div><strong>default</strong> — Todos os snippets, sem cronômetro</div>
+              <div><strong>fácil</strong> — Variáveis, declarações simples, one-liners (60s)</div>
+              <div><strong>médio</strong> — Funções, loops, tratamento de erros (45s)</div>
+              <div><strong>difícil</strong> — Patterns avançados, generics, closures (30s)</div>
             </div>
           </div>
 
@@ -58,15 +51,15 @@ export default function HelpModal({ onClose }: HelpModalProps) {
           <div>
             <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Trilhas</h3>
             <p style={{ color: 'var(--sub)' }}>
-              Acesse as trilhas educacionais pelo icone de livro no header. Pratique conceitos especificos como Variaveis, Funcoes, Objetos e mais, em qualquer linguagem.
+              Acesse as trilhas educacionais pelo ícone de livro no header. Pratique conceitos específicos como Variáveis, Funções, Objetos e mais, em qualquer linguagem.
             </p>
           </div>
 
           {/* XP */}
           <div>
-            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>XP e Niveis</h3>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>XP e Níveis</h3>
             <p style={{ color: 'var(--sub)' }}>
-              Ganhe XP ao completar snippets. Quanto maior o WPM e accuracy, mais XP. Snippets dificeis dao bonus multiplicador. Mantenha um streak diario para motivacao.
+              Ganhe XP ao completar snippets. Quanto maior o WPM e accuracy, mais XP. Snippets difíceis dão bônus multiplicador. Mantenha um streak diário para motivação.
             </p>
           </div>
 
@@ -74,7 +67,7 @@ export default function HelpModal({ onClose }: HelpModalProps) {
           <div>
             <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>Temas</h3>
             <p style={{ color: 'var(--sub)' }}>
-              Clique no nome do tema no canto inferior direito para trocar. Mais de 30 temas disponiveis. As cores do tema tambem afetam o syntax highlighting do codigo.
+              Clique no nome do tema no canto inferior direito para trocar. Mais de 30 temas disponíveis. As cores do tema também afetam o syntax highlighting do código.
             </p>
           </div>
         </div>

@@ -30,7 +30,7 @@ export default function StatsPage() {
       <div className="flex-1 flex flex-col items-center px-6 py-8">
         <div className="w-full max-w-lg space-y-8">
           <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]">
-            Estatisticas
+            Estatísticas
           </h1>
 
           {/* Profile */}

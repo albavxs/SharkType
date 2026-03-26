@@ -13,7 +13,7 @@ interface SnippetInfoProps {
 
 export default function SnippetInfo({ snippet, languageLabel, languageColor, current, total }: SnippetInfoProps) {
   const [showDetail, setShowDetail] = useState(true)
-  const diffLabel = snippet.difficulty === 'easy' ? 'Facil' : snippet.difficulty === 'medium' ? 'Medio' : 'Dificil'
+  const diffLabel = snippet.difficulty === 'easy' ? 'Fácil' : snippet.difficulty === 'medium' ? 'Médio' : 'Difícil'
 
   return (
     <div>

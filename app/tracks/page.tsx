@@ -129,8 +129,8 @@ export default function TracksPage() {
 
             {/* Código section */}
             <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Codigo</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Trilhas tematicas por conceito ou linguagem de programacao</p>
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Código</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Trilhas temáticas por conceito ou linguagem de programação</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                 {codeTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
@@ -138,7 +138,7 @@ export default function TracksPage() {
               </div>
               {codeStats.total > 0 && (
                 <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
-                  {codeStats.completed}/{codeStats.total} concluidos · {codeStats.pct}%
+                  {codeStats.completed}/{codeStats.total} concluídos · {codeStats.pct}%
                 </div>
               )}
             </div>
@@ -146,7 +146,7 @@ export default function TracksPage() {
             {/* Idiomas section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Idiomas</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Treine digitacao com textos em portugues, ingles, espanhol e frances</p>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Treine digitação com textos em português, inglês, espanhol e francês</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {idiomTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={idiomBadges} />
