@@ -40,8 +40,8 @@ export default function WPMGraph({ netSamples, rawSamples }: WPMGraphProps) {
   const yLabels = [0, Math.round(maxWPM / 2), maxWPM]
 
   return (
-    <div className="w-full max-w-3xl mx-auto animate-fade-in">
-      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-52">
+    <div className="w-full animate-fade-in">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-96">
         {yLabels.map((v, i) => {
           const y = height - padY - (v / maxWPM) * (height - padY * 2)
           return (

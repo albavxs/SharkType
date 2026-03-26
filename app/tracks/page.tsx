@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { tracks } from '@/data/tracks'
+import { tracks, Track } from '@/data/tracks'
+import { textLanguages } from '@/data'
 import { loadProgress, UserProgress, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
@@ -13,7 +14,11 @@ import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { getLanguageById } from '@/data'
-import { Language, Mode, Difficulty } from '@/lib/types'
+import { Language, Difficulty } from '@/lib/types'
+
+const codeTracks = tracks.filter(t => !t.textLanguages)
+const idiomTracks = tracks.filter(t => t.textLanguages)
+const idiomBadges = textLanguages.filter(l => l.id !== 'text-typing')
 
 export default function TracksPage() {
   const router = useRouter()
@@ -24,7 +29,6 @@ export default function TracksPage() {
   const isMobile = useIsMobile()
   const levelInfo = progress ? getLevel(progress.totalXP) : null
 
-  // Dummy language for Toolbar prop compatibility
   const dummyLang = getLanguageById(DEFAULT_LANGUAGE)!
 
   useEffect(() => {
@@ -45,22 +49,36 @@ export default function TracksPage() {
     return completed
   }
 
+  function getSectionStats(sectionTracks: Track[]) {
+    let total = 0
+    let completed = 0
+    for (const track of sectionTracks) {
+      total += track.snippetIds.length
+      completed += getTrackProgress(track.snippetIds)
+    }
+    const pct = total > 0 ? Math.round((completed / total) * 100) : 0
+    return { total, completed, pct }
+  }
+
+  const codeStats = getSectionStats(codeTracks)
+
   return (
     <main className="flex-1 flex flex-col min-h-screen relative">
       {!isMobile && <SceneWrapper />}
 
       <div className="relative z-10 flex-1 flex flex-col min-h-screen">
         <Toolbar
-          language={dummyLang} mode={'snippet' as Mode} difficulty={'all' as Difficulty | 'all'}
+          language={dummyLang} difficulty={'all' as Difficulty | 'all'}
           seconds={0} isTimerRunning={false}
-          onLanguageChange={() => {}} onModeChange={() => {}} onDifficultyChange={() => {}}
+          onLanguageChange={() => {}} onDifficultyChange={() => {}}
+          showControls={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => {}}
           level={levelInfo?.level ?? null} streak={progress?.streak.current ?? 0}
           locale={locale} onLocaleToggle={toggleLocale}
         />
 
         <div className="flex-1 flex flex-col items-center px-6 py-8">
-          <div className="w-full max-w-3xl">
+          <div className="w-full max-w-5xl">
             <h1 className="text-3xl font-bold font-[family-name:var(--font-geist-mono)] mb-2" style={{ color: 'var(--text)' }}>
               Trilhas
             </h1>
@@ -68,29 +86,49 @@ export default function TracksPage() {
               Escolha uma trilha de conceitos. Em seguida, escolha a linguagem para praticar.
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {tracks.map(track => {
-                const completed = getTrackProgress(track.snippetIds)
-                const total = track.snippetIds.length
-                const pct = total > 0 ? Math.round((completed / total) * 100) : 0
-
-                return (
+            {/* Código section */}
+            <div className="mb-10">
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Codigo</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Trilhas tematicas por conceito ou linguagem de programacao</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+                {codeTracks.map(track => (
                   <button key={track.id} onClick={() => router.push(`/tracks/${track.id}`)}
-                    className="block p-4 rounded-lg text-left transition-opacity hover:opacity-90"
+                    className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
                     style={{ backgroundColor: 'var(--sub-alt)' }}>
-                    <div className="text-base font-semibold mb-1" style={{ color: 'var(--text)' }}>{track.name}</div>
-                    <div className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{track.description}</div>
-
-                    <div className="flex items-center gap-1 mb-1">
-                      {Array.from({ length: Math.min(total, 10) }).map((_, i) => (
-                        <span key={i} className="w-2 h-2 rounded-full" style={{ backgroundColor: i < completed ? 'var(--main)' : 'var(--bg)' }} />
-                      ))}
-                      {total > 10 && <span className="text-[10px]" style={{ color: 'var(--sub)' }}>+{total - 10}</span>}
-                    </div>
-                    <span className="text-[10px]" style={{ color: 'var(--sub)' }}>{completed}/{total} · {pct}%</span>
+                    <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name}</div>
+                    <div className="text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>{track.description}</div>
                   </button>
-                )
-              })}
+                ))}
+              </div>
+              {codeStats.total > 0 && (
+                <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
+                  {codeStats.completed}/{codeStats.total} concluidos · {codeStats.pct}%
+                </div>
+              )}
+            </div>
+
+            {/* Idiomas section */}
+            <div className="mb-10">
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Idiomas</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Treine digitacao com textos em portugues, ingles, espanhol e frances</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {idiomTracks.map(track => (
+                  <button key={track.id} onClick={() => router.push(`/tracks/${track.id}`)}
+                    className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
+                    style={{ backgroundColor: 'var(--sub-alt)' }}>
+                    <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name}</div>
+                    <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description}</div>
+                    <div className="flex flex-wrap gap-1">
+                      {idiomBadges.map(lang => (
+                        <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+                          style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
+                          {lang.label}
+                        </span>
+                      ))}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

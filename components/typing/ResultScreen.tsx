@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Snippet } from '@/lib/types'
 import { calculateConsistency } from '@/lib/utils'
-import { FlameIcon, ShareIcon, ArrowRightIcon } from '@/components/icons'
+import { FlameIcon, ShareIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 import WPMGraph from '@/components/stats/WPMGraph'
 import { Locale, t } from '@/lib/i18n'
 
@@ -39,22 +39,32 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto animate-slide-up">
-      <div className="text-center mb-6">
-        <div className="text-6xl font-bold tabular-nums" style={{ color: 'var(--main)' }}>{animatedWpm}</div>
-        <div className="text-xs mt-1" style={{ color: 'var(--sub)' }}>wpm</div>
+    <div className="w-full mx-auto px-6 animate-slide-up">
+      {/* Top: WPM/ACC left + Graph right */}
+      <div className="flex gap-6 mb-6">
+        {/* Left stats */}
+        <div className="shrink-0 flex flex-col justify-center">
+          <div className="text-xs mb-1" style={{ color: 'var(--sub)' }}>wpm</div>
+          <div className="text-7xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>{animatedWpm}</div>
+          <div className="text-xs mt-4 mb-1" style={{ color: 'var(--sub)' }}>acc</div>
+          <div className="text-5xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>{accuracy}%</div>
+        </div>
+
+        {/* Graph */}
+        <div className="flex-1 min-w-0">
+          <WPMGraph netSamples={wpmSamples} rawSamples={rawWpmSamples} />
+        </div>
       </div>
 
-      <WPMGraph netSamples={wpmSamples} rawSamples={rawWpmSamples} />
-
-      <div className="grid grid-cols-6 gap-4 text-center mt-6 mb-6">
+      {/* Stats row */}
+      <div className="grid grid-cols-6 gap-4 text-center mb-6">
         {[
-          { v: wpm,             l: t('netWpm', locale),      c: 'var(--text)' },
-          { v: rawWpm,          l: t('rawWpm', locale),      c: 'var(--sub)' },
-          { v: `${accuracy}%`,  l: t('accuracy', locale),    c: 'var(--text)' },
+          { v: wpm,               l: t('netWpm', locale),      c: 'var(--text)' },
+          { v: rawWpm,            l: t('rawWpm', locale),      c: 'var(--sub)' },
+          { v: `${accuracy}%`,   l: t('accuracy', locale),    c: 'var(--text)' },
           { v: `${consistency}%`, l: t('consistency', locale), c: 'var(--text)' },
-          { v: errors,          l: t('errors', locale),      c: 'var(--error)' },
-          { v: `${duration}s`,  l: t('time', locale),        c: 'var(--text)' },
+          { v: errors,            l: t('errors', locale),      c: 'var(--error)' },
+          { v: `${duration}s`,   l: t('time', locale),        c: 'var(--text)' },
         ].map((s, i) => (
           <div key={i}>
             <div className="text-lg font-semibold tabular-nums" style={{ color: s.c }}>{s.v}</div>
@@ -63,6 +73,7 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
         ))}
       </div>
 
+      {/* XP / Level / Streak */}
       <div className="flex items-center justify-center gap-6 mb-6">
         <span className="text-sm font-bold" style={{ color: 'var(--main)' }}>+{animatedXP} XP</span>
         {leveledUp && <span className="text-xs font-bold animate-fade-in" style={{ color: 'var(--main)' }}>{t('levelUp', locale)}</span>}
@@ -76,6 +87,7 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
         {streak > 0 && <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--main)' }}><FlameIcon size={12} />{streak}d</span>}
       </div>
 
+      {/* Snippet info */}
       <div className="text-center text-sm mb-6">
         <span className="font-medium" style={{ color: 'var(--main)' }}>{languageLabel}</span>
         <span className="mx-2" style={{ color: 'var(--sub)', opacity: 0.3 }}>/</span>
@@ -84,18 +96,31 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
         <span style={{ color: 'var(--sub)' }}>{diff}</span>
       </div>
 
-      <div className="flex items-center justify-center gap-3">
+      {/* Actions */}
+      <div className="flex items-center justify-center gap-4">
         <button onClick={handleShare}
-          className="flex items-center gap-2 px-4 py-2.5 text-sm rounded-lg transition-opacity hover:opacity-80"
-          style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}>
-          <ShareIcon size={14} />
-          {copied ? t('copied', locale) : t('share', locale)}
+          className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+          style={{ color: 'var(--sub)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
+          title={copied ? t('copied', locale) : t('share', locale)}>
+          <ShareIcon size={20} />
         </button>
         <button onClick={onNext}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm rounded-lg font-medium transition-opacity hover:opacity-90"
-          style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>
-          {t('next', locale)}
-          <ArrowRightIcon size={14} />
+          className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+          style={{ color: 'var(--sub)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
+          title={t('next', locale)}>
+          <ArrowRightIcon size={20} />
+        </button>
+        <button onClick={onNext}
+          className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+          style={{ color: 'var(--sub)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
+          title={t('restart', locale)}>
+          <RefreshIcon size={20} />
         </button>
       </div>
     </div>

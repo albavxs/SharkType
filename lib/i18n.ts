@@ -26,7 +26,7 @@ const dict: Record<string, Record<Locale, string>> = {
   copied:      { pt: 'Copiado!',    en: 'Copied!' },
   next:        { pt: 'Próximo',     en: 'Next' },
   // UI labels
-  all:         { pt: 'todos',       en: 'all' },
+  all:         { pt: 'default',     en: 'default' },
   timeLabel:   { pt: 'tempo',       en: 'time' },
   prev:        { pt: 'Anterior',    en: 'Previous' },
   restart:     { pt: 'Reiniciar',   en: 'Restart' },
