@@ -54,4 +54,57 @@ export const languageKeywords: Record<string, string[]> = {
     'for', 'while', 'auto', 'const', 'void', 'int', 'double', 'using', 'std',
     'public', 'private', 'protected', 'virtual', 'override', 'constexpr',
   ],
+  swift: [
+    'func', 'var', 'let', 'if', 'else', 'guard', 'return', 'class', 'struct',
+    'enum', 'for', 'in', 'while', 'import', 'override', 'init', 'self', 'super',
+    'try', 'catch', 'throw', 'async', 'await', 'some', 'any', 'where', 'switch',
+    'case', 'break', 'continue', 'nil', 'true', 'false', 'protocol', 'extension',
+  ],
+  scala: [
+    'def', 'val', 'var', 'class', 'object', 'trait', 'extends', 'override',
+    'return', 'if', 'else', 'for', 'yield', 'match', 'case', 'import', 'type',
+    'abstract', 'sealed', 'given', 'using', 'new', 'with', 'null', 'true', 'false',
+  ],
+  ruby: [
+    'def', 'end', 'if', 'else', 'elsif', 'unless', 'while', 'until', 'for',
+    'in', 'do', 'begin', 'rescue', 'raise', 'return', 'class', 'module', 'require',
+    'attr_reader', 'attr_writer', 'attr_accessor', 'nil', 'true', 'false', 'self',
+    'super', 'yield', 'include', 'extend', 'puts', 'print',
+  ],
+  lua: [
+    'function', 'local', 'if', 'then', 'else', 'elseif', 'end', 'for', 'do',
+    'while', 'repeat', 'until', 'return', 'and', 'or', 'not', 'nil', 'true',
+    'false', 'in', 'break', 'goto', 'require', 'print', 'pairs', 'ipairs',
+    'setmetatable', 'getmetatable', 'pcall', 'error', 'type',
+  ],
+  html: [
+    'div', 'span', 'class', 'href', 'src', 'type', 'id', 'name', 'value',
+    'action', 'method', 'form', 'input', 'button', 'label', 'select', 'option',
+    'header', 'footer', 'nav', 'main', 'section', 'article', 'aside', 'table',
+    'thead', 'tbody', 'tr', 'th', 'td', 'ul', 'ol', 'li', 'img', 'alt',
+    'required', 'checked', 'disabled', 'placeholder', 'for', 'rel', 'charset',
+  ],
+  kotlin: [
+    'fun', 'val', 'var', 'class', 'object', 'interface', 'data', 'sealed', 'enum',
+    'if', 'else', 'when', 'for', 'while', 'return', 'import', 'package',
+    'override', 'abstract', 'companion', 'init', 'constructor', 'super', 'this',
+    'null', 'is', 'as', 'in', 'by', 'suspend', 'async', 'launch', 'coroutine',
+    'lateinit', 'lazy', 'inline', 'reified', 'crossinline',
+  ],
+  docker: [
+    'FROM', 'RUN', 'CMD', 'EXPOSE', 'ENV', 'COPY', 'ADD', 'WORKDIR', 'ARG',
+    'LABEL', 'VOLUME', 'USER', 'ENTRYPOINT', 'HEALTHCHECK', 'STOPSIGNAL',
+    'ONBUILD', 'SHELL', 'AS', 'interval', 'timeout', 'retries',
+  ],
+  git: [
+    'init', 'add', 'commit', 'push', 'pull', 'fetch', 'clone', 'branch',
+    'checkout', 'merge', 'rebase', 'reset', 'revert', 'stash', 'log',
+    'status', 'diff', 'remote', 'cherry-pick', 'bisect', 'blame', 'tag',
+  ],
+  linux: [
+    'ls', 'cd', 'pwd', 'cp', 'mv', 'rm', 'mkdir', 'touch', 'cat', 'grep',
+    'find', 'chmod', 'chown', 'ps', 'kill', 'tar', 'curl', 'wget', 'awk',
+    'sed', 'sort', 'uniq', 'head', 'tail', 'cut', 'echo', 'export', 'ssh',
+    'systemctl', 'journalctl', 'zip', 'du', 'df',
+  ],
 }

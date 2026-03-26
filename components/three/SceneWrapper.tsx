@@ -5,17 +5,11 @@ import { Suspense } from 'react'
 
 const SceneInner = dynamic(() => import('./SceneInner'), { ssr: false })
 
-interface SceneWrapperProps {
-  wpm?: number
-  lastKeyTime?: number
-  lastErrorTime?: number
-}
-
-export default function SceneWrapper(props: SceneWrapperProps) {
+export default function SceneWrapper() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
       <Suspense fallback={null}>
-        <SceneInner {...props} />
+        <SceneInner />
       </Suspense>
     </div>
   )

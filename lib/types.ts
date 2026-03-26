@@ -9,6 +9,7 @@ export interface Snippet {
   code: string
   concept: string
   difficulty: Difficulty
+  prompt?: string
 }
 
 export interface Language {

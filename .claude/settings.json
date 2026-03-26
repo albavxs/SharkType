@@ -5,7 +5,11 @@
       "WebFetch(domain:r3f.docs.pmnd.rs)",
       "WebFetch(domain:medium.com)",
       "WebFetch(domain:blog.maximeheckel.com)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Read(//home/gui369/**)"
+    ],
+    "additionalDirectories": [
+      "/home/gui369/Documentos/SyntaxLang.IO/app/tracks"
     ]
   }
 }

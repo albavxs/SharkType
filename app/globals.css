@@ -1,17 +1,36 @@
 @import "tailwindcss";
-@custom-variant light (&:where(.light, .light *));
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Default theme values (serika dark) */
+:root {
+  --bg: #323437;
+  --main: #e2b714;
+  --caret: #e2b714;
+  --sub: #646669;
+  --sub-alt: #2c2e31;
+  --text: #d1d0c5;
+  --error: #ca4754;
+  --error-extra: #7e2a33;
+  --syntax-keyword: #e2b714;
+  --syntax-string: #7ec699;
+  --syntax-number: #d19a66;
+  --syntax-comment: #4a4d52;
+  --syntax-type: #56b6c2;
+}
+
 body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  background: linear-gradient(135deg, var(--main), var(--main));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -30,7 +49,7 @@ body {
   top: 0.1em;
   bottom: 0.1em;
   width: 2px;
-  background-color: #a78bfa;
+  background-color: var(--caret);
   animation: blink 1s ease-in-out infinite;
 }
 
@@ -41,7 +60,7 @@ body {
   top: 0.1em;
   bottom: 0.1em;
   width: 2px;
-  background-color: #a78bfa;
+  background-color: var(--caret);
 }
 
 /* Animations */
@@ -56,5 +75,4 @@ body {
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #4a4d52; border-radius: 3px; }
-.light ::-webkit-scrollbar-thumb { background: #ccc; }
+::-webkit-scrollbar-thumb { background: var(--sub); border-radius: 3px; }

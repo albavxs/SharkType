@@ -16,9 +16,7 @@ export default function LanguageDropdown({ selected, onSelect }: LanguageDropdow
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -26,15 +24,9 @@ export default function LanguageDropdown({ selected, onSelect }: LanguageDropdow
 
   function renderItem(lang: Language) {
     return (
-      <button
-        key={lang.id}
-        onClick={() => { onSelect(lang); setOpen(false) }}
-        className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${
-          lang.id === selected.id
-            ? 'text-[#d1d0c5] bg-white/10'
-            : 'text-[#646669] hover:text-[#d1d0c5] hover:bg-white/5'
-        }`}
-      >
+      <button key={lang.id} onClick={() => { onSelect(lang); setOpen(false) }}
+        className="w-full flex items-center gap-2 px-3 py-1.5 text-sm transition-colors hover:opacity-80 cursor-pointer"
+        style={{ color: lang.id === selected.id ? 'var(--text)' : 'var(--sub)', backgroundColor: lang.id === selected.id ? 'var(--bg)' : 'transparent' }}>
         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: lang.color }} />
         {lang.label}
       </button>
@@ -43,21 +35,20 @@ export default function LanguageDropdown({ selected, onSelect }: LanguageDropdow
 
   return (
     <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2 py-1 rounded text-sm text-[#d1d0c5] hover:bg-white/5 transition-colors"
-      >
-        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: selected.color }} />
+      <button onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 px-2 py-1 rounded text-sm transition-colors cursor-pointer hover:opacity-80"
+        style={{ color: 'var(--text)' }}>
         <span>{selected.label}</span>
         <ChevronDownIcon size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-48 py-1 rounded-lg border border-[#4a4d52] bg-[#2c2e31] shadow-xl animate-fade-in max-h-80 overflow-y-auto">
-          <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-[#4a4d52]">Codigo</div>
+        <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-48 py-1 rounded-lg shadow-xl animate-fade-in max-h-80 overflow-y-auto"
+          style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}>
+          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Codigo</div>
           {codeLanguages.map(renderItem)}
-          <div className="border-t border-[#3c3e42] my-1" />
-          <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-[#4a4d52]">Texto</div>
+          <div className="my-1" style={{ borderTop: '1px solid var(--sub)', opacity: 0.3 }} />
+          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Texto</div>
           {textLanguages.map(renderItem)}
         </div>
       )}

@@ -15,31 +15,17 @@ const soundOptions: { key: SoundType; label: string }[] = [
 ]
 
 export default function SettingsPage() {
-  const [isLight, setIsLight] = useState(false)
   const [sound, setSound] = useState<SoundType>('off')
   const [showConfirm, setShowConfirm] = useState(false)
 
   useEffect(() => {
-    setIsLight(document.documentElement.classList.contains('light'))
     setSound(getSoundPref())
   }, [])
-
-  function toggleTheme() {
-    const next = !isLight
-    setIsLight(next)
-    if (next) {
-      document.documentElement.classList.add('light')
-    } else {
-      document.documentElement.classList.remove('light')
-    }
-    localStorage.setItem('theme', next ? 'light' : 'dark')
-  }
 
   function handleSoundChange(s: SoundType) {
     setSound(s)
     setSoundPref(s)
     if (s !== 'off') {
-      // Preview
       setTimeout(() => playKey(), 50)
     }
   }
@@ -51,9 +37,9 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen bg-[#323437] light:bg-[#f5f5f5]">
+    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="px-6 py-4">
-        <Link href="/" className="flex items-center gap-1.5 text-sm text-[#646669] hover:text-[#d1d0c5] light:hover:text-[#1a1a1a] transition-colors">
+        <Link href="/" className="flex items-center gap-1.5 text-sm transition-opacity hover:opacity-80" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
           Voltar
         </Link>
@@ -61,31 +47,23 @@ export default function SettingsPage() {
 
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="w-full max-w-md space-y-8">
-          <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)] text-[#d1d0c5] light:text-[#1a1a1a]">
+          <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
             Configuracoes
           </h1>
 
-          {/* Theme */}
-          <div className="flex items-center justify-between py-3 border-b border-[#3c3e42] light:border-[#d0d0d0]">
-            <span className="text-sm text-[#d1d0c5] light:text-[#1a1a1a]">Tema</span>
-            <button onClick={toggleTheme} className="px-3 py-1 text-xs rounded border border-[#4a4d52] text-[#d1d0c5] hover:border-[#646669] transition-colors">
-              {isLight ? 'Claro' : 'Escuro'}
-            </button>
-          </div>
-
           {/* Sound */}
-          <div className="py-3 border-b border-[#3c3e42] light:border-[#d0d0d0]">
-            <span className="text-sm text-[#d1d0c5] light:text-[#1a1a1a] mb-3 block">Som do teclado</span>
+          <div className="py-3" style={{ borderBottom: '1px solid var(--sub)', borderBottomWidth: '1px', borderColor: 'color-mix(in srgb, var(--sub) 30%, transparent)' }}>
+            <span className="text-sm mb-3 block" style={{ color: 'var(--text)' }}>Som do teclado</span>
             <div className="flex flex-wrap gap-2">
               {soundOptions.map(o => (
                 <button
                   key={o.key}
                   onClick={() => handleSoundChange(o.key)}
-                  className={`px-3 py-1.5 text-xs rounded border transition-colors ${
-                    sound === o.key
-                      ? 'border-[#a78bfa] text-[#a78bfa]'
-                      : 'border-[#4a4d52] text-[#646669] hover:border-[#646669]'
-                  }`}
+                  className="px-3 py-1.5 text-xs rounded transition-colors"
+                  style={{
+                    border: `1px solid ${sound === o.key ? 'var(--main)' : 'var(--sub)'}`,
+                    color: sound === o.key ? 'var(--main)' : 'var(--sub)',
+                  }}
                 >
                   {o.label}
                 </button>
@@ -94,20 +72,26 @@ export default function SettingsPage() {
           </div>
 
           {/* Reset */}
-          <div className="flex items-center justify-between py-3 border-b border-[#3c3e42] light:border-[#d0d0d0]">
-            <span className="text-sm text-[#d1d0c5] light:text-[#1a1a1a]">Reset progresso</span>
+          <div className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>
+            <span className="text-sm" style={{ color: 'var(--text)' }}>Reset progresso</span>
             {showConfirm ? (
               <div className="flex items-center gap-2">
-                <button onClick={handleReset} className="px-3 py-1 text-xs rounded bg-[#ca4754]/20 text-[#ca4754] hover:bg-[#ca4754]/30 transition-colors">Confirmar</button>
-                <button onClick={() => setShowConfirm(false)} className="px-3 py-1 text-xs rounded border border-[#4a4d52] text-[#646669] hover:border-[#646669] transition-colors">Cancelar</button>
+                <button onClick={handleReset} className="px-3 py-1 text-xs rounded transition-colors" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 20%, transparent)', color: 'var(--error)' }}>
+                  Confirmar
+                </button>
+                <button onClick={() => setShowConfirm(false)} className="px-3 py-1 text-xs rounded transition-colors" style={{ border: '1px solid var(--sub)', color: 'var(--sub)' }}>
+                  Cancelar
+                </button>
               </div>
             ) : (
-              <button onClick={() => setShowConfirm(true)} className="px-3 py-1 text-xs rounded border border-[#4a4d52] text-[#ca4754] hover:border-[#ca4754] transition-colors">Resetar</button>
+              <button onClick={() => setShowConfirm(true)} className="px-3 py-1 text-xs rounded transition-colors" style={{ border: '1px solid var(--sub)', color: 'var(--error)' }}>
+                Resetar
+              </button>
             )}
           </div>
 
           <div className="pt-4">
-            <Link href="/stats" className="text-xs text-[#646669] hover:text-[#d1d0c5] transition-colors">
+            <Link href="/stats" className="text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--sub)' }}>
               Ver estatisticas →
             </Link>
           </div>
