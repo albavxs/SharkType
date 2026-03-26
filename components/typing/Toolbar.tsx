@@ -3,7 +3,7 @@
 import { Language, Difficulty } from '@/lib/types'
 import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon } from '@/components/icons'
 import Link from 'next/link'
-import { Locale } from '@/lib/i18n'
+import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
 import LanguageDropdown from './LanguageDropdown'
 import DifficultySelector from './DifficultySelector'
@@ -42,16 +42,16 @@ export default function Toolbar({
             Shark<span style={{ color: 'var(--main)' }}>Type</span>
           </button>
           <div className={`flex items-center gap-1 sm:gap-3 transition-all duration-300 ${hide}`}>
-            <Link href="/tracks" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Trilhas">
+            <Link href="/tracks" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navTracks', locale)}>
               <BookIcon size={18} />
             </Link>
-            <Link href="/leaderboard" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Ranking">
+            <Link href="/leaderboard" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
               <TrophyIcon size={18} />
             </Link>
-            <button onClick={onHelpClick} className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Ajuda">
+            <button onClick={onHelpClick} className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
               <HelpIcon size={22} />
             </button>
-            <Link href="/settings" className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title="Configurações">
+            <Link href="/settings" className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
               <SlidersIcon size={22} />
             </Link>
           </div>
@@ -79,7 +79,7 @@ export default function Toolbar({
       {showControls && <div className={`sm:hidden flex justify-center transition-all duration-300 ${hide}`}>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          <LanguageDropdown selected={language} onSelect={onLanguageChange} />
+          <LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span>
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
@@ -98,7 +98,7 @@ export default function Toolbar({
       {showControls && <div className={`absolute left-1/2 -translate-x-1/2 hidden sm:block transition-all duration-300 ${hide}`}>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          <LanguageDropdown selected={language} onSelect={onLanguageChange} />
+          <LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span>
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
@@ -119,7 +119,7 @@ export default function Toolbar({
           <button onClick={onLocaleToggle}
             className="text-sm font-mono font-medium px-2 py-0.5 rounded transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95"
             style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}
-            title="Alternar idioma da interface">
+            title={t('toggleLocale', locale)}>
             {locale === 'pt' ? 'PT' : 'EN'}
           </button>
         )}

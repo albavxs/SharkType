@@ -128,7 +128,7 @@ export default function Home() {
               {!isTextMode && (
                 <div className={`w-full max-w-3xl mb-6 transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
                   <SnippetInfo snippet={snippet} languageLabel={language.label} languageColor={language.color}
-                    current={seqIndex + 1} total={sequence.length} />
+                    current={seqIndex + 1} total={sequence.length} locale={locale} />
                 </div>
               )}
 
@@ -153,7 +153,7 @@ export default function Home() {
 
               {engine.state.status === 'running' && (
                 <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
-                  <span className="hidden sm:inline">shift + tab — reiniciar</span>
+                  <span className="hidden sm:inline">{t('hintShiftTab', locale)}</span>
                 </div>
               )}
 
@@ -187,14 +187,14 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={engine.state.status === 'running'} />
+        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={engine.state.status === 'running'} locale={locale} />
       </div>
 
       {/* Modals */}
       {showThemeSelector && (
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
-      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
     </main>
   )
 }

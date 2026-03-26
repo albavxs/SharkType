@@ -3,15 +3,17 @@
 import { HelpIcon } from '@/components/icons'
 import { getTheme, getThemePref } from '@/lib/themes'
 import Link from 'next/link'
+import { t, Locale } from '@/lib/i18n'
 
 interface FooterProps {
   onHelpClick: () => void
   onThemeClick: () => void
   currentThemeName: string
   isTyping?: boolean
+  locale?: Locale
 }
 
-export default function Footer({ onHelpClick, onThemeClick, currentThemeName, isTyping = false }: FooterProps) {
+export default function Footer({ onHelpClick, onThemeClick, currentThemeName, isTyping = false, locale = 'pt' }: FooterProps) {
   const theme = getTheme(currentThemeName)
 
   return (
@@ -21,8 +23,8 @@ export default function Footer({ onHelpClick, onThemeClick, currentThemeName, is
         <button onClick={onHelpClick} className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">help</button>
         <a href="https://github.com/albavxs" target="_blank" rel="noopener noreferrer" className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">github</a>
         <Link href="/settings" className="transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95">
-          <span className="hidden sm:inline">configurações</span>
-          <span className="sm:hidden">config</span>
+          <span className="hidden sm:inline">{t('settings', locale)}</span>
+          <span className="sm:hidden">{t('settingsShort', locale)}</span>
         </Link>
       </div>
 

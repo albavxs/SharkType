@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react'
 import { loadProgress, getLevel, UserProgress } from '@/lib/gamification'
 import { languages } from '@/data'
 import { ArrowLeftIcon, FlameIcon } from '@/components/icons'
+import { useLocale } from '@/hooks/useLocale'
+import { t } from '@/lib/i18n'
 import Link from 'next/link'
 
 export default function StatsPage() {
   const [progress, setProgress] = useState<UserProgress | null>(null)
+  const { locale } = useLocale()
 
   useEffect(() => {
     setProgress(loadProgress())
@@ -23,14 +26,14 @@ export default function StatsPage() {
       <div className="px-3 sm:px-6 py-4">
         <Link href="/" className="flex items-center gap-1.5 text-sm transition-all duration-150 hover:scale-105 active:scale-95" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
-          Voltar
+          {t('back', locale)}
         </Link>
       </div>
 
       <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
         <div className="w-full max-w-lg space-y-6 sm:space-y-8">
           <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
-            Estatísticas
+            {t('pageStats', locale)}
           </h1>
 
           {/* Profile */}
@@ -54,9 +57,9 @@ export default function StatsPage() {
 
           {/* Per language */}
           <div className="space-y-3">
-            <h2 className="text-xs uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Por linguagem</h2>
+            <h2 className="text-xs uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('perLanguage', locale)}</h2>
             {langEntries.length === 0 && (
-              <p className="text-sm" style={{ color: 'var(--sub)' }}>Nenhuma sessao ainda. Comece a praticar!</p>
+              <p className="text-sm" style={{ color: 'var(--sub)' }}>{t('noSessionYet', locale)}</p>
             )}
             {langEntries.map(([langId, langProg]) => {
               const lang = languages.find(l => l.id === langId)
@@ -83,7 +86,7 @@ export default function StatsPage() {
           {/* Recent sessions */}
           {progress.history.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Historico recente</h2>
+              <h2 className="text-xs uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('recentHistory', locale)}</h2>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {progress.history.slice(0, 20).map((session, i) => {
                   const lang = languages.find(l => l.id === session.languageId)

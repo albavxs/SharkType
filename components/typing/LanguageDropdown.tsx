@@ -4,15 +4,17 @@ import { useState, useRef, useEffect } from 'react'
 import { codeLanguages, textLanguages } from '@/data'
 import { Language } from '@/lib/types'
 import { ChevronDownIcon } from '@/components/icons'
+import { t, Locale } from '@/lib/i18n'
 
 const idiomLanguages = textLanguages.filter(l => l.id !== 'text-typing')
 
 interface LanguageDropdownProps {
   selected: Language
   onSelect: (lang: Language) => void
+  locale?: Locale
 }
 
-export default function LanguageDropdown({ selected, onSelect }: LanguageDropdownProps) {
+export default function LanguageDropdown({ selected, onSelect, locale = 'pt' }: LanguageDropdownProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -47,10 +49,10 @@ export default function LanguageDropdown({ selected, onSelect }: LanguageDropdow
       {open && (
         <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-40 sm:w-48 py-1 rounded-lg shadow-xl animate-fade-in max-h-80 overflow-y-auto"
           style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}>
-          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Codigo</div>
+          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('sectionCode', locale)}</div>
           {codeLanguages.map(renderItem)}
           <div className="my-1" style={{ borderTop: '1px solid var(--sub)', opacity: 0.3 }} />
-          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>Texto</div>
+          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('sectionText', locale)}</div>
           {idiomLanguages.map(renderItem)}
         </div>
       )}

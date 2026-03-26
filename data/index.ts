@@ -18,6 +18,11 @@ import { kotlinSnippets } from './kotlin'
 import { dockerSnippets } from './docker'
 import { gitSnippets } from './git'
 import { linuxSnippets } from './linux'
+import { kubernetesSnippets } from './kubernetes'
+import { terraformSnippets } from './terraform'
+import { ansibleSnippets } from './ansible'
+import { cicdSnippets } from './cicd'
+import { nmapSnippets, webReconSnippets, firewallSnippets, networkAnalysisSnippets, hardeningSnippets, cryptoSnippets } from './cybersec'
 import { typingSnippets } from './text-typing'
 import { ptbrSnippets } from './text-ptbr'
 import { enSnippets } from './text-en'
@@ -44,6 +49,16 @@ export const codeLanguages: Language[] = [
   { id: 'docker',     label: 'Docker',     color: '#2496ed', snippets: dockerSnippets },
   { id: 'git',        label: 'Git',        color: '#f05032', snippets: gitSnippets },
   { id: 'linux',      label: 'Linux',      color: '#fcc624', snippets: linuxSnippets },
+  { id: 'kubernetes', label: 'Kubernetes', color: '#326ce5', snippets: kubernetesSnippets },
+  { id: 'terraform',  label: 'Terraform',  color: '#7b42bc', snippets: terraformSnippets },
+  { id: 'ansible',    label: 'Ansible',    color: '#ee0000', snippets: ansibleSnippets },
+  { id: 'cicd',       label: 'CI/CD',      color: '#fc6d26', snippets: cicdSnippets },
+  { id: 'nmap',             label: 'Nmap',             color: '#4682b4', snippets: nmapSnippets },
+  { id: 'web-recon',        label: 'Web Recon',        color: '#00d4aa', snippets: webReconSnippets },
+  { id: 'firewall',         label: 'Firewall',         color: '#ff6347', snippets: firewallSnippets },
+  { id: 'network-analysis', label: 'Network Analysis', color: '#20b2aa', snippets: networkAnalysisSnippets },
+  { id: 'hardening',        label: 'Hardening',        color: '#daa520', snippets: hardeningSnippets },
+  { id: 'crypto',           label: 'Cryptography',     color: '#9370db', snippets: cryptoSnippets },
 ]
 
 export const textLanguages: Language[] = [

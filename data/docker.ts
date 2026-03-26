@@ -3,9 +3,12 @@ import { Snippet } from '@/lib/types'
 export const dockerSnippets: Snippet[] = [
   {
     id: 'docker-001',
-    concept: 'FROM e CMD',
+    concept: { pt: 'FROM e CMD', en: 'FROM & CMD' },
     difficulty: 'easy',
-    prompt: 'Crie um Dockerfile para uma aplicacao Node.js: defina a imagem base alpine, o diretorio de trabalho, copie os arquivos, instale dependencias e defina o comando de inicializacao.',
+    prompt: {
+      pt: 'Monte um Dockerfile pra uma app Node.js: imagem alpine, diretório de trabalho, copie tudo, instale deps e defina o comando de start.',
+      en: 'Build a Dockerfile for a Node.js app: alpine base image, working directory, copy files, install deps, and set the start command.',
+    },
     code: `FROM node:20-alpine
 
 WORKDIR /app
@@ -16,9 +19,12 @@ CMD ["node", "server.js"]`,
   },
   {
     id: 'docker-002',
-    concept: 'ENV e EXPOSE',
+    concept: { pt: 'ENV e EXPOSE', en: 'ENV & EXPOSE' },
     difficulty: 'easy',
-    prompt: 'Configure variaveis de ambiente para uma aplicacao Python desabilitando bytecode e buffer, defina a porta e exponha-a.',
+    prompt: {
+      pt: 'Configure variáveis de ambiente pra uma app Python desabilitando bytecode e buffer, defina a porta e exponha ela.',
+      en: 'Set environment variables for a Python app disabling bytecode and buffering, define the port, and expose it.',
+    },
     code: `FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \\
@@ -29,9 +35,12 @@ EXPOSE 8000`,
   },
   {
     id: 'docker-003',
-    concept: 'ARG e Labels',
+    concept: { pt: 'ARG e Labels', en: 'ARG & Labels' },
     difficulty: 'easy',
-    prompt: 'Defina argumentos de build para versao e data, e adicione labels de metadados a imagem com os valores desses argumentos.',
+    prompt: {
+      pt: 'Defina args de build pra versão e data, e adicione labels de metadata na imagem com esses valores.',
+      en: 'Define build args for version and date, and add metadata labels to the image using those values.',
+    },
     code: `ARG APP_VERSION=1.0.0
 ARG BUILD_DATE
 
@@ -41,9 +50,12 @@ LABEL maintainer="dev@example.com" \\
   },
   {
     id: 'docker-004',
-    concept: 'COPY e RUN',
+    concept: { pt: 'COPY e RUN', en: 'COPY & RUN' },
     difficulty: 'easy',
-    prompt: 'Compile uma aplicacao Go: copie primeiro os arquivos de modulo para cachear dependencias, depois copie o codigo e compile o binario.',
+    prompt: {
+      pt: 'Compile uma app Go: copie primeiro os módulos pra cachear deps, depois o código e gere o binário.',
+      en: 'Build a Go app: copy module files first to cache deps, then copy the source and compile the binary.',
+    },
     code: `FROM golang:1.22-alpine AS build
 
 WORKDIR /src
@@ -55,9 +67,12 @@ RUN go build -o /app ./cmd/server`,
   },
   {
     id: 'docker-005',
-    concept: 'Multi-stage Build',
+    concept: { pt: 'Build Multi-stage', en: 'Multi-stage Build' },
     difficulty: 'medium',
-    prompt: 'Use multi-stage build para compilar um frontend React e servir apenas os arquivos estaticos com Nginx, sem incluir Node.js na imagem final.',
+    prompt: {
+      pt: 'Use multi-stage pra buildar um frontend React e servir só os arquivos estáticos com Nginx, sem Node na imagem final.',
+      en: 'Use multi-stage to build a React frontend and serve only the static files with Nginx, keeping Node out of the final image.',
+    },
     code: `FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
@@ -72,9 +87,12 @@ CMD ["nginx", "-g", "daemon off;"]`,
   },
   {
     id: 'docker-006',
-    concept: 'HEALTHCHECK',
+    concept: { pt: 'HEALTHCHECK', en: 'HEALTHCHECK' },
     difficulty: 'medium',
-    prompt: 'Adicione um health check a uma aplicacao Python FastAPI que verifica o endpoint /health a cada 30 segundos com timeout de 5s.',
+    prompt: {
+      pt: 'Adicione um health check numa app FastAPI que bate no /health a cada 30s com timeout de 5s.',
+      en: 'Add a health check to a FastAPI app that hits /health every 30s with a 5s timeout.',
+    },
     code: `FROM python:3.12-slim
 
 WORKDIR /app
@@ -89,9 +107,12 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]`,
   },
   {
     id: 'docker-007',
-    concept: 'ENTRYPOINT e CMD',
+    concept: { pt: 'ENTRYPOINT e CMD', en: 'ENTRYPOINT & CMD' },
     difficulty: 'medium',
-    prompt: 'Crie uma imagem Alpine com ferramentas de rede, um script de entrypoint executavel e CMD como argumento padrao substituivel.',
+    prompt: {
+      pt: 'Crie uma imagem Alpine com ferramentas de rede, um entrypoint executável e CMD como argumento padrão substituível.',
+      en: 'Create an Alpine image with network tools, an executable entrypoint, and CMD as a default overridable argument.',
+    },
     code: `FROM alpine:3.19
 
 RUN apk add --no-cache curl jq
@@ -104,9 +125,12 @@ CMD ["--help"]`,
   },
   {
     id: 'docker-008',
-    concept: 'USER e VOLUME',
+    concept: { pt: 'USER e VOLUME', en: 'USER & VOLUME' },
     difficulty: 'medium',
-    prompt: 'Execute a aplicacao como usuario nao-root por seguranca: crie grupo e usuario dedicados, transfira propriedade dos arquivos e declare um volume para persistencia.',
+    prompt: {
+      pt: 'Rode a app como usuário não-root: crie grupo e usuário, passe a ownership dos arquivos e declare um volume pra persistência.',
+      en: 'Run the app as a non-root user: create a group and user, transfer file ownership, and declare a volume for persistence.',
+    },
     code: `FROM node:20-alpine
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -122,9 +146,12 @@ CMD ["node", "server.js"]`,
   },
   {
     id: 'docker-009',
-    concept: 'Build Otimizado',
+    concept: { pt: 'Build Otimizado', en: 'Optimized Build' },
     difficulty: 'hard',
-    prompt: 'Use cargo-chef para cache otimizado de dependencias Rust em multi-stage: prepare o recipe, cozinhe as dependencias em cache separado e compile a aplicacao final.',
+    prompt: {
+      pt: 'Use cargo-chef pra cachear deps Rust em multi-stage: prepare o recipe, cozinhe as deps separado e compile o app final.',
+      en: 'Use cargo-chef to cache Rust deps in multi-stage: prepare the recipe, cook deps separately, and compile the final app.',
+    },
     code: `FROM rust:1.77-slim AS chef
 RUN cargo install cargo-chef
 WORKDIR /app
@@ -145,9 +172,12 @@ CMD ["server"]`,
   },
   {
     id: 'docker-010',
-    concept: 'Docker Compose Service',
+    concept: { pt: 'Serviço Docker Compose', en: 'Docker Compose Service' },
     difficulty: 'hard',
-    prompt: 'Configure um servico PostgreSQL seguro: use arquivo de senha via secret, execute script de inicializacao, monte volume de dados e adicione health check de prontidao.',
+    prompt: {
+      pt: 'Configure um Postgres seguro: senha via secret, script de init, volume de dados e health check de prontidão.',
+      en: 'Set up a secure Postgres: password via secret, init script, data volume, and readiness health check.',
+    },
     code: `FROM postgres:16-alpine
 
 ENV POSTGRES_DB=myapp \\

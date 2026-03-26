@@ -107,4 +107,43 @@ export const languageKeywords: Record<string, string[]> = {
     'sed', 'sort', 'uniq', 'head', 'tail', 'cut', 'echo', 'export', 'ssh',
     'systemctl', 'journalctl', 'zip', 'du', 'df',
   ],
+  kubernetes: [
+    'apiVersion', 'kind', 'metadata', 'spec', 'containers', 'replicas',
+    'selector', 'template', 'ports', 'image', 'name', 'namespace', 'labels',
+    'matchLabels', 'containerPort', 'port', 'targetPort', 'type',
+    'kubectl', 'get', 'apply', 'describe', 'logs', 'rollout', 'scale',
+    'autoscale', 'create', 'configmap', 'secret',
+  ],
+  terraform: [
+    'resource', 'provider', 'variable', 'output', 'module', 'data', 'locals',
+    'terraform', 'required_providers', 'default', 'type', 'value', 'source',
+    'version', 'region', 'tags', 'init', 'plan', 'apply', 'destroy', 'workspace',
+  ],
+  ansible: [
+    'hosts', 'tasks', 'name', 'become', 'handlers', 'roles', 'vars',
+    'when', 'notify', 'register', 'with_items', 'template', 'service',
+    'copy', 'apt', 'state', 'enabled', 'update_cache', 'upgrade',
+  ],
+  cicd: [
+    'name', 'on', 'jobs', 'runs-on', 'steps', 'uses', 'with', 'run',
+    'needs', 'if', 'push', 'pull_request', 'branches',
+  ],
+  nmap: [
+    'nmap', 'scan', 'host', 'port', 'ports', 'sudo', 'grep',
+  ],
+  'web-recon': [
+    'curl', 'dig', 'whois', 'nslookup', 'grep', 'resolve',
+  ],
+  firewall: [
+    'sudo', 'ufw', 'iptables', 'INPUT', 'ACCEPT', 'DROP', 'allow', 'deny',
+  ],
+  'network-analysis': [
+    'sudo', 'tcpdump', 'netstat', 'ss', 'grep', 'LISTEN',
+  ],
+  hardening: [
+    'sudo', 'find', 'chmod', 'chown', 'grep', 'passwd', 'adduser', 'usermod',
+  ],
+  crypto: [
+    'openssl', 'ssh', 'keygen', 'req', 'verify', 'chmod', 'cat',
+  ],
 }

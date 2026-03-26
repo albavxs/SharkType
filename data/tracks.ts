@@ -1,18 +1,23 @@
+import { Difficulty, I18nString } from '@/lib/types'
+
 export interface Track {
   id: string
-  name: string
-  description: string
+  name: I18nString
+  description: I18nString
   snippetIds: string[]
   textLanguages?: true
-  difficultyFilter?: 'easy' | 'medium' | 'hard'
+  difficultyFilter?: Difficulty
 }
 
 export const tracks: Track[] = [
-  // ── Existing tracks (updated with new languages) ─────────────────────────
+  // ── Concept tracks ──────────────────────────────────────────────────────
   {
     id: 'variables',
-    name: 'Variáveis',
-    description: 'Declaração e uso de variáveis, constantes e tipos básicos',
+    name: { pt: 'Variáveis', en: 'Variables' },
+    description: {
+      pt: 'Declaração e uso de variáveis, constantes e tipos básicos',
+      en: 'Declaring and using variables, constants, and basic types',
+    },
     snippetIds: [
       'js-002', 'js-003', 'js-008', 'js-009',
       'ts-001', 'ts-002', 'ts-004', 'ts-009',
@@ -30,8 +35,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'functions',
-    name: 'Funções',
-    description: 'Funções, arrow functions, lambdas, closures e callbacks',
+    name: { pt: 'Funções', en: 'Functions' },
+    description: {
+      pt: 'Funções, arrow functions, lambdas, closures e callbacks',
+      en: 'Functions, arrow functions, lambdas, closures, and callbacks',
+    },
     snippetIds: [
       'js-001', 'js-005', 'js-007',
       'ts-003', 'ts-007', 'ts-010',
@@ -49,8 +57,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'objects',
-    name: 'Objetos e Structs',
-    description: 'Objetos, structs, classes, interfaces e tipos compostos',
+    name: { pt: 'Objetos e Structs', en: 'Objects & Structs' },
+    description: {
+      pt: 'Objetos, structs, classes, interfaces e tipos compostos',
+      en: 'Objects, structs, classes, interfaces, and composite types',
+    },
     snippetIds: [
       'js-010',
       'ts-001', 'ts-006', 'ts-008',
@@ -67,8 +78,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'loops',
-    name: 'Loops e Iteração',
-    description: 'For, while, iteradores, map, filter e array methods',
+    name: { pt: 'Loops e Iteração', en: 'Loops & Iteration' },
+    description: {
+      pt: 'For, while, iteradores, map, filter e array methods',
+      en: 'For, while, iterators, map, filter, and array methods',
+    },
     snippetIds: [
       'js-006',
       'py-001', 'py-002',
@@ -86,8 +100,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'types',
-    name: 'Sistema de Tipos',
-    description: 'Generics, type narrowing, utility types e type guards',
+    name: { pt: 'Sistema de Tipos', en: 'Type System' },
+    description: {
+      pt: 'Generics, type narrowing, utility types e type guards',
+      en: 'Generics, type narrowing, utility types, and type guards',
+    },
     snippetIds: [
       'ts-003', 'ts-005', 'ts-006', 'ts-007', 'ts-008', 'ts-010',
       'rs-004', 'rs-005',
@@ -100,8 +117,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'errors',
-    name: 'Tratamento de Erros',
-    description: 'Try/catch, Result, Option, error handling patterns',
+    name: { pt: 'Tratamento de Erros', en: 'Error Handling' },
+    description: {
+      pt: 'Try/catch, Result, Option e patterns de tratamento de erros',
+      en: 'Try/catch, Result, Option, and error handling patterns',
+    },
     snippetIds: [
       'js-004', 'js-005',
       'py-004',
@@ -118,8 +138,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'classes',
-    name: 'Classes e OOP',
-    description: 'Classes, herança, interfaces, impl blocks',
+    name: { pt: 'Classes e OOP', en: 'Classes & OOP' },
+    description: {
+      pt: 'Classes, herança, interfaces e impl blocks',
+      en: 'Classes, inheritance, interfaces, and impl blocks',
+    },
     snippetIds: [
       'js-010',
       'ts-009',
@@ -136,8 +159,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'advanced',
-    name: 'Avançado',
-    description: 'Patterns idiomáticos, async, generics avançados, macros',
+    name: { pt: 'Avançado', en: 'Advanced' },
+    description: {
+      pt: 'Patterns idiomáticos, async, generics avançados e macros',
+      en: 'Idiomatic patterns, async, advanced generics, and macros',
+    },
     snippetIds: [
       'js-007',
       'ts-007', 'ts-008',
@@ -156,11 +182,14 @@ export const tracks: Track[] = [
     ],
   },
 
-  // ── New focused tracks ────────────────────────────────────────────────────
+  // ── Focused tracks ──────────────────────────────────────────────────────
   {
     id: 'web',
-    name: 'Web Frontend',
-    description: 'HTML, CSS e JavaScript/TypeScript para desenvolvimento web',
+    name: { pt: 'Web Frontend', en: 'Web Frontend' },
+    description: {
+      pt: 'HTML, CSS e JavaScript/TypeScript pra desenvolvimento web',
+      en: 'HTML, CSS, and JavaScript/TypeScript for web development',
+    },
     snippetIds: [
       'html-001', 'html-002', 'html-003', 'html-005', 'html-006',
       'css-001', 'css-002', 'css-003', 'css-004', 'css-005',
@@ -170,8 +199,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'scripting',
-    name: 'Scripting',
-    description: 'Bash, Python, Ruby e Lua: linguagens de script e automação',
+    name: { pt: 'Scripting', en: 'Scripting' },
+    description: {
+      pt: 'Bash, Python, Ruby e Lua: linguagens de script e automação',
+      en: 'Bash, Python, Ruby, and Lua: scripting and automation languages',
+    },
     snippetIds: [
       'bash-001', 'bash-002', 'bash-003', 'bash-005', 'bash-006', 'bash-007',
       'py-003', 'py-004', 'py-005', 'py-007',
@@ -181,8 +213,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'mobile',
-    name: 'Mobile',
-    description: 'Swift (iOS) e Kotlin (Android): padrão mobile moderno',
+    name: { pt: 'Mobile', en: 'Mobile' },
+    description: {
+      pt: 'Swift (iOS) e Kotlin (Android): padrão mobile moderno',
+      en: 'Swift (iOS) and Kotlin (Android): modern mobile development',
+    },
     snippetIds: [
       'swift-001', 'swift-002', 'swift-003', 'swift-004', 'swift-005',
       'swift-006', 'swift-007', 'swift-008', 'swift-009', 'swift-010',
@@ -192,8 +227,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'functional',
-    name: 'Programação Funcional',
-    description: 'Pattern matching, monads, closures e imutabilidade',
+    name: { pt: 'Programação Funcional', en: 'Functional Programming' },
+    description: {
+      pt: 'Pattern matching, monads, closures e imutabilidade',
+      en: 'Pattern matching, monads, closures, and immutability',
+    },
     snippetIds: [
       'scala-005', 'scala-006', 'scala-007', 'scala-009',
       'rs-003', 'rs-004', 'rs-005', 'rs-008',
@@ -205,8 +243,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'concurrency',
-    name: 'Concorrência e Async',
-    description: 'Goroutines, coroutines, promises, async/await e channels',
+    name: { pt: 'Concorrência e Async', en: 'Concurrency & Async' },
+    description: {
+      pt: 'Goroutines, coroutines, promises, async/await e channels',
+      en: 'Goroutines, coroutines, promises, async/await, and channels',
+    },
     snippetIds: [
       'go-004', 'go-005', 'go-007',
       'kotlin-009',
@@ -219,10 +260,17 @@ export const tracks: Track[] = [
   },
   {
     id: 'devops',
-    name: 'DevOps',
-    description: 'Docker, Linux, Git e Bash para infra e automação de deploys',
+    name: { pt: 'DevOps', en: 'DevOps' },
+    description: {
+      pt: 'Docker, Kubernetes, Terraform, Ansible e CI/CD pra infra e automação',
+      en: 'Docker, Kubernetes, Terraform, Ansible, and CI/CD for infrastructure and automation',
+    },
     snippetIds: [
       'docker-001', 'docker-002', 'docker-003', 'docker-004', 'docker-005',
+      'k8s-001', 'k8s-002', 'k8s-003', 'k8s-004', 'k8s-005', 'k8s-006',
+      'tf-001', 'tf-002', 'tf-003', 'tf-004',
+      'ans-001', 'ans-002', 'ans-003',
+      'cicd-001', 'cicd-002',
       'linux-004', 'linux-005', 'linux-006', 'linux-007', 'linux-008',
       'git-001', 'git-004', 'git-005', 'git-006',
       'bash-006', 'bash-007',
@@ -230,8 +278,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'database',
-    name: 'Banco de Dados',
-    description: 'SQL completo: SELECT, JOIN, agregações, CTEs e window functions',
+    name: { pt: 'Banco de Dados', en: 'Database' },
+    description: {
+      pt: 'SQL completo: SELECT, JOIN, agregações, CTEs e window functions',
+      en: 'Full SQL: SELECT, JOIN, aggregations, CTEs, and window functions',
+    },
     snippetIds: [
       'sql-001', 'sql-002', 'sql-003', 'sql-004', 'sql-005',
       'sql-006', 'sql-007', 'sql-008', 'sql-009', 'sql-010',
@@ -239,8 +290,11 @@ export const tracks: Track[] = [
   },
   {
     id: 'strings',
-    name: 'Strings e Texto',
-    description: 'Interpolação, formatação e manipulação de strings em múltiplas linguagens',
+    name: { pt: 'Strings e Texto', en: 'Strings & Text' },
+    description: {
+      pt: 'Interpolação, formatação e manipulação de strings em várias linguagens',
+      en: 'Interpolation, formatting, and string manipulation across languages',
+    },
     snippetIds: [
       'py-007',
       'ruby-002',
@@ -255,56 +309,113 @@ export const tracks: Track[] = [
     ],
   },
 
-  // ── Dedicated language tracks ─────────────────────────────────────────────
+  // ── Dedicated language tracks ───────────────────────────────────────────
   {
     id: 'git',
-    name: 'Git',
-    description: 'Controle de versão: commits, branches, merge, rebase e workflows',
+    name: { pt: 'Git', en: 'Git' },
+    description: {
+      pt: 'Controle de versão: commits, branches, merge, rebase e workflows',
+      en: 'Version control: commits, branches, merge, rebase, and workflows',
+    },
     snippetIds: [
       'git-001', 'git-002', 'git-003', 'git-004', 'git-005',
       'git-006', 'git-007', 'git-008', 'git-009', 'git-010',
+      'git-011', 'git-012', 'git-013', 'git-014', 'git-015',
+      'git-016', 'git-017', 'git-018', 'git-019', 'git-020',
     ],
   },
   {
     id: 'linux',
-    name: 'Linux CLI',
-    description: 'Comandos essenciais do terminal: arquivos, processos, rede e texto',
+    name: { pt: 'Linux CLI', en: 'Linux CLI' },
+    description: {
+      pt: 'Comandos essenciais do terminal: arquivos, processos, rede e texto',
+      en: 'Essential terminal commands: files, processes, networking, and text',
+    },
     snippetIds: [
       'linux-001', 'linux-002', 'linux-003', 'linux-004', 'linux-005',
       'linux-006', 'linux-007', 'linux-008', 'linux-009', 'linux-010',
+      'linux-011', 'linux-012', 'linux-013', 'linux-014', 'linux-015',
+      'linux-016', 'linux-017',
     ],
   },
   {
     id: 'docker',
-    name: 'Docker',
-    description: 'Containers: Dockerfile, imagens, volumes e multi-stage builds',
+    name: { pt: 'Docker', en: 'Docker' },
+    description: {
+      pt: 'Containers: Dockerfile, imagens, volumes e multi-stage builds',
+      en: 'Containers: Dockerfile, images, volumes, and multi-stage builds',
+    },
     snippetIds: [
       'docker-001', 'docker-002', 'docker-003', 'docker-004', 'docker-005',
       'docker-006', 'docker-007', 'docker-008', 'docker-009', 'docker-010',
     ],
   },
+  {
+    id: 'red-team',
+    name: { pt: 'Red Team', en: 'Red Team' },
+    description: {
+      pt: 'Reconhecimento, scanning e enumeração — Nmap, curl, whois, dig',
+      en: 'Reconnaissance, scanning, and enumeration — Nmap, curl, whois, dig',
+    },
+    snippetIds: [
+      'sec-001', 'sec-002', 'sec-003', 'sec-004', 'sec-005', 'sec-006',
+      'sec-017', 'sec-018',
+    ],
+  },
+  {
+    id: 'blue-team',
+    name: { pt: 'Blue Team', en: 'Blue Team' },
+    description: {
+      pt: 'Defesa, firewalls, monitoramento de rede e hardening de sistemas',
+      en: 'Defense, firewalls, network monitoring, and system hardening',
+    },
+    snippetIds: [
+      'sec-007', 'sec-008', 'sec-009', 'sec-010',
+      'sec-014', 'sec-015', 'sec-016',
+    ],
+  },
+  {
+    id: 'crypto',
+    name: { pt: 'Criptografia', en: 'Cryptography' },
+    description: {
+      pt: 'OpenSSL, certificados, chaves SSH e cadeia de confiança',
+      en: 'OpenSSL, certificates, SSH keys, and trust chains',
+    },
+    snippetIds: [
+      'sec-011', 'sec-012', 'sec-013',
+    ],
+  },
 
-  // ── Idiomas ─────────────────────────────────────────────────────────────
+  // ── Language tracks (text typing) ───────────────────────────────────────
   {
     id: 'idioma-iniciante',
-    name: 'Idiomas — Iniciante',
-    description: 'Frases curtas e vocabulário básico para começar a digitar rápido',
+    name: { pt: 'Idiomas — Iniciante', en: 'Languages — Beginner' },
+    description: {
+      pt: 'Frases curtas e vocabulário básico pra começar a digitar rápido',
+      en: 'Short phrases and basic vocabulary to get you typing fast',
+    },
     snippetIds: [],
     textLanguages: true,
     difficultyFilter: 'easy',
   },
   {
     id: 'idioma-medio',
-    name: 'Idiomas — Médio',
-    description: 'Parágrafos sobre ciência, tecnologia e cultura para ganhar velocidade',
+    name: { pt: 'Idiomas — Médio', en: 'Languages — Intermediate' },
+    description: {
+      pt: 'Parágrafos sobre ciência, tecnologia e cultura pra ganhar velocidade',
+      en: 'Paragraphs on science, tech, and culture to build your speed',
+    },
     snippetIds: [],
     textLanguages: true,
     difficultyFilter: 'medium',
   },
   {
     id: 'idioma-dificil',
-    name: 'Idiomas — Difícil',
-    description: 'Textos densos de filosofia, história e literatura para alta precisão',
+    name: { pt: 'Idiomas — Difícil', en: 'Languages — Hard' },
+    description: {
+      pt: 'Textos densos de filosofia, história e literatura pra alta precisão',
+      en: 'Dense philosophy, history, and literature texts for high precision',
+    },
     snippetIds: [],
     textLanguages: true,
     difficultyFilter: 'hard',

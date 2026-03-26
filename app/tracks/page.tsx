@@ -7,6 +7,7 @@ import { languages, textLanguages } from '@/data'
 import { loadProgress, UserProgress, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
+import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
@@ -89,8 +90,8 @@ export default function TracksPage() {
       <button onClick={() => router.push(`/tracks/${track.id}`)}
         className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
-        <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name}</div>
-        <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description}</div>
+        <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
+        <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description[locale]}</div>
         <div className="flex flex-wrap gap-1">
           {badges.map(lang => (
             <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
@@ -121,16 +122,16 @@ export default function TracksPage() {
         <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
           <div className="w-full max-w-5xl">
             <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-geist-mono)] mb-2" style={{ color: 'var(--text)' }}>
-              Trilhas
+              {t('pageTracks', locale)}
             </h1>
             <p className="text-xs sm:text-sm mb-4 sm:mb-8" style={{ color: 'var(--sub)' }}>
-              Escolha uma trilha de conceitos. Em seguida, escolha a linguagem para praticar.
+              {t('tracksSubtitle', locale)}
             </p>
 
             {/* Código section */}
             <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Código</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Trilhas temáticas por conceito ou linguagem de programação</p>
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('codeSection', locale)}</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('codeTracksDesc', locale)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {codeTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
@@ -138,15 +139,15 @@ export default function TracksPage() {
               </div>
               {codeStats.total > 0 && (
                 <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
-                  {codeStats.completed}/{codeStats.total} concluídos · {codeStats.pct}%
+                  {codeStats.completed}/{codeStats.total} {t('completed', locale)} · {codeStats.pct}%
                 </div>
               )}
             </div>
 
             {/* Idiomas section */}
             <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Idiomas</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Treine digitação com textos em português, inglês, espanhol e francês</p>
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('sectionIdioms', locale)}</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('idiomsDesc', locale)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {idiomTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={idiomBadges} />
@@ -156,7 +157,7 @@ export default function TracksPage() {
           </div>
         </div>
 
-        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} />
+        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} locale={locale} />
       </div>
 
       {showThemeSelector && (

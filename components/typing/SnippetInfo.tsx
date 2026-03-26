@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Snippet } from '@/lib/types'
+import { t, Locale } from '@/lib/i18n'
 
 interface SnippetInfoProps {
   snippet: Snippet
@@ -9,11 +10,12 @@ interface SnippetInfoProps {
   languageColor: string
   current: number
   total: number
+  locale: Locale
 }
 
-export default function SnippetInfo({ snippet, languageLabel, languageColor, current, total }: SnippetInfoProps) {
+export default function SnippetInfo({ snippet, languageLabel, languageColor, current, total, locale }: SnippetInfoProps) {
   const [showDetail, setShowDetail] = useState(true)
-  const diffLabel = snippet.difficulty === 'easy' ? 'Fácil' : snippet.difficulty === 'medium' ? 'Médio' : 'Difícil'
+  const diffLabel = snippet.difficulty === 'easy' ? t('easy', locale) : snippet.difficulty === 'medium' ? t('medium', locale) : t('hard', locale)
 
   return (
     <div>
@@ -22,23 +24,23 @@ export default function SnippetInfo({ snippet, languageLabel, languageColor, cur
         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: languageColor }} />
         <span className="text-xs" style={{ color: 'var(--sub)' }}>{languageLabel}</span>
         <span style={{ color: 'var(--sub)', opacity: 0.3 }}>/</span>
-        <span className="text-xs font-medium" style={{ color: 'var(--sub)' }}>{snippet.concept}</span>
+        <span className="text-xs font-medium" style={{ color: 'var(--sub)' }}>{snippet.concept[locale]}</span>
         <span className="text-xs ml-auto" style={{ color: 'var(--sub)' }}>{current}/{total}</span>
-        {snippet.prompt && (
+        {snippet.prompt?.[locale] && (
           <button onClick={() => setShowDetail(p => !p)}
             className="text-xs font-medium cursor-pointer transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95"
             style={{ color: 'var(--main)' }}>
-            {showDetail ? 'ocultar' : 'mostrar'}
+            {showDetail ? t('hide', locale) : t('show', locale)}
           </button>
         )}
       </div>
 
       {/* Expandable explanation card */}
-      {showDetail && snippet.prompt && (
+      {showDetail && snippet.prompt?.[locale] && (
         <div className="mt-3 px-4 py-3 rounded-lg text-sm leading-relaxed animate-fade-in"
           style={{ backgroundColor: 'var(--sub-alt)', borderLeft: '3px solid var(--main)' }}>
-          <div className="text-sm font-semibold mb-1.5" style={{ color: 'var(--main)' }}>{snippet.concept}</div>
-          <p style={{ color: 'var(--text)' }}>{snippet.prompt}</p>
+          <div className="text-sm font-semibold mb-1.5" style={{ color: 'var(--main)' }}>{snippet.concept[locale]}</div>
+          <p style={{ color: 'var(--text)' }}>{snippet.prompt?.[locale]}</p>
           <div className="mt-2 text-[10px]" style={{ color: 'var(--sub)' }}>{languageLabel} · {diffLabel}</div>
         </div>
       )}
