@@ -116,10 +116,71 @@ export const ChartIcon = ({ size = 16, className = '' }: IconProps) => (
   </svg>
 )
 
+export const SlidersIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <line x1="4" y1="3" x2="4" y2="13" />
+    <circle cx="4" cy="5" r="1.5" />
+    <line x1="8" y1="3" x2="8" y2="13" />
+    <circle cx="8" cy="10" r="1.5" />
+    <line x1="12" y1="3" x2="12" y2="13" />
+    <circle cx="12" cy="7" r="1.5" />
+  </svg>
+)
+
+export const HelpIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <circle cx="8" cy="8" r="6" />
+    <path d="M6.5 6.5a1.5 1.5 0 0 1 2.8.5c0 1-1.3 1.5-1.3 1.5" />
+    <circle cx="8" cy="11" r="0.5" fill="currentColor" />
+  </svg>
+)
+
+export const BookIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <path d="M2 3h4.5c1 0 1.5.5 1.5 1.5v9L6.5 12H2V3z" />
+    <path d="M14 3H9.5C8.5 3 8 3.5 8 4.5v9l1.5-1.5H14V3z" />
+  </svg>
+)
+
+export const HomeIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <path d="M3 6.5L8 2.5L13 6.5V13H10V9.5H6V13H3V6.5Z" />
+  </svg>
+)
+
+export const XIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <line x1="4" y1="4" x2="12" y2="12" />
+    <line x1="12" y1="4" x2="4" y2="12" />
+  </svg>
+)
+
 export const ChevronDownIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
     strokeLinejoin="round" className={className}>
     <polyline points="4,6 8,10 12,6" />
+  </svg>
+)
+
+export const TrophyIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <path d="M5 2h6v5a3 3 0 0 1-6 0V2z" />
+    <path d="M2 2h3v3a1.5 1.5 0 0 1-3 0V2z" />
+    <path d="M11 2h3v3a1.5 1.5 0 0 1-3 0V2z" />
+    <line x1="8" y1="10" x2="8" y2="13" />
+    <line x1="5" y1="13" x2="11" y2="13" />
   </svg>
 )
