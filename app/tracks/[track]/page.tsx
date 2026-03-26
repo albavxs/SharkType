@@ -35,7 +35,7 @@ export default function TrackPracticePage() {
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
-  const [currentTheme, setCurrentTheme] = useState('serika dark')
+  const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [clientProgress, setClientProgress] = useState<UserProgress | null>(null)
   const [selectedLang, setSelectedLang] = useState<Language | null>(null)
@@ -207,7 +207,7 @@ export default function TrackPracticePage() {
         />
 
         {/* Breadcrumb + progress */}
-        <div className={`px-6 py-2 flex items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
+        <div className={`px-3 sm:px-6 py-2 flex items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
           <Link href="/tracks" className="flex items-center gap-1.5 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--sub)' }}>
             <ArrowLeftIcon size={14} /> Trilhas
           </Link>
@@ -220,7 +220,7 @@ export default function TrackPracticePage() {
 
         {/* Language tabs */}
         {availableLanguages.length > 0 && (
-          <div className={`px-6 pb-3 flex items-center gap-2 flex-wrap transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
+          <div className={`px-3 sm:px-6 pb-3 flex items-center gap-1.5 sm:gap-2 flex-wrap transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
             {availableLanguages.map(lang => (
               <button
                 key={lang.id}
@@ -238,7 +238,7 @@ export default function TrackPracticePage() {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6">
           {!snippet ? (
             <p style={{ color: 'var(--sub)' }}>Carregando...</p>
           ) : showResult && finalStats ? (

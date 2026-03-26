@@ -24,7 +24,7 @@ import Footer from '@/components/typing/Footer'
 import ThemeSelector from '@/components/typing/ThemeSelector'
 import HelpModal from '@/components/typing/HelpModal'
 import SceneWrapper from '@/components/three/SceneWrapper'
-import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
+import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon, XIcon } from '@/components/icons'
 
 export default function Home() {
   const [language, setLanguage] = useState<Language>(() => getLanguageById(DEFAULT_LANGUAGE)!)
@@ -35,7 +35,7 @@ export default function Home() {
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
   const [clientProgress, setClientProgress] = useState<UserProgress | null>(null)
   const { locale, toggleLocale } = useLocale()
-  const [currentTheme, setCurrentTheme] = useState('serika dark')
+  const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const isMobile = useIsMobile()
@@ -116,7 +116,7 @@ export default function Home() {
           locale={locale} onLocaleToggle={toggleLocale} isTyping={engine.state.status === 'running'} />
 
         {/* Main */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6">
           {showResult && sessionResult && finalStats ? (
             <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
               duration={finalStats.duration} snippet={snippet} languageLabel={language.label} wpmSamples={finalStats.wpmSamples}
@@ -132,12 +132,28 @@ export default function Home() {
                 </div>
               )}
 
+              {/* Mobile: logo + reset above code while typing */}
+              {engine.state.status === 'running' && isMobile && (
+                <div className="flex items-center justify-center gap-3 mb-4 animate-fade-in">
+                  <button onClick={handleRestart}
+                    className="text-base font-bold font-[family-name:var(--font-geist-mono)] active:scale-95 transition-all duration-150"
+                    style={{ color: 'var(--text)' }}>
+                    Shark<span style={{ color: 'var(--main)' }}>Type</span>
+                  </button>
+                  <button onClick={handleRestart}
+                    className="p-1.5 rounded-full active:scale-90 transition-all duration-150"
+                    style={{ color: 'var(--sub)' }}>
+                    <RefreshIcon size={14} />
+                  </button>
+                </div>
+              )}
+
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={language.id} isTyping={engine.state.status === 'running'} locale={locale} />
 
               {engine.state.status === 'running' && (
                 <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
-                  shift + tab — reiniciar
+                  <span className="hidden sm:inline">shift + tab — reiniciar</span>
                 </div>
               )}
 

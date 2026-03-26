@@ -5,21 +5,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Default theme values (serika dark) */
+/* Default theme values (dracula) */
 :root {
-  --bg: #323437;
-  --main: #e2b714;
-  --caret: #e2b714;
-  --sub: #646669;
-  --sub-alt: #2c2e31;
-  --text: #d1d0c5;
-  --error: #ca4754;
-  --error-extra: #7e2a33;
-  --syntax-keyword: #e2b714;
-  --syntax-string: #7ec699;
-  --syntax-number: #d19a66;
-  --syntax-comment: #4a4d52;
-  --syntax-type: #56b6c2;
+  --bg: #282a36;
+  --main: #bd93f9;
+  --caret: #f8f8f2;
+  --sub: #6272a4;
+  --sub-alt: #20222c;
+  --text: #f8f8f2;
+  --error: #ff5555;
+  --error-extra: #bb2e2e;
+  --syntax-keyword: #ff79c6;
+  --syntax-string: #f1fa8c;
+  --syntax-number: #bd93f9;
+  --syntax-comment: #6272a4;
+  --syntax-type: #8be9fd;
 }
 
 body {

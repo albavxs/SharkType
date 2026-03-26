@@ -32,7 +32,7 @@ function formatDate(iso: string): string {
 export default function LeaderboardPage() {
   const router = useRouter()
   const [progress, setProgress] = useState<UserProgress | null>(null)
-  const [currentTheme, setCurrentTheme] = useState('serika dark')
+  const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [filterLang, setFilterLang] = useState<string>('all')
   const { locale, toggleLocale } = useLocale()
@@ -73,15 +73,15 @@ export default function LeaderboardPage() {
           locale={locale} onLocaleToggle={toggleLocale}
         />
 
-        <div className="flex-1 flex flex-col items-center px-6 py-8">
+        <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
           <div className="w-full max-w-3xl">
             <div className="flex items-end justify-between mb-2">
-              <h1 className="text-3xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
+              <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
                 Ranking
               </h1>
-              <span className="text-xs pb-1" style={{ color: 'var(--sub)' }}>ranking global em breve</span>
+              <span className="text-[10px] sm:text-xs pb-1" style={{ color: 'var(--sub)' }}>ranking global em breve</span>
             </div>
-            <p className="text-sm mb-6" style={{ color: 'var(--sub)' }}>
+            <p className="text-xs sm:text-sm mb-4 sm:mb-6" style={{ color: 'var(--sub)' }}>
               Suas melhores sessões, ordenadas por WPM.
             </p>
 
@@ -142,41 +142,43 @@ export default function LeaderboardPage() {
                 <p className="text-xs mt-1">Complete alguns treinos para ver seu histórico aqui.</p>
               </div>
             ) : (
-              <div className="rounded-lg overflow-hidden" style={{ border: '1px solid color-mix(in srgb, var(--sub) 20%, transparent)' }}>
-                {/* Table header */}
-                <div className="grid text-[10px] uppercase tracking-wider px-4 py-2"
-                  style={{ gridTemplateColumns: '2rem 1fr 4rem 4rem 3rem 3rem 4rem', backgroundColor: 'var(--sub-alt)', color: 'var(--sub)' }}>
-                  <span>#</span>
-                  <span>linguagem</span>
-                  <span className="text-right">wpm</span>
-                  <span className="text-right">precisão</span>
-                  <span className="text-right">erros</span>
-                  <span className="text-right">tempo</span>
-                  <span className="text-right">data</span>
-                </div>
-
-                {filtered.map((record, i) => (
-                  <div key={i}
-                    className="grid px-4 py-2.5 text-sm"
-                    style={{
-                      gridTemplateColumns: '2rem 1fr 4rem 4rem 3rem 3rem 4rem',
-                      borderTop: i > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
-                      backgroundColor: i === 0 && filterLang === 'all' ? 'color-mix(in srgb, var(--main) 5%, transparent)' : 'transparent',
-                    }}>
-                    <span className="text-xs font-mono" style={{ color: i < 3 ? 'var(--main)' : 'var(--sub)' }}>
-                      {i + 1}
-                    </span>
-                    <span className="flex items-center gap-1.5 text-xs">
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: getLangColor(record.languageId) }} />
-                      <span style={{ color: 'var(--text)' }}>{getLangLabel(record.languageId)}</span>
-                    </span>
-                    <span className="text-right font-semibold tabular-nums" style={{ color: 'var(--main)' }}>{record.wpm}</span>
-                    <span className="text-right tabular-nums text-xs" style={{ color: 'var(--text)' }}>{record.accuracy}%</span>
-                    <span className="text-right tabular-nums text-xs" style={{ color: record.errors > 0 ? 'var(--error)' : 'var(--sub)' }}>{record.errors}</span>
-                    <span className="text-right tabular-nums text-xs" style={{ color: 'var(--sub)' }}>{record.duration}s</span>
-                    <span className="text-right text-xs" style={{ color: 'var(--sub)' }}>{formatDate(record.date)}</span>
+              <div className="overflow-x-auto -mx-3 sm:mx-0">
+                <div className="rounded-lg overflow-hidden min-w-[28rem]" style={{ border: '1px solid color-mix(in srgb, var(--sub) 20%, transparent)' }}>
+                  {/* Table header */}
+                  <div className="grid text-[10px] uppercase tracking-wider px-3 sm:px-4 py-2"
+                    style={{ gridTemplateColumns: '1.5rem 1fr 3.5rem 3.5rem 2.5rem 2.5rem 3.5rem', backgroundColor: 'var(--sub-alt)', color: 'var(--sub)' }}>
+                    <span>#</span>
+                    <span>linguagem</span>
+                    <span className="text-right">wpm</span>
+                    <span className="text-right">precisão</span>
+                    <span className="text-right">erros</span>
+                    <span className="text-right">tempo</span>
+                    <span className="text-right">data</span>
                   </div>
-                ))}
+
+                  {filtered.map((record, i) => (
+                    <div key={i}
+                      className="grid px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm"
+                      style={{
+                        gridTemplateColumns: '1.5rem 1fr 3.5rem 3.5rem 2.5rem 2.5rem 3.5rem',
+                        borderTop: i > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
+                        backgroundColor: i === 0 && filterLang === 'all' ? 'color-mix(in srgb, var(--main) 5%, transparent)' : 'transparent',
+                      }}>
+                      <span className="text-xs font-mono" style={{ color: i < 3 ? 'var(--main)' : 'var(--sub)' }}>
+                        {i + 1}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs">
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: getLangColor(record.languageId) }} />
+                        <span style={{ color: 'var(--text)' }}>{getLangLabel(record.languageId)}</span>
+                      </span>
+                      <span className="text-right font-semibold tabular-nums" style={{ color: 'var(--main)' }}>{record.wpm}</span>
+                      <span className="text-right tabular-nums text-xs" style={{ color: 'var(--text)' }}>{record.accuracy}%</span>
+                      <span className="text-right tabular-nums text-xs" style={{ color: record.errors > 0 ? 'var(--error)' : 'var(--sub)' }}>{record.errors}</span>
+                      <span className="text-right tabular-nums text-xs" style={{ color: 'var(--sub)' }}>{record.duration}s</span>
+                      <span className="text-right text-xs" style={{ color: 'var(--sub)' }}>{formatDate(record.date)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

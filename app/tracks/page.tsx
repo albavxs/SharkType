@@ -37,7 +37,7 @@ function getTrackLanguages(track: Track): Language[] {
 export default function TracksPage() {
   const router = useRouter()
   const [progress, setProgress] = useState<UserProgress | null>(null)
-  const [currentTheme, setCurrentTheme] = useState('serika dark')
+  const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -118,12 +118,12 @@ export default function TracksPage() {
           locale={locale} onLocaleToggle={toggleLocale}
         />
 
-        <div className="flex-1 flex flex-col items-center px-6 py-8">
+        <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
           <div className="w-full max-w-5xl">
-            <h1 className="text-3xl font-bold font-[family-name:var(--font-geist-mono)] mb-2" style={{ color: 'var(--text)' }}>
+            <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-geist-mono)] mb-2" style={{ color: 'var(--text)' }}>
               Trilhas
             </h1>
-            <p className="text-sm mb-8" style={{ color: 'var(--sub)' }}>
+            <p className="text-xs sm:text-sm mb-4 sm:mb-8" style={{ color: 'var(--sub)' }}>
               Escolha uma trilha de conceitos. Em seguida, escolha a linguagem para praticar.
             </p>
 
@@ -131,7 +131,7 @@ export default function TracksPage() {
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Código</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Trilhas temáticas por conceito ou linguagem de programação</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {codeTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
@@ -147,7 +147,7 @@ export default function TracksPage() {
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>Idiomas</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Treine digitação com textos em português, inglês, espanhol e francês</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {idiomTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={idiomBadges} />
                 ))}
