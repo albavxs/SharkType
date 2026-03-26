@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { getLanguageById } from '@/data'
 import { generateChallengeSequence } from '@/lib/utils'
-import { Mode, Language, Snippet, Difficulty } from '@/lib/types'
+import { Language, Snippet, Difficulty } from '@/lib/types'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
 import { useTimer } from '@/hooks/useTimer'
@@ -12,7 +12,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { SessionOutput, UserProgress, loadProgress, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
-import { playKey, playError, playComplete } from '@/lib/sounds'
+import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Toolbar from '@/components/typing/Toolbar'
@@ -93,10 +93,10 @@ export default function Home() {
   function handlePrev() { setSeqIndex(i => i > 0 ? i - 1 : sequence.length - 1); setShowResult(false); setSessionResult(null); setFinalStats(null); timer.reset(timerDuration) }
   function handleLanguageChange(lang: Language) { setLanguage(lang); engine.reset(); timer.reset(timerDuration); setShowResult(false); setSessionResult(null); setFinalStats(null) }
 
-  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleNext : handleRestart, Escape: () => { setShowThemeSelector(false); setShowHelp(false) } }), [showResult]), true)
+  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleNext : handleRestart, ShiftTab: handleRestart, Escape: () => { setShowThemeSelector(false); setShowHelp(false) } }), [showResult]), true)
 
   const prevErrors = useMemo(() => ({ current: 0 }), [])
-  const wrappedHandleKey = useCallback((key: string) => { playKey(); engine.handleKey(key) }, [engine])
+  const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); engine.handleKey(key) }, [engine])
   useEffect(() => { if (engine.state.errors > prevErrors.current) { playError() }; prevErrors.current = engine.state.errors }, [engine.state.errors])
 
   const displaySeconds = isCountdown ? timer.seconds : engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
@@ -134,6 +134,12 @@ export default function Home() {
 
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={language.id} isTyping={engine.state.status === 'running'} locale={locale} />
+
+              {engine.state.status === 'running' && (
+                <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
+                  shift + tab — reiniciar
+                </div>
+              )}
 
               <div className={`w-full max-w-3xl mt-6 flex justify-center transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
                 <div className="flex items-center gap-4">
