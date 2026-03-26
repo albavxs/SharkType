@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { tracks, Track } from '@/data/tracks'
-import { textLanguages } from '@/data'
+import { languages, textLanguages } from '@/data'
 import { loadProgress, UserProgress, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
@@ -20,6 +20,20 @@ const codeTracks = tracks.filter(t => !t.textLanguages)
 const idiomTracks = tracks.filter(t => t.textLanguages)
 const idiomBadges = textLanguages.filter(l => l.id !== 'text-typing')
 
+function getTrackLanguages(track: Track): Language[] {
+  const seen = new Set<string>()
+  const result: Language[] = []
+  for (const sid of track.snippetIds) {
+    for (const lang of languages) {
+      if (!seen.has(lang.id) && lang.snippets.some(s => s.id === sid)) {
+        seen.add(lang.id)
+        result.push(lang)
+      }
+    }
+  }
+  return result
+}
+
 export default function TracksPage() {
   const router = useRouter()
   const [progress, setProgress] = useState<UserProgress | null>(null)
@@ -30,6 +44,14 @@ export default function TracksPage() {
   const levelInfo = progress ? getLevel(progress.totalXP) : null
 
   const dummyLang = getLanguageById(DEFAULT_LANGUAGE)!
+
+  const trackLangsMap = useMemo(() => {
+    const map = new Map<string, Language[]>()
+    for (const track of codeTracks) {
+      map.set(track.id, getTrackLanguages(track))
+    }
+    return map
+  }, [])
 
   useEffect(() => {
     const themeName = getThemePref()
@@ -62,6 +84,25 @@ export default function TracksPage() {
 
   const codeStats = getSectionStats(codeTracks)
 
+  function TrackCard({ track, badges }: { track: Track; badges: Language[] }) {
+    return (
+      <button onClick={() => router.push(`/tracks/${track.id}`)}
+        className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
+        style={{ backgroundColor: 'var(--sub-alt)' }}>
+        <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name}</div>
+        <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description}</div>
+        <div className="flex flex-wrap gap-1">
+          {badges.map(lang => (
+            <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+              style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
+              {lang.label}
+            </span>
+          ))}
+        </div>
+      </button>
+    )
+  }
+
   return (
     <main className="flex-1 flex flex-col min-h-screen relative">
       {!isMobile && <SceneWrapper />}
@@ -92,12 +133,7 @@ export default function TracksPage() {
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Trilhas tematicas por conceito ou linguagem de programacao</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                 {codeTracks.map(track => (
-                  <button key={track.id} onClick={() => router.push(`/tracks/${track.id}`)}
-                    className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
-                    style={{ backgroundColor: 'var(--sub-alt)' }}>
-                    <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name}</div>
-                    <div className="text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>{track.description}</div>
-                  </button>
+                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
               </div>
               {codeStats.total > 0 && (
@@ -113,20 +149,7 @@ export default function TracksPage() {
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>Treine digitacao com textos em portugues, ingles, espanhol e frances</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {idiomTracks.map(track => (
-                  <button key={track.id} onClick={() => router.push(`/tracks/${track.id}`)}
-                    className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
-                    style={{ backgroundColor: 'var(--sub-alt)' }}>
-                    <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name}</div>
-                    <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description}</div>
-                    <div className="flex flex-wrap gap-1">
-                      {idiomBadges.map(lang => (
-                        <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
-                          style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
-                          {lang.label}
-                        </span>
-                      ))}
-                    </div>
-                  </button>
+                  <TrackCard key={track.id} track={track} badges={idiomBadges} />
                 ))}
               </div>
             </div>

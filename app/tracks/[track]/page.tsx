@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { getTrackById } from '@/data/tracks'
 import { textLanguages, languages } from '@/data'
 import { Snippet, Language, Difficulty } from '@/lib/types'
@@ -13,7 +13,7 @@ import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { SessionOutput, UserProgress, loadProgress, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
-import { playKey, playError, playComplete } from '@/lib/sounds'
+import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import TypingArea from '@/components/typing/TypingArea'
 import SnippetInfo from '@/components/typing/SnippetInfo'
 import ResultScreen from '@/components/typing/ResultScreen'
@@ -23,6 +23,8 @@ import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 import Link from 'next/link'
+
+interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
 
 export default function TrackPracticePage() {
   const params = useParams()
@@ -38,6 +40,8 @@ export default function TrackPracticePage() {
   const [clientProgress, setClientProgress] = useState<UserProgress | null>(null)
   const [selectedLang, setSelectedLang] = useState<Language | null>(null)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
+  const [accumulated, setAccumulated] = useState<SnippetResult[]>([])
+  const [finalStats, setFinalStats] = useState<SnippetResult | null>(null)
   const { recordSession } = useProgress()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -81,10 +85,54 @@ export default function TrackPracticePage() {
     return snippets
   }, [track, selectedLang, difficulty])
 
-  const snippet = trackSnippets[seqIndex % Math.max(trackSnippets.length, 1)] ?? null
+  const snippet = trackSnippets[seqIndex] ?? null
+  const isLastSnippet = seqIndex >= trackSnippets.length - 1
 
-  const handleFinish = useCallback(() => { setShowResult(true); playComplete() }, [])
+  // Pending advance flag — set by handleFinish, consumed by useEffect
+  const pendingAdvanceRef = useRef(false)
+
+  const handleFinish = useCallback(() => {
+    playComplete()
+    pendingAdvanceRef.current = true
+  }, [])
+
   const engine = useTypingEngine(snippet?.code ?? '', handleFinish)
+
+  // Process snippet completion after engine finishes
+  useEffect(() => {
+    if (!pendingAdvanceRef.current) return
+    if (engine.state.status !== 'finished') return
+    pendingAdvanceRef.current = false
+
+    const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
+    const stats: SnippetResult = {
+      wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy,
+      errors: engine.state.errors, duration: dur,
+      wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples],
+    }
+
+    if (selectedLang && snippet) {
+      recordSession({ languageId: selectedLang.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty })
+    }
+
+    const next = [...accumulated, stats]
+    setAccumulated(next)
+
+    if (seqIndex >= trackSnippets.length - 1) {
+      // Last snippet — show aggregate result
+      const avgWpm = Math.round(next.reduce((s, r) => s + r.wpm, 0) / next.length)
+      const avgRawWpm = Math.round(next.reduce((s, r) => s + r.rawWpm, 0) / next.length)
+      const avgAcc = Math.round(next.reduce((s, r) => s + r.accuracy, 0) / next.length)
+      const totalErrors = next.reduce((s, r) => s + r.errors, 0)
+      const totalDur = next.reduce((s, r) => s + r.duration, 0)
+      setFinalStats({ wpm: avgWpm, rawWpm: avgRawWpm, accuracy: avgAcc, errors: totalErrors, duration: totalDur, wpmSamples: next.flatMap(r => r.wpmSamples), rawWpmSamples: next.flatMap(r => r.rawWpmSamples) })
+      setShowResult(true)
+      setClientProgress(loadProgress())
+    } else {
+      // Advance to next snippet
+      setSeqIndex(i => i + 1)
+    }
+  }, [engine.state.status])
   const prevErrors = useMemo(() => ({ current: 0 }), [])
   const isTyping = engine.state.status === 'running'
 
@@ -103,16 +151,18 @@ export default function TrackPracticePage() {
 
   useEffect(() => { if (engine.state.errors > prevErrors.current) { playError() }; prevErrors.current = engine.state.errors }, [engine.state.errors])
 
-  useEffect(() => {
-    if (showResult && snippet && !sessionResult && selectedLang) {
-      const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-      setSessionResult(recordSession({ languageId: selectedLang.id, snippetId: snippet.id, wpm: engine.wpm, accuracy: engine.accuracy, errors: engine.state.errors, duration: dur, difficulty: snippet.difficulty }))
-    }
-  }, [showResult])
+  function handleRestartTrack() {
+    setSeqIndex(0)
+    setShowResult(false)
+    setSessionResult(null)
+    setFinalStats(null)
+    setAccumulated([])
+    engine.reset()
+  }
 
-  function handleNext() { setSeqIndex(i => (i + 1) % Math.max(trackSnippets.length, 1)); setShowResult(false); setSessionResult(null); engine.reset() }
-  function handleRestart() { engine.reset(); setShowResult(false); setSessionResult(null) }
-  function handlePrev() { setSeqIndex(i => i > 0 ? i - 1 : Math.max(trackSnippets.length - 1, 0)); setShowResult(false); setSessionResult(null); engine.reset() }
+  function handleRestart() { engine.reset() }
+  function handleNext() { if (seqIndex < trackSnippets.length - 1) { setSeqIndex(i => i + 1); engine.reset() } }
+  function handlePrev() { if (seqIndex > 0) { setSeqIndex(i => i - 1); engine.reset() } }
 
   function handleLangChange(lang: Language) {
     let newLen: number
@@ -123,18 +173,18 @@ export default function TrackPracticePage() {
     } else {
       newLen = track!.snippetIds.filter(sid => lang.snippets.some(s => s.id === sid)).length
     }
-    setSeqIndex(i => Math.min(i, Math.max(newLen - 1, 0)))
+    setSeqIndex(0)
     setSelectedLang(lang)
     setShowResult(false)
     setSessionResult(null)
+    setFinalStats(null)
+    setAccumulated([])
     engine.reset()
   }
 
-  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleNext : handleRestart, Escape: () => setShowThemeSelector(false) }), [showResult]), true)
+  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleRestartTrack : handleRestart, ShiftTab: handleRestart, Escape: () => setShowThemeSelector(false) }), [showResult]), true)
 
-  const wrappedHandleKey = useCallback((key: string) => { playKey(); engine.handleKey(key) }, [engine])
-
-  const blur = isTyping ? 'blur-sm pointer-events-none' : ''
+  const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); engine.handleKey(key) }, [engine])
 
   if (!track) {
     return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>Trilha nao encontrada.</p></main>
@@ -148,7 +198,7 @@ export default function TrackPracticePage() {
         <Toolbar
           language={selectedLang ?? languages[0]} difficulty={difficulty}
           seconds={0} isTimerRunning={false}
-          onLanguageChange={() => {}} onDifficultyChange={(d) => { setDifficulty(d); setSeqIndex(0); engine.reset() }}
+          onLanguageChange={() => {}} onDifficultyChange={(d) => { setDifficulty(d); setSeqIndex(0); setAccumulated([]); engine.reset() }}
           showControls={!track.textLanguages}
           onHomeClick={() => router.push('/')} onHelpClick={() => {}}
           level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
@@ -156,8 +206,8 @@ export default function TrackPracticePage() {
           isTyping={isTyping}
         />
 
-        {/* Breadcrumb + progress — blur when typing */}
-        <div className={`px-6 py-2 flex items-center gap-2 transition-all duration-300 ${blur}`}>
+        {/* Breadcrumb + progress */}
+        <div className={`px-6 py-2 flex items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
           <Link href="/tracks" className="flex items-center gap-1.5 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--sub)' }}>
             <ArrowLeftIcon size={14} /> Trilhas
           </Link>
@@ -168,14 +218,14 @@ export default function TrackPracticePage() {
           )}
         </div>
 
-        {/* Language tabs — blur when typing */}
+        {/* Language tabs */}
         {availableLanguages.length > 0 && (
-          <div className={`px-6 pb-3 flex items-center gap-2 flex-wrap transition-all duration-300 ${blur}`}>
+          <div className={`px-6 pb-3 flex items-center gap-2 flex-wrap transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
             {availableLanguages.map(lang => (
               <button
                 key={lang.id}
                 onClick={() => handleLangChange(lang)}
-                className="flex items-center gap-1.5 px-3 py-1 text-xs rounded-full transition-all hover:brightness-110"
+                className="flex items-center gap-1.5 px-3 py-1 text-xs rounded-full transition-all duration-150 hover:brightness-110 hover:scale-105 active:scale-95 cursor-pointer"
                 style={{
                   backgroundColor: lang.id === selectedLang?.id ? 'var(--main)' : 'var(--sub-alt)',
                   color: lang.id === selectedLang?.id ? 'var(--bg)' : 'var(--text)',
@@ -191,12 +241,13 @@ export default function TrackPracticePage() {
         <div className="flex-1 flex flex-col items-center justify-center px-6">
           {!snippet ? (
             <p style={{ color: 'var(--sub)' }}>Carregando...</p>
-          ) : showResult && sessionResult ? (
-            <ResultScreen wpm={engine.wpm} rawWpm={engine.rawWpm} accuracy={engine.accuracy} errors={engine.state.errors}
-              duration={engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0}
-              snippet={snippet} languageLabel={selectedLang?.label ?? ''} wpmSamples={engine.wpmSamples} rawWpmSamples={engine.rawWpmSamples}
-              xpEarned={sessionResult.xpEarned} newLevel={sessionResult.newLevel} leveledUp={sessionResult.leveledUp}
-              levelPercent={sessionResult.levelPercent} streak={sessionResult.streak} onNext={handleNext} locale={locale} />
+          ) : showResult && finalStats ? (
+            <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
+              duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} wpmSamples={finalStats.wpmSamples}
+              rawWpmSamples={finalStats.rawWpmSamples}
+              xpEarned={accumulated.length * 10} newLevel={levelInfo?.level ?? 1} leveledUp={false}
+              levelPercent={levelInfo ? Math.round(((clientProgress?.totalXP ?? 0) % 100)) : 0} streak={clientProgress?.streak.current ?? 0}
+              onNext={handleRestartTrack} locale={locale} />
           ) : (
             <>
               {/* Prompt — hide when typing */}
@@ -205,6 +256,11 @@ export default function TrackPracticePage() {
               </div>
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
+              {isTyping && (
+                <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
+                  shift + tab — reiniciar
+                </div>
+              )}
               {/* Nav buttons — icon-only, hide when typing */}
               <div className={`w-full max-w-3xl mt-6 flex justify-center transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
                 <div className="flex items-center gap-4">
