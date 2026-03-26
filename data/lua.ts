@@ -5,7 +5,7 @@ export const luaSnippets: Snippet[] = [
     id: 'lua-001',
     concept: 'Funcao e Local',
     difficulty: 'easy',
-    prompt: 'Defina uma funcao local em Lua que concatena strings com o operador .. e retorna a saudacao.',
+    prompt: '"local function" define uma funcao cujo escopo e restrito ao arquivo ou bloco atual. Implemente greet usando o operador de concatenacao (..) para juntar as partes da saudacao e chame print para exibir o resultado.',
     code: `local function greet(name)
   return "Hello, " .. name .. "!"
 end
@@ -16,7 +16,7 @@ print(greet("Lua"))`,
     id: 'lua-002',
     concept: 'Tabela',
     difficulty: 'easy',
-    prompt: 'Crie uma tabela Lua com campos de pessoa e acesse os valores pelos nomes dos campos.',
+    prompt: 'Tabelas sao a unica estrutura de dados em Lua — usadas como arrays, dicionarios e objetos. Crie a tabela "person" com campos nome-valor e acesse name e age usando a notacao ponto.',
     code: `local person = {
   name = "Alice",
   age  = 30,
@@ -28,7 +28,7 @@ print(person.name, person.age)`,
     id: 'lua-003',
     concept: 'For Loop',
     difficulty: 'easy',
-    prompt: 'Use um for numerico para acumular a soma dos inteiros de 1 a 10.',
+    prompt: 'O for numerico em Lua tem a sintaxe "for i = inicio, fim do". Use-o para acumular a soma dos inteiros de 1 a 10 em uma variavel local e imprima o resultado ao final.',
     code: `local sum = 0
 for i = 1, 10 do
   sum = sum + i
@@ -39,7 +39,7 @@ print("Sum:", sum)`,
     id: 'lua-004',
     concept: 'String Format',
     difficulty: 'easy',
-    prompt: 'Use string.format para formatar uma mensagem de texto e um numero de ponto flutuante com precisao.',
+    prompt: 'string.format funciona como printf em C. Use o especificador %s para inserir uma string e %.4f para formatar math.pi com exatamente quatro casas decimais, chamando print para cada linha.',
     code: `local name = "World"
 local pi = math.pi
 print(string.format("Hello, %s!", name))
@@ -49,7 +49,7 @@ print(string.format("Pi = %.4f", pi))`,
     id: 'lua-005',
     concept: 'Metatables',
     difficulty: 'medium',
-    prompt: 'Implemente um objeto Vector usando metatables e __index para adicionar metodos como length.',
+    prompt: 'Metatables permitem sobrecarregar operadores e adicionar metodos a tabelas. Crie Vector com __index apontando para si mesmo, um construtor new que usa setmetatable e o metodo :length que calcula a norma euclidiana.',
     code: `local Vector = {}
 Vector.__index = Vector
 
@@ -65,7 +65,7 @@ end`,
     id: 'lua-006',
     concept: 'Closure',
     difficulty: 'medium',
-    prompt: 'Crie um contador usando closure, retornando uma tabela com funcoes inc e get encapsuladas.',
+    prompt: 'Closures em Lua capturam variaveis locais do escopo externo (upvalues). Implemente counter: retorne uma tabela com duas closures (inc e get) que compartilham e manipulam a mesma variavel "count" encapsulada.',
     code: `local function counter(start)
   local count = start or 0
   return {
@@ -82,7 +82,7 @@ print(c.get())`,
     id: 'lua-007',
     concept: 'Iterador',
     difficulty: 'medium',
-    prompt: 'Implemente um iterador range personalizado usando closures e use-o em um for generico.',
+    prompt: 'Iteradores genericos em Lua sao funcoes que retornam o proximo valor a cada chamada. Implemente range como uma factory que retorna uma closure de iteracao com step configuravel, usavel diretamente em um for generico.',
     code: `local function range(from, to, step)
   step = step or 1
   return function(_, i)
@@ -97,7 +97,7 @@ for i in range(1, 5) do io.write(i .. " ") end`,
     id: 'lua-008',
     concept: 'Coroutine',
     difficulty: 'medium',
-    prompt: 'Use coroutines com yield para implementar um produtor que entrega itens sob demanda via resume.',
+    prompt: 'Coroutines permitem pausar e retomar a execucao cooperativamente. Crie um produtor que usa yield para cada item, crie a coroutine com coroutine.create e consuma cada valor com coroutine.resume em um loop.',
     code: `local function producer()
   local items = {"a", "b", "c"}
   for _, v in ipairs(items) do
@@ -116,7 +116,7 @@ end`,
     id: 'lua-009',
     concept: 'Modulo Pattern',
     difficulty: 'hard',
-    prompt: 'Implemente o padrao de modulo Lua com funcoes privadas e publicas, retornando a tabela M.',
+    prompt: 'O padrao de modulo em Lua usa uma tabela local M para encapsular estado e expor apenas a API publica. Defina uma funcao privada (local) e duas publicas em M, depois retorne M ao final para uso como modulo.',
     code: `local M = {}
 
 local function private_helper(x)
@@ -137,7 +137,7 @@ return M`,
     id: 'lua-010',
     concept: 'pcall e Error Handling',
     difficulty: 'hard',
-    prompt: 'Use pcall para capturar erros lancados com error() e tratar o resultado com seguranca.',
+    prompt: 'pcall chama uma funcao em modo protegido: captura erros lancados por error() sem abortar o programa. Defina risky que valida o tipo e lanca um erro descritivo, depois use pcall e verifique ok/result para tratar sucesso e falha.',
     code: `local function risky(x)
   if type(x) ~= "number" then
     error("expected number, got " .. type(x))

@@ -3,6 +3,8 @@ export interface Track {
   name: string
   description: string
   snippetIds: string[]
+  textLanguages?: true
+  difficultyFilter?: 'easy' | 'medium' | 'hard'
 }
 
 export const tracks: Track[] = [
@@ -282,44 +284,30 @@ export const tracks: Track[] = [
     ],
   },
 
-  // ── Idioma tracks ─────────────────────────────────────────────────────────
+  // ── Idiomas ─────────────────────────────────────────────────────────────
   {
-    id: 'text-pt',
-    name: 'Portugues',
-    description: 'Praticar digitacao com frases, proverbios e textos em portugues do Brasil',
-    snippetIds: ['ptbr-001','ptbr-002','ptbr-003','ptbr-004','ptbr-005','ptbr-006','ptbr-007','ptbr-008','ptbr-009','ptbr-010'],
+    id: 'idioma-iniciante',
+    name: 'Idiomas — Iniciante',
+    description: 'Frases curtas e vocabulario basico para comecar a digitar rapido',
+    snippetIds: [],
+    textLanguages: true,
+    difficultyFilter: 'easy',
   },
   {
-    id: 'text-en',
-    name: 'English',
-    description: 'Practice typing with English phrases, quotes and paragraphs',
-    snippetIds: ['en-001','en-002','en-003','en-004','en-005','en-006','en-007','en-008','en-009','en-010'],
+    id: 'idioma-medio',
+    name: 'Idiomas — Medio',
+    description: 'Paragrafos sobre ciencia, tecnologia e cultura para ganhar velocidade',
+    snippetIds: [],
+    textLanguages: true,
+    difficultyFilter: 'medium',
   },
   {
-    id: 'text-es',
-    name: 'Espanol',
-    description: 'Practica de escritura con frases y textos en espanol',
-    snippetIds: ['es-001','es-002','es-003','es-004','es-005','es-006','es-007','es-008','es-009','es-010'],
-  },
-  {
-    id: 'text-fr',
-    name: 'Francais',
-    description: 'Pratique de frappe avec des phrases et textes en francais',
-    snippetIds: ['fr-001','fr-002','fr-003','fr-004','fr-005','fr-006','fr-007','fr-008','fr-009','fr-010'],
-  },
-
-  // ── Digitacao tracks ──────────────────────────────────────────────────────
-  {
-    id: 'typing-beginner',
-    name: 'Digitacao — Iniciante',
-    description: 'Home row, vogais e teclas basicas para quem esta comecando a digitar',
-    snippetIds: ['typing-001','typing-002','typing-003','typing-004','typing-005'],
-  },
-  {
-    id: 'typing-speed',
-    name: 'Digitacao — Velocidade',
-    description: 'Bigramas, palavras comuns, numeros e pontuacao para aumentar a velocidade',
-    snippetIds: ['typing-006','typing-007','typing-008','typing-009','typing-010'],
+    id: 'idioma-dificil',
+    name: 'Idiomas — Dificil',
+    description: 'Textos densos de filosofia, historia e literatura para alta precisao',
+    snippetIds: [],
+    textLanguages: true,
+    difficultyFilter: 'hard',
   },
 ]
 

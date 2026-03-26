@@ -5,7 +5,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-001',
     concept: 'Estrutura Basica',
     difficulty: 'easy',
-    prompt: 'Escreva um header semantico com titulo h1 e nav com links de navegacao.',
+    prompt: 'O elemento <header> contem a identidade e navegacao principal da pagina. Escreva um header semantico com <h1> para o titulo da aplicacao e <nav> com dois <a> de navegacao — sem divs desnecessarias.',
     code: `<header>
   <h1>SharkType</h1>
   <nav>
@@ -18,7 +18,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-002',
     concept: 'Formulario',
     difficulty: 'easy',
-    prompt: 'Crie um formulario de login com campo de email validado, label associado e botao de submit.',
+    prompt: 'Formularios HTML exigem action, method e associacao correta de label/input. Crie um form de login com POST, um <input type="email"> com required e id, seu <label> associado via "for" e um <button type="submit">.',
     code: `<form action="/login" method="POST">
   <label for="email">Email</label>
   <input type="email" id="email" name="email" required />
@@ -29,7 +29,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-003',
     concept: 'Imagem e Link',
     difficulty: 'easy',
-    prompt: 'Use figure, img com alt descritivo e figcaption para exibir uma imagem com legenda acessivel.',
+    prompt: '<figure> e <figcaption> fornecem contexto semantico para imagens. Envolva a <img> em um <figure>, inclua um alt descritivo no atributo alt e adicione uma <figcaption> logo abaixo com o texto da legenda.',
     code: `<figure>
   <img src="/logo.png" alt="SharkType logo" width="200" />
   <figcaption>Logo do SharkType</figcaption>
@@ -39,7 +39,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-004',
     concept: 'Lista',
     difficulty: 'easy',
-    prompt: 'Crie uma lista nao ordenada com itens que contem links de navegacao.',
+    prompt: '<ul> e semanticamente correto para conjuntos de itens sem ordem obrigatoria. Crie uma lista nao ordenada com tres <li>, cada um contendo um <a> para uma pagina diferente de linguagem de programacao.',
     code: `<ul>
   <li><a href="/swift">Swift</a></li>
   <li><a href="/kotlin">Kotlin</a></li>
@@ -50,7 +50,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-005',
     concept: 'Artigo Semantico',
     difficulty: 'medium',
-    prompt: 'Estruture um artigo com header, time com datetime, paragrafo de conteudo e footer com tag.',
+    prompt: '<article> envolve conteudo independente e autocontido. Estruture o artigo com <header> interno (h2 + time com datetime), um paragrafo de conteudo e <footer> com link de tag usando rel="tag".',
     code: `<article>
   <header>
     <h2>Introducao ao Lua</h2>
@@ -66,7 +66,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-006',
     concept: 'Meta e Link',
     difficulty: 'medium',
-    prompt: 'Configure o head com meta charset, viewport, description e link para folha de estilos.',
+    prompt: 'O <head> configura como o browser interpreta e indexa a pagina. Adicione meta charset para codificacao, viewport para responsividade mobile, meta description para SEO, link para o CSS e o <title>.',
     code: `<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -79,7 +79,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-007',
     concept: 'Select e Option',
     difficulty: 'medium',
-    prompt: 'Crie um campo select agrupando opcoes de linguagem com optgroup por categoria.',
+    prompt: '<optgroup> organiza opcoes de um <select> em grupos logicos com um rotulo. Crie um campo de selecao de linguagem com dois grupos (JVM e Script), cada um contendo duas <option> com value e texto.',
     code: `<select name="language" id="lang">
   <optgroup label="JVM">
     <option value="kotlin">Kotlin</option>
@@ -95,7 +95,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-008',
     concept: 'Tabela',
     difficulty: 'medium',
-    prompt: 'Construa uma tabela acessivel com thead, tbody, cabecalhos th com scope e linhas de dados.',
+    prompt: 'Tabelas acessiveis usam <thead>/<tbody>, <th> com atributo scope e <td> para dados. Construa uma tabela de resultados com tres colunas no cabecalho (scope="col") e uma linha de dados no corpo.',
     code: `<table>
   <thead>
     <tr>
@@ -117,7 +117,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-009',
     concept: 'Details e Summary',
     difficulty: 'hard',
-    prompt: 'Use details/summary para criar um accordion colapsavel com fieldset de opcoes radio.',
+    prompt: '<details>/<summary> criam um widget de divulgacao colapsavel nativo, sem JavaScript. Dentro do <details>, use <summary> como titulo clicavel e adicione um <fieldset> com <legend> e duas opcoes de <input type="radio">.',
     code: `<details>
   <summary>Configuracoes avancadas</summary>
   <fieldset>
@@ -135,7 +135,7 @@ export const htmlSnippets: Snippet[] = [
     id: 'html-010',
     concept: 'SVG Inline',
     difficulty: 'hard',
-    prompt: 'Incorpore um SVG inline acessivel com viewBox, title, role img e polyline para um grafico de linhas.',
+    prompt: 'SVG inline permite graficos vetoriais acessiveis diretamente no HTML. Crie um <svg> com viewBox, aria-label e role="img" para acessibilidade, <title> interno e um <polyline> com cinco pontos definindo a curva.',
     code: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"
      aria-label="Score chart" role="img">
   <title>Score chart</title>

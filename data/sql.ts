@@ -5,7 +5,7 @@ export const sqlSnippets: Snippet[] = [
     id: 'sql-001',
     concept: 'SELECT with JOIN',
     difficulty: 'easy',
-    prompt: 'Escreva uma consulta que une users e orders para buscar nomes e totais de pedidos acima de 100.',
+    prompt: 'INNER JOIN combina linhas de duas tabelas onde a condicao de juncao e satisfeita. Selecione o nome do usuario e o total do pedido unindo "users" e "orders" pela chave estrangeira user_id, filtrando apenas pedidos acima de 100.',
     code: `SELECT u.name, o.total
 FROM users u
 INNER JOIN orders o ON o.user_id = u.id
@@ -15,7 +15,7 @@ WHERE o.total > 100;`,
     id: 'sql-002',
     concept: 'GROUP BY + HAVING',
     difficulty: 'medium',
-    prompt: 'Conte funcionarios por departamento e filtre apenas departamentos com mais de 5 membros.',
+    prompt: 'GROUP BY agrega linhas; HAVING filtra grupos (diferente de WHERE que filtra linhas individuais). Conte funcionarios por departamento e exiba apenas os departamentos com mais de 5 membros, ordenados do maior para o menor.',
     code: `SELECT department, COUNT(*) AS total
 FROM employees
 GROUP BY department
@@ -26,7 +26,7 @@ ORDER BY total DESC;`,
     id: 'sql-003',
     concept: 'Subquery',
     difficulty: 'medium',
-    prompt: 'Use uma subquery para selecionar apenas os funcionarios com salario acima da media.',
+    prompt: 'Uma subquery e uma consulta aninhada dentro de outra. Use-a para calcular o salario medio de todos os funcionarios na clausula WHERE e retorne apenas os que ganham acima dessa media.',
     code: `SELECT name, salary
 FROM employees
 WHERE salary > (
@@ -38,7 +38,7 @@ WHERE salary > (
     id: 'sql-004',
     concept: 'CTE',
     difficulty: 'medium',
-    prompt: 'Use uma CTE (WITH) para nomear e reutilizar a selecao de usuarios ativos nos ultimos 30 dias.',
+    prompt: 'CTEs (Common Table Expressions) nomeiam uma subconsulta para reutilizar sem repeticao. Use WITH active_users AS (...) para definir os usuarios com login nos ultimos 30 dias e selecione tudo da CTE na query principal.',
     code: `WITH active_users AS (
     SELECT id, name
     FROM users
@@ -50,7 +50,7 @@ SELECT * FROM active_users;`,
     id: 'sql-005',
     concept: 'Window Function',
     difficulty: 'hard',
-    prompt: 'Use RANK() com PARTITION BY para classificar funcionarios por salario dentro de cada departamento.',
+    prompt: 'Window functions calculam valores sobre um conjunto de linhas sem colapsar o resultado como GROUP BY. Use RANK() com OVER(PARTITION BY department ORDER BY salary DESC) para rankear cada funcionario dentro do seu departamento.',
     code: `SELECT name, salary,
     RANK() OVER (
         PARTITION BY department
@@ -62,7 +62,7 @@ FROM employees;`,
     id: 'sql-006',
     concept: 'INSERT',
     difficulty: 'easy',
-    prompt: 'Insira um novo usuario com nome, email e timestamp de criacao na tabela users.',
+    prompt: 'INSERT INTO adiciona uma nova linha a uma tabela. Especifique as colunas entre parenteses e forneca os valores correspondentes, usando NOW() para preencher o timestamp de criacao automaticamente.',
     code: `INSERT INTO users (name, email, created_at)
 VALUES ('Alice', 'alice@example.com', NOW());`,
   },
@@ -70,7 +70,7 @@ VALUES ('Alice', 'alice@example.com', NOW());`,
     id: 'sql-007',
     concept: 'UPDATE',
     difficulty: 'easy',
-    prompt: 'Atualize o preco de todos os produtos eletronicos aplicando um aumento de 10% e atualize o timestamp.',
+    prompt: 'UPDATE modifica linhas existentes com a clausula SET. Aplique um aumento de 10% no preco (price * 1.10) e atualize o campo updated_at para o momento atual em todos os produtos da categoria "electronics".',
     code: `UPDATE products
 SET price = price * 1.10,
     updated_at = NOW()
@@ -80,7 +80,7 @@ WHERE category = 'electronics';`,
     id: 'sql-008',
     concept: 'DELETE with Subquery',
     difficulty: 'medium',
-    prompt: 'Delete sessoes de usuarios que nao fizeram login ha mais de um ano usando subquery.',
+    prompt: 'DELETE com subquery remove linhas com base em condicao de outra tabela. Exclua todas as sessoes cujos usuarios (identificados pelo user_id) nao fizeram login ha mais de 1 ano — sem join, usando IN com subquery.',
     code: `DELETE FROM sessions
 WHERE user_id IN (
     SELECT id FROM users
@@ -91,7 +91,7 @@ WHERE user_id IN (
     id: 'sql-009',
     concept: 'CREATE INDEX',
     difficulty: 'easy',
-    prompt: 'Crie um indice simples no email e um indice unico no username para otimizar buscas.',
+    prompt: 'Indices aceleram buscas ao custo de espaco em disco e tempo de escrita. Crie um indice simples na coluna email (para buscas rapidas) e um indice UNIQUE na coluna username (garantindo unicidade a nivel de banco).',
     code: `CREATE INDEX idx_users_email
 ON users (email);
 
@@ -102,7 +102,7 @@ ON users (username);`,
     id: 'sql-010',
     concept: 'CASE Expression',
     difficulty: 'medium',
-    prompt: 'Use a expressao CASE para classificar alunos em notas A, B, C ou F com base na pontuacao.',
+    prompt: 'CASE e uma expressao condicional inline no SQL, similar ao if/else de outras linguagens. Classifique cada aluno em nota A (>=90), B (>=80), C (>=70) ou F (demais) usando WHEN/THEN e ELSE como fallback.',
     code: `SELECT name,
     CASE
         WHEN score >= 90 THEN 'A'

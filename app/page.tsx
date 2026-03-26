@@ -16,7 +16,7 @@ import { playKey, playError, playComplete } from '@/lib/sounds'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Toolbar from '@/components/typing/Toolbar'
-import ModePill from '@/components/typing/ModePill'
+
 import TypingArea from '@/components/typing/TypingArea'
 import SnippetInfo from '@/components/typing/SnippetInfo'
 import ResultScreen from '@/components/typing/ResultScreen'
@@ -28,7 +28,6 @@ import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 
 export default function Home() {
   const [language, setLanguage] = useState<Language>(() => getLanguageById(DEFAULT_LANGUAGE)!)
-  const [mode, setMode] = useState<Mode>('snippet')
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [sequence, setSequence] = useState<Snippet[]>([])
   const [seqIndex, setSeqIndex] = useState(0)
@@ -53,6 +52,9 @@ export default function Home() {
   // Refresh progress after result
   useEffect(() => { if (showResult) setClientProgress(loadProgress()) }, [showResult])
 
+  const timerDuration = difficulty === 'hard' ? 30 : difficulty === 'medium' ? 45 : difficulty === 'easy' ? 60 : 0
+  const isCountdown = difficulty !== 'all'
+
   useEffect(() => {
     const filtered = difficulty === 'all' ? language.snippets : language.snippets.filter(s => s.difficulty === difficulty)
     const pool = filtered.length > 0 ? filtered : language.snippets
@@ -63,8 +65,6 @@ export default function Home() {
   }, [language, difficulty])
 
   const snippet = sequence[seqIndex] || language.snippets[0]
-  const timerDuration = mode === 'timed_30' ? 30 : mode === 'timed_60' ? 60 : 0
-  const isCountdown = mode !== 'snippet'
 
   const handleFinish = useCallback(() => { setShowResult(true); playComplete(); timer.stop() }, [])
   const handleTimerEnd = useCallback(() => { setShowResult(true); playComplete() }, [])
@@ -72,20 +72,26 @@ export default function Home() {
   const engine = useTypingEngine(snippet?.code ?? '', handleFinish)
   const timer = useTimer(timerDuration, isCountdown, handleTimerEnd)
 
+  // Reset timer + engine when difficulty changes
+  useEffect(() => { engine.reset(); timer.reset(timerDuration) }, [difficulty])
+
   useEffect(() => { if (engine.state.status === 'running' && !timer.isRunning) timer.start() }, [engine.state.status])
+
+  const [finalStats, setFinalStats] = useState<{ wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] } | null>(null)
 
   useEffect(() => {
     if (showResult && snippet && !sessionResult) {
       const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-      setSessionResult(recordSession({ languageId: language.id, snippetId: snippet.id, wpm: engine.wpm, accuracy: engine.accuracy, errors: engine.state.errors, duration: dur, difficulty: snippet.difficulty }))
+      const stats = { wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy, errors: engine.state.errors, duration: dur, wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples] }
+      setFinalStats(stats)
+      setSessionResult(recordSession({ languageId: language.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty }))
     }
   }, [showResult])
 
-  function handleRestart() { engine.reset(); timer.reset(timerDuration); setShowResult(false); setSessionResult(null) }
-  function handleNext() { setSeqIndex(i => (i + 1) % sequence.length); setShowResult(false); setSessionResult(null); timer.reset(timerDuration) }
-  function handlePrev() { setSeqIndex(i => i > 0 ? i - 1 : sequence.length - 1); setShowResult(false); setSessionResult(null); timer.reset(timerDuration) }
-  function handleLanguageChange(lang: Language) { setLanguage(lang); engine.reset(); timer.reset(timerDuration); setShowResult(false); setSessionResult(null) }
-  function handleModeChange(m: Mode) { setMode(m); engine.reset(); timer.reset(m === 'timed_30' ? 30 : m === 'timed_60' ? 60 : 0); setShowResult(false); setSessionResult(null) }
+  function handleRestart() { engine.reset(); timer.reset(timerDuration); setShowResult(false); setSessionResult(null); setFinalStats(null) }
+  function handleNext() { setSeqIndex(i => (i + 1) % sequence.length); setShowResult(false); setSessionResult(null); setFinalStats(null); timer.reset(timerDuration) }
+  function handlePrev() { setSeqIndex(i => i > 0 ? i - 1 : sequence.length - 1); setShowResult(false); setSessionResult(null); setFinalStats(null); timer.reset(timerDuration) }
+  function handleLanguageChange(lang: Language) { setLanguage(lang); engine.reset(); timer.reset(timerDuration); setShowResult(false); setSessionResult(null); setFinalStats(null) }
 
   useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleNext : handleRestart, Escape: () => { setShowThemeSelector(false); setShowHelp(false) } }), [showResult]), true)
 
@@ -94,7 +100,6 @@ export default function Home() {
   useEffect(() => { if (engine.state.errors > prevErrors.current) { playError() }; prevErrors.current = engine.state.errors }, [engine.state.errors])
 
   const displaySeconds = isCountdown ? timer.seconds : engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-  const duration = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
   const levelInfo = clientProgress ? getLevel(clientProgress.totalXP) : null
   const isTextMode = language.id.startsWith('text-')
 
@@ -104,31 +109,24 @@ export default function Home() {
 
       <div className="relative z-10 flex-1 flex flex-col min-h-screen">
         {/* Header */}
-        <Toolbar language={language} mode={mode} difficulty={difficulty} seconds={displaySeconds}
-          isTimerRunning={timer.isRunning} onLanguageChange={handleLanguageChange} onModeChange={handleModeChange}
+        <Toolbar language={language} difficulty={difficulty} seconds={displaySeconds}
+          isTimerRunning={timer.isRunning} onLanguageChange={handleLanguageChange}
           onDifficultyChange={setDifficulty} onHomeClick={handleRestart} onHelpClick={() => setShowHelp(true)}
           level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
-          locale={locale} onLocaleToggle={toggleLocale} />
-
-        {/* Mode pill */}
-        <div className="flex justify-center mb-4">
-          <ModePill language={language} mode={mode} difficulty={difficulty} seconds={displaySeconds}
-            isTimerRunning={timer.isRunning} onLanguageChange={handleLanguageChange} onModeChange={handleModeChange}
-            onDifficultyChange={setDifficulty} locale={locale} />
-        </div>
+          locale={locale} onLocaleToggle={toggleLocale} isTyping={engine.state.status === 'running'} />
 
         {/* Main */}
         <div className="flex-1 flex flex-col items-center justify-center px-6">
-          {showResult && sessionResult ? (
-            <ResultScreen wpm={engine.wpm} rawWpm={engine.rawWpm} accuracy={engine.accuracy} errors={engine.state.errors}
-              duration={duration} snippet={snippet} languageLabel={language.label} wpmSamples={engine.wpmSamples}
-              rawWpmSamples={engine.rawWpmSamples} xpEarned={sessionResult.xpEarned} newLevel={sessionResult.newLevel}
+          {showResult && sessionResult && finalStats ? (
+            <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
+              duration={finalStats.duration} snippet={snippet} languageLabel={language.label} wpmSamples={finalStats.wpmSamples}
+              rawWpmSamples={finalStats.rawWpmSamples} xpEarned={sessionResult.xpEarned} newLevel={sessionResult.newLevel}
               leveledUp={sessionResult.leveledUp} levelPercent={sessionResult.levelPercent} streak={sessionResult.streak}
               onNext={handleNext} locale={locale} />
           ) : (
             <>
               {!isTextMode && (
-                <div className="w-full max-w-3xl mb-6">
+                <div className={`w-full max-w-3xl mb-6 transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
                   <SnippetInfo snippet={snippet} languageLabel={language.label} languageColor={language.color}
                     current={seqIndex + 1} total={sequence.length} />
                 </div>
@@ -137,34 +135,37 @@ export default function Home() {
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={language.id} isTyping={engine.state.status === 'running'} locale={locale} />
 
-              <div className="w-full max-w-3xl mt-6 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <button onClick={handlePrev} className="flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-opacity hover:opacity-80"
-                    style={{ border: '1px solid var(--sub)', color: 'var(--sub)' }}>
-                    <ArrowLeftIcon size={12} /> {t('prev', locale)}
+              <div className={`w-full max-w-3xl mt-6 flex justify-center transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
+                <div className="flex items-center gap-4">
+                  <button onClick={handlePrev} className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+                    style={{ color: 'var(--sub)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
+                    aria-label={t('prev', locale)} title={t('prev', locale)}>
+                    <ArrowLeftIcon size={18} />
                   </button>
-                  <button onClick={handleRestart} className="p-1.5 rounded transition-opacity hover:opacity-80"
-                    style={{ border: '1px solid var(--sub)', color: 'var(--sub)' }} aria-label={t('restart', locale)}>
-                    <RefreshIcon size={12} />
+                  <button onClick={handleRestart} className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+                    style={{ color: 'var(--sub)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
+                    aria-label={t('restart', locale)} title={t('restart', locale)}>
+                    <RefreshIcon size={18} />
                   </button>
-                  <button onClick={handleNext} className="flex items-center gap-1 px-3 py-1.5 text-xs rounded transition-opacity hover:opacity-80"
-                    style={{ border: '1px solid var(--sub)', color: 'var(--sub)' }}>
-                    {t('next', locale)} <ArrowRightIcon size={12} />
+                  <button onClick={handleNext} className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+                    style={{ color: 'var(--sub)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
+                    aria-label={t('next', locale)} title={t('next', locale)}>
+                    <ArrowRightIcon size={18} />
                   </button>
                 </div>
-                {engine.state.status === 'running' && (
-                  <div className="text-right">
-                    <span className="text-2xl font-bold tabular-nums" style={{ color: 'var(--sub)' }}>{engine.wpm}</span>
-                    <span className="text-xs ml-1" style={{ color: 'var(--sub)', opacity: 0.5 }}>wpm</span>
-                  </div>
-                )}
               </div>
             </>
           )}
         </div>
 
         {/* Footer */}
-        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} />
+        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={engine.state.status === 'running'} />
       </div>
 
       {/* Modals */}

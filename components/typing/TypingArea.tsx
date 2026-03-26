@@ -75,7 +75,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (disabled) return
     if (e.key === 'Dead') return
-    if (e.isComposing) return
+    if ((e.nativeEvent as KeyboardEvent).isComposing) return
     if (e.key === 'Tab') { e.preventDefault(); onKey('Tab'); return }
     if (e.key === 'Enter') { e.preventDefault(); onKey('Enter'); return }
     if (e.key === 'Backspace') { e.preventDefault(); onKey('Backspace'); return }
@@ -143,6 +143,14 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
       {isIdle && (
         <div className="text-center mb-3 text-sm animate-fade-in" style={{ color: 'var(--sub)' }}>
           {t('startTyping', locale)}
+        </div>
+      )}
+
+      {isTyping && (
+        <div className="mb-2 tabular-nums" style={{ color: 'var(--main)' }}>
+          <span className="text-2xl font-bold">{currentIndex}</span>
+          <span className="text-sm mx-1" style={{ color: 'var(--sub)', opacity: 0.5 }}>/</span>
+          <span className="text-sm" style={{ color: 'var(--sub)' }}>{code.length}</span>
         </div>
       )}
 

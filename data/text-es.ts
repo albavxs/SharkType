@@ -1,14 +1,39 @@
 import { Snippet } from '@/lib/types'
 
 export const esSnippets: Snippet[] = [
+  // ── Easy (10) ───────────────────────────────────────────────────────────
   { id: 'es-001', concept: 'Pangrama', difficulty: 'easy', code: 'El veloz murcielago hindu comia feliz cardillo y kiwi.' },
   { id: 'es-002', concept: 'Frase comun', difficulty: 'easy', code: 'Buenos dias, me llamo Carlos y vivo en Madrid.' },
   { id: 'es-003', concept: 'Refran', difficulty: 'easy', code: 'No por mucho madrugar amanece mas temprano.' },
   { id: 'es-004', concept: 'Vocabulario', difficulty: 'easy', code: 'La casa tiene tres habitaciones, un jardin y una cocina grande.' },
-  { id: 'es-005', concept: 'Tecnologia', difficulty: 'medium', code: 'La programacion es el arte de crear instrucciones que las computadoras pueden entender y ejecutar de forma eficiente.' },
-  { id: 'es-006', concept: 'Ciencia', difficulty: 'medium', code: 'El sistema solar esta compuesto por ocho planetas que orbitan alrededor del Sol, nuestra estrella mas cercana.' },
-  { id: 'es-007', concept: 'Literatura', difficulty: 'medium', code: 'En un lugar de la Mancha, de cuyo nombre no quiero acordarme, vivia un hidalgo de los de lanza en astillero.' },
-  { id: 'es-008', concept: 'Geografia', difficulty: 'medium', code: 'America Latina es una region diversa con paisajes que van desde selvas tropicales hasta montanas nevadas y desiertos aridos.' },
-  { id: 'es-009', concept: 'Filosofia', difficulty: 'hard', code: 'La libertad no consiste en hacer lo que se quiere, sino en querer lo que se puede hacer, segun la filosofia estoica de la antigua Grecia.' },
-  { id: 'es-010', concept: 'Historia', difficulty: 'hard', code: 'La conquista de America fue un proceso historico que transformo radicalmente las culturas indigenas del continente y establecio nuevas estructuras politicas y sociales.' },
+  { id: 'es-005', concept: 'Saludo', difficulty: 'easy', code: 'Hola, soy Maria y trabajo como profesora en una escuela primaria.' },
+  { id: 'es-006', concept: 'Descripcion', difficulty: 'easy', code: 'El perro marron corre por el parque mientras los ninos juegan en los columpios.' },
+  { id: 'es-007', concept: 'Cotidiano', difficulty: 'easy', code: 'Esta manana fui al mercado, compre frutas frescas y prepare un jugo de naranja.' },
+  { id: 'es-008', concept: 'Naturaleza', difficulty: 'easy', code: 'Las montanas estaban cubiertas de nieve y el cielo estaba completamente despejado.' },
+  { id: 'es-009', concept: 'Dicho', difficulty: 'easy', code: 'Mas vale pajaro en mano que cien volando. La paciencia es la madre de la ciencia.' },
+  { id: 'es-010', concept: 'Indicaciones', difficulty: 'easy', code: 'Gira a la izquierda en el semaforo, sigue recto dos calles y la biblioteca esta a tu derecha.' },
+
+  // ── Medium (10) ─────────────────────────────────────────────────────────
+  { id: 'es-011', concept: 'Tecnologia', difficulty: 'medium', code: 'La programacion es el arte de crear instrucciones que las computadoras pueden entender y ejecutar de forma eficiente. Cada dia mas profesiones requieren conocimientos basicos de programacion.' },
+  { id: 'es-012', concept: 'Ciencia', difficulty: 'medium', code: 'El sistema solar esta compuesto por ocho planetas que orbitan alrededor del Sol, nuestra estrella mas cercana. Cada planeta tiene caracteristicas unicas que lo distinguen de los demas.' },
+  { id: 'es-013', concept: 'Literatura', difficulty: 'medium', code: 'En un lugar de la Mancha, de cuyo nombre no quiero acordarme, vivia un hidalgo de los de lanza en astillero. Asi comienza la obra mas importante de la literatura espanola.' },
+  { id: 'es-014', concept: 'Geografia', difficulty: 'medium', code: 'America Latina es una region diversa con paisajes que van desde selvas tropicales hasta montanas nevadas y desiertos aridos. Su riqueza cultural es igualmente impresionante.' },
+  { id: 'es-015', concept: 'Educacion', difficulty: 'medium', code: 'El pensamiento critico es una habilidad esencial que permite analizar informacion de manera objetiva y tomar decisiones fundamentadas. Las escuelas deben fomentar esta capacidad desde edades tempranas.' },
+  { id: 'es-016', concept: 'Medio ambiente', difficulty: 'medium', code: 'El cambio climatico es uno de los desafios mas urgentes de nuestra epoca. La transicion hacia energias renovables y la reduccion de emisiones de carbono son pasos fundamentales para proteger el planeta.' },
+  { id: 'es-017', concept: 'Salud', difficulty: 'medium', code: 'Una dieta equilibrada combinada con ejercicio regular es la base de una vida saludable. Los expertos recomiendan al menos treinta minutos de actividad fisica moderada cada dia para mantener el bienestar.' },
+  { id: 'es-018', concept: 'Cultura', difficulty: 'medium', code: 'La musica flamenca es una expresion artistica profundamente arraigada en la cultura espanola. Combina canto, guitarra y baile en una experiencia emocional que refleja siglos de tradicion e historia.' },
+  { id: 'es-019', concept: 'Economia', difficulty: 'medium', code: 'La globalizacion ha transformado las relaciones comerciales entre los paises. El libre comercio permite que productos y servicios crucen fronteras, pero tambien plantea desafios en terminos de desigualdad.' },
+  { id: 'es-020', concept: 'Astronomia', difficulty: 'medium', code: 'Marte es conocido como el Planeta Rojo debido al oxido de hierro en su superficie. Los cientificos investigan si alguna vez existio vida microbiana en este fascinante mundo vecino.' },
+
+  // ── Hard (10) ───────────────────────────────────────────────────────────
+  { id: 'es-021', concept: 'Filosofia', difficulty: 'hard', code: 'La libertad no consiste en hacer lo que se quiere, sino en querer lo que se puede hacer, segun la filosofia estoica de la antigua Grecia. Este principio invita a reflexionar sobre la relacion entre deseo, voluntad y las limitaciones de la existencia humana.' },
+  { id: 'es-022', concept: 'Historia', difficulty: 'hard', code: 'La conquista de America fue un proceso historico que transformo radicalmente las culturas indigenas del continente y establecio nuevas estructuras politicas y sociales. Las consecuencias de este encuentro entre civilizaciones aun resuenan en la identidad latinoamericana.' },
+  { id: 'es-023', concept: 'Derecho', difficulty: 'hard', code: 'Los derechos humanos son garantias universales que protegen la dignidad de todas las personas. Desde la Declaracion Universal de 1948, la comunidad internacional ha trabajado para establecer marcos legales que aseguren la libertad, la igualdad y la justicia en todo el mundo.' },
+  { id: 'es-024', concept: 'Psicologia', difficulty: 'hard', code: 'La psicologia cognitiva estudia como los seres humanos procesan informacion, forman recuerdos y toman decisiones. Investigaciones recientes demuestran que nuestros sesgos cognitivos influyen significativamente en la percepcion de la realidad y en el comportamiento cotidiano.' },
+  { id: 'es-025', concept: 'Sociologia', difficulty: 'hard', code: 'La desigualdad social se manifiesta en multiples dimensiones incluyendo acceso a educacion, salud y oportunidades economicas. Comprender las causas estructurales de estas disparidades es fundamental para disenar politicas publicas que promuevan una sociedad mas justa y equitativa.' },
+  { id: 'es-026', concept: 'Biologia', difficulty: 'hard', code: 'La teoria de la evolucion por seleccion natural, propuesta por Charles Darwin, explica como las especies cambian a lo largo del tiempo mediante la supervivencia diferencial de individuos con rasgos ventajosos. Este mecanismo ha moldeado la diversidad biologica del planeta durante millones de anos.' },
+  { id: 'es-027', concept: 'Fisica', difficulty: 'hard', code: 'La mecanica cuantica describe el comportamiento de la materia y la energia a escalas subatomicas, donde las particulas pueden existir en multiples estados simultaneamente. Esta teoria, aunque contraintuitiva, ha dado lugar a tecnologias como los transistores y los laseres.' },
+  { id: 'es-028', concept: 'Arte', difficulty: 'hard', code: 'El Renacimiento fue un periodo de extraordinario florecimiento cultural que comenzo en Italia durante el siglo catorce. Artistas como Leonardo da Vinci y Miguel Angel redefinieron los limites de la pintura, la escultura y la arquitectura, creando obras que siguen inspirando al mundo.' },
+  { id: 'es-029', concept: 'Linguistica', difficulty: 'hard', code: 'El lenguaje no es simplemente una herramienta de comunicacion sino una ventana a la forma en que los seres humanos piensan y perciben el mundo. La hipotesis de Sapir-Whorf sugiere que la estructura de un idioma influye en la vision del mundo de sus hablantes.' },
+  { id: 'es-030', concept: 'Etica', difficulty: 'hard', code: 'El dilema del tranvia es un experimento mental clasico en etica que nos obliga a confrontar decisiones morales dificiles. Debe uno desviar activamente el dano para salvar mas vidas, o es la inaccion moralmente preferible? Este dilema revela tensiones profundas entre marcos morales.' },
 ]

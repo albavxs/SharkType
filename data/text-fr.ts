@@ -1,14 +1,39 @@
 import { Snippet } from '@/lib/types'
 
 export const frSnippets: Snippet[] = [
-  { id: 'fr-001', concept: 'Pangrame', difficulty: 'easy', code: 'Portez ce vieux whisky au juge blond qui fume.' },
+  // ── Easy (10) ───────────────────────────────────────────────────────────
+  { id: 'fr-001', concept: 'Pangramme', difficulty: 'easy', code: 'Portez ce vieux whisky au juge blond qui fume.' },
   { id: 'fr-002', concept: 'Phrase commune', difficulty: 'easy', code: 'Bonjour, je suis Marie et je vis a Paris.' },
   { id: 'fr-003', concept: 'Proverbe', difficulty: 'easy', code: 'Qui vivra verra, dit le sage avec patience.' },
   { id: 'fr-004', concept: 'Vocabulaire', difficulty: 'easy', code: 'Le chat noir dort sur le canape pres de la fenetre ouverte.' },
-  { id: 'fr-005', concept: 'Technologie', difficulty: 'medium', code: 'La programmation informatique est devenue une competence essentielle dans le monde professionnel contemporain.' },
-  { id: 'fr-006', concept: 'Science', difficulty: 'medium', code: 'La Terre tourne autour du Soleil en environ 365 jours, creant ainsi le cycle des saisons que nous connaissons.' },
-  { id: 'fr-007', concept: 'Litterature', difficulty: 'medium', code: 'Longtemps, je me suis couche de bonne heure. Parfois, a peine ma bougie eteinte, mes yeux se fermaient.' },
-  { id: 'fr-008', concept: 'Gastronomie', difficulty: 'medium', code: 'La cuisine francaise est reconnue dans le monde entier pour sa finesse, sa diversite et son attention aux details.' },
-  { id: 'fr-009', concept: 'Philosophie', difficulty: 'hard', code: 'Je pense, donc je suis. Cette affirmation de Descartes constitue le fondement de la philosophie rationaliste moderne et de la quete de certitude.' },
-  { id: 'fr-010', concept: 'Histoire', difficulty: 'hard', code: 'La Revolution francaise de 1789 a profondement transforme les structures politiques et sociales de la France et a influence les mouvements democratiques dans le monde entier.' },
+  { id: 'fr-005', concept: 'Salutation', difficulty: 'easy', code: 'Bonjour, je suis Pierre et je travaille comme ingenieur a Lyon.' },
+  { id: 'fr-006', concept: 'Description', difficulty: 'easy', code: 'Les enfants jouent dans le jardin pendant que le soleil brille au-dessus des arbres.' },
+  { id: 'fr-007', concept: 'Quotidien', difficulty: 'easy', code: 'Ce matin, je suis alle au marche, jai achete du pain frais et des fruits de saison.' },
+  { id: 'fr-008', concept: 'Nature', difficulty: 'easy', code: 'Les montagnes etaient couvertes de neige fraiche et le ciel etait parfaitement clair.' },
+  { id: 'fr-009', concept: 'Dicton', difficulty: 'easy', code: 'Petit a petit, loiseau fait son nid. La patience est une vertu precieuse.' },
+  { id: 'fr-010', concept: 'Directions', difficulty: 'easy', code: 'Tournez a gauche au feu rouge, continuez tout droit et le musee sera sur votre droite.' },
+
+  // ── Medium (10) ─────────────────────────────────────────────────────────
+  { id: 'fr-011', concept: 'Technologie', difficulty: 'medium', code: 'La programmation informatique est devenue une competence essentielle dans le monde professionnel contemporain. Chaque jour, de nouveaux outils et langages apparaissent pour repondre aux besoins croissants du numerique.' },
+  { id: 'fr-012', concept: 'Science', difficulty: 'medium', code: 'La Terre tourne autour du Soleil en environ 365 jours, creant ainsi le cycle des saisons que nous connaissons. Cette revolution annuelle est accompagnee dune rotation quotidienne sur son axe.' },
+  { id: 'fr-013', concept: 'Litterature', difficulty: 'medium', code: 'Longtemps, je me suis couche de bonne heure. Parfois, a peine ma bougie eteinte, mes yeux se fermaient. Ainsi commence loeuvre monumentale de Marcel Proust sur la memoire et le temps.' },
+  { id: 'fr-014', concept: 'Gastronomie', difficulty: 'medium', code: 'La cuisine francaise est reconnue dans le monde entier pour sa finesse, sa diversite et son attention aux details. Chaque region possede ses specialites uniques, du cassoulet du sud-ouest au gratin dauphinois.' },
+  { id: 'fr-015', concept: 'Education', difficulty: 'medium', code: 'La pensee critique est une competence fondamentale qui permet danalyser les informations de maniere objective et de prendre des decisions eclairees. Les ecoles doivent encourager cette capacite des le plus jeune age.' },
+  { id: 'fr-016', concept: 'Environnement', difficulty: 'medium', code: 'Le changement climatique est lun des defis les plus urgents de notre epoque. La transition vers les energies renouvelables et la reduction des emissions de carbone sont des etapes essentielles pour proteger la planete.' },
+  { id: 'fr-017', concept: 'Sante', difficulty: 'medium', code: 'Une alimentation equilibree associee a une activite physique reguliere constitue la base dune vie saine. Les experts recommandent au moins trente minutes dexercice modere chaque jour pour maintenir le bien-etre.' },
+  { id: 'fr-018', concept: 'Culture', difficulty: 'medium', code: 'Le cinema francais est celebre pour son approche artistique et intellectuelle du septieme art. Des realisateurs comme Truffaut et Godard ont revolutionne la narration cinematographique avec la Nouvelle Vague.' },
+  { id: 'fr-019', concept: 'Economie', difficulty: 'medium', code: 'La mondialisation a transforme les relations commerciales entre les nations. Le libre-echange permet aux produits et services de traverser les frontieres, mais souleve aussi des questions sur linegalite economique.' },
+  { id: 'fr-020', concept: 'Astronomie', difficulty: 'medium', code: 'Mars est souvent appelee la Planete Rouge en raison de loxyde de fer present a sa surface. Les scientifiques continuent detudier si une forme de vie microbienne a jamais existe sur ce monde fascinant.' },
+
+  // ── Hard (10) ───────────────────────────────────────────────────────────
+  { id: 'fr-021', concept: 'Philosophie', difficulty: 'hard', code: 'Je pense, donc je suis. Cette affirmation de Descartes constitue le fondement de la philosophie rationaliste moderne et de la quete de certitude. La methode cartesienne propose de douter de tout jusqua trouver une verite indubitable qui serve de base au savoir.' },
+  { id: 'fr-022', concept: 'Histoire', difficulty: 'hard', code: 'La Revolution francaise de 1789 a profondement transforme les structures politiques et sociales de la France et a influence les mouvements democratiques dans le monde entier. Les ideaux de liberte, egalite et fraternite continuent de resonner dans les luttes pour la justice.' },
+  { id: 'fr-023', concept: 'Droit', difficulty: 'hard', code: 'Les droits de lhomme sont des garanties universelles qui protegent la dignite de toute personne. Depuis la Declaration universelle de 1948, la communaute internationale travaille a etablir des cadres juridiques assurant la liberte, legalite et la justice partout dans le monde.' },
+  { id: 'fr-024', concept: 'Psychologie', difficulty: 'hard', code: 'La psychologie cognitive etudie comment les etres humains traitent linformation, forment des souvenirs et prennent des decisions. Des recherches recentes montrent que nos biais cognitifs influencent considerablement notre perception de la realite et notre comportement quotidien.' },
+  { id: 'fr-025', concept: 'Sociologie', difficulty: 'hard', code: 'Linegalite sociale se manifeste sous de multiples formes, notamment dans lacces a leducation, aux soins de sante et aux opportunites economiques. Comprendre les causes structurelles de ces disparites est essentiel pour concevoir des politiques publiques favorisant une societe plus juste.' },
+  { id: 'fr-026', concept: 'Biologie', difficulty: 'hard', code: 'La theorie de levolution par selection naturelle, proposee par Charles Darwin, explique comment les especes changent au fil du temps grace a la survie differentielle des individus possedant des traits avantageux. Ce mecanisme a faconne la diversite biologique de la planete.' },
+  { id: 'fr-027', concept: 'Physique', difficulty: 'hard', code: 'La mecanique quantique decrit le comportement de la matiere et de lenergie aux echelles les plus petites, ou les particules peuvent exister dans plusieurs etats simultanement. Ce cadre theorique, bien que contre-intuitif, a donne naissance aux transistors et aux lasers.' },
+  { id: 'fr-028', concept: 'Art', difficulty: 'hard', code: 'La Renaissance fut une periode dextraordinaire epanouissement culturel et intellectuel qui debuta en Italie au quatorzieme siecle. Des artistes comme Leonard de Vinci et Michel-Ange repousserent les limites de la peinture, de la sculpture et de larchitecture.' },
+  { id: 'fr-029', concept: 'Linguistique', difficulty: 'hard', code: 'Le langage nest pas simplement un outil de communication mais une fenetre sur la facon dont les humains pensent et percoivent le monde. Lhypothese de Sapir-Whorf suggere que la structure dune langue influence la vision du monde de ses locuteurs.' },
+  { id: 'fr-030', concept: 'Ethique', difficulty: 'hard', code: 'Le dilemme du tramway est une experience de pensee classique en ethique qui nous oblige a confronter des choix moraux difficiles. Doit-on detourner activement le danger pour sauver plus de vies, ou linaction est-elle moralement preferable? Ce dilemme revele des tensions profondes entre cadres moraux.' },
 ]

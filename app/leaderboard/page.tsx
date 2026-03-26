@@ -12,7 +12,7 @@ import Footer from '@/components/typing/Footer'
 import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { codeLanguages, textLanguages } from '@/data'
-import { Language, Mode, Difficulty } from '@/lib/types'
+import { Language, Difficulty } from '@/lib/types'
 
 const ALL_LANGUAGES = [...codeLanguages, ...textLanguages]
 
@@ -64,9 +64,10 @@ export default function LeaderboardPage() {
 
       <div className="relative z-10 flex-1 flex flex-col min-h-screen">
         <Toolbar
-          language={codeLanguages[0]} mode={'snippet' as Mode} difficulty={'all' as Difficulty | 'all'}
+          language={codeLanguages[0]} difficulty={'all' as Difficulty | 'all'}
           seconds={0} isTimerRunning={false}
-          onLanguageChange={() => {}} onModeChange={() => {}} onDifficultyChange={() => {}}
+          onLanguageChange={() => {}} onDifficultyChange={() => {}}
+          showControls={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => {}}
           level={levelInfo?.level ?? null} streak={progress?.streak.current ?? 0}
           locale={locale} onLocaleToggle={toggleLocale}

@@ -5,7 +5,7 @@ export const rustSnippets: Snippet[] = [
     id: 'rs-001',
     concept: 'Function with Types',
     difficulty: 'easy',
-    prompt: 'Defina uma funcao Rust que recebe dois inteiros e retorna a soma, com todos os tipos anotados.',
+    prompt: 'Em Rust, todos os tipos de parametros e de retorno devem ser declarados explicitamente. Escreva a funcao "add" que recebe dois parametros i32 e retorna um i32 — o compilador nao infere tipos de funcoes publicas.',
     code: `fn add(a: i32, b: i32) -> i32 {
     a + b
 }`,
@@ -14,7 +14,7 @@ export const rustSnippets: Snippet[] = [
     id: 'rs-002',
     concept: 'Ownership',
     difficulty: 'medium',
-    prompt: 'Use clone para copiar uma String sem transferir a propriedade, permitindo usar ambas as variaveis.',
+    prompt: 'Em Rust, mover um valor transfere sua propriedade — apos isso, a variavel original se torna invalida. Use .clone() para criar uma copia independente de s1 em s2, permitindo usar ambas sem violar o sistema de ownership.',
     code: `let s1 = String::from("hello");
 let s2 = s1.clone();
 println!("{s1} and {s2}");`,
@@ -23,7 +23,7 @@ println!("{s1} and {s2}");`,
     id: 'rs-003',
     concept: 'Pattern Matching',
     difficulty: 'medium',
-    prompt: 'Use match para tratar cada variante de um enum Status de forma especifica, incluindo dados associados.',
+    prompt: 'Match em Rust e exaustivo: o compilador exige que todos os casos possiveis sejam cobertos. Use-o para tratar cada variante de Status — incluindo a variante com dado associado Inactive(reason) — e um wildcard _ para o restante.',
     code: `match status {
     Status::Active => println!("active"),
     Status::Inactive(reason) => println!("{reason}"),
@@ -34,7 +34,7 @@ println!("{s1} and {s2}");`,
     id: 'rs-004',
     concept: 'Option',
     difficulty: 'medium',
-    prompt: 'Implemente uma funcao que retorna Option<String> para representar um resultado que pode nao existir.',
+    prompt: 'Option<T> representa um valor que pode ou nao existir, substituindo null de forma segura em Rust. Implemente find_user retornando Some(String) para id == 1 e None para qualquer outro — sem usar null, -1 ou valores sentinela.',
     code: `fn find_user(id: u32) -> Option<String> {
     if id == 1 {
         Some(String::from("Alice"))
@@ -47,7 +47,7 @@ println!("{s1} and {s2}");`,
     id: 'rs-005',
     concept: 'Result',
     difficulty: 'medium',
-    prompt: 'Escreva uma funcao que retorna Result para tratar o erro de conversao de string para numero.',
+    prompt: 'Result<T, E> representa sucesso (Ok) ou falha (Err) de uma operacao. Implemente parse_number que tenta converter &str em i32 usando .parse(), mapeando o erro de parse para uma String descritiva com .map_err.',
     code: `fn parse_number(s: &str) -> Result<i32, String> {
     s.parse::<i32>()
         .map_err(|e| format!("Parse error: {e}"))
@@ -57,7 +57,7 @@ println!("{s1} and {s2}");`,
     id: 'rs-006',
     concept: 'Struct with Impl',
     difficulty: 'medium',
-    prompt: 'Defina uma struct Rectangle e implemente um metodo area no bloco impl.',
+    prompt: 'Structs agrupam dados relacionados; blocos impl adicionam comportamento a elas. Defina Rectangle com largura e altura como f64, depois implemente o metodo area(&self) no bloco impl que retorna o produto dos dois campos.',
     code: `struct Rectangle {
     width: f64,
     height: f64,
@@ -73,7 +73,7 @@ impl Rectangle {
     id: 'rs-007',
     concept: 'Vec Operations',
     difficulty: 'easy',
-    prompt: 'Crie um Vec vazio, adicione elementos e calcule a soma total usando iterator.',
+    prompt: 'Vec<T> e o array dinamico do Rust. Crie um Vec<i32> vazio com Vec::new(), adicione dois elementos com .push() e calcule a soma de todos os elementos de forma idiomatica com o metodo iterador .sum().',
     code: `let mut v: Vec<i32> = Vec::new();
 v.push(1);
 v.push(2);
@@ -83,7 +83,7 @@ let sum: i32 = v.iter().sum();`,
     id: 'rs-008',
     concept: 'Closure with Move',
     difficulty: 'hard',
-    prompt: 'Crie uma closure que captura uma String por move e a usa internamente ao ser chamada.',
+    prompt: 'Closures com "move" capturam o ambiente transferindo o ownership das variaveis capturadas. Capture a String "name" por move dentro de "greet", permitindo que a closure seja usada mesmo apos o escopo original encerrar.',
     code: `let name = String::from("Alice");
 let greet = move || {
     println!("Hello, {name}!");
@@ -94,7 +94,7 @@ greet();`,
     id: 'rs-009',
     concept: 'Borrowing',
     difficulty: 'easy',
-    prompt: 'Escreva uma funcao que recebe uma referencia a string e retorna a primeira palavra sem alocar memoria.',
+    prompt: 'Borrowing permite referencias sem transferir ownership. Implemente first_word recebendo uma &str (referencia emprestada) e retornando uma &str que aponta para a primeira palavra do mesmo buffer sem alocar nova memoria.',
     code: `fn first_word(s: &str) -> &str {
     &s[..s.find(' ').unwrap_or(s.len())]
 }`,
@@ -103,7 +103,7 @@ greet();`,
     id: 'rs-010',
     concept: 'Enum',
     difficulty: 'hard',
-    prompt: 'Defina um enum Command com variantes que carregam diferentes tipos de dados associados.',
+    prompt: 'Enums em Rust podem carregar dados de tipos diferentes em cada variante. Defina Command com quatro variantes: Quit (sem dados), Echo(String) (tupla), Move { x, y } (struct anonima) e Color(u8, u8, u8) (tupla de tres bytes).',
     code: `enum Command {
     Quit,
     Echo(String),

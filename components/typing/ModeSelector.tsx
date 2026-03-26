@@ -18,11 +18,11 @@ const modes: { key: Mode; label: string; group: 'time' | 'other' }[] = [
 export default function ModeSelector({ mode, onModeChange, locale = 'pt' }: ModeSelectorProps) {
   return (
     <div className="flex items-center gap-1 text-sm">
-      <span className="text-xs mr-1" style={{ color: 'var(--sub)' }}>{t('timeLabel', locale)}</span>
+      <span className="text-xs mr-1" style={{ color: 'var(--text)' }}>{t('timeLabel', locale)}</span>
       {modes.filter(m => m.group === 'time').map(m => (
         <button key={m.key} onClick={() => onModeChange(m.key)}
           className="px-2 py-0.5 rounded transition-colors cursor-pointer hover:opacity-80"
-          style={{ color: mode === m.key ? 'var(--main)' : 'var(--sub)' }}>
+          style={{ color: mode === m.key ? 'var(--main)' : 'var(--text)' }}>
           {m.label}
         </button>
       ))}
@@ -30,7 +30,7 @@ export default function ModeSelector({ mode, onModeChange, locale = 'pt' }: Mode
       {modes.filter(m => m.group === 'other').map(m => (
         <button key={m.key} onClick={() => onModeChange(m.key)}
           className="px-2 py-0.5 rounded transition-colors cursor-pointer hover:opacity-80"
-          style={{ color: mode === m.key ? 'var(--main)' : 'var(--sub)' }}>
+          style={{ color: mode === m.key ? 'var(--main)' : 'var(--text)' }}>
           {m.label}
         </button>
       ))}

@@ -23,8 +23,8 @@ export default function DifficultySelector({ selected, onChange, locale = 'pt' }
     <div className="flex items-center gap-1 text-sm">
       {options.map(o => (
         <button key={o.key} onClick={() => onChange(o.key)}
-          className="px-2 py-0.5 rounded transition-colors text-xs cursor-pointer hover:opacity-80"
-          style={{ color: selected === o.key ? 'var(--main)' : 'var(--sub)' }}>
+          className="px-2 py-0.5 rounded text-xs cursor-pointer transition-all duration-150 hover:scale-105 active:scale-95"
+          style={{ color: selected === o.key ? 'var(--main)' : 'var(--text)' }}>
           {t(o.labelKey, locale)}
         </button>
       ))}
