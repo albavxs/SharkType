@@ -389,7 +389,7 @@ export const tracks: Track[] = [
   // ── Language tracks (text typing) ───────────────────────────────────────
   {
     id: 'idioma-iniciante',
-    name: { pt: 'Idiomas — Iniciante', en: 'Languages — Beginner' },
+    name: { pt: 'Digitação — Iniciante', en: 'Typing — Beginner' },
     description: {
       pt: 'Frases curtas e vocabulário básico pra começar a digitar rápido',
       en: 'Short phrases and basic vocabulary to get you typing fast',
@@ -400,7 +400,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'idioma-medio',
-    name: { pt: 'Idiomas — Médio', en: 'Languages — Intermediate' },
+    name: { pt: 'Digitação — Intermediário', en: 'Typing — Intermediate' },
     description: {
       pt: 'Parágrafos sobre ciência, tecnologia e cultura pra ganhar velocidade',
       en: 'Paragraphs on science, tech, and culture to build your speed',
@@ -411,7 +411,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'idioma-dificil',
-    name: { pt: 'Idiomas — Difícil', en: 'Languages — Hard' },
+    name: { pt: 'Digitação — Avançado', en: 'Typing — Advanced' },
     description: {
       pt: 'Textos densos de filosofia, história e literatura pra alta precisão',
       en: 'Dense philosophy, history, and literature texts for high precision',

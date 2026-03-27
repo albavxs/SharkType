@@ -185,6 +185,50 @@ export function useTypingEngine(
           return newState
         }
 
+        // Enter: process \n then auto-skip leading whitespace on next line
+        if (key === 'Enter') {
+          const idx = prev.currentIndex
+          if (idx >= codeRef.current.length) return prev
+
+          const expected = codeRef.current[idx]
+          const isCorrect = actualKey === expected
+          const newStatuses = [...prev.charStatuses]
+          newStatuses[idx] = isCorrect ? 'correct' : 'incorrect'
+
+          totalKeypressesRef.current++
+          rawCharsRef.current++
+          if (isCorrect) correctCharsRef.current++
+          else errorsRef.current++
+
+          const isFirst = prev.status === 'idle'
+          if (isFirst) startTimeRef.current = Date.now()
+
+          let newIndex = idx + 1
+          let newInput = prev.input + actualKey
+
+          // Auto-skip leading whitespace (not counted in WPM/accuracy)
+          if (isCorrect) {
+            while (newIndex < codeRef.current.length && codeRef.current[newIndex] === ' ') {
+              newStatuses[newIndex] = 'correct'
+              newInput += ' '
+              newIndex++
+            }
+          }
+
+          const isFinished = newIndex >= codeRef.current.length
+          if (isFinished) onFinish?.()
+
+          return {
+            ...prev,
+            input: newInput,
+            charStatuses: newStatuses,
+            currentIndex: newIndex,
+            errors: errorsRef.current,
+            status: isFinished ? 'finished' : isFirst ? 'running' : prev.status,
+            startTime: startTimeRef.current,
+          }
+        }
+
         const idx = prev.currentIndex
         if (idx >= codeRef.current.length) return prev
 

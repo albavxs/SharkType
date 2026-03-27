@@ -47,14 +47,17 @@ export default function LanguageDropdown({ selected, onSelect, locale = 'pt' }: 
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-40 sm:w-48 py-1 rounded-lg shadow-xl animate-fade-in max-h-80 overflow-y-auto"
-          style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}>
-          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('sectionCode', locale)}</div>
-          {codeLanguages.map(renderItem)}
-          <div className="my-1" style={{ borderTop: '1px solid var(--sub)', opacity: 0.3 }} />
-          <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('sectionText', locale)}</div>
-          {idiomLanguages.map(renderItem)}
-        </div>
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 z-50 w-40 sm:w-48 py-1 rounded-lg shadow-xl animate-fade-in max-h-80 overflow-y-auto"
+            style={{ backgroundColor: 'var(--sub-alt)', border: '1px solid var(--sub)' }}>
+            <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('sectionCode', locale)}</div>
+            {codeLanguages.map(renderItem)}
+            <div className="my-1" style={{ borderTop: '1px solid var(--sub)', opacity: 0.3 }} />
+            <div className="px-3 py-1 text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('sectionText', locale)}</div>
+            {idiomLanguages.map(renderItem)}
+          </div>
+        </>
       )}
     </div>
   )

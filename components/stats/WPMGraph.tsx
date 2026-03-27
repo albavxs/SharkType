@@ -1,24 +1,35 @@
 interface WPMGraphProps {
   netSamples: number[]
   rawSamples: number[]
+  errors?: number[]
 }
 
-export default function WPMGraph({ netSamples, rawSamples }: WPMGraphProps) {
+export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphProps) {
   if (netSamples.length < 2) return null
 
   const allValues = [...netSamples, ...rawSamples]
-  const maxWPM = Math.max(...allValues, 1)
-  const width = 400
-  const height = 200
-  const pad = 4
+  const maxWPM = Math.max(...allValues, 10)
+  // Round up to a nice number for Y-axis
+  const yMax = Math.ceil(maxWPM / 10) * 10
+  const width = 500
+  const height = 220
+  const padLeft = 4
+  const padRight = 4
+  const padTop = 8
+  const padBottom = 24
 
-  function toPath(samples: number[]): string {
-    const points = samples.map((wpm, i) => {
-      const x = pad + (i / (samples.length - 1)) * (width - pad * 2)
-      const y = height - pad - (wpm / maxWPM) * (height - pad * 2)
+  const chartW = width - padLeft - padRight
+  const chartH = height - padTop - padBottom
+
+  function toPoints(samples: number[]) {
+    return samples.map((wpm, i) => {
+      const x = padLeft + (i / (samples.length - 1)) * chartW
+      const y = padTop + chartH - (wpm / yMax) * chartH
       return { x, y }
     })
+  }
 
+  function toSmoothPath(points: { x: number; y: number }[]): string {
     let d = `M ${points[0].x} ${points[0].y}`
     for (let i = 1; i < points.length; i++) {
       const prev = points[i - 1]
@@ -29,53 +40,119 @@ export default function WPMGraph({ netSamples, rawSamples }: WPMGraphProps) {
     return d
   }
 
-  const netPath = toPath(netSamples)
-  const rawPath = rawSamples.length >= 2 ? toPath(rawSamples) : ''
+  const netPoints = toPoints(netSamples)
+  const rawPoints = rawSamples.length >= 2 ? toPoints(rawSamples) : []
+  const netPath = toSmoothPath(netPoints)
+  const rawPath = rawPoints.length >= 2 ? toSmoothPath(rawPoints) : ''
 
-  const lastNetX = pad + ((netSamples.length - 1) / (netSamples.length - 1)) * (width - pad * 2)
-  const firstNetX = pad
-  const areaPath = `${netPath} L ${lastNetX} ${height - pad} L ${firstNetX} ${height - pad} Z`
+  // Area fill under net line
+  const lastPt = netPoints[netPoints.length - 1]
+  const firstPt = netPoints[0]
+  const areaPath = `${netPath} L ${lastPt.x} ${padTop + chartH} L ${firstPt.x} ${padTop + chartH} Z`
 
-  const yLabels = [0, Math.round(maxWPM / 2), maxWPM]
+  // Y-axis ticks
+  const yTickCount = 4
+  const yTicks = Array.from({ length: yTickCount + 1 }, (_, i) => Math.round((yMax / yTickCount) * i))
+
+  // X-axis labels (seconds)
+  const totalSeconds = netSamples.length
+  const xLabelStep = totalSeconds <= 10 ? 1 : totalSeconds <= 30 ? 5 : totalSeconds <= 60 ? 10 : 30
+  const xLabels: number[] = []
+  for (let s = 0; s <= totalSeconds - 1; s += xLabelStep) {
+    xLabels.push(s)
+  }
+  // Always include last
+  if (xLabels[xLabels.length - 1] !== totalSeconds - 1) {
+    xLabels.push(totalSeconds - 1)
+  }
+
+  // Error max for right axis
+  const hasErrors = errors && errors.some(e => e > 0)
+  const maxErr = hasErrors ? Math.max(...errors!, 1) : 0
 
   return (
     <div className="w-full animate-fade-in relative">
-      {/* Y-axis labels as HTML to avoid SVG distortion */}
-      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-1 pointer-events-none" style={{ width: '2rem' }}>
-        {[...yLabels].reverse().map((v, i) => (
-          <span key={i} className="text-[10px] text-right pr-1 leading-none" style={{ color: 'var(--sub)' }}>{v}</span>
-        ))}
-      </div>
+      <div className="flex">
+        {/* Y-axis labels (left) */}
+        <div className="flex flex-col justify-between shrink-0 py-1 pr-1" style={{ height: '12rem', paddingTop: `${padTop}px`, paddingBottom: `${padBottom}px` }}>
+          {[...yTicks].reverse().map((v, i) => (
+            <span key={i} className="text-[9px] sm:text-[10px] tabular-nums leading-none text-right" style={{ color: 'var(--sub)', minWidth: '1.5rem' }}>{v}</span>
+          ))}
+        </div>
 
-      {/* Grid lines + chart */}
-      <div className="ml-8">
-        <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full h-28 sm:h-40 md:h-48 block">
-          {yLabels.map((v, i) => {
-            const y = height - pad - (v / maxWPM) * (height - pad * 2)
-            return <line key={i} x1={0} y1={y} x2={width} y2={y} stroke="var(--sub)" strokeWidth="0.5" strokeOpacity="0.3" />
-          })}
+        {/* Chart */}
+        <div className="flex-1 min-w-0">
+          <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full block" style={{ height: '12rem' }}>
+            <defs>
+              <linearGradient id="netGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--main)" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="var(--main)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
 
-          <path d={areaPath} fill="url(#netGradient)" />
+            {/* Horizontal grid lines */}
+            {yTicks.map((v, i) => {
+              const y = padTop + chartH - (v / yMax) * chartH
+              return <line key={i} x1={padLeft} y1={y} x2={width - padRight} y2={y} stroke="var(--sub)" strokeWidth="0.5" strokeOpacity="0.2" />
+            })}
 
-          <defs>
-            <linearGradient id="netGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--main)" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="var(--main)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
+            {/* Vertical grid lines at X labels */}
+            {xLabels.map((s, i) => {
+              const x = padLeft + (s / (totalSeconds - 1)) * chartW
+              return <line key={i} x1={x} y1={padTop} x2={x} y2={padTop + chartH} stroke="var(--sub)" strokeWidth="0.5" strokeOpacity="0.15" />
+            })}
 
-          {rawPath && (
-            <path d={rawPath} fill="none" stroke="var(--sub)" strokeWidth="1.5" strokeDasharray="6 3" strokeOpacity="0.4" />
-          )}
+            {/* Area fill */}
+            <path d={areaPath} fill="url(#netGradient)" />
 
-          <path d={netPath} fill="none" stroke="var(--main)" strokeWidth="2.5" strokeLinecap="round" />
+            {/* Raw WPM line — solid, sub color */}
+            {rawPath && (
+              <path d={rawPath} fill="none" stroke="var(--sub)" strokeWidth="1.5" strokeOpacity="0.5" strokeLinecap="round" />
+            )}
 
-          {netSamples.length > 0 && (() => {
-            const lastX = pad + ((netSamples.length - 1) / (netSamples.length - 1)) * (width - pad * 2)
-            const lastY = height - pad - (netSamples[netSamples.length - 1] / maxWPM) * (height - pad * 2)
-            return <circle cx={lastX} cy={lastY} r="5" fill="var(--main)" />
-          })()}
-        </svg>
+            {/* Net WPM line — main color */}
+            <path d={netPath} fill="none" stroke="var(--main)" strokeWidth="2.5" strokeLinecap="round" />
+
+            {/* Error markers (X marks) */}
+            {hasErrors && errors!.map((e, i) => {
+              if (e === 0) return null
+              const x = padLeft + (i / (errors!.length - 1)) * chartW
+              return (
+                <g key={i}>
+                  <line x1={x - 3} y1={padTop + 4} x2={x + 3} y2={padTop + 10} stroke="var(--error)" strokeWidth="1.5" strokeOpacity="0.7" />
+                  <line x1={x + 3} y1={padTop + 4} x2={x - 3} y2={padTop + 10} stroke="var(--error)" strokeWidth="1.5" strokeOpacity="0.7" />
+                </g>
+              )
+            })}
+
+            {/* Data point dots on net line */}
+            {netPoints.map((pt, i) => (
+              <circle key={i} cx={pt.x} cy={pt.y} r="2.5" fill="var(--main)" opacity="0.6" />
+            ))}
+
+            {/* End point highlight */}
+            <circle cx={lastPt.x} cy={lastPt.y} r="4" fill="var(--main)" />
+
+            {/* X-axis labels */}
+            {xLabels.map((s, i) => {
+              const x = padLeft + (s / (totalSeconds - 1)) * chartW
+              return (
+                <text key={i} x={x} y={height - 4} textAnchor="middle" fontSize="9" fill="var(--sub)" opacity="0.6">
+                  {s + 1}
+                </text>
+              )
+            })}
+          </svg>
+        </div>
+
+        {/* Y-axis labels (right) — errors */}
+        {hasErrors && (
+          <div className="flex flex-col justify-between shrink-0 py-1 pl-1" style={{ height: '12rem', paddingTop: `${padTop}px`, paddingBottom: `${padBottom}px` }}>
+            {[maxErr, Math.round(maxErr / 2), 0].map((v, i) => (
+              <span key={i} className="text-[9px] sm:text-[10px] tabular-nums leading-none" style={{ color: 'var(--error)', minWidth: '1rem', opacity: 0.6 }}>{v}</span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
