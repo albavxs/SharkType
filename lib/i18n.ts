@@ -3,8 +3,8 @@ export type Locale = 'pt' | 'en'
 const LOCALE_KEY = 'sharktype-locale'
 
 export function getLocalePref(): Locale {
-  if (typeof window === 'undefined') return 'pt'
-  return (localStorage.getItem(LOCALE_KEY) as Locale) || 'pt'
+  if (typeof window === 'undefined') return 'en'
+  return (localStorage.getItem(LOCALE_KEY) as Locale) || 'en'
 }
 
 export function setLocalePref(l: Locale) {
@@ -98,7 +98,7 @@ const dict: Record<string, Record<Locale, string>> = {
     en: 'Themed tracks by concept or programming language',
   },
   completed:    { pt: 'concluídos', en: 'completed' },
-  sectionIdioms: { pt: 'Idiomas', en: 'Languages' },
+  sectionIdioms: { pt: 'Digitação', en: 'Typing' },
   idiomsDesc: {
     pt: 'Treine digitação com textos em português, inglês, espanhol e francês',
     en: 'Practice typing with texts in Portuguese, English, Spanish, and French',
@@ -146,6 +146,6 @@ const dict: Record<string, Record<Locale, string>> = {
   soundOff:      { pt: 'Desligado',       en: 'Off' },
 }
 
-export function t(key: string, locale: Locale = 'pt'): string {
+export function t(key: string, locale: Locale = 'en'): string {
   return dict[key]?.[locale] ?? key
 }

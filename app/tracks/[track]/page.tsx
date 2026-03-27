@@ -6,6 +6,7 @@ import { getTrackById } from '@/data/tracks'
 import { textLanguages, languages } from '@/data'
 import { Snippet, Language, Difficulty } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
+import { useTimer } from '@/hooks/useTimer'
 import { useProgress } from '@/hooks/useProgress'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useLocale } from '@/hooks/useLocale'
@@ -25,6 +26,13 @@ import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 import Link from 'next/link'
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
+
+function getTrackTimerDuration(difficulty: Difficulty | 'all', snippetCount: number): number {
+  if (difficulty === 'easy') return 60 + snippetCount * 5
+  if (difficulty === 'medium') return 45 + snippetCount * 4
+  if (difficulty === 'hard') return 30 + snippetCount * 3
+  return 0
+}
 
 export default function TrackPracticePage() {
   const params = useParams()
@@ -88,15 +96,37 @@ export default function TrackPracticePage() {
   const snippet = trackSnippets[seqIndex] ?? null
   const isLastSnippet = seqIndex >= trackSnippets.length - 1
 
-  // Pending advance flag — set by handleFinish, consumed by useEffect
-  const pendingAdvanceRef = useRef(false)
+  // Timer — dynamic per-snippet duration based on difficulty + snippet count
+  const snippetCount = trackSnippets.length
+  const timerDuration = useMemo(() => getTrackTimerDuration(difficulty, snippetCount), [difficulty, snippetCount])
+  const isCountdown = difficulty !== 'all'
 
-  const handleFinish = useCallback(() => {
+  // Pending advance flag — set by handleFinish or handleTimerEnd, consumed by useEffect
+  const pendingAdvanceRef = useRef(false)
+  const timerDurationRef = useRef(timerDuration)
+  timerDurationRef.current = timerDuration
+
+  const handleTimerEnd = useCallback(() => {
     playComplete()
     pendingAdvanceRef.current = true
   }, [])
 
+  const timer = useTimer(timerDuration, isCountdown, handleTimerEnd)
+
+  const handleFinish = useCallback(() => {
+    playComplete()
+    timer.stop()
+    pendingAdvanceRef.current = true
+  }, [timer])
+
   const engine = useTypingEngine(snippet?.code ?? '', handleFinish)
+
+  // Start timer when typing starts
+  useEffect(() => {
+    if (engine.state.status === 'running' && isCountdown && !timer.isRunning) {
+      timer.start()
+    }
+  }, [engine.state.status])
 
   // Process snippet completion after engine finishes
   useEffect(() => {
@@ -131,8 +161,10 @@ export default function TrackPracticePage() {
     } else {
       // Advance to next snippet
       setSeqIndex(i => i + 1)
+      timer.reset(timerDurationRef.current)
     }
   }, [engine.state.status])
+
   const prevErrors = useMemo(() => ({ current: 0 }), [])
   const isTyping = engine.state.status === 'running'
 
@@ -158,21 +190,14 @@ export default function TrackPracticePage() {
     setFinalStats(null)
     setAccumulated([])
     engine.reset()
+    timer.reset(timerDuration)
   }
 
-  function handleRestart() { engine.reset() }
-  function handleNext() { if (seqIndex < trackSnippets.length - 1) { setSeqIndex(i => i + 1); engine.reset() } }
-  function handlePrev() { if (seqIndex > 0) { setSeqIndex(i => i - 1); engine.reset() } }
+  function handleRestart() { engine.reset(); timer.reset(timerDuration) }
+  function handleNext() { if (seqIndex < trackSnippets.length - 1) { setSeqIndex(i => i + 1); engine.reset(); timer.reset(timerDuration) } }
+  function handlePrev() { if (seqIndex > 0) { setSeqIndex(i => i - 1); engine.reset(); timer.reset(timerDuration) } }
 
   function handleLangChange(lang: Language) {
-    let newLen: number
-    if (track!.textLanguages) {
-      newLen = track!.difficultyFilter
-        ? lang.snippets.filter(s => s.difficulty === track!.difficultyFilter).length
-        : lang.snippets.length
-    } else {
-      newLen = track!.snippetIds.filter(sid => lang.snippets.some(s => s.id === sid)).length
-    }
     setSeqIndex(0)
     setSelectedLang(lang)
     setShowResult(false)
@@ -180,11 +205,23 @@ export default function TrackPracticePage() {
     setFinalStats(null)
     setAccumulated([])
     engine.reset()
+    timer.reset(timerDuration)
+  }
+
+  function handleDifficultyChange(d: Difficulty | 'all') {
+    setDifficulty(d)
+    setSeqIndex(0)
+    setAccumulated([])
+    engine.reset()
+    const newDur = getTrackTimerDuration(d, snippetCount)
+    timer.reset(newDur)
   }
 
   useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleRestartTrack : handleRestart, ShiftTab: handleRestart, Escape: () => setShowThemeSelector(false) }), [showResult]), true)
 
   const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); engine.handleKey(key) }, [engine])
+
+  const displaySeconds = isCountdown ? timer.seconds : (engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0)
 
   if (!track) {
     return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>{t('trackNotFound', locale)}</p></main>
@@ -197,9 +234,9 @@ export default function TrackPracticePage() {
       <div className="relative z-10 flex-1 flex flex-col min-h-screen">
         <Toolbar
           language={selectedLang ?? languages[0]} difficulty={difficulty}
-          seconds={0} isTimerRunning={false}
-          onLanguageChange={() => {}} onDifficultyChange={(d) => { setDifficulty(d); setSeqIndex(0); setAccumulated([]); engine.reset() }}
-          showControls={!track.textLanguages}
+          seconds={displaySeconds} isTimerRunning={timer.isRunning}
+          onLanguageChange={() => {}} onDifficultyChange={handleDifficultyChange}
+          showControls={true}
           onHomeClick={() => router.push('/')} onHelpClick={() => {}}
           level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
           locale={locale} onLocaleToggle={toggleLocale}

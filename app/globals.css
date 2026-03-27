@@ -36,31 +36,11 @@ body {
   background-clip: text;
 }
 
-/* Cursor */
+/* Cursor blink (idle only — typing cursor is solid via inline style) */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
+  0%, 40% { opacity: 1; }
   50% { opacity: 0; }
-}
-
-.cursor-char::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.1em;
-  bottom: 0.1em;
-  width: 2px;
-  background-color: var(--caret);
-  animation: blink 1s ease-in-out infinite;
-}
-
-.cursor-char-solid::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.1em;
-  bottom: 0.1em;
-  width: 2px;
-  background-color: var(--caret);
+  90%, 100% { opacity: 1; }
 }
 
 /* Animations */

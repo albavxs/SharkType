@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect, useMemo, useState, useLayoutEffect, useCallback } from 'react'
 import { CharStatus } from '@/lib/types'
 import { languageKeywords } from '@/data/keywords'
 import { Locale, t } from '@/lib/i18n'
@@ -53,12 +53,16 @@ function buildStringMap(code: string): boolean[] {
   return map
 }
 
-export default function TypingArea({ code, charStatuses, currentIndex, onKey, disabled, languageId, isTyping, locale = 'pt' }: TypingAreaProps) {
+export default function TypingArea({ code, charStatuses, currentIndex, onKey, disabled, languageId, isTyping, locale = 'en' }: TypingAreaProps) {
   const isTextMode = languageId.startsWith('text-')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const isComposingRef = useRef(false)
   const keywordMap = useMemo(() => buildKeywordMap(code, languageId), [code, languageId])
   const stringMap = useMemo(() => buildStringMap(code), [code])
+
+  const [cursorPos, setCursorPos] = useState({ left: 0, top: 0, height: 0 })
+  const [cursorReady, setCursorReady] = useState(false)
 
   const lines = useMemo(() => {
     const result: { text: string; startIndex: number }[] = []
@@ -70,7 +74,34 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     return result
   }, [code])
 
-  useEffect(() => { if (!disabled) textareaRef.current?.focus() }, [disabled])
+  useEffect(() => { if (!disabled) textareaRef.current?.focus() }, [disabled, code])
+
+  // Position the sliding cursor
+  const updateCursorPos = useCallback(() => {
+    const container = containerRef.current
+    if (!container) return
+    const charEl = container.querySelector(`[data-idx="${currentIndex}"]`) as HTMLElement | null
+    if (charEl) {
+      const containerRect = container.getBoundingClientRect()
+      const charRect = charEl.getBoundingClientRect()
+      setCursorPos({
+        left: charRect.left - containerRect.left,
+        top: charRect.top - containerRect.top + charRect.height * 0.1,
+        height: charRect.height * 0.8,
+      })
+      setCursorReady(true)
+    }
+  }, [currentIndex])
+
+  useLayoutEffect(() => {
+    updateCursorPos()
+  }, [currentIndex, code, updateCursorPos])
+
+  // Also update on resize
+  useEffect(() => {
+    window.addEventListener('resize', updateCursorPos)
+    return () => window.removeEventListener('resize', updateCursorPos)
+  }, [updateCursorPos])
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (disabled) return
@@ -101,33 +132,23 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
   }
 
   function getCharStyle(status: CharStatus, index: number): React.CSSProperties {
-    const isCursor = index === currentIndex
-    if (isCursor) return { color: 'var(--sub)' }
     switch (status) {
       case 'correct':
         if (!isTextMode && keywordMap[index]) return { color: 'var(--syntax-keyword)' }
         if (!isTextMode && stringMap[index]) return { color: 'var(--syntax-string)' }
         return { color: 'var(--text)' }
       case 'incorrect':
-        return { color: 'var(--error)', backgroundColor: 'color-mix(in srgb, var(--error) 10%, transparent)' }
+        return { color: 'var(--error)' }
       case 'pending':
       default:
         return { color: 'var(--sub)' }
     }
   }
 
-  function getCharClass(status: CharStatus, index: number): string {
-    const isCursor = index === currentIndex
-    const base = isTextMode ? 'relative' : 'relative whitespace-pre'
-    if (isCursor) return `${base} ${isTyping ? 'cursor-char-solid' : 'cursor-char'}`
-    if (status === 'incorrect') return `${base} rounded-sm`
-    return base
-  }
-
   const isIdle = currentIndex === 0 && !isTyping
 
   return (
-    <div className={`w-full mx-auto cursor-text overflow-hidden ${isTextMode ? 'max-w-2xl' : 'max-w-3xl'}`} onClick={() => textareaRef.current?.focus()}>
+    <div className={`w-full mx-auto cursor-text overflow-hidden ${isTextMode ? 'max-w-5xl' : 'max-w-3xl'}`} onClick={() => textareaRef.current?.focus()}>
       <textarea
         ref={textareaRef}
         className="absolute opacity-0 w-0 h-0"
@@ -154,44 +175,59 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
         </div>
       )}
 
-      {isTextMode ? (
-        /* Text mode: centered prose, word wrap, MonkeyType style */
-        <div className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.8] sm:leading-[2.2] md:leading-[2.4] w-full mx-auto" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-          {code.split('').map((char, i) => (
-            <span key={i} className={getCharClass(charStatuses[i], i)} style={getCharStyle(charStatuses[i], i)}>
-              {char}
-            </span>
-          ))}
-        </div>
-      ) : (
-        /* Code mode: line numbers, monospace, wraps long lines */
-        <div className="font-[family-name:var(--font-geist-mono)] text-base sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8]">
-          {lines.map((line, lineIdx) => (
-            <div key={lineIdx} className="flex min-w-0">
-              <span className="select-none w-6 sm:w-10 text-right pr-2 sm:pr-4 text-[10px] sm:text-xs leading-[1.6] sm:leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>
-                {lineIdx + 1}
+      <div ref={containerRef} className="relative">
+        {/* Sliding cursor */}
+        {cursorReady && (
+          <div
+            className="absolute pointer-events-none z-10"
+            style={{
+              left: cursorPos.left - 1,
+              top: cursorPos.top - cursorPos.height * 0.08,
+              height: cursorPos.height * 1.16,
+              width: 3,
+              backgroundColor: 'var(--caret)',
+              transition: isTyping ? 'left 0.08s ease-out, top 0.08s ease-out' : 'none',
+              animation: isTyping ? 'none' : 'blink 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              borderRadius: 2,
+              opacity: 0.85,
+            }}
+          />
+        )}
+
+        {isTextMode ? (
+          <div className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.2] sm:leading-[1.4] md:leading-[1.5] w-full mx-auto text-center" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', fontVariantLigatures: 'none' }}>
+            {code.split('').map((char, i) => (
+              <span key={i} data-idx={i} className="relative" style={getCharStyle(charStatuses[i], i)}>
+                {char}
               </span>
-              <span className="whitespace-pre-wrap flex-1 min-w-0" style={{ overflowWrap: 'anywhere', wordBreak: 'break-all' }}>
-                {line.text.split('').map((char, charIdx) => {
-                  const globalIdx = line.startIndex + charIdx
-                  return (
-                    <span key={globalIdx} className={getCharClass(charStatuses[globalIdx], globalIdx)} style={getCharStyle(charStatuses[globalIdx], globalIdx)}>
-                      {char}
-                    </span>
-                  )
-                })}
-                {lineIdx < lines.length - 1 && (() => {
-                  const nlIdx = line.startIndex + line.text.length
-                  if (nlIdx === currentIndex) {
-                    return <span className={`relative ${isTyping ? 'cursor-char-solid' : 'cursor-char'}`} style={{ color: 'var(--sub)' }}>{' '}</span>
-                  }
-                  return null
-                })()}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        ) : (
+          <div className="font-[family-name:var(--font-geist-mono)] text-base sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8]" style={{ fontVariantLigatures: 'none' }}>
+            {lines.map((line, lineIdx) => (
+              <div key={lineIdx} className="flex min-w-0">
+                <span className="select-none w-6 sm:w-10 text-right pr-2 sm:pr-4 text-[10px] sm:text-xs leading-[1.6] sm:leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>
+                  {lineIdx + 1}
+                </span>
+                <span className="whitespace-pre-wrap flex-1 min-w-0" style={{ overflowWrap: 'anywhere', wordBreak: 'break-all' }}>
+                  {line.text.split('').map((char, charIdx) => {
+                    const globalIdx = line.startIndex + charIdx
+                    return (
+                      <span key={globalIdx} data-idx={globalIdx} className="relative whitespace-pre" style={getCharStyle(charStatuses[globalIdx], globalIdx)}>
+                        {char}
+                      </span>
+                    )
+                  })}
+                  {/* Newline target for cursor positioning */}
+                  {lineIdx < lines.length - 1 && (
+                    <span data-idx={line.startIndex + line.text.length} className="relative whitespace-pre" style={{ color: 'var(--sub)' }}>{' '}</span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
