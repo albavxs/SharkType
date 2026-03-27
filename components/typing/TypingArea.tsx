@@ -156,7 +156,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
 
       {isTextMode ? (
         /* Text mode: centered prose, word wrap, MonkeyType style */
-        <div className="font-[family-name:var(--font-geist-sans)] text-base sm:text-xl md:text-[1.75rem] leading-[1.8] sm:leading-[2.2] md:leading-[2.4] w-full mx-auto" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+        <div className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.8] sm:leading-[2.2] md:leading-[2.4] w-full mx-auto" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
           {code.split('').map((char, i) => (
             <span key={i} className={getCharClass(charStatuses[i], i)} style={getCharStyle(charStatuses[i], i)}>
               {char}
@@ -165,7 +165,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
         </div>
       ) : (
         /* Code mode: line numbers, monospace, wraps long lines */
-        <div className="font-[family-name:var(--font-geist-mono)] text-sm sm:text-lg md:text-[1.5rem] leading-[1.6] sm:leading-[1.8]">
+        <div className="font-[family-name:var(--font-geist-mono)] text-base sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8]">
           {lines.map((line, lineIdx) => (
             <div key={lineIdx} className="flex min-w-0">
               <span className="select-none w-6 sm:w-10 text-right pr-2 sm:pr-4 text-[10px] sm:text-xs leading-[1.6] sm:leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>

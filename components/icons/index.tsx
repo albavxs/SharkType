@@ -184,3 +184,63 @@ export const TrophyIcon = ({ size = 16, className = '' }: IconProps) => (
     <line x1="5" y1="13" x2="11" y2="13" />
   </svg>
 )
+
+export const MailIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <rect x="1.5" y="3" width="13" height="10" rx="1.5" />
+    <path d="M1.5 4.5L8 9l6.5-4.5" />
+  </svg>
+)
+
+export const CodeBranchIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <circle cx="5" cy="3.5" r="1.5" />
+    <circle cx="5" cy="12.5" r="1.5" />
+    <circle cx="11" cy="6" r="1.5" />
+    <path d="M5 5v6M5 5c0 2 1 3.5 6 1" />
+  </svg>
+)
+
+export const DiscordIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={className}>
+    <path d="M13.07 3.26a12.2 12.2 0 0 0-3.02-.94.05.05 0 0 0-.05.02c-.13.23-.27.53-.37.77a11.28 11.28 0 0 0-3.26 0 7.4 7.4 0 0 0-.38-.77.05.05 0 0 0-.05-.02 12.18 12.18 0 0 0-3.02.94.04.04 0 0 0-.02.02C1.03 6.04.54 8.73.8 11.38a.05.05 0 0 0 .02.04 12.3 12.3 0 0 0 3.7 1.87.05.05 0 0 0 .05-.02c.28-.4.54-.81.76-1.25a.05.05 0 0 0-.03-.07 8.1 8.1 0 0 1-1.15-.55.05.05 0 0 1 0-.08c.08-.06.15-.12.23-.17a.05.05 0 0 1 .05 0 8.78 8.78 0 0 0 7.54 0 .05.05 0 0 1 .05 0c.07.06.15.12.23.18a.05.05 0 0 1 0 .08c-.37.21-.75.4-1.15.55a.05.05 0 0 0-.03.07c.22.44.48.85.76 1.24a.05.05 0 0 0 .06.02 12.26 12.26 0 0 0 3.7-1.87.05.05 0 0 0 .02-.03c.3-3.13-.51-5.8-2.14-8.12a.04.04 0 0 0-.02-.02zM5.68 9.8c-.7 0-1.28-.65-1.28-1.44s.57-1.44 1.28-1.44c.72 0 1.3.65 1.28 1.44 0 .8-.57 1.44-1.28 1.44zm4.64 0c-.7 0-1.28-.65-1.28-1.44s.57-1.44 1.28-1.44c.72 0 1.3.65 1.28 1.44 0 .8-.56 1.44-1.28 1.44z" />
+  </svg>
+)
+
+export const TwitterIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={className}>
+    <path d="M9.33 6.93L14.25 1H13l-4.27 4.97L5.08 1H.25L5.44 8.78.25 15h1.26l4.54-5.28L9.92 15h4.83L9.33 6.93zM6.66 9.02l-.53-.75L2 2.04h1.8l3.38 4.84.53.75L13 14.02h-1.8L6.66 9.03z" />
+  </svg>
+)
+
+export const ShieldIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <path d="M8 1.5L2.5 4v4c0 3.5 2.5 5.5 5.5 6.5 3-1 5.5-3 5.5-6.5V4L8 1.5z" />
+  </svg>
+)
+
+export const LockIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <rect x="3.5" y="7" width="9" height="7" rx="1" />
+    <path d="M5 7V5a3 3 0 0 1 6 0v2" />
+  </svg>
+)
+
+export const FileTextIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <path d="M9.5 1.5H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5L9.5 1.5z" />
+    <polyline points="9.5,1.5 9.5,5 13,5" />
+    <line x1="5.5" y1="8.5" x2="10.5" y2="8.5" />
+    <line x1="5.5" y1="11" x2="8.5" y2="11" />
+  </svg>
+)
