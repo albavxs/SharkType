@@ -61,7 +61,10 @@ export default function TrackPracticePage() {
   // Available languages for this track
   const availableLanguages = useMemo(() => {
     if (!track) return []
-    if (track.textLanguages) return textLanguages.filter(l => l.id !== 'text-typing')
+    if (track.textLanguages) {
+      if (track.snippetIds.length > 0) return textLanguages.filter(l => l.id === 'text-typing')
+      return textLanguages.filter(l => l.id !== 'text-typing')
+    }
     const seen = new Set<string>()
     const result: Language[] = []
     for (const sid of track.snippetIds) {
@@ -80,9 +83,15 @@ export default function TrackPracticePage() {
     if (!track || !selectedLang) return []
     let snippets: Snippet[]
     if (track.textLanguages) {
-      snippets = track.difficultyFilter
-        ? selectedLang.snippets.filter(s => s.difficulty === track.difficultyFilter)
-        : selectedLang.snippets
+      if (track.snippetIds.length > 0) {
+        snippets = track.snippetIds
+          .map(sid => selectedLang.snippets.find(s => s.id === sid))
+          .filter((s): s is Snippet => Boolean(s))
+      } else {
+        snippets = track.difficultyFilter
+          ? selectedLang.snippets.filter(s => s.difficulty === track.difficultyFilter)
+          : selectedLang.snippets
+      }
     } else {
       snippets = track.snippetIds
         .map(sid => selectedLang.snippets.find(s => s.id === sid))

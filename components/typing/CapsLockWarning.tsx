@@ -14,10 +14,13 @@ export function useCapsLock() {
   const [capsLock, setCapsLock] = useState(false)
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => setCapsLock(e.getModifierState('CapsLock'))
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'CapsLock' && e.type === 'keydown') {
+        setCapsLock(prev => !prev)
+      }
+    }
     window.addEventListener('keydown', handler)
-    window.addEventListener('keyup', handler)
-    return () => { window.removeEventListener('keydown', handler); window.removeEventListener('keyup', handler) }
+    return () => { window.removeEventListener('keydown', handler) }
   }, [])
 
   return capsLock
@@ -33,7 +36,7 @@ export default function CapsLockWarning({ visible, isMobile, locale = 'en' }: Ca
         style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
       >
         <CapsLockIcon size={18} />
-        <span>Caps Lock</span>
+        <span>{t('capsLock', locale)}</span>
       </div>
     </div>
   )
