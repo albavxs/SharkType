@@ -234,6 +234,14 @@ export const LockIcon = ({ size = 16, className = '' }: IconProps) => (
   </svg>
 )
 
+export const CapsLockIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor"
+    className={className}>
+    <rect x="3.5" y="7" width="9" height="7" rx="1.2" />
+    <path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+)
+
 export const FileTextIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
     stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"

@@ -23,6 +23,7 @@ import Footer from '@/components/typing/Footer'
 import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
+import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 import Link from 'next/link'
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
@@ -53,6 +54,7 @@ export default function TrackPracticePage() {
   const { recordSession } = useProgress()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
+  const capsLock = useCapsLock()
 
   const levelInfo = clientProgress ? getLevel(clientProgress.totalXP) : null
 
@@ -291,8 +293,15 @@ export default function TrackPracticePage() {
               <div className={`w-full max-w-3xl mb-6 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
                 <SnippetInfo snippet={snippet} languageLabel={selectedLang?.label ?? ''} languageColor={selectedLang?.color ?? '#888'} current={seqIndex + 1} total={trackSnippets.length} locale={locale} />
               </div>
+              {/* Caps Lock warning — desktop: above text */}
+              <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
+
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
+
+              {/* Caps Lock warning — mobile: below text */}
+              <CapsLockWarning visible={capsLock && !showResult && !!isMobile} isMobile={true} locale={locale} />
+
               {isTyping && (
                 <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
                   {t('hintShiftTab', locale)}
