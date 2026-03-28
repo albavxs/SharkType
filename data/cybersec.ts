@@ -7,7 +7,7 @@ export const nmapSnippets: Snippet[] = [
     concept: { pt: 'Scan Nmap Básico', en: 'Basic Nmap Scan' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Escaneie um host, uma sub-rede inteira e faça descoberta de hosts sem scan de portas.',
+      pt: 'Escaneia um host, uma sub-rede inteira e faz descoberta de hosts sem scan de portas.',
       en: 'Scan a single host, an entire subnet, and do host discovery without port scanning.',
     },
     code: `nmap 192.168.1.1
@@ -19,7 +19,7 @@ nmap -sn 192.168.1.0/24`,
     concept: { pt: 'Padrão de Scan Recon', en: 'Recon Scan Pattern' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Rode um scan com scripts padrão e detecção de versão, depois um completo em todas as portas salvando em arquivo.',
+      pt: 'Roda um scan com scripts padrão e detecção de versão, depois um completo em todas as portas salvando num arquivo.',
       en: 'Run a scan with default scripts and version detection, then a full all-ports scan saving output to a file.',
     },
     code: `nmap -sC -sV -T4 192.168.1.1
@@ -30,7 +30,7 @@ nmap -sC -sV -p- -T4 192.168.1.1 -oN scan.txt`,
     concept: { pt: 'Tipos de Scan', en: 'Scan Types' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Execute os quatro tipos principais de scan: SYN stealth, TCP connect, UDP e ACK.',
+      pt: 'Roda os quatro tipos principais de scan: SYN stealth, TCP connect, UDP e ACK.',
       en: 'Run the four main scan types: SYN stealth, TCP connect, UDP, and ACK.',
     },
     code: `nmap -sS 192.168.1.1   # SYN scan (stealthy)
@@ -43,7 +43,7 @@ nmap -sA 192.168.1.1   # ACK scan`,
     concept: { pt: 'Portas Específicas', en: 'Specific Ports' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Escaneie portas específicas, um range, todas as 65535 e as 100 mais comuns.',
+      pt: 'Escaneia portas específicas, um range, todas as 65535 e as 100 mais comuns.',
       en: 'Scan specific ports, a range, all 65535, and the top 100 most common.',
     },
     code: `nmap -p 22,80,443 192.168.1.1
@@ -56,7 +56,7 @@ nmap --top-ports 100 192.168.1.1`,
     concept: { pt: 'Detecção de OS e Versão', en: 'OS and Version Detection' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Detecte o sistema operacional, versões de serviço e rode o scan agressivo completo.',
+      pt: 'Detecta o sistema operacional, as versões dos serviços e roda o scan agressivo completo.',
       en: 'Detect the operating system, service versions, and run the full aggressive scan.',
     },
     code: `nmap -O 192.168.1.1
@@ -68,7 +68,7 @@ nmap -A 192.168.1.1   # OS + version + scripts + traceroute`,
     concept: { pt: 'Output e Evasão', en: 'Output and Evasion' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Salve resultados em texto e XML, pule descoberta de host e use decoys pra dificultar detecção.',
+      pt: 'Salva os resultados em texto e XML, pula descoberta de host e usa decoys pra dificultar a detecção.',
       en: 'Save results as text and XML, skip host discovery, and use decoys to evade detection.',
     },
     code: `nmap -oN normal.txt 192.168.1.1
@@ -85,7 +85,7 @@ export const webReconSnippets: Snippet[] = [
     concept: { pt: 'Teste de Endpoints com curl', en: 'curl Endpoint Testing' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Pegue só os headers, busque o header do servidor, teste métodos OPTIONS e force resolução DNS local.',
+      pt: 'Pega só os headers, busca o header do servidor, testa o método OPTIONS e força resolução DNS local.',
       en: 'Fetch headers only, grab the server header, test OPTIONS method, and force local DNS resolution.',
     },
     code: `curl -I https://example.com
@@ -98,7 +98,7 @@ curl --resolve example.com:443:127.0.0.1 https://example.com`,
     concept: { pt: 'Recon com whois e dig', en: 'whois and dig Recon' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Consulte dados WHOIS, resolva DNS com dig, busque registros MX e A, e use nslookup com DNS alternativo.',
+      pt: 'Consulta dados WHOIS, resolve DNS com dig, busca registros MX e A e usa nslookup com DNS alternativo.',
       en: 'Look up WHOIS data, resolve DNS with dig, query MX and A records, and use nslookup with an alternate DNS.',
     },
     code: `whois example.com
@@ -116,7 +116,7 @@ export const firewallSnippets: Snippet[] = [
     concept: { pt: 'Firewall UFW', en: 'UFW Firewall' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Confira o status do UFW, ative, libere SSH e HTTP, bloqueie telnet e remova uma regra.',
+      pt: 'Confere o status do UFW, ativa, libera SSH e HTTP, bloqueia telnet e remove uma regra.',
       en: 'Check UFW status, enable it, allow SSH and HTTP, block telnet, and delete a rule.',
     },
     code: `sudo ufw status
@@ -131,7 +131,7 @@ sudo ufw delete allow 80/tcp`,
     concept: { pt: 'Regras iptables', en: 'iptables Rules' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Liste regras detalhadas, libere SSH e HTTP, bloqueie todo o resto e defina a política padrão como DROP.',
+      pt: 'Lista as regras detalhadas, libera SSH e HTTP, bloqueia todo o resto e seta a política padrão como DROP.',
       en: 'List verbose rules, allow SSH and HTTP, drop everything else, and set the default INPUT policy to DROP.',
     },
     code: `sudo iptables -L -v
@@ -149,7 +149,7 @@ export const networkAnalysisSnippets: Snippet[] = [
     concept: { pt: 'Captura com tcpdump', en: 'tcpdump Packet Capture' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Capture pacotes numa interface, salve em arquivo, filtre por host e porta, e leia uma captura salva.',
+      pt: 'Captura pacotes numa interface, salva em arquivo, filtra por host e porta e lê uma captura salva.',
       en: 'Capture packets on an interface, save to file, filter by host and port, and read a saved capture.',
     },
     code: `sudo tcpdump -i eth0
@@ -163,7 +163,7 @@ sudo tcpdump -r capture.pcap`,
     concept: { pt: 'Portas Abertas com ss/netstat', en: 'Open Ports with ss/netstat' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Liste portas abertas com ss e netstat, filtrando por conexões em escuta e pela porta 80.',
+      pt: 'Lista as portas abertas com ss e netstat, filtrando pelas conexões em LISTEN e pela porta 80.',
       en: 'List open ports with ss and netstat, filtering for listening connections and port 80.',
     },
     code: `ss -tuln
@@ -180,7 +180,7 @@ export const hardeningSnippets: Snippet[] = [
     concept: { pt: 'Auditoria de Permissões', en: 'Permission Audit' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Encontre binários com SUID e SGID no sistema, confira permissões do shadow e detalhes do passwd.',
+      pt: 'Encontra binários com SUID e SGID no sistema, confere as permissões do shadow e os detalhes do passwd.',
       en: 'Find SUID and SGID binaries on the system, check shadow permissions, and inspect passwd details.',
     },
     code: `find / -perm -4000 2>/dev/null   # SUID bits
@@ -193,7 +193,7 @@ stat /etc/passwd`,
     concept: { pt: 'Monitoramento de Logs de Segurança', en: 'Security Log Monitoring' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Acompanhe o auth.log em tempo real, filtre tentativas de senha errada e veja os últimos logins.',
+      pt: 'Fica acompanhando o auth.log em tempo real, filtra tentativas de senha errada e vê os últimos logins.',
       en: 'Tail the auth log in real time, filter failed password attempts, and check recent logins.',
     },
     code: `sudo tail -f /var/log/auth.log
@@ -206,7 +206,7 @@ sudo last -n 20`,
     concept: { pt: 'Usuários e sudo', en: 'Users and sudo' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Crie um usuário deploy, adicione ao grupo sudo, desabilite login do root, confira o ID e edite o sudoers.',
+      pt: 'Cria um usuário deploy, adiciona no grupo sudo, desabilita login do root, confere o ID e edita o sudoers.',
       en: 'Create a deploy user, add to sudo group, disable root login, check the user ID, and edit sudoers.',
     },
     code: `sudo adduser deploy
@@ -224,7 +224,7 @@ export const cryptoSnippets: Snippet[] = [
     concept: { pt: 'Certificado Autoassinado', en: 'Self-signed Certificate' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Gere um certificado autoassinado RSA 4096 bits válido por 1 ano, sem senha na chave privada.',
+      pt: 'Gera um certificado autoassinado RSA 4096 bits válido por 1 ano, sem passphrase na chave privada.',
       en: 'Generate a self-signed RSA 4096-bit certificate valid for 1 year, with no passphrase on the private key.',
     },
     code: `openssl req -x509 -newkey rsa:4096 \\
@@ -238,7 +238,7 @@ export const cryptoSnippets: Snippet[] = [
     concept: { pt: 'Inspecionar Certificado', en: 'Inspect Certificate' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Exiba os detalhes de um certificado local, conecte num servidor pra ver o cert remoto e verifique a cadeia de confiança.',
+      pt: 'Mostra os detalhes de um certificado local, conecta num servidor pra ver o cert remoto e verifica a cadeia de confiança.',
       en: 'Display details of a local certificate, connect to a server to view the remote cert, and verify the trust chain.',
     },
     code: `openssl x509 -in cert.pem -text -noout
@@ -250,7 +250,7 @@ openssl verify -CAfile ca.pem cert.pem`,
     concept: { pt: 'Gerenciamento de Chaves SSH', en: 'SSH Key Management' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Gere uma chave ed25519, copie pro servidor remoto, adicione ao authorized_keys e ajuste as permissões.',
+      pt: 'Gera uma chave ed25519, copia pro servidor remoto, adiciona no authorized_keys e ajusta as permissões.',
       en: 'Generate an ed25519 key, copy it to the remote server, add it to authorized_keys, and fix permissions.',
     },
     code: `ssh-keygen -t ed25519 -C "voce@email.com"

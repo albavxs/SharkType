@@ -6,7 +6,7 @@ export const ansibleSnippets: Snippet[] = [
     concept: { pt: 'Playbook Básico', en: 'Basic Playbook' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Escreva um playbook que atualiza pacotes, instala o nginx e garante que o serviço tá rodando e habilitado no boot.',
+      pt: 'Monta um playbook que atualiza os pacotes, instala o nginx e garante que o serviço tá rodando e habilitado no boot.',
       en: 'Write a playbook that updates packages, installs nginx, and ensures the service is running and enabled on boot.',
     },
     code: `- hosts: webservers
@@ -33,7 +33,7 @@ export const ansibleSnippets: Snippet[] = [
     concept: { pt: 'Inventário e Variáveis', en: 'Inventory and Variables' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Monte um inventário INI com dois servidores web, definindo usuário SSH e chave privada como variáveis do grupo.',
+      pt: 'Monta um inventário INI com dois servidores web, setando o usuário SSH e a chave privada como variáveis do grupo.',
       en: 'Set up an INI inventory with two web servers, defining the SSH user and private key as group variables.',
     },
     code: `# inventory/hosts.ini
@@ -50,7 +50,7 @@ ansible_ssh_private_key_file=~/.ssh/id_rsa`,
     concept: { pt: 'Comandos ansible-playbook', en: 'ansible-playbook Commands' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Execute um playbook com inventário customizado, faça dry-run, filtre por tag e teste conectividade com ping.',
+      pt: 'Roda um playbook com inventário customizado, faz dry-run, filtra por tag e testa a conectividade com ping.',
       en: 'Run a playbook with a custom inventory, do a dry run, filter by tag, and test connectivity with ping.',
     },
     code: `ansible-playbook -i inventory/hosts.ini playbook.yml

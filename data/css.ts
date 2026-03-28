@@ -6,7 +6,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Flexbox', en: 'Flexbox' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Flexbox distribui itens ao longo de um eixo com controle preciso de alinhamento. Crie .container com display:flex, centralize na direção principal com justify-content:center, no eixo transversal com align-items:center e defina gap.',
+      pt: 'Flexbox distribui itens num eixo com controle fino de alinhamento. Cria .container com display:flex, centraliza no eixo principal com justify-content:center, no cruzado com align-items:center e define o gap.',
       en: 'Flexbox distributes items along an axis with precise alignment control. Create .container with display:flex, center on the main axis with justify-content:center, on the cross axis with align-items:center and set gap.',
     },
     code: `.container {
@@ -21,7 +21,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Grid', en: 'Grid' },
     difficulty: 'medium',
     prompt: {
-      pt: 'CSS Grid cria layouts bidimensionais responsivos sem media queries. Use grid-template-columns com repeat(auto-fit, minmax(250px, 1fr)) para que as colunas se criem e destruam automaticamente conforme o espaço disponível.',
+      pt: 'CSS Grid faz layouts 2D responsivos sem precisar de media query. Usa grid-template-columns com repeat(auto-fit, minmax(250px, 1fr)) pras colunas se criarem e sumirem sozinhas conforme o espaço disponível.',
       en: 'CSS Grid creates responsive two-dimensional layouts without media queries. Use grid-template-columns with repeat(auto-fit, minmax(250px, 1fr)) so columns auto-create and collapse based on available space.',
     },
     code: `.grid {
@@ -35,7 +35,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Custom Properties', en: 'Custom Properties' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Variáveis CSS (custom properties) centralizam valores reutilizáveis. Declare --primary e --radius em :root (escopo global) e use-as em .button com var() — alterar a variável atualiza todos os usos automaticamente.',
+      pt: 'Variáveis CSS (custom properties) centralizam valores que você reutiliza no projeto todo. Declara --primary e --radius em :root (escopo global) e usa em .button com var() — mudou a variável, atualiza tudo automaticamente.',
       en: 'CSS variables (custom properties) centralize reusable values. Declare --primary and --radius in :root (global scope) and use them in .button with var() — changing the variable updates all usages automatically.',
     },
     code: `:root {
@@ -53,7 +53,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Media Query', en: 'Media Query' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Media queries aplicam estilos condicionalmente com base nas características do dispositivo. Para viewports com largura máxima de 768px, oculte .sidebar com display:none e expanda .main para 100% da largura.',
+      pt: 'Media queries aplicam estilos de acordo com as características do dispositivo. Pra viewports de até 768px, esconde a .sidebar com display:none e expande .main pra ocupar 100% da largura.',
       en: 'Media queries conditionally apply styles based on device characteristics. For viewports with max-width of 768px, hide .sidebar with display:none and expand .main to 100% width.',
     },
     code: `@media (max-width: 768px) {
@@ -70,7 +70,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Animação', en: 'Animation' },
     difficulty: 'medium',
     prompt: {
-      pt: '@keyframes define os estados de uma animação CSS. Crie fadeIn indo de opacity:0 + translateY(10px) até opacity:1 + translateY(0) e aplique ao .card com duração de 0.3s e easing ease-out.',
+      pt: '@keyframes define os estados de uma animação CSS. Cria um fadeIn saindo de opacity:0 + translateY(10px) até opacity:1 + translateY(0) e aplica no .card com 0.3s de duração e ease-out.',
       en: '@keyframes defines the states of a CSS animation. Create fadeIn going from opacity:0 + translateY(10px) to opacity:1 + translateY(0) and apply it to .card with 0.3s duration and ease-out easing.',
     },
     code: `@keyframes fadeIn {
@@ -87,7 +87,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Pseudo-elements', en: 'Pseudo-elements' },
     difficulty: 'medium',
     prompt: {
-      pt: '::before insere um elemento virtual antes do conteúdo sem adicionar HTML. Use-o em .label para criar um ponto decorativo circular: content vazio, display inline-block, tamanho fixo, border-radius 50% e background currentColor.',
+      pt: '::before insere um pseudo-elemento antes do conteúdo sem mexer no HTML. Usa no .label pra criar um ponto decorativo redondo: content vazio, display inline-block, tamanho fixo, border-radius 50% e background currentColor.',
       en: '::before inserts a virtual element before the content without adding HTML. Use it on .label to create a decorative circular dot: empty content, display inline-block, fixed size, border-radius 50% and background currentColor.',
     },
     code: `.label::before {
@@ -105,7 +105,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Container Query', en: 'Container Query' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Container queries estilizam com base no tamanho do container pai — não da viewport. Marque .card-wrapper como container-type: inline-size e, quando atingir 400px, altere .card para um grid de duas colunas.',
+      pt: 'Container queries estilizam com base no tamanho do container pai, não da viewport. Marca .card-wrapper como container-type: inline-size e quando chegar em 400px, muda .card pra um grid de duas colunas.',
       en: 'Container queries style based on the parent container size — not the viewport. Mark .card-wrapper as container-type: inline-size and, when it reaches 400px, change .card to a two-column grid.',
     },
     code: `.card-wrapper {
@@ -123,7 +123,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Clamp', en: 'Clamp' },
     difficulty: 'medium',
     prompt: {
-      pt: 'clamp(min, preferred, max) cria valores fluidos que se adaptam ao viewport sem media queries. Use para font-size: mínimo de 1.5rem (em telas pequenas), preferido de 4vw e máximo de 3rem (em telas grandes).',
+      pt: 'clamp(min, preferred, max) cria valores fluidos que se adaptam ao viewport sem media query. Usa pra font-size: mínimo 1.5rem em tela pequena, valor preferido de 4vw e máximo de 3rem em tela grande.',
       en: 'clamp(min, preferred, max) creates fluid values that adapt to the viewport without media queries. Use it for font-size: minimum of 1.5rem (on small screens), preferred of 4vw and maximum of 3rem (on large screens).',
     },
     code: `.title {
@@ -137,7 +137,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Transições', en: 'Transitions' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Transitions animam mudanças de propriedade CSS de forma suave. Defina transition para background e transform em .button com duração de 150ms e easing ease, depois altere os dois valores no estado :hover.',
+      pt: 'Transitions fazem as mudanças de propriedade CSS ficarem suaves. Define transition pra background e transform no .button com 150ms e ease, depois muda os dois valores no :hover.',
       en: 'Transitions smoothly animate CSS property changes. Set transition for background and transform on .button with 150ms duration and ease easing, then change both values on :hover state.',
     },
     code: `.button {
@@ -155,7 +155,7 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Nesting', en: 'Nesting' },
     difficulty: 'medium',
     prompt: {
-      pt: 'CSS nesting (nível 1) permite aninhar seletores como em SASS/SCSS, sem pré-processador. Dentro de .nav, use "& a" para estilizar links e "& a:hover" para o estado de hover — sem repetir o seletor pai.',
+      pt: 'CSS nesting nativo deixa você aninhar seletores igual no SASS/SCSS, sem pré-processador. Dentro de .nav, usa "& a" pra estilizar os links e "& a:hover" pro hover — sem repetir o seletor pai.',
       en: 'CSS nesting (level 1) lets you nest selectors like in SASS/SCSS, without a preprocessor. Inside .nav, use "& a" to style links and "& a:hover" for the hover state — without repeating the parent selector.',
     },
     code: `.nav {

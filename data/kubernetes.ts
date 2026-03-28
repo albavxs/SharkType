@@ -6,7 +6,7 @@ export const kubernetesSnippets: Snippet[] = [
     concept: { pt: 'Comandos kubectl Básicos', en: 'Basic kubectl Commands' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Liste pods de produção, serviços de todos os namespaces, descreva um pod e acompanhe seus logs.',
+      pt: 'Lista os pods de produção, os services de todos os namespaces, descreve um pod e fica acompanhando os logs dele.',
       en: 'List production pods, services across all namespaces, describe a pod, and tail its logs.',
     },
     code: `kubectl get pods -n production
@@ -19,7 +19,7 @@ kubectl logs -f api-7d9f4b --tail=100`,
     concept: { pt: 'Deployment YAML', en: 'Deployment YAML' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Crie um manifesto de Deployment com 3 réplicas pra uma API rodando na porta 3000 no namespace de produção.',
+      pt: 'Monta um manifesto de Deployment com 3 réplicas pra uma API na porta 3000, no namespace de produção.',
       en: 'Write a Deployment manifest with 3 replicas for an API running on port 3000 in the production namespace.',
     },
     code: `apiVersion: apps/v1
@@ -48,7 +48,7 @@ spec:
     concept: { pt: 'Service YAML', en: 'Service YAML' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Defina um Service ClusterIP que roteia tráfego da porta 80 pra porta 3000 dos pods da API.',
+      pt: 'Define um Service do tipo ClusterIP que roteia o tráfego da porta 80 pra 3000 nos pods da API.',
       en: 'Define a ClusterIP Service that routes traffic from port 80 to port 3000 on the API pods.',
     },
     code: `apiVersion: v1
@@ -68,7 +68,7 @@ spec:
     concept: { pt: 'Apply e Rollback', en: 'Apply and Rollback' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Aplique um deployment, acompanhe o rollout, desfaça se der ruim e atualize a imagem direto pela CLI.',
+      pt: 'Aplica um deployment, acompanha o rollout, faz rollback se der ruim e atualiza a imagem direto pela CLI.',
       en: 'Apply a deployment, watch the rollout status, undo it if needed, and update the image via CLI.',
     },
     code: `kubectl apply -f deployment.yaml
@@ -81,7 +81,7 @@ kubectl set image deployment/api api=minha-app:1.1`,
     concept: { pt: 'ConfigMap e Secret', en: 'ConfigMap and Secret' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Crie um ConfigMap com variáveis e arquivo, e um Secret genérico com senha pra banco de dados.',
+      pt: 'Cria um ConfigMap a partir de variáveis e de um arquivo, e um Secret genérico com a senha do banco.',
       en: 'Create a ConfigMap from literals and a file, plus a generic Secret with a database password.',
     },
     code: `kubectl create configmap app-config \\
@@ -96,7 +96,7 @@ kubectl create secret generic db-secret \\
     concept: { pt: 'Scale e Autoscale', en: 'Scale and Autoscale' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Escale um deployment manualmente pra 5 réplicas e configure autoscaling baseado em CPU.',
+      pt: 'Escala um deployment na mão pra 5 réplicas e configura autoscaling baseado em CPU.',
       en: 'Manually scale a deployment to 5 replicas and set up CPU-based autoscaling.',
     },
     code: `kubectl scale deployment api --replicas=5

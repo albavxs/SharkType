@@ -6,7 +6,7 @@ export const dockerSnippets: Snippet[] = [
     concept: { pt: 'FROM e CMD', en: 'FROM & CMD' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Monte um Dockerfile pra uma app Node.js: imagem alpine, diretório de trabalho, copie tudo, instale deps e defina o comando de start.',
+      pt: 'Monta um Dockerfile pra uma app Node.js: imagem alpine, diretório de trabalho, copia tudo, instala as deps e define o comando de start.',
       en: 'Build a Dockerfile for a Node.js app: alpine base image, working directory, copy files, install deps, and set the start command.',
     },
     code: `FROM node:20-alpine
@@ -22,7 +22,7 @@ CMD ["node", "server.js"]`,
     concept: { pt: 'ENV e EXPOSE', en: 'ENV & EXPOSE' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Configure variáveis de ambiente pra uma app Python desabilitando bytecode e buffer, defina a porta e exponha ela.',
+      pt: 'Configura as variáveis de ambiente pra uma app Python desabilitando bytecode e buffer, define a porta e expõe ela.',
       en: 'Set environment variables for a Python app disabling bytecode and buffering, define the port, and expose it.',
     },
     code: `FROM python:3.12-slim
@@ -38,7 +38,7 @@ EXPOSE 8000`,
     concept: { pt: 'ARG e Labels', en: 'ARG & Labels' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Defina args de build pra versão e data, e adicione labels de metadata na imagem com esses valores.',
+      pt: 'Define args de build pra versão e data, e bota labels de metadata na imagem com esses valores.',
       en: 'Define build args for version and date, and add metadata labels to the image using those values.',
     },
     code: `ARG APP_VERSION=1.0.0
@@ -53,7 +53,7 @@ LABEL maintainer="dev@example.com" \\
     concept: { pt: 'COPY e RUN', en: 'COPY & RUN' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Compile uma app Go: copie primeiro os módulos pra cachear deps, depois o código e gere o binário.',
+      pt: 'Compila uma app Go: copia primeiro os módulos pra cachear as deps, depois o código e gera o binário.',
       en: 'Build a Go app: copy module files first to cache deps, then copy the source and compile the binary.',
     },
     code: `FROM golang:1.22-alpine AS build
@@ -90,7 +90,7 @@ CMD ["nginx", "-g", "daemon off;"]`,
     concept: { pt: 'HEALTHCHECK', en: 'HEALTHCHECK' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Adicione um health check numa app FastAPI que bate no /health a cada 30s com timeout de 5s.',
+      pt: 'Adiciona um health check numa app FastAPI que bate no /health a cada 30s com timeout de 5s.',
       en: 'Add a health check to a FastAPI app that hits /health every 30s with a 5s timeout.',
     },
     code: `FROM python:3.12-slim
@@ -110,7 +110,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]`,
     concept: { pt: 'ENTRYPOINT e CMD', en: 'ENTRYPOINT & CMD' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Crie uma imagem Alpine com ferramentas de rede, um entrypoint executável e CMD como argumento padrão substituível.',
+      pt: 'Cria uma imagem Alpine com ferramentas de rede, um entrypoint executável e CMD como argumento padrão substituível.',
       en: 'Create an Alpine image with network tools, an executable entrypoint, and CMD as a default overridable argument.',
     },
     code: `FROM alpine:3.19
@@ -128,7 +128,7 @@ CMD ["--help"]`,
     concept: { pt: 'USER e VOLUME', en: 'USER & VOLUME' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Rode a app como usuário não-root: crie grupo e usuário, passe a ownership dos arquivos e declare um volume pra persistência.',
+      pt: 'Roda a app como usuário não-root: cria grupo e usuário, passa a ownership dos arquivos e declara um volume pra persistência.',
       en: 'Run the app as a non-root user: create a group and user, transfer file ownership, and declare a volume for persistence.',
     },
     code: `FROM node:20-alpine
@@ -175,7 +175,7 @@ CMD ["server"]`,
     concept: { pt: 'Serviço Docker Compose', en: 'Docker Compose Service' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Configure um Postgres seguro: senha via secret, script de init, volume de dados e health check de prontidão.',
+      pt: 'Configura um Postgres seguro: senha via secret, script de init, volume de dados e health check de readiness.',
       en: 'Set up a secure Postgres: password via secret, init script, data volume, and readiness health check.',
     },
     code: `FROM postgres:16-alpine

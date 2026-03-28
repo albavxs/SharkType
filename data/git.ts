@@ -6,7 +6,7 @@ export const gitSnippets: Snippet[] = [
     concept: { pt: 'Workflow Básico', en: 'Basic Workflow' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Inicie um repo do zero, adicione tudo e faça o primeiro commit.',
+      pt: 'Inicia um repo do zero, adiciona tudo e faz o primeiro commit.',
       en: 'Initialize a repo from scratch, stage everything, and make the first commit.',
     },
     code: `git init
@@ -18,7 +18,7 @@ git commit -m "first commit"`,
     concept: { pt: 'Status & Diff', en: 'Status & Diff' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Confira o estado do repo, veja o que mudou fora do stage e o que já tá preparado pro commit.',
+      pt: 'Checa o estado do repo, vê o que mudou fora do stage e o que já tá staged pro commit.',
       en: 'Check the repo state, view unstaged changes, and review what is already staged.',
     },
     code: `git status
@@ -30,7 +30,7 @@ git diff --staged`,
     concept: { pt: 'Branches', en: 'Branches' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Crie uma branch de feature, mude pra ela e depois delete quando não precisar mais.',
+      pt: 'Cria uma branch de feature, muda pra ela e depois deleta quando não precisar mais.',
       en: 'Create a feature branch, switch to it, then delete it once you are done.',
     },
     code: `git branch feature/login
@@ -42,7 +42,7 @@ git branch -d feature/login`,
     concept: { pt: 'Repositório Remoto', en: 'Remote' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Conecte o repo local ao GitHub, suba seus commits e puxe as atualizações.',
+      pt: 'Conecta o repo local ao GitHub, sobe seus commits e puxa as atualizações.',
       en: 'Link your local repo to GitHub, push your commits, and pull remote changes.',
     },
     code: `git remote add origin https://github.com/user/repo.git
@@ -54,7 +54,7 @@ git pull origin main`,
     concept: { pt: 'Stash', en: 'Stash' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Guarde suas mudanças no stash pra trocar de branch, liste os stashes e recupere o último.',
+      pt: 'Guarda suas mudanças no stash pra trocar de branch, lista os stashes e recupera o último.',
       en: 'Stash your WIP so you can switch branches, list stashes, and pop the latest one.',
     },
     code: `git stash push -m "WIP: login form"
@@ -66,7 +66,7 @@ git stash pop`,
     concept: { pt: 'Merge', en: 'Merge' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Volte pra main, integre a branch de feature com merge explícito e limpe a branch depois.',
+      pt: 'Volta pra main, integra a branch de feature com merge explícito e limpa a branch depois.',
       en: 'Switch to main, merge the feature branch with an explicit merge commit, then clean up.',
     },
     code: `git checkout main
@@ -78,7 +78,7 @@ git branch -d feature/login`,
     concept: { pt: 'Rebase', en: 'Rebase' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Reaplique os commits da sua feature em cima da main pra manter o histórico linear.',
+      pt: 'Reaplica os commits da sua feature em cima da main pra manter o histórico linear.',
       en: 'Rebase your feature commits on top of main for a clean linear history.',
     },
     code: `git checkout feature/auth
@@ -90,7 +90,7 @@ git rebase --continue`,
     concept: { pt: 'Log & Blame', en: 'Log & Blame' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Veja o histórico compacto com grafo, filtre por autor e período, e descubra quem escreveu cada linha.',
+      pt: 'Vê o histórico compacto com grafo, filtra por autor e período, e descobre quem escreveu cada linha.',
       en: 'View compact log with graph, filter by author and date range, and blame specific lines.',
     },
     code: `git log --oneline --graph --all
@@ -102,7 +102,7 @@ git blame -L 10,20 src/main.ts`,
     concept: { pt: 'Reset & Revert', en: 'Reset & Revert' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Desfaça o último commit mantendo as mudanças, force o sync com o remoto e reverta um commit de forma segura.',
+      pt: 'Desfaz o último commit mantendo as mudanças staged, força o sync com o remote e reverte um commit de forma segura.',
       en: 'Undo the last commit keeping changes staged, hard reset to remote, and safely revert a commit.',
     },
     code: `git reset --soft HEAD~1
@@ -114,7 +114,7 @@ git revert HEAD --no-edit`,
     concept: { pt: 'Cherry-pick & Bisect', en: 'Cherry-pick & Bisect' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Traga commits específicos de outra branch e use bisect pra achar qual commit quebrou tudo.',
+      pt: 'Traz commits específicos de outra branch e usa bisect pra descobrir qual commit quebrou tudo.',
       en: 'Cherry-pick specific commits from another branch and use bisect to find the bug-introducing commit.',
     },
     code: `git cherry-pick abc1234 def5678
@@ -127,7 +127,7 @@ git bisect good v1.0.0`,
     concept: { pt: 'Identidade Global', en: 'Global Identity Config' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Configure seu nome e email globalmente pra que seus commits fiquem identificados certinho.',
+      pt: 'Configura seu nome e email globalmente pra que seus commits fiquem identificados certinho.',
       en: 'Set up your global name and email so your commits are properly attributed.',
     },
     code: `git config --global user.name "Seu Nome"
@@ -138,7 +138,7 @@ git config --global user.email "voce@email.com"`,
     concept: { pt: 'Aliases', en: 'Aliases' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Crie atalhos globais pro checkout, branch e status pra digitar menos no dia a dia.',
+      pt: 'Cria atalhos globais pro checkout, branch e status pra digitar menos no dia a dia.',
       en: 'Create global shortcuts for checkout, branch, and status to save keystrokes.',
     },
     code: `git config --global alias.co checkout
@@ -150,7 +150,7 @@ git config --global alias.st status`,
     concept: { pt: 'Opções de Clone', en: 'Clone Options' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Clone um repo normalmente, depois uma branch específica, e por fim um shallow clone só com o último commit.',
+      pt: 'Clona um repo normalmente, depois uma branch específica, e por fim faz um shallow clone só com o último commit.',
       en: 'Clone a repo normally, then a specific branch, and finally a shallow clone with only the latest commit.',
     },
     code: `git clone https://github.com/user/repo.git
@@ -162,7 +162,7 @@ git clone --depth 1 https://github.com/user/repo.git`,
     concept: { pt: 'Amend de Commits', en: 'Amend Commits' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Corrija a mensagem do último commit e depois faça um amend sem alterar a mensagem.',
+      pt: 'Corrige a mensagem do último commit e depois faz um amend sem mudar a mensagem.',
       en: 'Fix the last commit message and then amend without changing the message.',
     },
     code: `git commit --amend -m "feat: mensagem corrigida"
@@ -173,7 +173,7 @@ git commit --amend --no-edit`,
     concept: { pt: 'Restore Moderno', en: 'Modern Restore' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Use git restore pra descartar mudanças de um arquivo, tirar do stage e restaurar tudo de uma vez.',
+      pt: 'Usa git restore pra descartar mudanças de um arquivo, tirar do stage e restaurar tudo de uma vez.',
       en: 'Use git restore to discard file changes, unstage a file, and restore everything at once.',
     },
     code: `git restore arquivo.ts
@@ -185,7 +185,7 @@ git restore .`,
     concept: { pt: 'Stash Avançado', en: 'Advanced Stash' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Faça stash com e sem mensagem, recupere, liste os guardados e limpe um stash específico.',
+      pt: 'Faz stash com e sem mensagem, recupera, lista os stashes salvos e dropa um específico.',
       en: 'Stash with and without a message, pop it back, list all stashes, and drop a specific one.',
     },
     code: `git stash
@@ -199,7 +199,7 @@ git stash drop stash@{0}`,
     concept: { pt: 'Push & Pull com Opções', en: 'Push & Pull Options' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Suba a branch pro remote, faça force push seguro, pull com rebase e atualize as refs.',
+      pt: 'Sobe a branch pro remote, faz force push seguro, pull com rebase e atualiza as refs.',
       en: 'Push the branch upstream, force push safely, pull with rebase, and fetch remote refs.',
     },
     code: `git push -u origin main
@@ -212,7 +212,7 @@ git fetch origin`,
     concept: { pt: 'Gerenciar Remotes', en: 'Manage Remotes' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Adicione um remote origin, confira os remotes configurados e remova um que não precisa mais.',
+      pt: 'Adiciona um remote origin, confere os remotes configurados e remove um que não precisa mais.',
       en: 'Add an origin remote, check configured remotes, and remove one you no longer need.',
     },
     code: `git remote add origin https://github.com/user/repo.git
@@ -224,7 +224,7 @@ git remote remove origin`,
     concept: { pt: 'Tags de Versão', en: 'Version Tags' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Crie uma tag leve, depois uma anotada com mensagem e suba todas as tags pro remote.',
+      pt: 'Cria uma tag leve, depois uma anotada com mensagem e sobe todas as tags pro remote.',
       en: 'Create a lightweight tag, then an annotated one with a message, and push all tags to remote.',
     },
     code: `git tag v1.0.0
@@ -236,7 +236,7 @@ git push origin --tags`,
     concept: { pt: 'Log Compacto e Gráfico', en: 'Compact & Graphic Log' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Veja o log resumido, adicione o grafo de branches e filtre por autor e data.',
+      pt: 'Vê o log resumido, adiciona o grafo de branches e filtra por autor e data.',
       en: 'View the condensed log, add the branch graph, and filter by author and date.',
     },
     code: `git log --oneline

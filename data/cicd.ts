@@ -6,7 +6,7 @@ export const cicdSnippets: Snippet[] = [
     concept: { pt: 'Workflow GitHub Actions Básico', en: 'Basic GitHub Actions Workflow' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Crie um workflow de CI que roda testes em push na main e em pull requests, usando Node 20.',
+      pt: 'Cria um workflow de CI que roda os testes em push na main e em pull requests, usando Node 20.',
       en: 'Create a CI workflow that runs tests on push to main and on pull requests, using Node 20.',
     },
     code: `name: CI
@@ -32,7 +32,7 @@ jobs:
     concept: { pt: 'Deploy com GitHub Actions', en: 'Deploy with GitHub Actions' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Adicione um job de deploy que depende dos testes, builda a imagem Docker com o SHA do commit e faz push pro registry.',
+      pt: 'Adiciona um job de deploy que depende dos testes, builda a imagem Docker tagueada com o SHA do commit e faz push pro registry.',
       en: 'Add a deploy job that depends on tests, builds a Docker image tagged with the commit SHA, and pushes it to the registry.',
     },
     code: `  deploy:

@@ -6,7 +6,7 @@ export const rubySnippets: Snippet[] = [
     concept: { pt: 'Método', en: 'Method' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Métodos Ruby são definidos com "def" e retornam o valor da última expressão implicitamente. Defina greet com um argumento "name" que usa "World" como valor padrão — sem precisar de return explícito.',
+      pt: 'Métodos em Ruby são definidos com "def" e retornam a última expressão automaticamente. Crie greet com um argumento "name" que tem "World" como valor padrão — sem precisar de return explícito.',
       en: 'Ruby methods are defined with "def" and implicitly return the last expression\'s value. Define greet with a "name" argument that defaults to "World" — no explicit return needed.',
     },
     code: `def greet(name = "World")
@@ -20,7 +20,7 @@ puts greet("Ruby")`,
     concept: { pt: 'String Interpolation', en: 'String Interpolation' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Interpolação de strings em Ruby usa #{expressão} dentro de aspas duplas. Combine a variável "language" e o número "version" em uma mensagem — qualquer expressão Ruby pode ser avaliada dentro de #{}.',
+      pt: 'Interpolação de string em Ruby usa #{expressão} dentro de aspas duplas. Junte a variável "language" e o número "version" numa mensagem — qualquer expressão Ruby pode entrar dentro de #{}.',
       en: 'Ruby string interpolation uses #{expression} inside double quotes. Combine the "language" variable and the "version" number in a message — any Ruby expression can be evaluated inside #{}.',
     },
     code: `language = "Ruby"
@@ -32,7 +32,7 @@ puts "#{language} #{version} is awesome!"`,
     concept: { pt: 'Métodos de Array', en: 'Array Methods' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Ruby tem métodos funcionais ricos em Array. Use .map com bloco para dobrar cada número, .select com Symbol#to_proc (&:even?) para filtrar apenas os pares e .sum para calcular o total — cada um em uma linha.',
+      pt: 'Ruby tem métodos funcionais bem ricos em Array. Use .map com bloco pra dobrar cada número, .select com Symbol#to_proc (&:even?) pra pegar só os pares e .sum pro total — um por linha.',
       en: 'Ruby has rich functional Array methods. Use .map with a block to double each number, .select with Symbol#to_proc (&:even?) to filter only evens and .sum to calculate the total — one per line.',
     },
     code: `nums = [3, 1, 4, 1, 5, 9, 2, 6]
@@ -45,7 +45,7 @@ total = nums.sum`,
     concept: { pt: 'Hash', en: 'Hash' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Hashes em Ruby são dicionários criados com a sintaxe {chave: valor}. Declare um hash de pessoa com símbolos, acesse um campo específico pela chave e use .each com bloco de dois parâmetros para iterar todos os pares.',
+      pt: 'Hashes em Ruby são dicionários criados com {chave: valor}. Declare um hash de pessoa com símbolos, acesse um campo pela chave e use .each com bloco de dois parâmetros pra percorrer todos os pares.',
       en: 'Ruby hashes are dictionaries created with the {key: value} syntax. Declare a person hash with symbols, access a specific field by key and use .each with a two-parameter block to iterate all pairs.',
     },
     code: `person = { name: "Alice", age: 30, city: "SP" }
@@ -57,7 +57,7 @@ person.each { |k, v| puts "#{k}: #{v}" }`,
     concept: { pt: 'Classe', en: 'Class' },
     difficulty: 'medium',
     prompt: {
-      pt: 'attr_accessor gera getters e setters automaticamente para variáveis de instância. Defina Animal com @name e @sound inicializados pelo constructor, e o método speak que combina os dois com interpolação de string.',
+      pt: 'attr_accessor gera getters e setters automaticamente pras variáveis de instância. Defina Animal com @name e @sound inicializados no constructor, e o método speak que junta os dois com interpolação de string.',
       en: 'attr_accessor auto-generates getters and setters for instance variables. Define Animal with @name and @sound initialized by the constructor, and the speak method that combines both with string interpolation.',
     },
     code: `class Animal
@@ -78,7 +78,7 @@ end`,
     concept: { pt: 'Block e Yield', en: 'Block and Yield' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Blocks são o mecanismo de customização mais fundamental do Ruby — qualquer método pode aceitar um bloco com yield. Implemente "repeat" que usa n.times e chama yield em cada iteração para executar o bloco fornecido.',
+      pt: 'Blocks são o mecanismo mais fundamental de customização no Ruby — qualquer método pode receber um bloco via yield. Crie "repeat" usando n.times e chamando yield a cada iteração pra executar o bloco que foi passado.',
       en: 'Blocks are Ruby\'s most fundamental customization mechanism — any method can accept a block with yield. Implement "repeat" using n.times and calling yield on each iteration to execute the provided block.',
     },
     code: `def repeat(n)
@@ -92,7 +92,7 @@ repeat(3) { puts "Hello!" }`,
     concept: { pt: 'Module e Mixin', en: 'Module and Mixin' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Modules fornecem namespacing e reutilização de código via include (mixin). Crie Serializable com o método to_json que usa instance_variables e inclua-o em User — instâncias de User ganham to_json sem herança.',
+      pt: 'Modules dão namespacing e reuso de código via include (mixin). Crie Serializable com o método to_json usando instance_variables e inclua em User — as instâncias de User ganham to_json sem precisar de herança.',
       en: 'Modules provide namespacing and code reuse via include (mixin). Create Serializable with a to_json method that uses instance_variables and include it in User — User instances gain to_json without inheritance.',
     },
     code: `module Serializable
@@ -113,7 +113,7 @@ end`,
     concept: { pt: 'Enumerable', en: 'Enumerable' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Ruby encoraja o encadeamento fluente de métodos Enumerable. Em uma única expressão, filtre palavras com mais de 4 letras, transforme para capitalize, ordene alfabeticamente e una em uma string com ", " entre elas.',
+      pt: 'Ruby incentiva encadear métodos Enumerable de forma fluente. Numa expressão só, filtre palavras com mais de 4 letras, aplique capitalize, ordene em ordem alfabética e junte tudo numa string com ", " entre elas.',
       en: 'Ruby encourages fluent chaining of Enumerable methods. In a single expression, filter words longer than 4 characters, transform to capitalize, sort alphabetically and join into a string with ", " between them.',
     },
     code: `words = %w[hello world ruby programming]
@@ -128,7 +128,7 @@ result = words
     concept: { pt: 'Proc e Lambda', en: 'Proc and Lambda' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Lambdas (-> {}) e Procs diferem no comportamento com return e aridade. Defina square como lambda e cube como proc, depois implemente transform como uma lambda que recebe um array e uma função, chamando .map(&fn) para aplicar.',
+      pt: 'Lambdas (-> {}) e Procs se comportam diferente no return e na aridade. Defina square como lambda e cube como proc, depois crie transform como lambda que recebe um array e uma função, usando .map(&fn) pra aplicar.',
       en: 'Lambdas (-> {}) and Procs differ in return behavior and arity. Define square as a lambda and cube as a proc, then implement transform as a lambda that takes an array and a function, calling .map(&fn) to apply it.',
     },
     code: `square = ->(x) { x ** 2 }
@@ -142,7 +142,7 @@ puts transform.call([1, 2, 3, 4], square)`,
     concept: { pt: 'Method Missing', en: 'Method Missing' },
     difficulty: 'hard',
     prompt: {
-      pt: 'method_missing intercepta qualquer chamada a método não definido, permitindo DSLs dinâmicas. Implemente FlexObject: nomes terminando em "=" armazenam o valor em @data, os demais o recuperam — criando getters/setters arbitrários.',
+      pt: 'method_missing intercepta chamadas a métodos que não existem, abrindo espaço pra DSLs dinâmicas. Monte FlexObject: nomes que terminam em "=" salvam o valor em @data, os demais leem — criando getters/setters sob demanda.',
       en: 'method_missing intercepts any call to an undefined method, enabling dynamic DSLs. Implement FlexObject: names ending in "=" store the value in @data, others retrieve it — creating arbitrary getters/setters.',
     },
     code: `class FlexObject

@@ -61,4 +61,66 @@ export const typingSnippets: Snippet[] = [
     difficulty: 'hard',
     code: 'The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.',
   },
+
+  // ── Key position drills (for "Comece Aqui" track) ────────────────────────
+  {
+    id: 'typing-011',
+    concept: { pt: 'Dedos Indicadores', en: 'Index Fingers' },
+    difficulty: 'easy',
+    code: 'ff jj fj jf ff jj fj jf fj fj jf jf ff jj',
+  },
+  {
+    id: 'typing-012',
+    concept: { pt: 'Dedos Médios', en: 'Middle Fingers' },
+    difficulty: 'easy',
+    code: 'dd kk dk kd dd kk dk kd dk dk kd kd dd kk',
+  },
+  {
+    id: 'typing-013',
+    concept: { pt: 'Dedos Anelares', en: 'Ring Fingers' },
+    difficulty: 'easy',
+    code: 'ss ll sl ls ss ll sl ls sl sl ls ls ss ll',
+  },
+  {
+    id: 'typing-014',
+    concept: { pt: 'Dedos Mínimos', en: 'Pinky Fingers' },
+    difficulty: 'easy',
+    code: 'aa ;; a; ;a aa ;; a; ;a a; a; ;a ;a aa ;;',
+  },
+  {
+    id: 'typing-015',
+    concept: { pt: 'Alcance dos Indicadores', en: 'Index Reach' },
+    difficulty: 'easy',
+    code: 'frf juj ftf jyj fgf jhj fvf jmj fbf jnj',
+  },
+  {
+    id: 'typing-016',
+    concept: { pt: 'Mão Esquerda', en: 'Left Hand' },
+    difficulty: 'easy',
+    code: 'as df fd sa asd fds asdf fdsa sad das fast',
+  },
+  {
+    id: 'typing-017',
+    concept: { pt: 'Mão Direita', en: 'Right Hand' },
+    difficulty: 'easy',
+    code: 'jk l; ;l kj jkl ;lk jkl; ;lkj jkl jkl; kl',
+  },
+  {
+    id: 'typing-018',
+    concept: { pt: 'Combinações Comuns PT', en: 'Common PT Combos' },
+    difficulty: 'easy',
+    code: 'as os de no em um ao se do na eu da que por',
+  },
+  {
+    id: 'typing-019',
+    concept: { pt: 'Linhas Alternadas', en: 'Alternating Rows' },
+    difficulty: 'easy',
+    code: 'far joy ask lip wet you red lot zip mud hen',
+  },
+  {
+    id: 'typing-020',
+    concept: { pt: 'Alfabeto Completo', en: 'Full Alphabet' },
+    difficulty: 'easy',
+    code: 'abcdefghijklmnopqrstuvwxyz zyxwvutsrqponmlkjihgfedcba',
+  },
 ]

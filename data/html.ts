@@ -6,7 +6,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Estrutura Básica', en: 'Basic Structure' },
     difficulty: 'easy',
     prompt: {
-      pt: 'O elemento <header> contém a identidade e navegação principal da página. Escreva um header semântico com <h1> para o título da aplicação e <nav> com dois <a> de navegação — sem divs desnecessárias.',
+      pt: 'O <header> é onde fica a identidade da página e a navegação principal. Monta um header semântico com <h1> pro título do app e <nav> com dois <a> pra navegação — nada de div sem necessidade.',
       en: 'The <header> element contains the page\'s identity and main navigation. Write a semantic header with <h1> for the app title and <nav> with two navigation <a> links — no unnecessary divs.',
     },
     code: `<header>
@@ -22,7 +22,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Formulário', en: 'Form' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Formulários HTML exigem action, method e associação correta de label/input. Crie um form de login com POST, um <input type="email"> com required e id, seu <label> associado via "for" e um <button type="submit">.',
+      pt: 'Pra um form funcionar direito, você precisa de action, method e o label associado ao input. Faz um form de login com POST, um <input type="email"> com required e id, o <label> linkado pelo "for" e um <button type="submit">.',
       en: 'HTML forms require action, method and proper label/input association. Create a login form with POST, an <input type="email"> with required and id, its <label> linked via "for" and a <button type="submit">.',
     },
     code: `<form action="/login" method="POST">
@@ -36,7 +36,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Imagem e Link', en: 'Image and Link' },
     difficulty: 'easy',
     prompt: {
-      pt: '<figure> e <figcaption> fornecem contexto semântico para imagens. Envolva a <img> em um <figure>, inclua um alt descritivo no atributo alt e adicione uma <figcaption> logo abaixo com o texto da legenda.',
+      pt: '<figure> e <figcaption> dão contexto semântico pra imagens. Coloca a <img> dentro de um <figure>, bota um alt descritivo e adiciona um <figcaption> logo abaixo com o texto da legenda.',
       en: '<figure> and <figcaption> provide semantic context for images. Wrap the <img> in a <figure>, include a descriptive alt attribute and add a <figcaption> right below with the caption text.',
     },
     code: `<figure>
@@ -49,7 +49,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Lista', en: 'List' },
     difficulty: 'easy',
     prompt: {
-      pt: '<ul> é semanticamente correto para conjuntos de itens sem ordem obrigatória. Crie uma lista não ordenada com três <li>, cada um contendo um <a> para uma página diferente de linguagem de programação.',
+      pt: '<ul> é o elemento certo quando a ordem dos itens não importa. Cria uma lista não ordenada com três <li>, cada um com um <a> linkando pra uma página de linguagem diferente.',
       en: '<ul> is semantically correct for unordered sets of items. Create an unordered list with three <li> elements, each containing an <a> linking to a different programming language page.',
     },
     code: `<ul>
@@ -63,7 +63,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Artigo Semântico', en: 'Semantic Article' },
     difficulty: 'medium',
     prompt: {
-      pt: '<article> envolve conteúdo independente e autocontido. Estruture o artigo com <header> interno (h2 + time com datetime), um parágrafo de conteúdo e <footer> com link de tag usando rel="tag".',
+      pt: '<article> serve pra conteúdo independente que faz sentido sozinho. Estrutura o artigo com um <header> interno (h2 + time com datetime), um parágrafo de conteúdo e um <footer> com link de tag usando rel="tag".',
       en: '<article> wraps independent, self-contained content. Structure the article with an inner <header> (h2 + time with datetime), a content paragraph and <footer> with a tag link using rel="tag".',
     },
     code: `<article>
@@ -82,7 +82,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Meta e Link', en: 'Meta and Link' },
     difficulty: 'medium',
     prompt: {
-      pt: 'O <head> configura como o browser interpreta e indexa a página. Adicione meta charset para codificação, viewport para responsividade mobile, meta description para SEO, link para o CSS e o <title>.',
+      pt: 'No <head> você configura como o browser vai interpretar e indexar a página. Adiciona meta charset pra codificação, viewport pra responsividade mobile, meta description pro SEO, o link do CSS e o <title>.',
       en: 'The <head> configures how the browser interprets and indexes the page. Add meta charset for encoding, viewport for mobile responsiveness, meta description for SEO, link to the CSS and the <title>.',
     },
     code: `<head>
@@ -98,7 +98,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Select e Option', en: 'Select and Option' },
     difficulty: 'medium',
     prompt: {
-      pt: '<optgroup> organiza opções de um <select> em grupos lógicos com um rótulo. Crie um campo de seleção de linguagem com dois grupos (JVM e Script), cada um contendo duas <option> com value e texto.',
+      pt: '<optgroup> agrupa as opções de um <select> com um label pra cada grupo. Monta um select de linguagem com dois grupos (JVM e Script), cada um com duas <option> com value e texto.',
       en: '<optgroup> organizes <select> options into logical groups with a label. Create a language select field with two groups (JVM and Script), each containing two <option> elements with value and text.',
     },
     code: `<select name="language" id="lang">
@@ -117,7 +117,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Tabela', en: 'Table' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Tabelas acessíveis usam <thead>/<tbody>, <th> com atributo scope e <td> para dados. Construa uma tabela de resultados com três colunas no cabeçalho (scope="col") e uma linha de dados no corpo.',
+      pt: 'Pra tabela ficar acessível, usa <thead>/<tbody>, <th> com scope e <td> pros dados. Monta uma tabela de resultados com três colunas no header (scope="col") e uma linha de dados no body.',
       en: 'Accessible tables use <thead>/<tbody>, <th> with scope attribute and <td> for data. Build a results table with three header columns (scope="col") and one data row in the body.',
     },
     code: `<table>
@@ -142,7 +142,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Details e Summary', en: 'Details and Summary' },
     difficulty: 'hard',
     prompt: {
-      pt: '<details>/<summary> criam um widget de divulgação colapsável nativo, sem JavaScript. Dentro do <details>, use <summary> como título clicável e adicione um <fieldset> com <legend> e duas opções de <input type="radio">.',
+      pt: '<details>/<summary> criam um accordion nativo, sem precisar de JavaScript. Dentro do <details>, usa <summary> como título clicável e coloca um <fieldset> com <legend> e duas opções de <input type="radio">.',
       en: '<details>/<summary> create a native collapsible disclosure widget, no JavaScript needed. Inside <details>, use <summary> as the clickable title and add a <fieldset> with <legend> and two <input type="radio"> options.',
     },
     code: `<details>
@@ -163,7 +163,7 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'SVG Inline', en: 'Inline SVG' },
     difficulty: 'hard',
     prompt: {
-      pt: 'SVG inline permite gráficos vetoriais acessíveis diretamente no HTML. Crie um <svg> com viewBox, aria-label e role="img" para acessibilidade, <title> interno e um <polyline> com cinco pontos definindo a curva.',
+      pt: 'SVG inline deixa você colocar gráficos vetoriais direto no HTML com acessibilidade. Cria um <svg> com viewBox, aria-label e role="img", um <title> interno e um <polyline> com cinco pontos formando a curva.',
       en: 'Inline SVG allows accessible vector graphics directly in HTML. Create an <svg> with viewBox, aria-label and role="img" for accessibility, an inner <title> and a <polyline> with five points defining the curve.',
     },
     code: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"

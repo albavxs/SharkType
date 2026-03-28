@@ -388,8 +388,25 @@ export const tracks: Track[] = [
 
   // ── Language tracks (text typing) ───────────────────────────────────────
   {
+    id: 'comece-aqui',
+    name: { pt: 'Comece Aqui', en: 'Start Here' },
+    description: {
+      pt: 'Aprenda a posição de cada tecla e memorize o teclado passo a passo',
+      en: 'Learn key positions and memorize the keyboard step by step',
+    },
+    snippetIds: [
+      'typing-011', 'typing-012', 'typing-013', 'typing-014',
+      'typing-001', 'typing-002',
+      'typing-015', 'typing-016', 'typing-017',
+      'typing-003', 'typing-004', 'typing-005',
+      'typing-018', 'typing-019', 'typing-020',
+      'typing-006', 'typing-007', 'typing-008', 'typing-009', 'typing-010',
+    ],
+    textLanguages: true,
+  },
+  {
     id: 'idioma-iniciante',
-    name: { pt: 'Digitação — Iniciante', en: 'Typing — Beginner' },
+    name: { pt: 'Iniciante', en: 'Beginner' },
     description: {
       pt: 'Frases curtas e vocabulário básico pra começar a digitar rápido',
       en: 'Short phrases and basic vocabulary to get you typing fast',
@@ -400,7 +417,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'idioma-medio',
-    name: { pt: 'Digitação — Intermediário', en: 'Typing — Intermediate' },
+    name: { pt: 'Intermediário', en: 'Intermediate' },
     description: {
       pt: 'Parágrafos sobre ciência, tecnologia e cultura pra ganhar velocidade',
       en: 'Paragraphs on science, tech, and culture to build your speed',
@@ -411,7 +428,7 @@ export const tracks: Track[] = [
   },
   {
     id: 'idioma-dificil',
-    name: { pt: 'Digitação — Avançado', en: 'Typing — Advanced' },
+    name: { pt: 'Avançado', en: 'Advanced' },
     description: {
       pt: 'Textos densos de filosofia, história e literatura pra alta precisão',
       en: 'Dense philosophy, history, and literature texts for high precision',

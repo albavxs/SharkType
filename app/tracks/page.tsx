@@ -128,6 +128,17 @@ export default function TracksPage() {
               {t('tracksSubtitle', locale)}
             </p>
 
+            {/* Idiomas section */}
+            <div className="mb-10">
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('sectionIdioms', locale)}</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('idiomsDesc', locale)}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                {idiomTracks.map(track => (
+                  <TrackCard key={track.id} track={track} badges={track.snippetIds.length > 0 ? [] : idiomBadges} />
+                ))}
+              </div>
+            </div>
+
             {/* Código section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('codeSection', locale)}</h2>
@@ -142,17 +153,6 @@ export default function TracksPage() {
                   {codeStats.completed}/{codeStats.total} {t('completed', locale)} · {codeStats.pct}%
                 </div>
               )}
-            </div>
-
-            {/* Idiomas section */}
-            <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('sectionIdioms', locale)}</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('idiomsDesc', locale)}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                {idiomTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={idiomBadges} />
-                ))}
-              </div>
             </div>
           </div>
         </div>

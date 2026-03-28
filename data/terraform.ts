@@ -6,7 +6,7 @@ export const terraformSnippets: Snippet[] = [
     concept: { pt: 'Comandos Básicos', en: 'Basic Commands' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Inicialize o projeto, gere o plano de execução, aplique as mudanças, destrua tudo e valide a configuração.',
+      pt: 'Inicializa o projeto, gera o plano de execução, aplica as mudanças, destrói tudo e valida a config.',
       en: 'Initialize the project, generate the execution plan, apply changes, destroy everything, and validate the config.',
     },
     code: `terraform init
@@ -20,7 +20,7 @@ terraform validate`,
     concept: { pt: 'Provider e Recurso AWS', en: 'Provider and AWS Resource' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Configure o provider AWS com versão mínima, defina a região via variável e crie uma instância EC2 com tag.',
+      pt: 'Configura o provider da AWS com versão mínima, define a região via variável e sobe uma instância EC2 com tag.',
       en: 'Set up the AWS provider with a minimum version, define the region via variable, and create a tagged EC2 instance.',
     },
     code: `terraform {
@@ -49,7 +49,7 @@ resource "aws_instance" "app" {
     concept: { pt: 'Variáveis e Outputs', en: 'Variables and Outputs' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Declare uma variável de região com valor padrão e exporte o IP público da instância como output.',
+      pt: 'Declara uma variável de região com valor padrão e exporta o IP público da instância como output.',
       en: 'Declare a region variable with a default value and export the instance public IP as an output.',
     },
     code: `variable "region" {
@@ -66,7 +66,7 @@ output "instance_ip" {
     concept: { pt: 'Workspaces', en: 'Workspaces' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Crie um workspace de staging, alterne pra produção e liste todos os workspaces disponíveis.',
+      pt: 'Cria um workspace de staging, troca pra produção e lista todos os workspaces disponíveis.',
       en: 'Create a staging workspace, switch to production, and list all available workspaces.',
     },
     code: `terraform workspace new staging
