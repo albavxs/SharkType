@@ -92,10 +92,20 @@ const dict: Record<string, Record<Locale, string>> = {
     pt: 'Escolha uma trilha de conceitos. Em seguida, escolha a linguagem para praticar.',
     en: 'Pick a concept track, then choose the language you want to practice in.',
   },
-  codeSection:    { pt: 'Código', en: 'Code' },
+  codeSection:    { pt: 'Conceitos', en: 'Concepts' },
   codeTracksDesc: {
-    pt: 'Trilhas temáticas por conceito ou linguagem de programação',
-    en: 'Themed tracks by concept or programming language',
+    pt: 'Aprenda conceitos fundamentais de programação passo a passo',
+    en: 'Learn fundamental programming concepts step by step',
+  },
+  focusedSection:    { pt: 'Foco por Área', en: 'By Focus Area' },
+  focusedTracksDesc: {
+    pt: 'Trilhas temáticas por domínio ou stack de tecnologia',
+    en: 'Themed tracks by domain or technology stack',
+  },
+  cyberdevopsSection:    { pt: 'Cybersegurança & DevOps', en: 'Cybersecurity & DevOps' },
+  cyberdevopsTracksDesc: {
+    pt: 'Git, Linux, Docker, segurança ofensiva e defensiva, e infraestrutura',
+    en: 'Git, Linux, Docker, offensive and defensive security, and infrastructure',
   },
   completed:    { pt: 'concluídos', en: 'completed' },
   sectionIdioms: { pt: 'Digitação', en: 'Typing' },

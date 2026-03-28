@@ -17,7 +17,7 @@ terraform validate`,
   },
   {
     id: 'tf-002',
-    concept: { pt: 'Provider e Recurso AWS', en: 'Provider and AWS Resource' },
+    concept: { pt: 'Provedor e Recurso AWS', en: 'Provider and AWS Resource' },
     difficulty: 'medium',
     prompt: {
       pt: 'Configura o provider da AWS com versão mínima, define a região via variável e sobe uma instância EC2 com tag.',
@@ -46,7 +46,7 @@ resource "aws_instance" "app" {
   },
   {
     id: 'tf-003',
-    concept: { pt: 'Variáveis e Outputs', en: 'Variables and Outputs' },
+    concept: { pt: 'Variáveis e Saídas', en: 'Variables and Outputs' },
     difficulty: 'medium',
     prompt: {
       pt: 'Declara uma variável de região com valor padrão e exporta o IP público da instância como output.',
@@ -63,7 +63,7 @@ output "instance_ip" {
   },
   {
     id: 'tf-004',
-    concept: { pt: 'Workspaces', en: 'Workspaces' },
+    concept: { pt: 'Espaços de Trabalho', en: 'Workspaces' },
     difficulty: 'hard',
     prompt: {
       pt: 'Cria um workspace de staging, troca pra produção e lista todos os workspaces disponíveis.',

@@ -65,6 +65,12 @@ export default function TrackPracticePage() {
       if (track.snippetIds.length > 0) return textLanguages.filter(l => l.id === 'text-typing')
       return textLanguages.filter(l => l.id !== 'text-typing')
     }
+    // Slot-based tracks: find languages that have at least one snippet matching any slot
+    if (track.slots && track.slots.length > 0) {
+      return languages.filter(lang =>
+        lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
+      )
+    }
     const seen = new Set<string>()
     const result: Language[] = []
     for (const sid of track.snippetIds) {
@@ -82,7 +88,12 @@ export default function TrackPracticePage() {
   const trackSnippets = useMemo((): Snippet[] => {
     if (!track || !selectedLang) return []
     let snippets: Snippet[]
-    if (track.textLanguages) {
+    // Slot-based tracks: find one snippet per slot in order
+    if (track.slots && track.slots.length > 0) {
+      snippets = track.slots
+        .map(slot => selectedLang.snippets.find(s => s.slot === slot))
+        .filter((s): s is Snippet => Boolean(s))
+    } else if (track.textLanguages) {
       if (track.snippetIds.length > 0) {
         snippets = track.snippetIds
           .map(sid => selectedLang.snippets.find(s => s.id === sid))
@@ -247,7 +258,7 @@ export default function TrackPracticePage() {
           language={selectedLang ?? languages[0]} difficulty={difficulty}
           seconds={displaySeconds} isTimerRunning={timer.isRunning}
           onLanguageChange={() => {}} onDifficultyChange={handleDifficultyChange}
-          showControls={true}
+          showControls={!(track.textLanguages && track.snippetIds.length > 0)}
           onHomeClick={() => router.push('/')} onHelpClick={() => {}}
           level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
           locale={locale} onLocaleToggle={toggleLocale}

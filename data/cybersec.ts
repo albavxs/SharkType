@@ -4,7 +4,7 @@ import { Snippet } from '@/lib/types'
 export const nmapSnippets: Snippet[] = [
   {
     id: 'sec-001',
-    concept: { pt: 'Scan Nmap Básico', en: 'Basic Nmap Scan' },
+    concept: { pt: 'Varredura Nmap Básica', en: 'Basic Nmap Scan' },
     difficulty: 'easy',
     prompt: {
       pt: 'Escaneia um host, uma sub-rede inteira e faz descoberta de hosts sem scan de portas.',
@@ -16,7 +16,7 @@ nmap -sn 192.168.1.0/24`,
   },
   {
     id: 'sec-002',
-    concept: { pt: 'Padrão de Scan Recon', en: 'Recon Scan Pattern' },
+    concept: { pt: 'Padrão de Varredura Recon', en: 'Recon Scan Pattern' },
     difficulty: 'medium',
     prompt: {
       pt: 'Roda um scan com scripts padrão e detecção de versão, depois um completo em todas as portas salvando num arquivo.',
@@ -27,7 +27,7 @@ nmap -sC -sV -p- -T4 192.168.1.1 -oN scan.txt`,
   },
   {
     id: 'sec-003',
-    concept: { pt: 'Tipos de Scan', en: 'Scan Types' },
+    concept: { pt: 'Tipos de Varredura', en: 'Scan Types' },
     difficulty: 'medium',
     prompt: {
       pt: 'Roda os quatro tipos principais de scan: SYN stealth, TCP connect, UDP e ACK.',
@@ -53,7 +53,7 @@ nmap --top-ports 100 192.168.1.1`,
   },
   {
     id: 'sec-005',
-    concept: { pt: 'Detecção de OS e Versão', en: 'OS and Version Detection' },
+    concept: { pt: 'Detecção de SO e Versão', en: 'OS and Version Detection' },
     difficulty: 'medium',
     prompt: {
       pt: 'Detecta o sistema operacional, as versões dos serviços e roda o scan agressivo completo.',
@@ -65,7 +65,7 @@ nmap -A 192.168.1.1   # OS + version + scripts + traceroute`,
   },
   {
     id: 'sec-006',
-    concept: { pt: 'Output e Evasão', en: 'Output and Evasion' },
+    concept: { pt: 'Saída e Evasão', en: 'Output and Evasion' },
     difficulty: 'hard',
     prompt: {
       pt: 'Salva os resultados em texto e XML, pula descoberta de host e usa decoys pra dificultar a detecção.',
@@ -95,7 +95,7 @@ curl --resolve example.com:443:127.0.0.1 https://example.com`,
   },
   {
     id: 'sec-018',
-    concept: { pt: 'Recon com whois e dig', en: 'whois and dig Recon' },
+    concept: { pt: 'Reconhecimento com whois e dig', en: 'whois and dig Recon' },
     difficulty: 'easy',
     prompt: {
       pt: 'Consulta dados WHOIS, resolve DNS com dig, busca registros MX e A e usa nslookup com DNS alternativo.',
@@ -146,7 +146,7 @@ sudo iptables -P INPUT DROP`,
 export const networkAnalysisSnippets: Snippet[] = [
   {
     id: 'sec-009',
-    concept: { pt: 'Captura com tcpdump', en: 'tcpdump Packet Capture' },
+    concept: { pt: 'Captura de Pacotes com tcpdump', en: 'tcpdump Packet Capture' },
     difficulty: 'medium',
     prompt: {
       pt: 'Captura pacotes numa interface, salva em arquivo, filtra por host e porta e lê uma captura salva.',
@@ -221,7 +221,7 @@ sudo visudo`,
 export const cryptoSnippets: Snippet[] = [
   {
     id: 'sec-011',
-    concept: { pt: 'Certificado Autoassinado', en: 'Self-signed Certificate' },
+    concept: { pt: 'Certificado SSL Autoassinado', en: 'Self-signed Certificate' },
     difficulty: 'medium',
     prompt: {
       pt: 'Gera um certificado autoassinado RSA 4096 bits válido por 1 ano, sem passphrase na chave privada.',
@@ -235,7 +235,7 @@ export const cryptoSnippets: Snippet[] = [
   },
   {
     id: 'sec-012',
-    concept: { pt: 'Inspecionar Certificado', en: 'Inspect Certificate' },
+    concept: { pt: 'Inspecionar Certificado SSL', en: 'Inspect Certificate' },
     difficulty: 'medium',
     prompt: {
       pt: 'Mostra os detalhes de um certificado local, conecta num servidor pra ver o cert remoto e verifica a cadeia de confiança.',
@@ -247,7 +247,7 @@ openssl verify -CAfile ca.pem cert.pem`,
   },
   {
     id: 'sec-013',
-    concept: { pt: 'Gerenciamento de Chaves SSH', en: 'SSH Key Management' },
+    concept: { pt: 'Gerenciamento de Chave SSH', en: 'SSH Key Management' },
     difficulty: 'medium',
     prompt: {
       pt: 'Gera uma chave ed25519, copia pro servidor remoto, adiciona no authorized_keys e ajusta as permissões.',

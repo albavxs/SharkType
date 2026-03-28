@@ -30,7 +30,7 @@ ORDER BY total DESC;`,
   },
   {
     id: 'sql-003',
-    concept: { pt: 'Subquery', en: 'Subquery' },
+    concept: { pt: 'Subconsulta', en: 'Subquery' },
     difficulty: 'medium',
     prompt: {
       pt: 'Subquery é uma query dentro de outra. Usa ela pra calcular o salário médio de todos os funcionários no WHERE e retorna só quem ganha acima dessa média.',
@@ -60,7 +60,7 @@ SELECT * FROM active_users;`,
   },
   {
     id: 'sql-005',
-    concept: { pt: 'Window Function', en: 'Window Function' },
+    concept: { pt: 'Função de Janela', en: 'Window Function' },
     difficulty: 'hard',
     prompt: {
       pt: 'Window functions calculam valores sobre um conjunto de linhas sem colapsar o resultado como o GROUP BY faz. Usa RANK() com OVER(PARTITION BY department ORDER BY salary DESC) pra rankear cada funcionário dentro do departamento dele.',
@@ -99,7 +99,7 @@ WHERE category = 'electronics';`,
   },
   {
     id: 'sql-008',
-    concept: { pt: 'DELETE com Subquery', en: 'DELETE with Subquery' },
+    concept: { pt: 'DELETE com Subconsulta', en: 'DELETE with Subquery' },
     difficulty: 'medium',
     prompt: {
       pt: 'DELETE com subquery remove linhas baseado em condição de outra tabela. Deleta todas as sessões onde o usuário (pelo user_id) não faz login há mais de 1 ano — sem join, usando IN com subquery.',

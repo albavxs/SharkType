@@ -3,7 +3,7 @@ import { Snippet } from '@/lib/types'
 export const goSnippets: Snippet[] = [
   {
     id: 'go-001',
-    concept: { pt: 'Function', en: 'Function' },
+    concept: { pt: 'Função', en: 'Function' },
     difficulty: 'easy',
     prompt: {
       pt: 'Em Go, função declara o tipo de cada parâmetro e do retorno. Defina "add" com dois parâmetros int (dá pra abreviar "a, b int" quando o tipo é o mesmo) e retorne a soma direto.',
@@ -12,10 +12,11 @@ export const goSnippets: Snippet[] = [
     code: `func add(a, b int) int {
     return a + b
 }`,
+    slot: 'fn-basic',
   },
   {
     id: 'go-002',
-    concept: { pt: 'Struct', en: 'Struct' },
+    concept: { pt: 'Estrutura', en: 'Struct' },
     difficulty: 'easy',
     prompt: {
       pt: 'Struct em Go agrupa campos tipados. Declare User com três campos exportados (maiúscula pra ficar visível fora do pacote): Name e Email como string, e Age como int.',
@@ -26,6 +27,7 @@ export const goSnippets: Snippet[] = [
     Email string
     Age   int
 }`,
+    slot: 'obj-create',
   },
   {
     id: 'go-003',
@@ -38,6 +40,7 @@ export const goSnippets: Snippet[] = [
     code: `type Reader interface {
     Read(p []byte) (n int, err error)
 }`,
+    slot: 'obj-interface',
   },
   {
     id: 'go-004',
@@ -51,10 +54,11 @@ export const goSnippets: Snippet[] = [
     result := heavyComputation()
     ch <- result
 }()`,
+    slot: 'adv-concurrent',
   },
   {
     id: 'go-005',
-    concept: { pt: 'Channel', en: 'Channel' },
+    concept: { pt: 'Canal', en: 'Channel' },
     difficulty: 'medium',
     prompt: {
       pt: 'Channel é o mecanismo de comunicação segura entre goroutines em Go. Crie um channel de string com buffer de 1 usando make, envie "hello" pra ele e receba a mensagem com o operador <-.',
@@ -64,6 +68,7 @@ export const goSnippets: Snippet[] = [
 ch <- "hello"
 msg := <-ch
 fmt.Println(msg)`,
+    slot: 'adv-pattern',
   },
   {
     id: 'go-006',
@@ -81,6 +86,7 @@ fmt.Println(msg)`,
     defer f.Close()
     return io.ReadAll(f)
 }`,
+    slot: 'err-finally',
   },
   {
     id: 'go-007',
@@ -94,10 +100,11 @@ fmt.Println(msg)`,
 if err != nil {
     return fmt.Errorf("failed: %w", err)
 }`,
+    slot: 'err-try-catch',
   },
   {
     id: 'go-008',
-    concept: { pt: 'Range Loop', en: 'Range Loop' },
+    concept: { pt: 'Laço Range', en: 'Range Loop' },
     difficulty: 'easy',
     prompt: {
       pt: 'Range itera sobre slices, arrays, maps e channels retornando índice e valor. Use "for i, v := range items" pra acessar cada par e imprima formatado com Printf.',
@@ -106,10 +113,11 @@ if err != nil {
     code: `for i, v := range items {
     fmt.Printf("%d: %s\\n", i, v)
 }`,
+    slot: 'loop-foreach',
   },
   {
     id: 'go-009',
-    concept: { pt: 'Map', en: 'Map' },
+    concept: { pt: 'Mapa', en: 'Map' },
     difficulty: 'easy',
     prompt: {
       pt: 'Map em Go associa chaves a valores e pode ser declarado com make ou literal. Inicialize um map[string]int com literal, coloque dois pares e acesse um valor checando se existe: age, ok := m["alice"].',
@@ -120,6 +128,7 @@ if err != nil {
     "bob":   30,
 }
 age, ok := m["alice"]`,
+    slot: 'var-types',
   },
   {
     id: 'go-010',
@@ -135,5 +144,522 @@ age, ok := m["alice"]`,
 
 x := 5
 increment(&x)`,
+    slot: 'fn-callback',
+  },
+  // ── If e Else ──────────────────────────────────────────────
+  {
+    id: 'go-011',
+    concept: { pt: 'If Simples', en: 'Basic If' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Go, o if nao precisa de parenteses na condicao. Verifique se age e maior ou igual a 18 e imprima com fmt.Println.',
+      en: 'In Go, if statements don\'t need parentheses. Check if age is 18 or older and print with fmt.Println.',
+    },
+    code: `if age >= 18 {
+    fmt.Println("You are an adult")
+}`,
+    slot: 'cond-basic-if',
+  },
+  {
+    id: 'go-012',
+    concept: { pt: 'If-Else', en: 'If-Else' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'If-else em Go segue a mesma regra: sem parenteses e a chave abre na mesma linha. Classifique score como "Pass" ou "Fail" e guarde numa variavel.',
+      en: 'If-else in Go follows the same rule: no parentheses and the brace opens on the same line. Classify score as "Pass" or "Fail" and store in a variable.',
+    },
+    code: `var result string
+if score >= 70 {
+    result = "Pass"
+} else {
+    result = "Fail"
+}`,
+    slot: 'cond-if-else',
+  },
+  {
+    id: 'go-013',
+    concept: { pt: 'Expressao Condicional Curta', en: 'Short Conditional' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go nao tem operador ternario, mas uma func helper inline resolve. Crie uma funcao ternary generica com Go 1.18+ que recebe uma condicao bool e dois valores.',
+      en: 'Go has no ternary operator, but an inline helper function works. Create a generic ternary function with Go 1.18+ that takes a bool condition and two values.',
+    },
+    code: `func ternary[T any](cond bool, a, b T) T {
+    if cond {
+        return a
+    }
+    return b
+}`,
+    slot: 'cond-ternary',
+  },
+  {
+    id: 'go-014',
+    concept: { pt: 'Switch', en: 'Switch' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Switch em Go nao precisa de break — cada case para automaticamente. Use switch pra mapear um dia da semana a uma categoria, com default pra "Midweek".',
+      en: 'Switch in Go doesn\'t need break — each case stops automatically. Use switch to map a day of the week to a category, with default for "Midweek".',
+    },
+    code: `switch day {
+case "Monday", "Friday":
+    label = "Work"
+case "Saturday", "Sunday":
+    label = "Rest"
+default:
+    label = "Midweek"
+}`,
+    slot: 'cond-switch',
+  },
+  {
+    id: 'go-015',
+    concept: { pt: 'If com Inicializador', en: 'If with Initializer' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Em Go, o if pode ter uma declaracao curta antes da condicao, separada por ";". Use isso pra abrir um arquivo e checar o erro na mesma linha — o escopo da variavel fica limitado ao bloco.',
+      en: 'In Go, if can have a short statement before the condition, separated by ";". Use this to open a file and check the error on the same line — the variable\'s scope is limited to the block.',
+    },
+    code: `if f, err := os.Open("config.json"); err != nil {
+    log.Fatal(err)
+} else {
+    defer f.Close()
+}`,
+    slot: 'cond-guard',
+  },
+  // ── Variaveis ──────────────────────────────────────────────
+  {
+    id: 'go-016',
+    concept: { pt: 'Declaracao de Variavel', en: 'Variable Declaration' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go tem dois jeitos de declarar variavel: "var" com tipo explicito e ":=" com inferencia. Declare uma string com var e um inteiro com :=.',
+      en: 'Go has two ways to declare variables: "var" with explicit type and ":=" with inference. Declare a string with var and an int with :=.',
+    },
+    code: `var name string = "Alice"
+age := 25`,
+    slot: 'var-declare',
+  },
+  {
+    id: 'go-017',
+    concept: { pt: 'Constante', en: 'Constant' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Constantes em Go sao declaradas com "const" e podem ser agrupadas num bloco. Declare PI e MaxRetries num bloco const.',
+      en: 'Constants in Go are declared with "const" and can be grouped in a block. Declare PI and MaxRetries in a const block.',
+    },
+    code: `const (
+    PI         = 3.14159
+    MaxRetries = 3
+)`,
+    slot: 'var-const',
+  },
+  {
+    id: 'go-018',
+    concept: { pt: 'Interpolacao com Sprintf', en: 'String Interpolation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go nao tem interpolacao nativa, mas fmt.Sprintf formata strings com verbos como %s e %d. Construa uma saudacao usando Sprintf.',
+      en: 'Go doesn\'t have native interpolation, but fmt.Sprintf formats strings with verbs like %s and %d. Build a greeting using Sprintf.',
+    },
+    code: `name := "Alice"
+age := 30
+msg := fmt.Sprintf("Hello, %s! You are %d.", name, age)`,
+    slot: 'var-interpolation',
+  },
+  {
+    id: 'go-019',
+    concept: { pt: 'Slice', en: 'Slice' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Slice e o array dinamico de Go. Crie um slice literal de strings, adicione um elemento com append e imprima o tamanho com len.',
+      en: 'Slices are Go\'s dynamic arrays. Create a string slice literal, add an element with append, and print the length with len.',
+    },
+    code: `fruits := []string{"apple", "banana"}
+fruits = append(fruits, "cherry")
+fmt.Println(len(fruits))`,
+    slot: 'var-array',
+  },
+  {
+    id: 'go-020',
+    concept: { pt: 'Retorno Multiplo', en: 'Multiple Return' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go permite retornar multiplos valores, o que e usado pra retornar resultado + erro. Crie divide que retorna float64 e error, checando divisao por zero.',
+      en: 'Go allows multiple return values, commonly used for result + error. Create divide that returns float64 and error, checking for division by zero.',
+    },
+    code: `func divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, errors.New("division by zero")
+    }
+    return a / b, nil
+}`,
+    slot: 'var-destructure',
+  },
+  // ── Funcoes ────────────────────────────────────────────────
+  {
+    id: 'go-021',
+    concept: { pt: 'Funcao Anonima', en: 'Anonymous Function' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go suporta funcoes anonimas que podem ser atribuidas a variaveis. Crie uma funcao anonima que soma dois inteiros e atribua a variavel "add".',
+      en: 'Go supports anonymous functions that can be assigned to variables. Create an anonymous function that adds two ints and assign it to the variable "add".',
+    },
+    code: `add := func(a, b int) int {
+    return a + b
+}
+fmt.Println(add(3, 4))`,
+    slot: 'fn-arrow',
+  },
+  {
+    id: 'go-022',
+    concept: { pt: 'Closure', en: 'Closure' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Closures em Go capturam variaveis do escopo externo. Crie um contador que retorna uma funcao — cada chamada incrementa e retorna o valor capturado.',
+      en: 'Closures in Go capture variables from the outer scope. Create a counter that returns a function — each call increments and returns the captured value.',
+    },
+    code: `func counter() func() int {
+    count := 0
+    return func() int {
+        count++
+        return count
+    }
+}`,
+    slot: 'fn-closure',
+  },
+  {
+    id: 'go-023',
+    concept: { pt: 'Parametros Variadicos', en: 'Variadic Parameters' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go usa "..." pra parametros variadicos, permitindo passar qualquer quantidade de argumentos. Crie sum que aceita multiplos inteiros e retorna a soma.',
+      en: 'Go uses "..." for variadic parameters, allowing any number of arguments. Create sum that accepts multiple ints and returns the total.',
+    },
+    code: `func sum(nums ...int) int {
+    total := 0
+    for _, n := range nums {
+        total += n
+    }
+    return total
+}`,
+    slot: 'fn-default-params',
+  },
+  // ── Loops ──────────────────────────────────────────────────
+  {
+    id: 'go-024',
+    concept: { pt: 'For Classico', en: 'Classic For' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go so tem "for" como laco — nao existe while nem do-while. Use o for classico com inicializador, condicao e pos para imprimir de 0 a 4.',
+      en: 'Go only has "for" as a loop — there is no while or do-while. Use the classic for with init, condition, and post to print 0 through 4.',
+    },
+    code: `for i := 0; i < 5; i++ {
+    fmt.Println(i)
+}`,
+    slot: 'loop-for',
+  },
+  {
+    id: 'go-025',
+    concept: { pt: 'For como While', en: 'For as While' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Go, "for" sem inicializador e pos funciona como while. Use pra ler de um scanner enquanto houver input.',
+      en: 'In Go, "for" without init and post works as while. Use it to read from a scanner while there is input.',
+    },
+    code: `scanner := bufio.NewScanner(os.Stdin)
+for scanner.Scan() {
+    fmt.Println(scanner.Text())
+}`,
+    slot: 'loop-while',
+  },
+  {
+    id: 'go-026',
+    concept: { pt: 'Filtrar Slice', en: 'Filter Slice' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go nao tem filter embutido, mas e facil construir um com range e append. Filtre um slice de inteiros mantendo apenas os pares.',
+      en: 'Go has no built-in filter, but it\'s easy to build one with range and append. Filter a slice of ints keeping only even numbers.',
+    },
+    code: `var evens []int
+for _, n := range nums {
+    if n%2 == 0 {
+        evens = append(evens, n)
+    }
+}`,
+    slot: 'loop-filter',
+  },
+  {
+    id: 'go-027',
+    concept: { pt: 'Gerar Sequencia', en: 'Generate Sequence' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Go, crie uma sequencia numerica com um for classico adicionando ao slice. Gere um slice de 1 a n usando append.',
+      en: 'In Go, create a numeric sequence with a classic for appending to a slice. Generate a slice from 1 to n using append.',
+    },
+    code: `func makeRange(n int) []int {
+    s := make([]int, 0, n)
+    for i := 1; i <= n; i++ {
+        s = append(s, i)
+    }
+    return s
+}`,
+    slot: 'loop-range',
+  },
+  // ── Objetos (struct patterns) ──────────────────────────────
+  {
+    id: 'go-028',
+    concept: { pt: 'Metodo em Struct', en: 'Struct Method' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Go, metodos sao funcoes com um receiver. Adicione um metodo FullName ao struct Person que concatena FirstName e LastName.',
+      en: 'In Go, methods are functions with a receiver. Add a FullName method to the Person struct that concatenates FirstName and LastName.',
+    },
+    code: `type Person struct {
+    FirstName, LastName string
+}
+
+func (p Person) FullName() string {
+    return p.FirstName + " " + p.LastName
+}`,
+    slot: 'obj-methods',
+  },
+  {
+    id: 'go-029',
+    concept: { pt: 'Struct Aninhado', en: 'Nested Struct' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go suporta composicao com embedding — o struct interno "promove" seus campos pro externo. Crie Address e Company com Address embutido.',
+      en: 'Go supports composition via embedding — the inner struct promotes its fields to the outer. Create Address and Company with embedded Address.',
+    },
+    code: `type Address struct {
+    City, State string
+}
+
+type Company struct {
+    Name string
+    Address
+}`,
+    slot: 'obj-nested',
+  },
+  // ── Classes (struct + interface patterns) ──────────────────
+  {
+    id: 'go-030',
+    concept: { pt: 'Struct com Constructor', en: 'Struct Constructor' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Go nao tem classes, mas a convencao e criar funcoes New* que funcionam como construtores. Crie NewUser que valida os campos e retorna *User.',
+      en: 'Go has no classes, but the convention is New* functions as constructors. Create NewUser that validates fields and returns *User.',
+    },
+    code: `func NewUser(name string, age int) *User {
+    return &User{
+        Name: name,
+        Age:  age,
+    }
+}`,
+    slot: 'class-basic',
+  },
+  {
+    id: 'go-031',
+    concept: { pt: 'Composicao (Heranca)', en: 'Composition (Inheritance)' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go usa composicao em vez de heranca. Embuta Animal dentro de Dog pra "herdar" seus campos e metodos de forma implicita.',
+      en: 'Go uses composition instead of inheritance. Embed Animal inside Dog to "inherit" its fields and methods implicitly.',
+    },
+    code: `type Animal struct {
+    Name string
+}
+
+func (a Animal) Speak() string {
+    return a.Name + " speaks"
+}
+
+type Dog struct {
+    Animal
+    Breed string
+}`,
+    slot: 'class-inherit',
+  },
+  {
+    id: 'go-032',
+    concept: { pt: 'Sobrescrita de Metodo', en: 'Method Override' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Em Go, o struct externo pode redefinir um metodo do struct embutido, "sobrescrevendo" o comportamento. Faca Dog redefinir Speak de Animal.',
+      en: 'In Go, the outer struct can redefine a method from the embedded struct, "overriding" the behavior. Make Dog override Animal\'s Speak.',
+    },
+    code: `func (d Dog) Speak() string {
+    return d.Name + " barks"
+}
+
+dog := Dog{Animal: Animal{Name: "Rex"}, Breed: "Labrador"}
+fmt.Println(dog.Speak())`,
+    slot: 'class-override',
+  },
+  {
+    id: 'go-033',
+    concept: { pt: 'Interface como Abstrato', en: 'Interface as Abstract' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go nao tem classes abstratas, mas interfaces servem o mesmo proposito. Defina Shape com Area() e implemente com Circle.',
+      en: 'Go has no abstract classes, but interfaces serve the same purpose. Define Shape with Area() and implement it with Circle.',
+    },
+    code: `type Shape interface {
+    Area() float64
+}
+
+type Circle struct {
+    Radius float64
+}
+
+func (c Circle) Area() float64 {
+    return 3.14159 * c.Radius * c.Radius
+}`,
+    slot: 'class-abstract',
+  },
+  // ── Erros ──────────────────────────────────────────────────
+  {
+    id: 'go-034',
+    concept: { pt: 'Erro Customizado', en: 'Custom Error' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Em Go, qualquer tipo que implemente Error() string satisfaz a interface error. Crie um tipo ValidationError com campo Field e Message.',
+      en: 'In Go, any type implementing Error() string satisfies the error interface. Create a ValidationError type with Field and Message fields.',
+    },
+    code: `type ValidationError struct {
+    Field   string
+    Message string
+}
+
+func (e *ValidationError) Error() string {
+    return e.Field + ": " + e.Message
+}`,
+    slot: 'err-custom',
+  },
+  {
+    id: 'go-035',
+    concept: { pt: 'Resultado com ok', en: 'Result with ok' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go usa o padrao "valor, ok" pra indicar sucesso ou falha sem erro explicito. Use esse padrao pra buscar num map e tratar a ausencia.',
+      en: 'Go uses the "value, ok" pattern to indicate success or failure without an explicit error. Use this pattern to look up a map and handle absence.',
+    },
+    code: `func lookup(users map[string]User, key string) (User, bool) {
+    u, ok := users[key]
+    return u, ok
+}`,
+    slot: 'err-result',
+  },
+  // ── Tipos ──────────────────────────────────────────────────
+  {
+    id: 'go-036',
+    concept: { pt: 'Generico', en: 'Generic' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go 1.18+ suporta generics com type parameters. Crie uma funcao Filter generica que aceita um slice de qualquer tipo e um predicado.',
+      en: 'Go 1.18+ supports generics with type parameters. Create a generic Filter function that accepts a slice of any type and a predicate.',
+    },
+    code: `func Filter[T any](s []T, fn func(T) bool) []T {
+    var result []T
+    for _, v := range s {
+        if fn(v) {
+            result = append(result, v)
+        }
+    }
+    return result
+}`,
+    slot: 'type-generic',
+  },
+  {
+    id: 'go-037',
+    concept: { pt: 'Union com Interface', en: 'Union with Interface' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Go 1.18+ permite union types em constraints de interface. Defina Number como constraint que aceita int ou float64 e crie Sum generico.',
+      en: 'Go 1.18+ allows union types in interface constraints. Define Number as a constraint accepting int or float64 and create a generic Sum.',
+    },
+    code: `type Number interface {
+    int | float64
+}
+
+func Sum[T Number](nums []T) T {
+    var total T
+    for _, n := range nums {
+        total += n
+    }
+    return total
+}`,
+    slot: 'type-union',
+  },
+  {
+    id: 'go-038',
+    concept: { pt: 'Constraint de Tipo', en: 'Type Constraint' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Constraints em Go restringem quais tipos um generico aceita. Use comparable pra garantir que o tipo suporta == e crie Contains generico.',
+      en: 'Constraints in Go restrict which types a generic accepts. Use comparable to ensure the type supports == and create a generic Contains.',
+    },
+    code: `func Contains[T comparable](s []T, target T) bool {
+    for _, v := range s {
+        if v == target {
+            return true
+        }
+    }
+    return false
+}`,
+    slot: 'type-constraint',
+  },
+  {
+    id: 'go-039',
+    concept: { pt: 'Tipo Utilitario', en: 'Utility Type' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Em Go, tipos utilitarios sao criados com generics e interfaces. Crie um tipo Pair generico que agrupa dois valores de tipos diferentes.',
+      en: 'In Go, utility types are built with generics and interfaces. Create a generic Pair type that groups two values of different types.',
+    },
+    code: `type Pair[A, B any] struct {
+    First  A
+    Second B
+}
+
+func NewPair[A, B any](a A, b B) Pair[A, B] {
+    return Pair[A, B]{First: a, Second: b}
+}`,
+    slot: 'type-utility',
+  },
+  // ── Avancado ───────────────────────────────────────────────
+  {
+    id: 'go-040',
+    concept: { pt: 'Async com Goroutine', en: 'Async with Goroutine' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Go usa goroutines e channels pra concorrencia assincrona. Lance multiplas goroutines com WaitGroup pra esperar todas terminarem.',
+      en: 'Go uses goroutines and channels for async concurrency. Launch multiple goroutines with WaitGroup to wait for all to finish.',
+    },
+    code: `var wg sync.WaitGroup
+for _, url := range urls {
+    wg.Add(1)
+    go func(u string) {
+        defer wg.Done()
+        fetch(u)
+    }(url)
+}
+wg.Wait()`,
+    slot: 'adv-async',
+  },
+  {
+    id: 'go-041',
+    concept: { pt: 'Select com Channels', en: 'Select with Channels' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Select em Go e como um switch pra operacoes de channel — espera o primeiro channel que estiver pronto. Use com time.After pra timeout.',
+      en: 'Select in Go is like a switch for channel operations — waits for the first ready channel. Use it with time.After for a timeout.',
+    },
+    code: `select {
+case msg := <-ch:
+    fmt.Println("received:", msg)
+case <-time.After(5 * time.Second):
+    fmt.Println("timeout")
+}`,
+    slot: 'adv-macro',
   },
 ]

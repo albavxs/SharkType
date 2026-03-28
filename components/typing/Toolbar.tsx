@@ -23,13 +23,14 @@ interface ToolbarProps {
   onLocaleToggle?: () => void
   isTyping?: boolean
   showControls?: boolean
+  showLanguage?: boolean
 }
 
 export default function Toolbar({
   language, difficulty, seconds, isTimerRunning,
   onLanguageChange, onDifficultyChange,
   onHomeClick, onHelpClick, level, streak, locale, onLocaleToggle,
-  isTyping = false, showControls = true,
+  isTyping = false, showControls = true, showLanguage = true,
 }: ToolbarProps) {
   const hide = isTyping ? 'opacity-0 pointer-events-none' : 'opacity-100'
 
@@ -79,8 +80,8 @@ export default function Toolbar({
       {showControls && <div className={`sm:hidden flex justify-center transition-all duration-300 ${hide}`}>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          <LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
-          <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span>
+          {showLanguage && <><LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
+          <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
             <>
@@ -98,8 +99,8 @@ export default function Toolbar({
       {showControls && <div className={`absolute left-1/2 -translate-x-1/2 hidden sm:block transition-all duration-300 ${hide}`}>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          <LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
-          <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span>
+          {showLanguage && <><LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
+          <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
             <>

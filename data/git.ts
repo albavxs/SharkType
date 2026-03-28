@@ -3,7 +3,7 @@ import { Snippet } from '@/lib/types'
 export const gitSnippets: Snippet[] = [
   {
     id: 'git-001',
-    concept: { pt: 'Workflow Básico', en: 'Basic Workflow' },
+    concept: { pt: 'Fluxo Básico', en: 'Basic Workflow' },
     difficulty: 'easy',
     prompt: {
       pt: 'Inicia um repo do zero, adiciona tudo e faz o primeiro commit.',
@@ -15,7 +15,7 @@ git commit -m "first commit"`,
   },
   {
     id: 'git-002',
-    concept: { pt: 'Status & Diff', en: 'Status & Diff' },
+    concept: { pt: 'Status e Diferenças', en: 'Status & Diff' },
     difficulty: 'easy',
     prompt: {
       pt: 'Checa o estado do repo, vê o que mudou fora do stage e o que já tá staged pro commit.',
@@ -27,7 +27,7 @@ git diff --staged`,
   },
   {
     id: 'git-003',
-    concept: { pt: 'Branches', en: 'Branches' },
+    concept: { pt: 'Ramificações', en: 'Branches' },
     difficulty: 'easy',
     prompt: {
       pt: 'Cria uma branch de feature, muda pra ela e depois deleta quando não precisar mais.',
@@ -51,7 +51,7 @@ git pull origin main`,
   },
   {
     id: 'git-005',
-    concept: { pt: 'Stash', en: 'Stash' },
+    concept: { pt: 'Reserva', en: 'Stash' },
     difficulty: 'medium',
     prompt: {
       pt: 'Guarda suas mudanças no stash pra trocar de branch, lista os stashes e recupera o último.',
@@ -63,7 +63,7 @@ git stash pop`,
   },
   {
     id: 'git-006',
-    concept: { pt: 'Merge', en: 'Merge' },
+    concept: { pt: 'Mesclagem', en: 'Merge' },
     difficulty: 'medium',
     prompt: {
       pt: 'Volta pra main, integra a branch de feature com merge explícito e limpa a branch depois.',
@@ -87,7 +87,7 @@ git rebase --continue`,
   },
   {
     id: 'git-008',
-    concept: { pt: 'Log & Blame', en: 'Log & Blame' },
+    concept: { pt: 'Histórico e Blame', en: 'Log & Blame' },
     difficulty: 'medium',
     prompt: {
       pt: 'Vê o histórico compacto com grafo, filtra por autor e período, e descobre quem escreveu cada linha.',
@@ -99,7 +99,7 @@ git blame -L 10,20 src/main.ts`,
   },
   {
     id: 'git-009',
-    concept: { pt: 'Reset & Revert', en: 'Reset & Revert' },
+    concept: { pt: 'Desfazer e Reverter', en: 'Reset & Revert' },
     difficulty: 'hard',
     prompt: {
       pt: 'Desfaz o último commit mantendo as mudanças staged, força o sync com o remote e reverte um commit de forma segura.',
@@ -111,7 +111,7 @@ git revert HEAD --no-edit`,
   },
   {
     id: 'git-010',
-    concept: { pt: 'Cherry-pick & Bisect', en: 'Cherry-pick & Bisect' },
+    concept: { pt: 'Cherry-Pick e Bisect', en: 'Cherry-pick & Bisect' },
     difficulty: 'hard',
     prompt: {
       pt: 'Traz commits específicos de outra branch e usa bisect pra descobrir qual commit quebrou tudo.',
@@ -124,7 +124,7 @@ git bisect good v1.0.0`,
   },
   {
     id: 'git-011',
-    concept: { pt: 'Identidade Global', en: 'Global Identity Config' },
+    concept: { pt: 'Configuração de Identidade', en: 'Global Identity Config' },
     difficulty: 'easy',
     prompt: {
       pt: 'Configura seu nome e email globalmente pra que seus commits fiquem identificados certinho.',
@@ -135,7 +135,7 @@ git config --global user.email "voce@email.com"`,
   },
   {
     id: 'git-012',
-    concept: { pt: 'Aliases', en: 'Aliases' },
+    concept: { pt: 'Atalhos', en: 'Aliases' },
     difficulty: 'easy',
     prompt: {
       pt: 'Cria atalhos globais pro checkout, branch e status pra digitar menos no dia a dia.',
@@ -147,7 +147,7 @@ git config --global alias.st status`,
   },
   {
     id: 'git-013',
-    concept: { pt: 'Opções de Clone', en: 'Clone Options' },
+    concept: { pt: 'Opções de Clonagem', en: 'Clone Options' },
     difficulty: 'easy',
     prompt: {
       pt: 'Clona um repo normalmente, depois uma branch específica, e por fim faz um shallow clone só com o último commit.',
@@ -159,7 +159,7 @@ git clone --depth 1 https://github.com/user/repo.git`,
   },
   {
     id: 'git-014',
-    concept: { pt: 'Amend de Commits', en: 'Amend Commits' },
+    concept: { pt: 'Corrigir Commit', en: 'Amend Commits' },
     difficulty: 'medium',
     prompt: {
       pt: 'Corrige a mensagem do último commit e depois faz um amend sem mudar a mensagem.',
@@ -170,7 +170,7 @@ git commit --amend --no-edit`,
   },
   {
     id: 'git-015',
-    concept: { pt: 'Restore Moderno', en: 'Modern Restore' },
+    concept: { pt: 'Restauração Moderna', en: 'Modern Restore' },
     difficulty: 'medium',
     prompt: {
       pt: 'Usa git restore pra descartar mudanças de um arquivo, tirar do stage e restaurar tudo de uma vez.',
@@ -182,7 +182,7 @@ git restore .`,
   },
   {
     id: 'git-016',
-    concept: { pt: 'Stash Avançado', en: 'Advanced Stash' },
+    concept: { pt: 'Reserva Avançada', en: 'Advanced Stash' },
     difficulty: 'medium',
     prompt: {
       pt: 'Faz stash com e sem mensagem, recupera, lista os stashes salvos e dropa um específico.',
@@ -196,7 +196,7 @@ git stash drop stash@{0}`,
   },
   {
     id: 'git-017',
-    concept: { pt: 'Push & Pull com Opções', en: 'Push & Pull Options' },
+    concept: { pt: 'Push e Pull com Opções', en: 'Push & Pull Options' },
     difficulty: 'medium',
     prompt: {
       pt: 'Sobe a branch pro remote, faz force push seguro, pull com rebase e atualiza as refs.',
@@ -209,7 +209,7 @@ git fetch origin`,
   },
   {
     id: 'git-018',
-    concept: { pt: 'Gerenciar Remotes', en: 'Manage Remotes' },
+    concept: { pt: 'Gerenciar Remotos', en: 'Manage Remotes' },
     difficulty: 'easy',
     prompt: {
       pt: 'Adiciona um remote origin, confere os remotes configurados e remove um que não precisa mais.',
@@ -233,7 +233,7 @@ git push origin --tags`,
   },
   {
     id: 'git-020',
-    concept: { pt: 'Log Compacto e Gráfico', en: 'Compact & Graphic Log' },
+    concept: { pt: 'Histórico Compacto e Gráfico', en: 'Compact & Graphic Log' },
     difficulty: 'easy',
     prompt: {
       pt: 'Vê o log resumido, adiciona o grafo de branches e filtra por autor e data.',

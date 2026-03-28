@@ -32,7 +32,7 @@ export const cssSnippets: Snippet[] = [
   },
   {
     id: 'css-003',
-    concept: { pt: 'Custom Properties', en: 'Custom Properties' },
+    concept: { pt: 'Propriedades Customizadas', en: 'Custom Properties' },
     difficulty: 'easy',
     prompt: {
       pt: 'Variáveis CSS (custom properties) centralizam valores que você reutiliza no projeto todo. Declara --primary e --radius em :root (escopo global) e usa em .button com var() — mudou a variável, atualiza tudo automaticamente.',
@@ -50,7 +50,7 @@ export const cssSnippets: Snippet[] = [
   },
   {
     id: 'css-004',
-    concept: { pt: 'Media Query', en: 'Media Query' },
+    concept: { pt: 'Consulta de Mídia', en: 'Media Query' },
     difficulty: 'easy',
     prompt: {
       pt: 'Media queries aplicam estilos de acordo com as características do dispositivo. Pra viewports de até 768px, esconde a .sidebar com display:none e expande .main pra ocupar 100% da largura.',
@@ -84,7 +84,7 @@ export const cssSnippets: Snippet[] = [
   },
   {
     id: 'css-006',
-    concept: { pt: 'Pseudo-elements', en: 'Pseudo-elements' },
+    concept: { pt: 'Pseudoelementos', en: 'Pseudo-elements' },
     difficulty: 'medium',
     prompt: {
       pt: '::before insere um pseudo-elemento antes do conteúdo sem mexer no HTML. Usa no .label pra criar um ponto decorativo redondo: content vazio, display inline-block, tamanho fixo, border-radius 50% e background currentColor.',
@@ -102,7 +102,7 @@ export const cssSnippets: Snippet[] = [
   },
   {
     id: 'css-007',
-    concept: { pt: 'Container Query', en: 'Container Query' },
+    concept: { pt: 'Consulta de Contêiner', en: 'Container Query' },
     difficulty: 'hard',
     prompt: {
       pt: 'Container queries estilizam com base no tamanho do container pai, não da viewport. Marca .card-wrapper como container-type: inline-size e quando chegar em 400px, muda .card pra um grid de duas colunas.',
@@ -152,7 +152,7 @@ export const cssSnippets: Snippet[] = [
   },
   {
     id: 'css-010',
-    concept: { pt: 'Nesting', en: 'Nesting' },
+    concept: { pt: 'Aninhamento', en: 'Nesting' },
     difficulty: 'medium',
     prompt: {
       pt: 'CSS nesting nativo deixa você aninhar seletores igual no SASS/SCSS, sem pré-processador. Dentro de .nav, usa "& a" pra estilizar os links e "& a:hover" pro hover — sem repetir o seletor pai.',

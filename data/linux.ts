@@ -3,7 +3,7 @@ import { Snippet } from '@/lib/types'
 export const linuxSnippets: Snippet[] = [
   {
     id: 'linux-001',
-    concept: { pt: 'Navegação', en: 'Navigation' },
+    concept: { pt: 'Navegação de Arquivos', en: 'Navigation' },
     difficulty: 'easy',
     prompt: {
       pt: 'Lista tudo com permissões em /var/log (inclusive os ocultos), entra em /etc/nginx e mostra o caminho atual.',
@@ -15,7 +15,7 @@ pwd`,
   },
   {
     id: 'linux-002',
-    concept: { pt: 'Operações com Arquivos', en: 'File Operations' },
+    concept: { pt: 'Gerenciamento de Arquivos', en: 'File Operations' },
     difficulty: 'easy',
     prompt: {
       pt: 'Copia um diretório inteiro, renomeia um arquivo e apaga uma pasta de cache com tudo dentro.',
@@ -63,7 +63,7 @@ chown -R www-data:www-data /var/www`,
   },
   {
     id: 'linux-006',
-    concept: { pt: 'Processos', en: 'Processes' },
+    concept: { pt: 'Gerenciamento de Processos', en: 'Processes' },
     difficulty: 'medium',
     prompt: {
       pt: 'Acha o processo do nginx, mata pelo PID, restarta o serviço e fica acompanhando os logs em tempo real.',

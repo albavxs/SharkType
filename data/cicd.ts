@@ -3,7 +3,7 @@ import { Snippet } from '@/lib/types'
 export const cicdSnippets: Snippet[] = [
   {
     id: 'cicd-001',
-    concept: { pt: 'Workflow GitHub Actions Básico', en: 'Basic GitHub Actions Workflow' },
+    concept: { pt: 'Fluxo Básico do GitHub Actions', en: 'Basic GitHub Actions Workflow' },
     difficulty: 'medium',
     prompt: {
       pt: 'Cria um workflow de CI que roda os testes em push na main e em pull requests, usando Node 20.',

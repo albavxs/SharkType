@@ -35,7 +35,7 @@ EXPOSE 8000`,
   },
   {
     id: 'docker-003',
-    concept: { pt: 'ARG e Labels', en: 'ARG & Labels' },
+    concept: { pt: 'ARG e Rótulos', en: 'ARG & Labels' },
     difficulty: 'easy',
     prompt: {
       pt: 'Define args de build pra versão e data, e bota labels de metadata na imagem com esses valores.',
@@ -67,7 +67,7 @@ RUN go build -o /app ./cmd/server`,
   },
   {
     id: 'docker-005',
-    concept: { pt: 'Build Multi-stage', en: 'Multi-stage Build' },
+    concept: { pt: 'Build Multi-estágio', en: 'Multi-stage Build' },
     difficulty: 'medium',
     prompt: {
       pt: 'Use multi-stage pra buildar um frontend React e servir só os arquivos estáticos com Nginx, sem Node na imagem final.',
@@ -87,7 +87,7 @@ CMD ["nginx", "-g", "daemon off;"]`,
   },
   {
     id: 'docker-006',
-    concept: { pt: 'HEALTHCHECK', en: 'HEALTHCHECK' },
+    concept: { pt: 'Verificação de Saúde', en: 'HEALTHCHECK' },
     difficulty: 'medium',
     prompt: {
       pt: 'Adiciona um health check numa app FastAPI que bate no /health a cada 30s com timeout de 5s.',

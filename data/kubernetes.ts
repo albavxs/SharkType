@@ -3,7 +3,7 @@ import { Snippet } from '@/lib/types'
 export const kubernetesSnippets: Snippet[] = [
   {
     id: 'k8s-001',
-    concept: { pt: 'Comandos kubectl Básicos', en: 'Basic kubectl Commands' },
+    concept: { pt: 'Comandos Básicos do kubectl', en: 'Basic kubectl Commands' },
     difficulty: 'easy',
     prompt: {
       pt: 'Lista os pods de produção, os services de todos os namespaces, descreve um pod e fica acompanhando os logs dele.',
@@ -16,7 +16,7 @@ kubectl logs -f api-7d9f4b --tail=100`,
   },
   {
     id: 'k8s-002',
-    concept: { pt: 'Deployment YAML', en: 'Deployment YAML' },
+    concept: { pt: 'YAML de Implantação', en: 'Deployment YAML' },
     difficulty: 'medium',
     prompt: {
       pt: 'Monta um manifesto de Deployment com 3 réplicas pra uma API na porta 3000, no namespace de produção.',
@@ -45,7 +45,7 @@ spec:
   },
   {
     id: 'k8s-003',
-    concept: { pt: 'Service YAML', en: 'Service YAML' },
+    concept: { pt: 'YAML de Serviço', en: 'Service YAML' },
     difficulty: 'hard',
     prompt: {
       pt: 'Define um Service do tipo ClusterIP que roteia o tráfego da porta 80 pra 3000 nos pods da API.',
@@ -65,7 +65,7 @@ spec:
   },
   {
     id: 'k8s-004',
-    concept: { pt: 'Apply e Rollback', en: 'Apply and Rollback' },
+    concept: { pt: 'Aplicar e Reverter', en: 'Apply and Rollback' },
     difficulty: 'medium',
     prompt: {
       pt: 'Aplica um deployment, acompanha o rollout, faz rollback se der ruim e atualiza a imagem direto pela CLI.',
@@ -78,7 +78,7 @@ kubectl set image deployment/api api=minha-app:1.1`,
   },
   {
     id: 'k8s-005',
-    concept: { pt: 'ConfigMap e Secret', en: 'ConfigMap and Secret' },
+    concept: { pt: 'ConfigMap e Segredo', en: 'ConfigMap and Secret' },
     difficulty: 'hard',
     prompt: {
       pt: 'Cria um ConfigMap a partir de variáveis e de um arquivo, e um Secret genérico com a senha do banco.',
@@ -93,7 +93,7 @@ kubectl create secret generic db-secret \\
   },
   {
     id: 'k8s-006',
-    concept: { pt: 'Scale e Autoscale', en: 'Scale and Autoscale' },
+    concept: { pt: 'Escalar e Autoescalar', en: 'Scale and Autoscale' },
     difficulty: 'hard',
     prompt: {
       pt: 'Escala um deployment na mão pra 5 réplicas e configura autoscaling baseado em CPU.',
