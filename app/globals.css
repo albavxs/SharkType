@@ -38,9 +38,9 @@ body {
 
 /* Cursor blink (idle only — typing cursor is solid via inline style) */
 @keyframes blink {
-  0%, 40% { opacity: 1; }
+  0% { opacity: 1; }
   50% { opacity: 0; }
-  90%, 100% { opacity: 1; }
+  100% { opacity: 1; }
 }
 
 /* Animations */
