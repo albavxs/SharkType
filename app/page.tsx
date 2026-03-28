@@ -25,6 +25,7 @@ import ThemeSelector from '@/components/typing/ThemeSelector'
 import HelpModal from '@/components/typing/HelpModal'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon, XIcon } from '@/components/icons'
+import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 
 export default function Home() {
   const [language, setLanguage] = useState<Language>(() => getLanguageById(DEFAULT_LANGUAGE)!)
@@ -39,6 +40,7 @@ export default function Home() {
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const isMobile = useIsMobile()
+  const capsLock = useCapsLock()
   const { recordSession } = useProgress()
 
   // Init theme + progress on client
@@ -148,8 +150,14 @@ export default function Home() {
                 </div>
               )}
 
+              {/* Caps Lock warning — desktop: above text */}
+              <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
+
               <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={language.id} isTyping={engine.state.status === 'running'} locale={locale} />
+
+              {/* Caps Lock warning — mobile: below text */}
+              <CapsLockWarning visible={capsLock && !showResult && !!isMobile} isMobile={true} locale={locale} />
 
               {engine.state.status === 'running' && (
                 <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>

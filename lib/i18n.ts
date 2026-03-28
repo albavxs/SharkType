@@ -107,6 +107,7 @@ const dict: Record<string, Record<Locale, string>> = {
   // ── Track practice page ─────────────────────────────────────────────────
   trackNotFound: { pt: 'Trilha não encontrada.', en: 'Track not found.' },
   hintShiftTab:  { pt: 'shift + tab — reiniciar', en: 'shift + tab — restart' },
+  capsLock:      { pt: 'Caps Lock ativado', en: 'Caps Lock is on' },
 
   // ── Leaderboard page ────────────────────────────────────────────────────
   pageRanking:    { pt: 'Ranking',        en: 'Leaderboard' },
