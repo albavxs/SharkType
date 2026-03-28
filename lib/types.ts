@@ -12,6 +12,7 @@ export interface Snippet {
   concept: I18nString
   difficulty: Difficulty
   prompt?: I18nString
+  slot?: string
 }
 
 export interface Language {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { tracks, Track } from '@/data/tracks'
+import { tracks, Track, TrackSection } from '@/data/tracks'
 import { languages, textLanguages } from '@/data'
 import { loadProgress, UserProgress, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
@@ -12,16 +12,26 @@ import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
 import ThemeSelector from '@/components/typing/ThemeSelector'
+import HelpModal from '@/components/typing/HelpModal'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { getLanguageById } from '@/data'
 import { Language, Difficulty } from '@/lib/types'
 
-const codeTracks = tracks.filter(t => !t.textLanguages)
+const conceptTracks = tracks.filter(t => t.section === 'concept')
+const focusedTracks = tracks.filter(t => t.section === 'focused')
+const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
+const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
 const idiomBadges = textLanguages.filter(l => l.id !== 'text-typing')
 
 function getTrackLanguages(track: Track): Language[] {
+  // Slot-based tracks
+  if (track.slots && track.slots.length > 0) {
+    return languages.filter(lang =>
+      lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
+    )
+  }
   const seen = new Set<string>()
   const result: Language[] = []
   for (const sid of track.snippetIds) {
@@ -40,6 +50,7 @@ export default function TracksPage() {
   const [progress, setProgress] = useState<UserProgress | null>(null)
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
   const levelInfo = progress ? getLevel(progress.totalXP) : null
@@ -114,7 +125,7 @@ export default function TracksPage() {
           seconds={0} isTimerRunning={false}
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
-          onHomeClick={() => router.push('/')} onHelpClick={() => {}}
+          onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
           level={levelInfo?.level ?? null} streak={progress?.streak.current ?? 0}
           locale={locale} onLocaleToggle={toggleLocale}
         />
@@ -139,12 +150,34 @@ export default function TracksPage() {
               </div>
             </div>
 
-            {/* Código section */}
+            {/* Conceitos section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('codeSection', locale)}</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('codeTracksDesc', locale)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                {codeTracks.map(track => (
+                {conceptTracks.map(track => (
+                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
+                ))}
+              </div>
+            </div>
+
+            {/* Foco por Área section */}
+            <div className="mb-10">
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('focusedSection', locale)}</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('focusedTracksDesc', locale)}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                {focusedTracks.map(track => (
+                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
+                ))}
+              </div>
+            </div>
+
+            {/* Cybersecurity & DevOps section */}
+            <div className="mb-10">
+              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('cyberdevopsSection', locale)}</h2>
+              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('cyberdevopsTracksDesc', locale)}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
+                {cyberdevopsTracks.map(track => (
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
               </div>
@@ -157,8 +190,10 @@ export default function TracksPage() {
           </div>
         </div>
 
-        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} locale={locale} />
+        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} locale={locale} />
       </div>
+
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
 
       {showThemeSelector && (
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
