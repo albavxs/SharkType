@@ -187,7 +187,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
               width: 3,
               backgroundColor: 'var(--caret)',
               transition: isTyping ? 'left 0.08s ease-out, top 0.08s ease-out' : 'none',
-              animation: isTyping ? 'none' : 'blink 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              animation: isTyping ? 'none' : 'blink 1.2s ease-in-out infinite',
               borderRadius: 2,
               opacity: 0.85,
             }}
