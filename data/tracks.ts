@@ -211,7 +211,8 @@ export const tracks: Track[] = [
       'k8s-001', 'k8s-002', 'k8s-003', 'k8s-004', 'k8s-005', 'k8s-006',
       'tf-001', 'tf-002', 'tf-003', 'tf-004',
       'ans-001', 'ans-002', 'ans-003',
-      'cicd-001', 'cicd-002',
+      'cicd-001', 'cicd-002', 'cicd-003', 'cicd-004', 'cicd-005',
+      'cicd-006', 'cicd-007', 'cicd-008', 'cicd-009', 'cicd-010',
       'linux-004', 'linux-005', 'linux-006', 'linux-007', 'linux-008',
       'git-001', 'git-004', 'git-005', 'git-006',
       'bash-006', 'bash-007',
@@ -222,12 +223,14 @@ export const tracks: Track[] = [
     id: 'database',
     name: { pt: 'Banco de Dados', en: 'Database' },
     description: {
-      pt: 'SQL completo: SELECT, JOIN, agregações, CTEs e window functions',
-      en: 'Full SQL: SELECT, JOIN, aggregations, CTEs, and window functions',
+      pt: 'SQL e MongoDB: SELECT, JOIN, agregações, pipelines e Mongoose',
+      en: 'SQL and MongoDB: SELECT, JOIN, aggregations, pipelines, and Mongoose',
     },
     snippetIds: [
       'sql-001', 'sql-002', 'sql-003', 'sql-004', 'sql-005',
       'sql-006', 'sql-007', 'sql-008', 'sql-009', 'sql-010',
+      'mongo-001', 'mongo-002', 'mongo-003', 'mongo-004', 'mongo-005',
+      'mongo-006', 'mongo-007', 'mongo-008', 'mongo-009', 'mongo-010',
     ],
     section: 'focused',
   },
@@ -334,6 +337,146 @@ export const tracks: Track[] = [
       'sec-011', 'sec-012', 'sec-013',
     ],
     section: 'cyberdevops',
+  },
+
+  // ── Frontend & Frameworks ────────────────────────────────────────────────
+  {
+    id: 'react',
+    name: { pt: 'React', en: 'React' },
+    description: {
+      pt: 'Hooks, contexto, memoização, custom hooks e error boundaries',
+      en: 'Hooks, context, memoization, custom hooks, and error boundaries',
+    },
+    snippetIds: [
+      'react-001', 'react-002', 'react-003', 'react-004', 'react-005',
+      'react-006', 'react-007', 'react-008', 'react-009', 'react-010',
+      'react-011', 'react-012',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'vue',
+    name: { pt: 'Vue.js', en: 'Vue.js' },
+    description: {
+      pt: 'Composition API, reatividade, diretivas, Pinia e Vue Router',
+      en: 'Composition API, reactivity, directives, Pinia, and Vue Router',
+    },
+    snippetIds: [
+      'vue-001', 'vue-002', 'vue-003', 'vue-004', 'vue-005',
+      'vue-006', 'vue-007', 'vue-008', 'vue-009', 'vue-010',
+      'vue-011', 'vue-012',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'nodejs',
+    name: { pt: 'Node.js', en: 'Node.js' },
+    description: {
+      pt: 'APIs REST, Express, Fastify, middleware e streams',
+      en: 'REST APIs, Express, Fastify, middleware, and streams',
+    },
+    snippetIds: [
+      'node-001', 'node-002', 'node-003', 'node-004', 'node-005',
+      'node-006', 'node-007', 'node-008', 'node-009', 'node-010',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'nextjs',
+    name: { pt: 'Next.js', en: 'Next.js' },
+    description: {
+      pt: 'App Router, Server Components, Server Actions, cache e middleware',
+      en: 'App Router, Server Components, Server Actions, caching, and middleware',
+    },
+    snippetIds: [
+      'next-001', 'next-002', 'next-003', 'next-004', 'next-005',
+      'next-006', 'next-007', 'next-008', 'next-009', 'next-010',
+      'next-011', 'next-012',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'dom',
+    name: { pt: 'DOM & Web APIs', en: 'DOM & Web APIs' },
+    description: {
+      pt: 'Manipulação de DOM, eventos, fetch e Web APIs do navegador',
+      en: 'DOM manipulation, events, fetch, and browser Web APIs',
+    },
+    snippetIds: [
+      'js-037', 'js-038', 'js-039', 'js-040', 'js-041',
+      'js-042', 'js-043', 'js-044', 'js-045', 'js-046',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'templates',
+    name: { pt: 'Template Engines', en: 'Template Engines' },
+    description: {
+      pt: 'Jinja, herança de templates e sistemas de template server-side',
+      en: 'Jinja, template inheritance, and server-side template systems',
+    },
+    snippetIds: [
+      'jinja-001', 'jinja-002', 'jinja-003', 'jinja-004', 'jinja-005',
+      'jinja-006', 'jinja-007', 'jinja-008', 'jinja-009', 'jinja-010',
+    ],
+    section: 'focused',
+  },
+  // ── Engenharia de Software ──────────────────────────────────────────────
+  {
+    id: 'design-patterns',
+    name: { pt: 'Design Patterns & SOLID', en: 'Design Patterns & SOLID' },
+    description: {
+      pt: 'SOLID, DRY, Clean Code e padrões de projeto com exemplos em JS/TS',
+      en: 'SOLID, DRY, Clean Code, and design patterns with JS/TS examples',
+    },
+    snippetIds: [
+      'pat-001', 'pat-002', 'pat-003', 'pat-004', 'pat-005',
+      'pat-006', 'pat-007', 'pat-008', 'pat-009', 'pat-010',
+      'pat-011', 'pat-012',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'algorithms',
+    name: { pt: 'Algoritmos & Estruturas de Dados', en: 'Algorithms & Data Structures' },
+    description: {
+      pt: 'Big O, ordenação, busca, árvores, grafos e estruturas de dados',
+      en: 'Big O, sorting, searching, trees, graphs, and data structures',
+    },
+    snippetIds: [
+      'algo-001', 'algo-002', 'algo-003', 'algo-004', 'algo-005',
+      'algo-006', 'algo-007', 'algo-008', 'algo-009', 'algo-010',
+      'algo-011', 'algo-012',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'testing',
+    name: { pt: 'Testes', en: 'Testing' },
+    description: {
+      pt: 'Unit, integração, e2e e TDD com Jest, Vitest, Cypress e Testing Library',
+      en: 'Unit, integration, e2e, and TDD with Jest, Vitest, Cypress, and Testing Library',
+    },
+    snippetIds: [
+      'test-001', 'test-002', 'test-003', 'test-004', 'test-005',
+      'test-006', 'test-007', 'test-008', 'test-009', 'test-010',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'backend',
+    name: { pt: 'Backend Basics', en: 'Backend Basics' },
+    description: {
+      pt: 'Async, concorrência e padrões de servidor em Python, Go, Java e Ruby',
+      en: 'Async, concurrency, and server patterns in Python, Go, Java, and Ruby',
+    },
+    snippetIds: [
+      'py-004', 'py-038', 'py-039',
+      'go-006', 'go-007', 'go-040', 'go-041',
+      'java-004', 'java-006', 'java-039', 'java-041',
+      'ruby-006', 'ruby-007', 'ruby-031', 'ruby-035',
+    ],
+    section: 'focused',
   },
 
   // ── Language tracks (text typing) ───────────────────────────────────────

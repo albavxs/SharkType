@@ -504,4 +504,203 @@ handlers[action]?.();`,
 ]);`,
     slot: 'adv-concurrent',
   },
+  // ── DOM & Web APIs ────────────────────────────────────────
+  {
+    id: 'js-037',
+    concept: { pt: 'querySelector e querySelectorAll', en: 'querySelector and querySelectorAll' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'querySelector retorna o primeiro elemento que bate com o seletor CSS, e querySelectorAll retorna todos. Selecione um botão pelo id e todos os itens de uma lista.',
+      en: 'querySelector returns the first element matching a CSS selector, and querySelectorAll returns all of them. Select a button by id and all items in a list.',
+    },
+    code: `const btn = document.querySelector('#submit-btn');
+const items = document.querySelectorAll('.list-item');
+
+items.forEach(item => {
+  console.log(item.textContent);
+});`,
+  },
+  {
+    id: 'js-038',
+    concept: { pt: 'addEventListener', en: 'addEventListener' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'addEventListener registra um callback que executa quando um evento ocorre no elemento. Adicione listeners de click e keydown num formulário.',
+      en: 'addEventListener registers a callback that runs when an event occurs on the element. Add click and keydown listeners to a form.',
+    },
+    code: `const form = document.querySelector('#my-form');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = new FormData(form);
+  console.log(Object.fromEntries(data));
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') form.reset();
+});`,
+  },
+  {
+    id: 'js-039',
+    concept: { pt: 'Delegação de Eventos', en: 'Event Delegation' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Delegação de eventos usa um único listener no pai pra capturar eventos dos filhos via bubbling. Adicione um listener na lista que detecta cliques nos botões de delete.',
+      en: 'Event delegation uses a single listener on the parent to capture child events via bubbling. Add a listener on the list that detects clicks on delete buttons.',
+    },
+    code: `const list = document.querySelector('#todo-list');
+
+list.addEventListener('click', (e) => {
+  const btn = e.target.closest('.delete-btn');
+  if (!btn) return;
+
+  const item = btn.closest('.todo-item');
+  item.remove();
+});`,
+  },
+  {
+    id: 'js-040',
+    concept: { pt: 'createElement e appendChild', en: 'createElement and appendChild' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'createElement cria um novo elemento DOM e appendChild o insere como filho. Crie uma função que adiciona um item de tarefa à lista dinamicamente.',
+      en: 'createElement creates a new DOM element and appendChild inserts it as a child. Create a function that dynamically adds a task item to the list.',
+    },
+    code: `function addTodo(text) {
+  const li = document.createElement('li');
+  li.className = 'todo-item';
+  li.innerHTML = \`
+    <span>\${text}</span>
+    <button class="delete-btn">x</button>
+  \`;
+  document.querySelector('#todo-list').appendChild(li);
+}`,
+  },
+  {
+    id: 'js-041',
+    concept: { pt: 'classList', en: 'classList' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'classList oferece métodos como add, remove e toggle pra manipular classes CSS de um elemento sem sobrescrever as existentes.',
+      en: 'classList provides methods like add, remove, and toggle to manipulate CSS classes on an element without overwriting existing ones.',
+    },
+    code: `const menu = document.querySelector('.sidebar');
+
+document.querySelector('#menu-toggle').addEventListener('click', () => {
+  menu.classList.toggle('open');
+});
+
+menu.classList.add('animated');
+menu.classList.remove('hidden');
+console.log(menu.classList.contains('open'));`,
+  },
+  {
+    id: 'js-042',
+    concept: { pt: 'Dataset (data attributes)', en: 'Dataset (data attributes)' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'O objeto dataset acessa atributos data-* do HTML como propriedades JavaScript em camelCase. Use dataset pra ler e escrever metadados nos elementos.',
+      en: 'The dataset object accesses HTML data-* attributes as camelCase JavaScript properties. Use dataset to read and write metadata on elements.',
+    },
+    code: `const card = document.querySelector('.product-card');
+
+const productId = card.dataset.productId;
+const category = card.dataset.category;
+
+card.dataset.selected = 'true';
+card.dataset.lastViewed = Date.now();
+
+console.log(productId, category);`,
+  },
+  {
+    id: 'js-043',
+    concept: { pt: 'Fetch com async/await completo', en: 'Full Fetch with async/await' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma chamada fetch completa verifica o status, trata erros de rede e parseia o body. Implemente uma função POST com headers, body JSON e tratamento de erro robusto.',
+      en: 'A complete fetch call checks the status, handles network errors, and parses the body. Implement a POST function with headers, JSON body, and robust error handling.',
+    },
+    code: `async function postData(url, body) {
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+    return await res.json();
+  } catch (err) {
+    console.error('Request failed:', err.message);
+    throw err;
+  }
+}`,
+  },
+  {
+    id: 'js-044',
+    concept: { pt: 'FormData API', en: 'FormData API' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'FormData captura todos os campos de um formulário automaticamente, incluindo arquivos. Use FormData pra enviar um formulário com upload de arquivo via fetch.',
+      en: 'FormData automatically captures all form fields including files. Use FormData to submit a form with file upload via fetch.',
+    },
+    code: `const form = document.querySelector('#upload-form');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  formData.append('timestamp', Date.now());
+
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+  const result = await res.json();
+  console.log(result);
+});`,
+  },
+  {
+    id: 'js-045',
+    concept: { pt: 'IntersectionObserver', en: 'IntersectionObserver' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'IntersectionObserver detecta quando um elemento entra ou sai do viewport, perfeito pra lazy loading e animações no scroll. Observe imagens pra carregar sob demanda.',
+      en: 'IntersectionObserver detects when an element enters or leaves the viewport, perfect for lazy loading and scroll animations. Observe images to load on demand.',
+    },
+    code: `const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const img = entry.target;
+    img.src = img.dataset.src;
+    img.classList.add('loaded');
+    observer.unobserve(img);
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('img[data-src]').forEach(img => {
+  observer.observe(img);
+});`,
+  },
+  {
+    id: 'js-046',
+    concept: { pt: 'LocalStorage e SessionStorage', en: 'LocalStorage and SessionStorage' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'localStorage persiste dados entre sessões e sessionStorage apenas durante a aba. Use localStorage pra salvar e recuperar preferências do usuário como JSON.',
+      en: 'localStorage persists data across sessions and sessionStorage only during the tab. Use localStorage to save and retrieve user preferences as JSON.',
+    },
+    code: `const PREFS_KEY = 'user-preferences';
+
+function savePrefs(prefs) {
+  localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+}
+
+function loadPrefs() {
+  const raw = localStorage.getItem(PREFS_KEY);
+  return raw ? JSON.parse(raw) : { theme: 'dark', lang: 'pt' };
+}
+
+const prefs = loadPrefs();
+prefs.theme = 'light';
+savePrefs(prefs);`,
+  },
 ]

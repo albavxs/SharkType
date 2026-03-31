@@ -23,6 +23,15 @@ import { terraformSnippets } from './terraform'
 import { ansibleSnippets } from './ansible'
 import { cicdSnippets } from './cicd'
 import { nmapSnippets, webReconSnippets, firewallSnippets, networkAnalysisSnippets, hardeningSnippets, cryptoSnippets } from './cybersec'
+import { vueSnippets } from './vue'
+import { jinjaSnippets } from './jinja'
+import { reactSnippets } from './react'
+import { nodejsSnippets } from './nodejs'
+import { testingSnippets } from './testing'
+import { patternsSnippets } from './patterns'
+import { algorithmsSnippets } from './algorithms'
+import { mongodbSnippets } from './mongodb'
+import { nextjsSnippets } from './nextjs'
 import { typingSnippets } from './text-typing'
 import { ptbrSnippets } from './text-ptbr'
 import { enSnippets } from './text-en'
@@ -59,6 +68,15 @@ export const codeLanguages: Language[] = [
   { id: 'network-analysis', label: 'Network Analysis', color: '#20b2aa', snippets: networkAnalysisSnippets },
   { id: 'hardening',        label: 'Hardening',        color: '#daa520', snippets: hardeningSnippets },
   { id: 'crypto',           label: 'Cryptography',     color: '#9370db', snippets: cryptoSnippets },
+  { id: 'vue',              label: 'Vue.js',           color: '#42b883', snippets: vueSnippets },
+  { id: 'react',            label: 'React',            color: '#61dafb', snippets: reactSnippets },
+  { id: 'nodejs',           label: 'Node.js',          color: '#339933', snippets: nodejsSnippets },
+  { id: 'testing',          label: 'Testing',          color: '#22c55e', snippets: testingSnippets },
+  { id: 'patterns',         label: 'Design Patterns',  color: '#8b5cf6', snippets: patternsSnippets },
+  { id: 'algorithms',       label: 'Algorithms',       color: '#06b6d4', snippets: algorithmsSnippets },
+  { id: 'mongodb',          label: 'MongoDB',          color: '#47a248', snippets: mongodbSnippets },
+  { id: 'jinja',            label: 'Jinja',            color: '#b41717', snippets: jinjaSnippets },
+  { id: 'nextjs',           label: 'Next.js',          color: '#b0b0b0', snippets: nextjsSnippets },
 ]
 
 export const textLanguages: Language[] = [

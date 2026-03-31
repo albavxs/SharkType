@@ -146,4 +146,46 @@ export const languageKeywords: Record<string, string[]> = {
   crypto: [
     'openssl', 'ssh', 'keygen', 'req', 'verify', 'chmod', 'cat',
   ],
+  vue: [
+    'ref', 'reactive', 'computed', 'watch', 'watchEffect', 'onMounted', 'onUnmounted',
+    'defineProps', 'defineEmits', 'defineStore', 'provide', 'inject', 'toRefs',
+    'createApp', 'createRouter', 'setup', 'template', 'script', 'style',
+  ],
+  react: [
+    'useState', 'useEffect', 'useContext', 'useMemo', 'useCallback', 'useReducer',
+    'useRef', 'createContext', 'memo', 'import', 'export', 'return', 'const',
+    'function', 'props', 'children',
+  ],
+  nodejs: [
+    'require', 'module', 'exports', 'app', 'express', 'fastify', 'get', 'post',
+    'put', 'delete', 'listen', 'use', 'next', 'req', 'res', 'async', 'await',
+    'fs', 'path', 'process',
+  ],
+  testing: [
+    'describe', 'it', 'test', 'expect', 'beforeEach', 'afterEach', 'jest', 'vi',
+    'mock', 'fn', 'spyOn', 'render', 'screen', 'fireEvent', 'cy', 'visit',
+    'get', 'toEqual', 'toBe',
+  ],
+  patterns: [
+    'class', 'interface', 'extends', 'implements', 'new', 'constructor', 'return',
+    'export', 'import', 'const', 'private', 'public', 'static', 'abstract', 'readonly',
+  ],
+  algorithms: [
+    'function', 'const', 'let', 'return', 'if', 'else', 'while', 'for', 'class',
+    'constructor', 'this', 'new', 'null', 'push', 'pop', 'shift',
+  ],
+  mongodb: [
+    'db', 'find', 'insertOne', 'insertMany', 'updateOne', 'deleteOne', 'aggregate',
+    'match', 'group', 'lookup', 'project', 'unwind', 'sort', 'limit', 'Schema', 'model',
+  ],
+  jinja: [
+    'extends', 'block', 'endblock', 'for', 'endfor', 'if', 'elif', 'else', 'endif',
+    'macro', 'endmacro', 'include', 'import', 'set', 'filter',
+  ],
+  nextjs: [
+    'export', 'default', 'async', 'function', 'return', 'import', 'const',
+    'await', 'fetch', 'revalidatePath', 'revalidateTag', 'notFound', 'redirect',
+    'NextRequest', 'NextResponse', 'generateMetadata', 'generateStaticParams',
+    'middleware', 'cookies', 'headers', 'params', 'searchParams',
+  ],
 }
