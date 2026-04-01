@@ -119,7 +119,7 @@ const role = ref('dev')
     <option value="dev">Developer</option>
     <option value="design">Designer</option>
   </select>
-  <p>{{ name }} — {{ role }}</p>
+  <p>{{ name }} -- {{ role }}</p>
 </template>`,
   },
   {

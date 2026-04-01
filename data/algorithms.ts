@@ -9,10 +9,10 @@ export const algorithmsSnippets: Snippet[] = [
       pt: 'Big O descreve a complexidade de tempo de um algoritmo. Demonstre O(1), O(n) e O(n²) com exemplos práticos de operações comuns.',
       en: 'Big O describes an algorithm\'s time complexity. Demonstrate O(1), O(n), and O(n²) with practical examples of common operations.',
     },
-    code: `// O(1) — acesso direto
+    code: `// O(1) -- acesso direto
 const first = arr[0];
 
-// O(n) — percorrer tudo
+// O(n) -- percorrer tudo
 function includes(arr, target) {
   for (const item of arr) {
     if (item === target) return true;
@@ -20,7 +20,7 @@ function includes(arr, target) {
   return false;
 }
 
-// O(n²) — loop aninhado
+// O(n²) -- loop aninhado
 function hasDuplicate(arr) {
   for (let i = 0; i < arr.length; i++) {
     for (let j = i + 1; j < arr.length; j++) {
@@ -59,8 +59,8 @@ binarySearch([1, 3, 5, 7, 9, 11], 7); // 3`,
     concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Bubble Sort compara pares adjacentes e troca se estiverem fora de ordem — O(n²). Implemente com otimização de parada antecipada quando não houver trocas.',
-      en: 'Bubble Sort compares adjacent pairs and swaps if out of order — O(n²). Implement with early stop optimization when no swaps occur.',
+      pt: 'Bubble Sort compara pares adjacentes e troca se estiverem fora de ordem -- O(n²). Implemente com otimização de parada antecipada quando não houver trocas.',
+      en: 'Bubble Sort compares adjacent pairs and swaps if out of order -- O(n²). Implement with early stop optimization when no swaps occur.',
     },
     code: `function bubbleSort(arr) {
   const a = [...arr];
@@ -84,8 +84,8 @@ bubbleSort([5, 3, 8, 1, 2]); // [1, 2, 3, 5, 8]`,
     concept: { pt: 'Merge Sort', en: 'Merge Sort' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Merge Sort divide o array recursivamente e depois intercala as metades ordenadas — O(n log n). Implemente as funções mergeSort e merge.',
-      en: 'Merge Sort recursively splits the array then merges sorted halves — O(n log n). Implement the mergeSort and merge functions.',
+      pt: 'Merge Sort divide o array recursivamente e depois intercala as metades ordenadas -- O(n log n). Implemente as funções mergeSort e merge.',
+      en: 'Merge Sort recursively splits the array then merges sorted halves -- O(n log n). Implement the mergeSort and merge functions.',
     },
     code: `function mergeSort(arr) {
   if (arr.length <= 1) return arr;
@@ -112,8 +112,8 @@ mergeSort([38, 27, 43, 3, 9, 82, 10]);`,
     concept: { pt: 'Quick Sort', en: 'Quick Sort' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Quick Sort escolhe um pivô e particiona o array em menores e maiores, depois ordena recursivamente — O(n log n) médio. Implemente com pivô no último elemento.',
-      en: 'Quick Sort picks a pivot and partitions the array into smaller and larger, then sorts recursively — O(n log n) average. Implement with last element as pivot.',
+      pt: 'Quick Sort escolhe um pivô e particiona o array em menores e maiores, depois ordena recursivamente -- O(n log n) médio. Implemente com pivô no último elemento.',
+      en: 'Quick Sort picks a pivot and partitions the array into smaller and larger, then sorts recursively -- O(n log n) average. Implement with last element as pivot.',
     },
     code: `function quickSort(arr) {
   if (arr.length <= 1) return arr;
@@ -226,8 +226,8 @@ class LinkedList {
     concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Uma BST mantém nós menores à esquerda e maiores à direita — O(log n) para busca. Implemente inserção e busca recursiva.',
-      en: 'A BST keeps smaller nodes on the left and larger on the right — O(log n) for search. Implement recursive insert and search.',
+      pt: 'Uma BST mantém nós menores à esquerda e maiores à direita -- O(log n) para busca. Implemente inserção e busca recursiva.',
+      en: 'A BST keeps smaller nodes on the left and larger on the right -- O(log n) for search. Implement recursive insert and search.',
     },
     code: `class TreeNode {
   constructor(value) {
@@ -332,8 +332,8 @@ dfs(graph, 'A'); // ['A', 'B', 'D', 'C', 'E']`,
     concept: { pt: 'Hash Map Simples', en: 'Simple Hash Map' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Um hash map usa uma função de hash pra mapear chaves a posições num array — O(1) médio. Implemente um HashMap básico com set, get e has.',
-      en: 'A hash map uses a hash function to map keys to array positions — O(1) average. Implement a basic HashMap with set, get, and has.',
+      pt: 'Um hash map usa uma função de hash pra mapear chaves a posições num array -- O(1) médio. Implemente um HashMap básico com set, get e has.',
+      en: 'A hash map uses a hash function to map keys to array positions -- O(1) average. Implement a basic HashMap with set, get, and has.',
     },
     code: `class HashMap {
   constructor(size = 53) {

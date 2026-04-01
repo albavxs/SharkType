@@ -22,8 +22,8 @@ print(greet("Lua"))`,
     difficulty: 'easy',
     slot: 'obj-create',
     prompt: {
-      pt: 'Tabelas são a única estrutura de dados do Lua — servem como array, dicionário e objeto. Crie a tabela "person" com campos chave-valor e acesse name e age com notação ponto.',
-      en: 'Tables are Lua\'s only data structure — used as arrays, dictionaries and objects. Create the "person" table with key-value fields and access name and age using dot notation.',
+      pt: 'Tabelas são a única estrutura de dados do Lua -- servem como array, dicionário e objeto. Crie a tabela "person" com campos chave-valor e acesse name e age com notação ponto.',
+      en: 'Tables are Lua\'s only data structure -- used as arrays, dictionaries and objects. Create the "person" table with key-value fields and access name and age using dot notation.',
     },
     code: `local person = {
   name = "Alice",

@@ -211,8 +211,8 @@ async function loadConfig(filename) {
     concept: { pt: 'Streams', en: 'Streams' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Streams processam dados em pedaços sem carregar tudo na memória — essencial pra arquivos grandes. Use pipe pra ler, transformar e escrever um CSV.',
-      en: 'Streams process data in chunks without loading everything into memory — essential for large files. Use pipe to read, transform, and write a CSV.',
+      pt: 'Streams processam dados em pedaços sem carregar tudo na memória -- essencial pra arquivos grandes. Use pipe pra ler, transformar e escrever um CSV.',
+      en: 'Streams process data in chunks without loading everything into memory -- essential for large files. Use pipe to read, transform, and write a CSV.',
     },
     code: `import { createReadStream, createWriteStream } from 'node:fs';
 import { Transform } from 'node:stream';

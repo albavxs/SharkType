@@ -6,8 +6,8 @@ export const javascriptSnippets: Snippet[] = [
     concept: { pt: 'Função Seta', en: 'Arrow Function' },
     difficulty: 'easy',
     prompt: {
-      pt: 'No JS moderno, a arrow function é o jeito mais enxuto de escrever funções. Ao invés de usar function add(a, b) { return a + b }, reescreva add com a sintaxe de seta (=>) numa linha só — sem chaves e sem return.',
-      en: 'Arrow functions are the concise way to define functions in modern JS. Instead of writing function add(a, b) { return a + b }, define add using the arrow syntax (=>) in a single line — no braces or explicit return needed.',
+      pt: 'No JS moderno, a arrow function é o jeito mais enxuto de escrever funções. Ao invés de usar function add(a, b) { return a + b }, reescreva add com a sintaxe de seta (=>) numa linha só -- sem chaves e sem return.',
+      en: 'Arrow functions are the concise way to define functions in modern JS. Instead of writing function add(a, b) { return a + b }, define add using the arrow syntax (=>) in a single line -- no braces or explicit return needed.',
     },
     code: `const add = (a, b) => a + b;`,
     slot: 'fn-arrow',
@@ -28,8 +28,8 @@ export const javascriptSnippets: Snippet[] = [
     concept: { pt: 'Desestruturação de Objeto', en: 'Object Destructuring' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Object destructuring deixa você extrair propriedades pelo nome numa tacada só. Do objeto "user", tire "name" e "age" — e coloque 0 como valor padrão pra "age" caso a propriedade não exista.',
-      en: 'Object destructuring extracts properties by name in a single assignment. From the "user" object, extract "name" and "age" — and set 0 as the default value for "age" in case the property doesn\'t exist on the object.',
+      pt: 'Object destructuring deixa você extrair propriedades pelo nome numa tacada só. Do objeto "user", tire "name" e "age" -- e coloque 0 como valor padrão pra "age" caso a propriedade não exista.',
+      en: 'Object destructuring extracts properties by name in a single assignment. From the "user" object, extract "name" and "age" -- and set 0 as the default value for "age" in case the property doesn\'t exist on the object.',
     },
     code: `const { name, age = 0 } = user;`,
   },
@@ -83,8 +83,8 @@ export const javascriptSnippets: Snippet[] = [
     concept: { pt: 'Clausura', en: 'Closure' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Closures deixam funções internas acessarem e modificarem variáveis da função de fora, mesmo depois que ela já retornou. Implemente counter como uma factory que retorna {increment, decrement, value} — as três funções compartilham a mesma variável "count" via closure.',
-      en: 'Closures let inner functions access and modify variables from the outer function even after it returns. Implement counter as a factory that returns {increment, decrement, value} — all three functions share the same "count" variable via closure.',
+      pt: 'Closures deixam funções internas acessarem e modificarem variáveis da função de fora, mesmo depois que ela já retornou. Implemente counter como uma factory que retorna {increment, decrement, value} -- as três funções compartilham a mesma variável "count" via closure.',
+      en: 'Closures let inner functions access and modify variables from the outer function even after it returns. Implement counter as a factory that returns {increment, decrement, value} -- all three functions share the same "count" variable via closure.',
     },
     code: `function counter() {
   let count = 0;
@@ -359,8 +359,8 @@ fruits.forEach(fruit => console.log(fruit));`,
     concept: { pt: 'Métodos de Objeto', en: 'Object Methods' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Objetos podem ter métodos — funções definidas como propriedades. Crie um objeto calculator com um método add que soma dois números.',
-      en: 'Objects can have methods — functions defined as properties. Create a calculator object with an add method that sums two numbers.',
+      pt: 'Objetos podem ter métodos -- funções definidas como propriedades. Crie um objeto calculator com um método add que soma dois números.',
+      en: 'Objects can have methods -- functions defined as properties. Create a calculator object with an add method that sums two numbers.',
     },
     code: `const calculator = {
   add(a, b) {

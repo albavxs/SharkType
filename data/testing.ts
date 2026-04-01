@@ -250,7 +250,7 @@ it('should match snapshot', () => {
       pt: 'TDD segue o ciclo Red-Green-Refactor: escreva um teste que falha, implemente o mínimo pra passar, depois refatore. Demonstre o ciclo completo com uma função de validação.',
       en: 'TDD follows the Red-Green-Refactor cycle: write a failing test, implement the minimum to pass, then refactor. Demonstrate the full cycle with a validation function.',
     },
-    code: `// 1. RED — escreva o teste primeiro
+    code: `// 1. RED -- escreva o teste primeiro
 describe('validateEmail', () => {
   it('should accept valid email', () => {
     expect(validateEmail('user@example.com')).toBe(true);
@@ -263,12 +263,12 @@ describe('validateEmail', () => {
   });
 });
 
-// 2. GREEN — implemente o mínimo
+// 2. GREEN -- implemente o mínimo
 function validateEmail(email) {
   return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
 }
 
-// 3. REFACTOR — extraia e melhore
+// 3. REFACTOR -- extraia e melhore
 const EMAIL_REGEX = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
 const validateEmail = (email) => EMAIL_REGEX.test(email);`,
   },

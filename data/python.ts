@@ -96,8 +96,8 @@ class Point:
     concept: { pt: 'Operador Morsa', en: 'Walrus Operator' },
     difficulty: 'hard',
     prompt: {
-      pt: 'O walrus operator (:=) atribui e avalia numa expressão só, evitando cálculo duplicado. Use pra calcular len(data) uma vez só: atribua o resultado a "n" e teste se é maior que 10 no mesmo if — sem precisar de linha separada.',
-      en: 'The walrus operator (:=) assigns and evaluates in a single expression, avoiding duplicate computation. Use it to calculate len(data) just once: assign the result to "n" and test if it\'s greater than 10 in the same if — no separate line needed.',
+      pt: 'O walrus operator (:=) atribui e avalia numa expressão só, evitando cálculo duplicado. Use pra calcular len(data) uma vez só: atribua o resultado a "n" e teste se é maior que 10 no mesmo if -- sem precisar de linha separada.',
+      en: 'The walrus operator (:=) assigns and evaluates in a single expression, avoiding duplicate computation. Use it to calculate len(data) just once: assign the result to "n" and test if it\'s greater than 10 in the same if -- no separate line needed.',
     },
     code: `if (n := len(data)) > 10:
     print(f"List is too long ({n} elements)")`,
@@ -528,5 +528,286 @@ except ValueError:
     tasks = [fetch_data(url) for url in urls]
     return await asyncio.gather(*tasks)`,
     slot: 'adv-concurrent',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'py-040',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com exemplos Pythônicos.',
+      en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with Pythonic examples.',
+    },
+    code: `# O(1) -- acesso direto
+first = arr[0]
+
+# O(n) -- percorrer tudo
+def contains(arr: list[int], target: int) -> bool:
+    return any(x == target for x in arr)
+
+# O(n²) -- loop aninhado
+def has_duplicate(arr: list[int]) -> bool:
+    for i in range(len(arr)):
+        for j in range(i + 1, len(arr)):
+            if arr[i] == arr[j]:
+                return True
+    return False`,
+  },
+  {
+    id: 'py-041',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Busca binária divide a lista ordenada ao meio -- O(log n). Implemente de forma iterativa.',
+      en: 'Binary search halves a sorted list -- O(log n). Implement it iteratively.',
+    },
+    code: `def binary_search(arr: list[int], target: int) -> int:
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1`,
+  },
+  {
+    id: 'py-042',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com parada antecipada.',
+      en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with early stop.',
+    },
+    code: `def bubble_sort(arr: list[int]) -> list[int]:
+    a = arr.copy()
+    for i in range(len(a) - 1):
+        swapped = False
+        for j in range(len(a) - 1 - i):
+            if a[j] > a[j + 1]:
+                a[j], a[j + 1] = a[j + 1], a[j]
+                swapped = True
+        if not swapped:
+            break
+    return a`,
+  },
+  {
+    id: 'py-043',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com função merge auxiliar.',
+      en: 'Merge Sort recursively splits and merges -- O(n log n). Implement with a merge helper.',
+    },
+    code: `def merge_sort(arr: list[int]) -> list[int]:
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(a: list[int], b: list[int]) -> list[int]:
+    result, i, j = [], 0, 0
+    while i < len(a) and j < len(b):
+        if a[i] <= b[j]:
+            result.append(a[i]); i += 1
+        else:
+            result.append(b[j]); j += 1
+    return result + a[i:] + b[j:]`,
+  },
+  {
+    id: 'py-044',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Quick Sort escolhe um pivô e particiona -- O(n log n) médio. Implemente com list comprehension.',
+      en: 'Quick Sort picks a pivot and partitions -- O(n log n) average. Implement with list comprehension.',
+    },
+    code: `def quick_sort(arr: list[int]) -> list[int]:
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[-1]
+    left = [x for x in arr[:-1] if x < pivot]
+    right = [x for x in arr[:-1] if x >= pivot]
+    return quick_sort(left) + [pivot] + quick_sort(right)`,
+  },
+  {
+    id: 'py-045',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Python, uma lista funciona como pilha com append e pop. Implemente uma classe Stack.',
+      en: 'In Python, a list works as a stack with append and pop. Implement a Stack class.',
+    },
+    code: `class Stack:
+    def __init__(self):
+        self.items: list = []
+
+    def push(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        return self.items.pop()
+
+    def peek(self):
+        return self.items[-1]
+
+    def is_empty(self) -> bool:
+        return len(self.items) == 0`,
+  },
+  {
+    id: 'py-046',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'collections.deque oferece FIFO eficiente com append e popleft. Use como fila.',
+      en: 'collections.deque provides efficient FIFO with append and popleft. Use it as a queue.',
+    },
+    code: `from collections import deque
+
+class Queue:
+    def __init__(self):
+        self.items = deque()
+
+    def enqueue(self, item):
+        self.items.append(item)
+
+    def dequeue(self):
+        return self.items.popleft()
+
+    def front(self):
+        return self.items[0]
+
+    def is_empty(self) -> bool:
+        return len(self.items) == 0`,
+  },
+  {
+    id: 'py-047',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma lista ligada armazena nós onde cada um aponta pro próximo. Implemente com inserção e travessia.',
+      en: 'A linked list stores nodes where each points to the next. Implement with insertion and traversal.',
+    },
+    code: `class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def prepend(self, value):
+        node = Node(value)
+        node.next = self.head
+        self.head = node
+
+    def to_list(self) -> list:
+        result, curr = [], self.head
+        while curr:
+            result.append(curr.value)
+            curr = curr.next
+        return result`,
+  },
+  {
+    id: 'py-048',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma BST mantém menores à esquerda e maiores à direita. Implemente inserção e busca.',
+      en: 'A BST keeps smaller left and larger right. Implement insert and search.',
+    },
+    code: `class TreeNode:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+def insert(node, val):
+    if node is None:
+        return TreeNode(val)
+    if val < node.val:
+        node.left = insert(node.left, val)
+    else:
+        node.right = insert(node.right, val)
+    return node
+
+def search(node, val) -> bool:
+    if node is None:
+        return False
+    if val == node.val:
+        return True
+    return search(node.left if val < node.val else node.right, val)`,
+  },
+  {
+    id: 'py-049',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'BFS explora nível por nível usando uma fila. Implemente com deque e set de visitados.',
+      en: 'BFS explores level by level using a queue. Implement with deque and visited set.',
+    },
+    code: `from collections import deque
+
+def bfs(graph: dict[str, list[str]], start: str) -> list[str]:
+    visited = set()
+    queue = deque([start])
+    result = []
+    visited.add(start)
+    while queue:
+        node = queue.popleft()
+        result.append(node)
+        for neighbor in graph.get(node, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return result`,
+  },
+  {
+    id: 'py-050',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'DFS explora o mais fundo possível usando uma pilha. Implemente iterativamente com lista.',
+      en: 'DFS explores as deep as possible using a stack. Implement it iteratively with a list.',
+    },
+    code: `def dfs(graph: dict[str, list[str]], start: str) -> list[str]:
+    visited = set()
+    stack = [start]
+    result = []
+    while stack:
+        node = stack.pop()
+        if node in visited:
+            continue
+        visited.add(node)
+        result.append(node)
+        for neighbor in reversed(graph.get(node, [])):
+            if neighbor not in visited:
+                stack.append(neighbor)
+    return result`,
+  },
+  {
+    id: 'py-051',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'dict é o hash map nativo do Python com acesso O(1) médio. Use operações comuns e iteração.',
+      en: 'dict is Python\'s native hash map with O(1) average access. Use common operations and iteration.',
+    },
+    code: `scores: dict[str, int] = {}
+scores["Alice"] = 95
+scores["Bob"] = 87
+scores["Carol"] = 92
+
+alice = scores.get("Alice")
+has_bob = "Bob" in scores
+dave = scores.get("Dave", 0)
+
+for name, score in scores.items():
+    print(f"{name}: {score}")`,
   },
 ]

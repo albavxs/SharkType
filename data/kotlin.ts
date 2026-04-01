@@ -674,4 +674,234 @@ var name: String by Delegates.observable("inicial") { _, old, new ->
 }`,
     slot: 'adv-macro',
   },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'kotlin-043',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: { pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Kotlin.', en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Kotlin.' },
+    code: `// O(1) -- acesso direto
+val first = arr[0]
+
+// O(n) -- percorrer tudo
+fun contains(arr: List<Int>, target: Int): Boolean =
+    arr.any { it == target }
+
+// O(n²) -- loop aninhado
+fun hasDuplicate(arr: List<Int>): Boolean {
+    for (i in arr.indices)
+        for (j in i + 1 until arr.size)
+            if (arr[i] == arr[j]) return true
+    return false
+}`,
+  },
+  {
+    id: 'kotlin-044',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: { pt: 'Busca binária divide a lista ordenada ao meio -- O(log n).', en: 'Binary search halves a sorted list -- O(log n).' },
+    code: `fun binarySearch(arr: List<Int>, target: Int): Int {
+    var left = 0
+    var right = arr.size - 1
+    while (left <= right) {
+        val mid = left + (right - left) / 2
+        when {
+            arr[mid] == target -> return mid
+            arr[mid] < target -> left = mid + 1
+            else -> right = mid - 1
+        }
+    }
+    return -1
+}`,
+  },
+  {
+    id: 'kotlin-045',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: { pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²).', en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²).' },
+    code: `fun bubbleSort(arr: MutableList<Int>): List<Int> {
+    val a = arr.toMutableList()
+    for (i in 0 until a.size - 1) {
+        var swapped = false
+        for (j in 0 until a.size - 1 - i) {
+            if (a[j] > a[j + 1]) {
+                a[j] = a[j + 1].also { a[j + 1] = a[j] }
+                swapped = true
+            }
+        }
+        if (!swapped) break
+    }
+    return a
+}`,
+  },
+  {
+    id: 'kotlin-046',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Merge Sort divide recursivamente e intercala -- O(n log n).', en: 'Merge Sort recursively splits and merges -- O(n log n).' },
+    code: `fun mergeSort(arr: List<Int>): List<Int> {
+    if (arr.size <= 1) return arr
+    val mid = arr.size / 2
+    val left = mergeSort(arr.subList(0, mid))
+    val right = mergeSort(arr.subList(mid, arr.size))
+    return merge(left, right)
+}
+
+fun merge(a: List<Int>, b: List<Int>): List<Int> {
+    val result = mutableListOf<Int>()
+    var i = 0; var j = 0
+    while (i < a.size && j < b.size)
+        if (a[i] <= b[j]) result.add(a[i++]) else result.add(b[j++])
+    result.addAll(a.subList(i, a.size))
+    result.addAll(b.subList(j, b.size))
+    return result
+}`,
+  },
+  {
+    id: 'kotlin-047',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio.', en: 'Quick Sort partitions around a pivot -- O(n log n) average.' },
+    code: `fun quickSort(arr: List<Int>): List<Int> {
+    if (arr.size <= 1) return arr
+    val pivot = arr.last()
+    val rest = arr.dropLast(1)
+    val left = rest.filter { it < pivot }
+    val right = rest.filter { it >= pivot }
+    return quickSort(left) + pivot + quickSort(right)
+}`,
+  },
+  {
+    id: 'kotlin-048',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: { pt: 'ArrayDeque funciona como pilha em Kotlin com addLast, removeLast e last.', en: 'ArrayDeque works as a stack in Kotlin with addLast, removeLast, and last.' },
+    code: `val stack = ArrayDeque<Int>()
+stack.addLast(1)
+stack.addLast(2)
+stack.addLast(3)
+
+val top = stack.last()
+val removed = stack.removeLast()
+val empty = stack.isEmpty()`,
+  },
+  {
+    id: 'kotlin-049',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: { pt: 'ArrayDeque funciona como fila com addLast e removeFirst.', en: 'ArrayDeque works as a queue with addLast and removeFirst.' },
+    code: `val queue = ArrayDeque<String>()
+queue.addLast("A")
+queue.addLast("B")
+queue.addLast("C")
+
+val front = queue.first()
+val removed = queue.removeFirst()
+val size = queue.size`,
+  },
+  {
+    id: 'kotlin-050',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma lista ligada usa data class com referência ao próximo nó.', en: 'A linked list uses data class with reference to next node.' },
+    code: `data class Node(val value: Int, var next: Node? = null)
+
+class LinkedList {
+    var head: Node? = null
+
+    fun prepend(value: Int) {
+        head = Node(value, head)
+    }
+
+    fun toList(): List<Int> {
+        val result = mutableListOf<Int>()
+        var curr = head
+        while (curr != null) { result.add(curr.value); curr = curr.next }
+        return result
+    }
+}`,
+  },
+  {
+    id: 'kotlin-051',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma BST mantém menores à esquerda e maiores à direita.', en: 'A BST keeps smaller left and larger right.' },
+    code: `class TreeNode(val value: Int) {
+    var left: TreeNode? = null
+    var right: TreeNode? = null
+}
+
+fun insert(node: TreeNode?, value: Int): TreeNode {
+    if (node == null) return TreeNode(value)
+    if (value < node.value) node.left = insert(node.left, value)
+    else node.right = insert(node.right, value)
+    return node
+}
+
+fun search(node: TreeNode?, value: Int): Boolean {
+    if (node == null) return false
+    if (value == node.value) return true
+    return if (value < node.value) search(node.left, value) else search(node.right, value)
+}`,
+  },
+  {
+    id: 'kotlin-052',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'BFS explora nível por nível com ArrayDeque e mutableSetOf.', en: 'BFS explores level by level with ArrayDeque and mutableSetOf.' },
+    code: `fun bfs(graph: Map<String, List<String>>, start: String): List<String> {
+    val visited = mutableSetOf(start)
+    val queue = ArrayDeque<String>()
+    queue.addLast(start)
+    val result = mutableListOf<String>()
+    while (queue.isNotEmpty()) {
+        val node = queue.removeFirst()
+        result.add(node)
+        for (nb in graph[node].orEmpty()) {
+            if (visited.add(nb)) queue.addLast(nb)
+        }
+    }
+    return result
+}`,
+  },
+  {
+    id: 'kotlin-053',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'DFS explora o mais fundo possível com pilha.', en: 'DFS explores as deep as possible with a stack.' },
+    code: `fun dfs(graph: Map<String, List<String>>, start: String): List<String> {
+    val visited = mutableSetOf<String>()
+    val stack = ArrayDeque<String>()
+    stack.addLast(start)
+    val result = mutableListOf<String>()
+    while (stack.isNotEmpty()) {
+        val node = stack.removeLast()
+        if (!visited.add(node)) continue
+        result.add(node)
+        for (nb in graph[node].orEmpty().reversed()) {
+            if (nb !in visited) stack.addLast(nb)
+        }
+    }
+    return result
+}`,
+  },
+  {
+    id: 'kotlin-054',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: { pt: 'mutableMapOf é o hash map do Kotlin com acesso O(1) médio.', en: 'mutableMapOf is Kotlin\'s hash map with O(1) average access.' },
+    code: `val scores = mutableMapOf(
+    "Alice" to 95,
+    "Bob" to 87,
+    "Carol" to 92,
+)
+
+val alice = scores["Alice"]
+val hasBob = "Bob" in scores
+val dave = scores.getOrDefault("Dave", 0)
+
+for ((name, score) in scores) {
+    println("$name: $score")
+}`,
+  },
 ]

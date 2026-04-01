@@ -6,8 +6,8 @@ export const nextjsSnippets: Snippet[] = [
     concept: { pt: 'Server Component', en: 'Server Component' },
     difficulty: 'easy',
     prompt: {
-      pt: 'No App Router do Next.js, todo componente é Server Component por padrão — roda no servidor e pode fazer fetch direto. Crie uma página que busca e exibe dados sem useEffect.',
-      en: 'In Next.js App Router, every component is a Server Component by default — it runs on the server and can fetch directly. Create a page that fetches and displays data without useEffect.',
+      pt: 'No App Router do Next.js, todo componente é Server Component por padrão -- roda no servidor e pode fazer fetch direto. Crie uma página que busca e exibe dados sem useEffect.',
+      en: 'In Next.js App Router, every component is a Server Component by default -- it runs on the server and can fetch directly. Create a page that fetches and displays data without useEffect.',
     },
     code: `export default async function UsersPage() {
   const res = await fetch('https://api.example.com/users');

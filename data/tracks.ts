@@ -14,7 +14,7 @@ export interface Track {
 }
 
 export const tracks: Track[] = [
-  // ── Concept tracks — Iniciante ───────────────────────────────────────────
+  // ── Concept tracks -- Iniciante ───────────────────────────────────────────
   {
     id: 'conditionals',
     name: { pt: 'If e Else', en: 'If & Else' },
@@ -48,7 +48,7 @@ export const tracks: Track[] = [
     slots: ['fn-basic', 'fn-arrow', 'fn-callback', 'fn-closure', 'fn-default-params'],
     section: 'concept',
   },
-  // ── Concept tracks — Intermediário ──────────────────────────────────────
+  // ── Concept tracks -- Intermediário ──────────────────────────────────────
   {
     id: 'objects',
     name: { pt: 'Objetos e Structs', en: 'Objects & Structs' },
@@ -104,7 +104,7 @@ export const tracks: Track[] = [
     slots: ['class-basic', 'class-inherit', 'class-override', 'class-abstract'],
     section: 'concept',
   },
-  // ── Concept tracks — Avançado ───────────────────────────────────────────
+  // ── Concept tracks -- Avançado ───────────────────────────────────────────
   {
     id: 'advanced',
     name: { pt: 'Avançado', en: 'Advanced' },
@@ -209,8 +209,11 @@ export const tracks: Track[] = [
     snippetIds: [
       'docker-001', 'docker-002', 'docker-003', 'docker-004', 'docker-005',
       'k8s-001', 'k8s-002', 'k8s-003', 'k8s-004', 'k8s-005', 'k8s-006',
-      'tf-001', 'tf-002', 'tf-003', 'tf-004',
-      'ans-001', 'ans-002', 'ans-003',
+      'k8s-007', 'k8s-008', 'k8s-009', 'k8s-010', 'k8s-011', 'k8s-012',
+      'tf-001', 'tf-002', 'tf-003', 'tf-004', 'tf-005', 'tf-006',
+      'tf-007', 'tf-008', 'tf-009', 'tf-010', 'tf-011', 'tf-012',
+      'ans-001', 'ans-002', 'ans-003', 'ans-004', 'ans-005', 'ans-006',
+      'ans-007', 'ans-008', 'ans-009', 'ans-010', 'ans-011', 'ans-012',
       'cicd-001', 'cicd-002', 'cicd-003', 'cicd-004', 'cicd-005',
       'cicd-006', 'cicd-007', 'cicd-008', 'cicd-009', 'cicd-010',
       'linux-004', 'linux-005', 'linux-006', 'linux-007', 'linux-008',
@@ -304,12 +307,12 @@ export const tracks: Track[] = [
     id: 'red-team',
     name: { pt: 'Red Team', en: 'Red Team' },
     description: {
-      pt: 'Reconhecimento, scanning e enumeração — Nmap, curl, whois, dig',
-      en: 'Reconnaissance, scanning, and enumeration — Nmap, curl, whois, dig',
+      pt: 'Reconhecimento, scanning e enumeração -- Nmap, curl, whois, dig',
+      en: 'Reconnaissance, scanning, and enumeration -- Nmap, curl, whois, dig',
     },
     snippetIds: [
       'sec-001', 'sec-002', 'sec-003', 'sec-004', 'sec-005', 'sec-006',
-      'sec-017', 'sec-018',
+      'sec-017', 'sec-018', 'sec-019', 'sec-020', 'sec-021',
     ],
     section: 'cyberdevops',
   },
@@ -321,8 +324,9 @@ export const tracks: Track[] = [
       en: 'Defense, firewalls, network monitoring, and system hardening',
     },
     snippetIds: [
-      'sec-007', 'sec-008', 'sec-009', 'sec-010',
-      'sec-014', 'sec-015', 'sec-016',
+      'sec-007', 'sec-008', 'sec-022', 'sec-023', 'sec-024',
+      'sec-009', 'sec-010', 'sec-025', 'sec-026', 'sec-027',
+      'sec-014', 'sec-015', 'sec-016', 'sec-028', 'sec-029', 'sec-030',
     ],
     section: 'cyberdevops',
   },
@@ -330,11 +334,11 @@ export const tracks: Track[] = [
     id: 'crypto',
     name: { pt: 'Criptografia', en: 'Cryptography' },
     description: {
-      pt: 'OpenSSL, certificados, chaves SSH e cadeia de confiança',
-      en: 'OpenSSL, certificates, SSH keys, and trust chains',
+      pt: 'OpenSSL, certificados, chaves SSH, hashing e criptografia de arquivos',
+      en: 'OpenSSL, certificates, SSH keys, hashing, and file encryption',
     },
     snippetIds: [
-      'sec-011', 'sec-012', 'sec-013',
+      'sec-011', 'sec-012', 'sec-013', 'sec-031', 'sec-032', 'sec-033',
     ],
     section: 'cyberdevops',
   },
@@ -447,6 +451,26 @@ export const tracks: Track[] = [
       'algo-001', 'algo-002', 'algo-003', 'algo-004', 'algo-005',
       'algo-006', 'algo-007', 'algo-008', 'algo-009', 'algo-010',
       'algo-011', 'algo-012',
+      'py-040', 'py-041', 'py-042', 'py-043', 'py-044', 'py-045',
+      'py-046', 'py-047', 'py-048', 'py-049', 'py-050', 'py-051',
+      'ts-044', 'ts-045', 'ts-046', 'ts-047', 'ts-048', 'ts-049',
+      'ts-050', 'ts-051', 'ts-052', 'ts-053', 'ts-054', 'ts-055',
+      'go-042', 'go-043', 'go-044', 'go-045', 'go-046', 'go-047',
+      'go-048', 'go-049', 'go-050', 'go-051', 'go-052', 'go-053',
+      'java-042', 'java-043', 'java-044', 'java-045', 'java-046', 'java-047',
+      'java-048', 'java-049', 'java-050', 'java-051', 'java-052', 'java-053',
+      'cpp-042', 'cpp-043', 'cpp-044', 'cpp-045', 'cpp-046', 'cpp-047',
+      'cpp-048', 'cpp-049', 'cpp-050', 'cpp-051', 'cpp-052', 'cpp-053',
+      'rs-044', 'rs-045', 'rs-046', 'rs-047', 'rs-048', 'rs-049',
+      'rs-050', 'rs-051', 'rs-052', 'rs-053', 'rs-054', 'rs-055',
+      'kotlin-043', 'kotlin-044', 'kotlin-045', 'kotlin-046', 'kotlin-047', 'kotlin-048',
+      'kotlin-049', 'kotlin-050', 'kotlin-051', 'kotlin-052', 'kotlin-053', 'kotlin-054',
+      'ruby-042', 'ruby-043', 'ruby-044', 'ruby-045', 'ruby-046', 'ruby-047',
+      'ruby-048', 'ruby-049', 'ruby-050', 'ruby-051', 'ruby-052', 'ruby-053',
+      'scala-042', 'scala-043', 'scala-044', 'scala-045', 'scala-046', 'scala-047',
+      'scala-048', 'scala-049', 'scala-050', 'scala-051', 'scala-052', 'scala-053',
+      'swift-042', 'swift-043', 'swift-044', 'swift-045', 'swift-046', 'swift-047',
+      'swift-048', 'swift-049', 'swift-050', 'swift-051', 'swift-052', 'swift-053',
     ],
     section: 'focused',
   },

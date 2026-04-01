@@ -45,8 +45,8 @@ db.users.find({
     concept: { pt: 'find com Projeção', en: 'find with Projection' },
     difficulty: 'easy',
     prompt: {
-      pt: 'O segundo argumento de find() controla quais campos retornar — 1 pra incluir, 0 pra excluir. Busque usuários retornando só nome e email, sem _id.',
-      en: 'The second argument of find() controls which fields to return — 1 to include, 0 to exclude. Find users returning only name and email, without _id.',
+      pt: 'O segundo argumento de find() controla quais campos retornar -- 1 pra incluir, 0 pra excluir. Busque usuários retornando só nome e email, sem _id.',
+      en: 'The second argument of find() controls which fields to return -- 1 to include, 0 to exclude. Find users returning only name and email, without _id.',
     },
     code: `db.users.find(
   { active: true },

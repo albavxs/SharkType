@@ -35,8 +35,8 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Propriedades Customizadas', en: 'Custom Properties' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Variáveis CSS (custom properties) centralizam valores que você reutiliza no projeto todo. Declara --primary e --radius em :root (escopo global) e usa em .button com var() — mudou a variável, atualiza tudo automaticamente.',
-      en: 'CSS variables (custom properties) centralize reusable values. Declare --primary and --radius in :root (global scope) and use them in .button with var() — changing the variable updates all usages automatically.',
+      pt: 'Variáveis CSS (custom properties) centralizam valores que você reutiliza no projeto todo. Declara --primary e --radius em :root (escopo global) e usa em .button com var() -- mudou a variável, atualiza tudo automaticamente.',
+      en: 'CSS variables (custom properties) centralize reusable values. Declare --primary and --radius in :root (global scope) and use them in .button with var() -- changing the variable updates all usages automatically.',
     },
     code: `:root {
   --primary: #3b82f6;
@@ -106,7 +106,7 @@ export const cssSnippets: Snippet[] = [
     difficulty: 'hard',
     prompt: {
       pt: 'Container queries estilizam com base no tamanho do container pai, não da viewport. Marca .card-wrapper como container-type: inline-size e quando chegar em 400px, muda .card pra um grid de duas colunas.',
-      en: 'Container queries style based on the parent container size — not the viewport. Mark .card-wrapper as container-type: inline-size and, when it reaches 400px, change .card to a two-column grid.',
+      en: 'Container queries style based on the parent container size -- not the viewport. Mark .card-wrapper as container-type: inline-size and, when it reaches 400px, change .card to a two-column grid.',
     },
     code: `.card-wrapper {
   container-type: inline-size;
@@ -155,8 +155,8 @@ export const cssSnippets: Snippet[] = [
     concept: { pt: 'Aninhamento', en: 'Nesting' },
     difficulty: 'medium',
     prompt: {
-      pt: 'CSS nesting nativo deixa você aninhar seletores igual no SASS/SCSS, sem pré-processador. Dentro de .nav, usa "& a" pra estilizar os links e "& a:hover" pro hover — sem repetir o seletor pai.',
-      en: 'CSS nesting (level 1) lets you nest selectors like in SASS/SCSS, without a preprocessor. Inside .nav, use "& a" to style links and "& a:hover" for the hover state — without repeating the parent selector.',
+      pt: 'CSS nesting nativo deixa você aninhar seletores igual no SASS/SCSS, sem pré-processador. Dentro de .nav, usa "& a" pra estilizar os links e "& a:hover" pro hover -- sem repetir o seletor pai.',
+      en: 'CSS nesting (level 1) lets you nest selectors like in SASS/SCSS, without a preprocessor. Inside .nav, use "& a" to style links and "& a:hover" for the hover state -- without repeating the parent selector.',
     },
     code: `.nav {
   display: flex;

@@ -6,8 +6,8 @@ export const htmlSnippets: Snippet[] = [
     concept: { pt: 'Estrutura Básica', en: 'Basic Structure' },
     difficulty: 'easy',
     prompt: {
-      pt: 'O <header> é onde fica a identidade da página e a navegação principal. Monta um header semântico com <h1> pro título do app e <nav> com dois <a> pra navegação — nada de div sem necessidade.',
-      en: 'The <header> element contains the page\'s identity and main navigation. Write a semantic header with <h1> for the app title and <nav> with two navigation <a> links — no unnecessary divs.',
+      pt: 'O <header> é onde fica a identidade da página e a navegação principal. Monta um header semântico com <h1> pro título do app e <nav> com dois <a> pra navegação -- nada de div sem necessidade.',
+      en: 'The <header> element contains the page\'s identity and main navigation. Write a semantic header with <h1> for the app title and <nav> with two navigation <a> links -- no unnecessary divs.',
     },
     code: `<header>
   <h1>SharkType</h1>

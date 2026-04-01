@@ -102,8 +102,8 @@ WHERE category = 'electronics';`,
     concept: { pt: 'DELETE com Subconsulta', en: 'DELETE with Subquery' },
     difficulty: 'medium',
     prompt: {
-      pt: 'DELETE com subquery remove linhas baseado em condição de outra tabela. Deleta todas as sessões onde o usuário (pelo user_id) não faz login há mais de 1 ano — sem join, usando IN com subquery.',
-      en: 'DELETE with subquery removes rows based on a condition from another table. Delete all sessions whose users (identified by user_id) haven\'t logged in for over 1 year — no join, using IN with a subquery.',
+      pt: 'DELETE com subquery remove linhas baseado em condição de outra tabela. Deleta todas as sessões onde o usuário (pelo user_id) não faz login há mais de 1 ano -- sem join, usando IN com subquery.',
+      en: 'DELETE with subquery removes rows based on a condition from another table. Delete all sessions whose users (identified by user_id) haven\'t logged in for over 1 year -- no join, using IN with a subquery.',
     },
     code: `DELETE FROM sessions
 WHERE user_id IN (

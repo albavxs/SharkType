@@ -69,8 +69,8 @@ export const javaSnippets: Snippet[] = [
     concept: { pt: 'Lambda', en: 'Lambda' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Lambda substitui instancia de interface funcional com uma sintaxe enxuta. Crie um Comparator<User> que ordena por idade usando Integer.compare — sem precisar criar uma classe anonima inteira.',
-      en: 'Lambda expressions replace functional interface instances with concise syntax. Create a Comparator<User> that sorts by age using Integer.compare — no need to declare an entire anonymous class.',
+      pt: 'Lambda substitui instancia de interface funcional com uma sintaxe enxuta. Crie um Comparator<User> que ordena por idade usando Integer.compare -- sem precisar criar uma classe anonima inteira.',
+      en: 'Lambda expressions replace functional interface instances with concise syntax. Create a Comparator<User> that sorts by age using Integer.compare -- no need to declare an entire anonymous class.',
     },
     code: `Comparator<User> byAge = (a, b) ->
     Integer.compare(a.getAge(), b.getAge());`,
@@ -125,8 +125,8 @@ String name = user
     concept: { pt: 'Try com Recursos', en: 'Try-With-Resources' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Try-with-resources garante o fechamento automatico de qualquer Closeable ao sair do bloco. Declare o BufferedReader na clausula try(...) — ele fecha sozinho, mesmo se rolar uma excecao durante a leitura.',
-      en: 'Try-with-resources ensures automatic closing of any Closeable when exiting the block. Declare the BufferedReader in the try(...) clause — it will be closed automatically, even if an exception occurs during reading.',
+      pt: 'Try-with-resources garante o fechamento automatico de qualquer Closeable ao sair do bloco. Declare o BufferedReader na clausula try(...) -- ele fecha sozinho, mesmo se rolar uma excecao durante a leitura.',
+      en: 'Try-with-resources ensures automatic closing of any Closeable when exiting the block. Declare the BufferedReader in the try(...) clause -- it will be closed automatically, even if an exception occurs during reading.',
     },
     code: `try (var reader = new BufferedReader(
         new FileReader("data.txt"))) {
@@ -140,8 +140,8 @@ String name = user
     concept: { pt: 'Casamento de Padroes', en: 'Pattern Matching' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Pattern matching com instanceof (Java 16+) checa o tipo e faz o cast numa expressao so. Verifique se "obj" e String, atribua a "s" na mesma linha e combine com && pra testar o tamanho — sem cast separado.',
-      en: 'Pattern matching with instanceof (Java 16+) checks the type and casts in a single expression. Check if "obj" is a String, assign it to "s" on the same line, and combine with && to test length — no separate cast needed.',
+      pt: 'Pattern matching com instanceof (Java 16+) checa o tipo e faz o cast numa expressao so. Verifique se "obj" e String, atribua a "s" na mesma linha e combine com && pra testar o tamanho -- sem cast separado.',
+      en: 'Pattern matching with instanceof (Java 16+) checks the type and casts in a single expression. Check if "obj" is a String, assign it to "s" on the same line, and combine with && to test length -- no separate cast needed.',
     },
     code: `if (obj instanceof String s && s.length() > 5) {
     System.out.println(s.toUpperCase());
@@ -331,8 +331,8 @@ System.out.println(greeter.get());`,
     concept: { pt: 'Parametros Default com Overload', en: 'Default Params via Overload' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Java nao tem parametros default, mas usa overloading pra simular. Crie duas versoes de greet — uma com nome e titulo, outra so com nome que chama a primeira.',
-      en: 'Java has no default parameters, but uses overloading to simulate them. Create two versions of greet — one with name and title, another with just name that calls the first.',
+      pt: 'Java nao tem parametros default, mas usa overloading pra simular. Crie duas versoes de greet -- uma com nome e titulo, outra so com nome que chama a primeira.',
+      en: 'Java has no default parameters, but uses overloading to simulate them. Create two versions of greet -- one with name and title, another with just name that calls the first.',
     },
     code: `public String greet(String name, String title) {
     return "Hello, " + title + " " + name;
@@ -421,8 +421,8 @@ public String toString() {
     concept: { pt: 'Objeto Aninhado', en: 'Nested Object' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Objetos aninhados em Java sao composicao — uma classe contem outra como campo. Crie Company com um campo Address.',
-      en: 'Nested objects in Java use composition — one class contains another as a field. Create Company with an Address field.',
+      pt: 'Objetos aninhados em Java sao composicao -- uma classe contem outra como campo. Crie Company com um campo Address.',
+      en: 'Nested objects in Java use composition -- one class contains another as a field. Create Company with an Address field.',
     },
     code: `public class Company {
     private String name;
@@ -615,5 +615,287 @@ public @interface Validate {
     }
 }`,
     slot: 'adv-concurrent',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'java-042',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com operações comuns em Java.',
+      en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with common Java operations.',
+    },
+    code: `// O(1) -- acesso direto
+int first = arr[0];
+
+// O(n) -- percorrer tudo
+boolean contains(int[] arr, int target) {
+    for (int item : arr) {
+        if (item == target) return true;
+    }
+    return false;
+}
+
+// O(n²) -- loop aninhado
+boolean hasDuplicate(int[] arr) {
+    for (int i = 0; i < arr.length; i++)
+        for (int j = i + 1; j < arr.length; j++)
+            if (arr[i] == arr[j]) return true;
+    return false;
+}`,
+  },
+  {
+    id: 'java-043',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Busca binária divide o array ordenado ao meio a cada passo -- O(log n). Implemente de forma iterativa.',
+      en: 'Binary search halves a sorted array at each step -- O(log n). Implement it iteratively.',
+    },
+    code: `int binarySearch(int[] arr, int target) {
+    int left = 0, right = arr.length - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}`,
+  },
+  {
+    id: 'java-044',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Bubble Sort compara pares adjacentes e troca se fora de ordem -- O(n²). Implemente com parada antecipada.',
+      en: 'Bubble Sort compares adjacent pairs and swaps if out of order -- O(n²). Implement with early stop.',
+    },
+    code: `void bubbleSort(int[] arr) {
+    for (int i = 0; i < arr.length - 1; i++) {
+        boolean swapped = false;
+        for (int j = 0; j < arr.length - 1 - i; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int tmp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = tmp;
+                swapped = true;
+            }
+        }
+        if (!swapped) break;
+    }
+}`,
+  },
+  {
+    id: 'java-045',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Merge Sort divide recursivamente e intercala as metades ordenadas -- O(n log n). Implemente com método merge auxiliar.',
+      en: 'Merge Sort recursively splits and merges sorted halves -- O(n log n). Implement with a merge helper.',
+    },
+    code: `void mergeSort(int[] arr, int l, int r) {
+    if (l >= r) return;
+    int mid = (l + r) / 2;
+    mergeSort(arr, l, mid);
+    mergeSort(arr, mid + 1, r);
+    merge(arr, l, mid, r);
+}
+
+void merge(int[] arr, int l, int mid, int r) {
+    int[] left = Arrays.copyOfRange(arr, l, mid + 1);
+    int[] right = Arrays.copyOfRange(arr, mid + 1, r + 1);
+    int i = 0, j = 0, k = l;
+    while (i < left.length && j < right.length)
+        arr[k++] = left[i] <= right[j] ? left[i++] : right[j++];
+    while (i < left.length) arr[k++] = left[i++];
+    while (j < right.length) arr[k++] = right[j++];
+}`,
+  },
+  {
+    id: 'java-046',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Quick Sort escolhe um pivô e particiona o array -- O(n log n) médio. Implemente com partição Lomuto.',
+      en: 'Quick Sort picks a pivot and partitions the array -- O(n log n) average. Implement with Lomuto partition.',
+    },
+    code: `void quickSort(int[] arr, int lo, int hi) {
+    if (lo >= hi) return;
+    int pivot = arr[hi];
+    int i = lo;
+    for (int j = lo; j < hi; j++) {
+        if (arr[j] < pivot) {
+            int tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+            i++;
+        }
+    }
+    int tmp = arr[i]; arr[i] = arr[hi]; arr[hi] = tmp;
+    quickSort(arr, lo, i - 1);
+    quickSort(arr, i + 1, hi);
+}`,
+  },
+  {
+    id: 'java-047',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Uma pilha segue LIFO. Em Java, ArrayDeque é a implementação recomendada. Use push, pop e peek.',
+      en: 'A stack follows LIFO. In Java, ArrayDeque is the recommended implementation. Use push, pop, and peek.',
+    },
+    code: `Deque<Integer> stack = new ArrayDeque<>();
+stack.push(1);
+stack.push(2);
+stack.push(3);
+
+int top = stack.peek();   // 3
+int removed = stack.pop(); // 3
+boolean empty = stack.isEmpty();`,
+  },
+  {
+    id: 'java-048',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Uma fila segue FIFO. Use LinkedList como Queue com offer, poll e peek.',
+      en: 'A queue follows FIFO. Use LinkedList as Queue with offer, poll, and peek.',
+    },
+    code: `Queue<String> queue = new LinkedList<>();
+queue.offer("A");
+queue.offer("B");
+queue.offer("C");
+
+String front = queue.peek();  // "A"
+String removed = queue.poll(); // "A"
+int size = queue.size();`,
+  },
+  {
+    id: 'java-049',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma lista ligada armazena nós onde cada um aponta pro próximo. Implemente com inserção e travessia.',
+      en: 'A linked list stores nodes where each points to the next. Implement with insertion and traversal.',
+    },
+    code: `class Node {
+    int value;
+    Node next;
+    Node(int v) { value = v; }
+}
+
+class LinkedList {
+    Node head;
+
+    void prepend(int v) {
+        Node n = new Node(v);
+        n.next = head;
+        head = n;
+    }
+
+    void print() {
+        for (Node n = head; n != null; n = n.next)
+            System.out.print(n.value + " -> ");
+        System.out.println("null");
+    }
+}`,
+  },
+  {
+    id: 'java-050',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma BST mantém menores à esquerda e maiores à direita. Implemente inserção e busca recursivas.',
+      en: 'A BST keeps smaller nodes left and larger right. Implement recursive insert and search.',
+    },
+    code: `class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int v) { val = v; }
+}
+
+TreeNode insert(TreeNode node, int val) {
+    if (node == null) return new TreeNode(val);
+    if (val < node.val) node.left = insert(node.left, val);
+    else node.right = insert(node.right, val);
+    return node;
+}
+
+boolean search(TreeNode node, int val) {
+    if (node == null) return false;
+    if (val == node.val) return true;
+    return val < node.val ? search(node.left, val) : search(node.right, val);
+}`,
+  },
+  {
+    id: 'java-051',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'BFS explora um grafo nível por nível usando uma fila. Implemente com Queue e Set de visitados.',
+      en: 'BFS explores a graph level by level using a queue. Implement with Queue and visited Set.',
+    },
+    code: `List<String> bfs(Map<String, List<String>> graph, String start) {
+    List<String> result = new ArrayList<>();
+    Set<String> visited = new HashSet<>();
+    Queue<String> queue = new LinkedList<>();
+    queue.offer(start);
+    visited.add(start);
+
+    while (!queue.isEmpty()) {
+        String node = queue.poll();
+        result.add(node);
+        for (String neighbor : graph.getOrDefault(node, List.of())) {
+            if (visited.add(neighbor)) queue.offer(neighbor);
+        }
+    }
+    return result;
+}`,
+  },
+  {
+    id: 'java-052',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'DFS explora o mais fundo possível antes de retroceder. Implemente de forma iterativa com Deque.',
+      en: 'DFS explores as deep as possible before backtracking. Implement iteratively with Deque.',
+    },
+    code: `List<String> dfs(Map<String, List<String>> graph, String start) {
+    List<String> result = new ArrayList<>();
+    Set<String> visited = new HashSet<>();
+    Deque<String> stack = new ArrayDeque<>();
+    stack.push(start);
+
+    while (!stack.isEmpty()) {
+        String node = stack.pop();
+        if (!visited.add(node)) continue;
+        result.add(node);
+        List<String> neighbors = graph.getOrDefault(node, List.of());
+        for (int i = neighbors.size() - 1; i >= 0; i--)
+            if (!visited.contains(neighbors.get(i)))
+                stack.push(neighbors.get(i));
+    }
+    return result;
+}`,
+  },
+  {
+    id: 'java-053',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'HashMap armazena pares chave-valor com acesso O(1) médio. Use put, get, containsKey e iteração.',
+      en: 'HashMap stores key-value pairs with O(1) average access. Use put, get, containsKey, and iteration.',
+    },
+    code: `Map<String, Integer> scores = new HashMap<>();
+scores.put("Alice", 95);
+scores.put("Bob", 87);
+scores.put("Carol", 92);
+
+int aliceScore = scores.get("Alice");
+boolean hasBob = scores.containsKey("Bob");
+scores.getOrDefault("Dave", 0);
+
+for (var entry : scores.entrySet()) {
+    System.out.println(entry.getKey() + ": " + entry.getValue());
+}`,
   },
 ]

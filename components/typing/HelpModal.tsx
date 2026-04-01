@@ -35,6 +35,7 @@ export default function HelpModal({ onClose, locale }: HelpModalProps) {
               <div><Kbd>enter</Kbd> {t('helpEnter', locale)}</div>
               <div><Kbd>backspace</Kbd> {t('helpBackspace', locale)}</div>
               <div><Kbd>esc</Kbd> {t('helpEsc', locale)}</div>
+              <div><Kbd>shift + f</Kbd> {locale === 'pt' ? 'Expandir/recolher código longo' : 'Expand/collapse long code'}</div>
             </div>
           </div>
 

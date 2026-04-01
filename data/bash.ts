@@ -7,8 +7,8 @@ export const bashSnippets: Snippet[] = [
     difficulty: 'easy',
     slot: 'var-declare',
     prompt: {
-      pt: 'Variáveis em Bash são declaradas sem espaço no "=" e expandidas com $. Atribui "world" pra NAME e usa dentro de uma mensagem com echo — aspas duplas deixam a variável expandir.',
-      en: 'Bash variables are declared without spaces around "=" and expanded with $. Assign the string "world" to NAME and use it inside a message with echo — double quotes allow variable expansion.',
+      pt: 'Variáveis em Bash são declaradas sem espaço no "=" e expandidas com $. Atribui "world" pra NAME e usa dentro de uma mensagem com echo -- aspas duplas deixam a variável expandir.',
+      en: 'Bash variables are declared without spaces around "=" and expanded with $. Assign the string "world" to NAME and use it inside a message with echo -- double quotes allow variable expansion.',
     },
     code: `NAME="world"
 echo "Hello, $NAME!"`,

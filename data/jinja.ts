@@ -25,7 +25,7 @@ export const jinjaSnippets: Snippet[] = [
 {% for product in products %}
   <li>
     {{ loop.index }}. {{ product.name }}
-    — R$ {{ "%.2f" | format(product.price) }}
+    -- R$ {{ "%.2f" | format(product.price) }}
   </li>
 {% else %}
   <li>Nenhum produto encontrado.</li>
@@ -72,7 +72,7 @@ export const jinjaSnippets: Snippet[] = [
 {# home.html #}
 {% extends 'base.html' %}
 
-{% block title %}Home — Meu Site{% endblock %}
+{% block title %}Home -- Meu Site{% endblock %}
 
 {% block content %}
   <h1>Bem-vindo!</h1>
@@ -153,7 +153,7 @@ export const jinjaSnippets: Snippet[] = [
     },
     code: `<ul>
   {%- for item in items %}
-  <li>{{ item.name }} — {{ item.value }}</li>
+  <li>{{ item.name }} -- {{ item.value }}</li>
   {%- endfor %}
 </ul>
 
@@ -185,11 +185,11 @@ export const jinjaSnippets: Snippet[] = [
       pt: 'Combine herança multinível, macros importadas e blocos opcionais para criar um layout de dashboard com sidebar, breadcrumbs e área de conteúdo customizável.',
       en: 'Combine multi-level inheritance, imported macros, and optional blocks to create a dashboard layout with sidebar, breadcrumbs, and customizable content area.',
     },
-    code: `{# dashboard.html — extends base.html #}
+    code: `{# dashboard.html -- extends base.html #}
 {% extends 'base.html' %}
 {% from 'macros/ui.html' import icon, badge %}
 
-{% block title %}Dashboard — {{ page_title }}{% endblock %}
+{% block title %}Dashboard -- {{ page_title }}{% endblock %}
 
 {% block content %}
 <div class="dashboard">

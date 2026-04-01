@@ -121,8 +121,8 @@ class ReadOnlyStream implements Readable {
     concept: { pt: 'Inversão de Dependência (SOLID D)', en: 'Dependency Inversion (SOLID D)' },
     difficulty: 'hard',
     prompt: {
-      pt: 'O princípio D diz que módulos de alto nível não devem depender dos de baixo nível — ambos devem depender de abstrações. Injete a dependência de banco de dados via construtor.',
-      en: 'The D principle says high-level modules shouldn\'t depend on low-level ones — both should depend on abstractions. Inject the database dependency via constructor.',
+      pt: 'O princípio D diz que módulos de alto nível não devem depender dos de baixo nível -- ambos devem depender de abstrações. Injete a dependência de banco de dados via construtor.',
+      en: 'The D principle says high-level modules shouldn\'t depend on low-level ones -- both should depend on abstractions. Inject the database dependency via constructor.',
     },
     code: `interface UserRepository {
   findById(id: string): Promise<User>;
@@ -146,7 +146,7 @@ const service = new UserService(new PostgresUserRepo());`,
   },
   {
     id: 'pat-006',
-    concept: { pt: 'DRY — Extrair Função', en: 'DRY — Extract Function' },
+    concept: { pt: 'DRY -- Extrair Função', en: 'DRY -- Extract Function' },
     difficulty: 'easy',
     prompt: {
       pt: 'DRY (Don\'t Repeat Yourself) elimina duplicação extraindo lógica comum em funções reutilizáveis. Extraia a formatação de data que aparece em vários lugares.',
@@ -320,7 +320,7 @@ adapter.pay(5000, 'BRL');`,
   },
   {
     id: 'pat-012',
-    concept: { pt: 'Clean Code — Nomes e Funções Pequenas', en: 'Clean Code — Naming and Small Functions' },
+    concept: { pt: 'Clean Code -- Nomes e Funções Pequenas', en: 'Clean Code -- Naming and Small Functions' },
     difficulty: 'easy',
     prompt: {
       pt: 'Clean Code prioriza nomes descritivos e funções pequenas que fazem uma coisa só. Refatore uma função longa em funções menores com nomes claros.',

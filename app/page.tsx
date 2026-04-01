@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { getLanguageById } from '@/data'
-import { generateChallengeSequence } from '@/lib/utils'
+import { generateChallengeSequence, stripCodeComments } from '@/lib/utils'
 import { Language, Snippet, Difficulty } from '@/lib/types'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
@@ -58,8 +58,7 @@ export default function Home() {
   const isCountdown = difficulty !== 'all'
 
   useEffect(() => {
-    const filtered = difficulty === 'all' ? language.snippets : language.snippets.filter(s => s.difficulty === difficulty)
-    const pool = filtered.length > 0 ? filtered : language.snippets
+    const pool = language.snippets
     setSequence(generateChallengeSequence(pool))
     setSeqIndex(0)
     setShowResult(false)
@@ -67,11 +66,15 @@ export default function Home() {
   }, [language, difficulty])
 
   const snippet = sequence[seqIndex] || language.snippets[0]
+  const displayCode = useMemo(() => {
+    const raw = snippet?.code ?? ''
+    return difficulty === 'all' ? raw : stripCodeComments(raw)
+  }, [snippet, difficulty])
 
   const handleFinish = useCallback(() => { setShowResult(true); playComplete(); timer.stop() }, [])
   const handleTimerEnd = useCallback(() => { setShowResult(true); playComplete() }, [])
 
-  const engine = useTypingEngine(snippet?.code ?? '', handleFinish)
+  const engine = useTypingEngine(displayCode, handleFinish)
   const timer = useTimer(timerDuration, isCountdown, handleTimerEnd)
 
   // Reset timer + engine when difficulty changes
@@ -153,7 +156,7 @@ export default function Home() {
               {/* Caps Lock warning — desktop: above text */}
               <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
 
-              <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
+              <TypingArea code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={language.id} isTyping={engine.state.status === 'running'} locale={locale} />
 
               {/* Caps Lock warning — mobile: below text */}

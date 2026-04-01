@@ -7,8 +7,8 @@ export const rubySnippets: Snippet[] = [
     difficulty: 'easy',
     slot: 'fn-default-params',
     prompt: {
-      pt: 'Métodos em Ruby são definidos com "def" e retornam a última expressão automaticamente. Crie greet com um argumento "name" que tem "World" como valor padrão — sem precisar de return explícito.',
-      en: 'Ruby methods are defined with "def" and implicitly return the last expression\'s value. Define greet with a "name" argument that defaults to "World" — no explicit return needed.',
+      pt: 'Métodos em Ruby são definidos com "def" e retornam a última expressão automaticamente. Crie greet com um argumento "name" que tem "World" como valor padrão -- sem precisar de return explícito.',
+      en: 'Ruby methods are defined with "def" and implicitly return the last expression\'s value. Define greet with a "name" argument that defaults to "World" -- no explicit return needed.',
     },
     code: `def greet(name = "World")
   "Hello, #{name}!"
@@ -22,8 +22,8 @@ puts greet("Ruby")`,
     difficulty: 'easy',
     slot: 'var-interpolation',
     prompt: {
-      pt: 'Interpolação de string em Ruby usa #{expressão} dentro de aspas duplas. Junte a variável "language" e o número "version" numa mensagem — qualquer expressão Ruby pode entrar dentro de #{}.',
-      en: 'Ruby string interpolation uses #{expression} inside double quotes. Combine the "language" variable and the "version" number in a message — any Ruby expression can be evaluated inside #{}.',
+      pt: 'Interpolação de string em Ruby usa #{expressão} dentro de aspas duplas. Junte a variável "language" e o número "version" numa mensagem -- qualquer expressão Ruby pode entrar dentro de #{}.',
+      en: 'Ruby string interpolation uses #{expression} inside double quotes. Combine the "language" variable and the "version" number in a message -- any Ruby expression can be evaluated inside #{}.',
     },
     code: `language = "Ruby"
 version = 3.2
@@ -35,8 +35,8 @@ puts "#{language} #{version} is awesome!"`,
     difficulty: 'easy',
     slot: 'loop-filter',
     prompt: {
-      pt: 'Ruby tem métodos funcionais bem ricos em Array. Use .map com bloco pra dobrar cada número, .select com Symbol#to_proc (&:even?) pra pegar só os pares e .sum pro total — um por linha.',
-      en: 'Ruby has rich functional Array methods. Use .map with a block to double each number, .select with Symbol#to_proc (&:even?) to filter only evens and .sum to calculate the total — one per line.',
+      pt: 'Ruby tem métodos funcionais bem ricos em Array. Use .map com bloco pra dobrar cada número, .select com Symbol#to_proc (&:even?) pra pegar só os pares e .sum pro total -- um por linha.',
+      en: 'Ruby has rich functional Array methods. Use .map with a block to double each number, .select with Symbol#to_proc (&:even?) to filter only evens and .sum to calculate the total -- one per line.',
     },
     code: `nums = [3, 1, 4, 1, 5, 9, 2, 6]
 doubled = nums.map { |n| n * 2 }
@@ -84,8 +84,8 @@ end`,
     difficulty: 'medium',
     slot: 'fn-callback',
     prompt: {
-      pt: 'Blocks são o mecanismo mais fundamental de customização no Ruby — qualquer método pode receber um bloco via yield. Crie "repeat" usando n.times e chamando yield a cada iteração pra executar o bloco que foi passado.',
-      en: 'Blocks are Ruby\'s most fundamental customization mechanism — any method can accept a block with yield. Implement "repeat" using n.times and calling yield on each iteration to execute the provided block.',
+      pt: 'Blocks são o mecanismo mais fundamental de customização no Ruby -- qualquer método pode receber um bloco via yield. Crie "repeat" usando n.times e chamando yield a cada iteração pra executar o bloco que foi passado.',
+      en: 'Blocks are Ruby\'s most fundamental customization mechanism -- any method can accept a block with yield. Implement "repeat" using n.times and calling yield on each iteration to execute the provided block.',
     },
     code: `def repeat(n)
   n.times { yield }
@@ -99,8 +99,8 @@ repeat(3) { puts "Hello!" }`,
     difficulty: 'medium',
     slot: 'obj-interface',
     prompt: {
-      pt: 'Modules dão namespacing e reuso de código via include (mixin). Crie Serializable com o método to_json usando instance_variables e inclua em User — as instâncias de User ganham to_json sem precisar de herança.',
-      en: 'Modules provide namespacing and code reuse via include (mixin). Create Serializable with a to_json method that uses instance_variables and include it in User — User instances gain to_json without inheritance.',
+      pt: 'Modules dão namespacing e reuso de código via include (mixin). Crie Serializable com o método to_json usando instance_variables e inclua em User -- as instâncias de User ganham to_json sem precisar de herança.',
+      en: 'Modules provide namespacing and code reuse via include (mixin). Create Serializable with a to_json method that uses instance_variables and include it in User -- User instances gain to_json without inheritance.',
     },
     code: `module Serializable
   def to_json
@@ -152,8 +152,8 @@ puts transform.call([1, 2, 3, 4], square)`,
     difficulty: 'hard',
     slot: 'adv-pattern',
     prompt: {
-      pt: 'method_missing intercepta chamadas a métodos que não existem, abrindo espaço pra DSLs dinâmicas. Monte FlexObject: nomes que terminam em "=" salvam o valor em @data, os demais leem — criando getters/setters sob demanda.',
-      en: 'method_missing intercepts any call to an undefined method, enabling dynamic DSLs. Implement FlexObject: names ending in "=" store the value in @data, others retrieve it — creating arbitrary getters/setters.',
+      pt: 'method_missing intercepta chamadas a métodos que não existem, abrindo espaço pra DSLs dinâmicas. Monte FlexObject: nomes que terminam em "=" salvam o valor em @data, os demais leem -- criando getters/setters sob demanda.',
+      en: 'method_missing intercepts any call to an undefined method, enabling dynamic DSLs. Implement FlexObject: names ending in "=" store the value in @data, others retrieve it -- creating arbitrary getters/setters.',
     },
     code: `class FlexObject
   def initialize
@@ -705,5 +705,224 @@ end
 p1 = Point.new(0, 0)
 p2 = Point.new(3, 4)
 puts p1.distance_to(p2)`,
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'ruby-042',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: { pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Ruby.', en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Ruby.' },
+    code: `# O(1) -- acesso direto
+first = arr[0]
+
+# O(n) -- percorrer tudo
+def contains?(arr, target)
+  arr.any? { |x| x == target }
+end
+
+# O(n²) -- loop aninhado
+def has_duplicate?(arr)
+  (0...arr.length).each do |i|
+    ((i + 1)...arr.length).each do |j|
+      return true if arr[i] == arr[j]
+    end
+  end
+  false
+end`,
+  },
+  {
+    id: 'ruby-043',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: { pt: 'Busca binária divide o array ordenado ao meio -- O(log n). Implemente iterativamente.', en: 'Binary search halves a sorted array -- O(log n). Implement it iteratively.' },
+    code: `def binary_search(arr, target)
+  left, right = 0, arr.length - 1
+  while left <= right
+    mid = (left + right) / 2
+    return mid if arr[mid] == target
+    arr[mid] < target ? left = mid + 1 : right = mid - 1
+  end
+  -1
+end`,
+  },
+  {
+    id: 'ruby-044',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: { pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com parada antecipada.', en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with early stop.' },
+    code: `def bubble_sort(arr)
+  a = arr.dup
+  (a.length - 1).times do |i|
+    swapped = false
+    (a.length - 1 - i).times do |j|
+      if a[j] > a[j + 1]
+        a[j], a[j + 1] = a[j + 1], a[j]
+        swapped = true
+      end
+    end
+    break unless swapped
+  end
+  a
+end`,
+  },
+  {
+    id: 'ruby-045',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Merge Sort divide recursivamente e intercala -- O(n log n).', en: 'Merge Sort recursively splits and merges -- O(n log n).' },
+    code: `def merge_sort(arr)
+  return arr if arr.length <= 1
+  mid = arr.length / 2
+  merge(merge_sort(arr[0...mid]), merge_sort(arr[mid..]))
+end
+
+def merge(a, b)
+  result, i, j = [], 0, 0
+  while i < a.length && j < b.length
+    a[i] <= b[j] ? (result << a[i]; i += 1) : (result << b[j]; j += 1)
+  end
+  result + a[i..] + b[j..]
+end`,
+  },
+  {
+    id: 'ruby-046',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio.', en: 'Quick Sort partitions around a pivot -- O(n log n) average.' },
+    code: `def quick_sort(arr)
+  return arr if arr.length <= 1
+  pivot = arr.last
+  rest = arr[0...-1]
+  left = rest.select { |x| x < pivot }
+  right = rest.select { |x| x >= pivot }
+  quick_sort(left) + [pivot] + quick_sort(right)
+end`,
+  },
+  {
+    id: 'ruby-047',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: { pt: 'Em Ruby, Array funciona como pilha com push, pop e last.', en: 'In Ruby, Array works as a stack with push, pop, and last.' },
+    code: `stack = []
+stack.push(1)
+stack.push(2)
+stack.push(3)
+
+top = stack.last     # 3
+removed = stack.pop  # 3
+empty = stack.empty?`,
+  },
+  {
+    id: 'ruby-048',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: { pt: 'Uma fila em Ruby usa Array com push e shift.', en: 'A queue in Ruby uses Array with push and shift.' },
+    code: `queue = []
+queue.push("A")
+queue.push("B")
+queue.push("C")
+
+front = queue.first    # "A"
+removed = queue.shift  # "A"
+size = queue.length`,
+  },
+  {
+    id: 'ruby-049',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma lista ligada usa Struct com referência ao próximo nó.', en: 'A linked list uses Struct with reference to the next node.' },
+    code: `Node = Struct.new(:value, :next_node)
+
+class LinkedList
+  attr_accessor :head
+
+  def prepend(value)
+    @head = Node.new(value, @head)
+  end
+
+  def to_a
+    result, curr = [], @head
+    while curr
+      result << curr.value
+      curr = curr.next_node
+    end
+    result
+  end
+end`,
+  },
+  {
+    id: 'ruby-050',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma BST mantém menores à esquerda e maiores à direita.', en: 'A BST keeps smaller left and larger right.' },
+    code: `class TreeNode
+  attr_accessor :val, :left, :right
+  def initialize(val) = @val = val
+end
+
+def insert(node, val)
+  return TreeNode.new(val) if node.nil?
+  val < node.val ? node.left = insert(node.left, val) : node.right = insert(node.right, val)
+  node
+end
+
+def search?(node, val)
+  return false if node.nil?
+  return true if val == node.val
+  val < node.val ? search?(node.left, val) : search?(node.right, val)
+end`,
+  },
+  {
+    id: 'ruby-051',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'BFS explora nível por nível com Array como fila e Set.', en: 'BFS explores level by level with Array as queue and Set.' },
+    code: `require 'set'
+
+def bfs(graph, start)
+  visited = Set.new([start])
+  queue, result = [start], []
+  until queue.empty?
+    node = queue.shift
+    result << node
+    (graph[node] || []).each do |nb|
+      next if visited.include?(nb)
+      visited.add(nb)
+      queue << nb
+    end
+  end
+  result
+end`,
+  },
+  {
+    id: 'ruby-052',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'DFS explora o mais fundo possível com Array como pilha.', en: 'DFS explores as deep as possible with Array as stack.' },
+    code: `def dfs(graph, start)
+  visited = Set.new
+  stack, result = [start], []
+  until stack.empty?
+    node = stack.pop
+    next if visited.include?(node)
+    visited.add(node)
+    result << node
+    (graph[node] || []).reverse_each { |nb| stack << nb unless visited.include?(nb) }
+  end
+  result
+end`,
+  },
+  {
+    id: 'ruby-053',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: { pt: 'Hash é o hash map nativo do Ruby com acesso O(1) médio.', en: 'Hash is Ruby\'s native hash map with O(1) average access.' },
+    code: `scores = { "Alice" => 95, "Bob" => 87, "Carol" => 92 }
+
+alice = scores["Alice"]
+has_bob = scores.key?("Bob")
+dave = scores.fetch("Dave", 0)
+
+scores.each { |name, score| puts "#{name}: #{score}" }`,
   },
 ]

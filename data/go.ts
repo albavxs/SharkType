@@ -34,8 +34,8 @@ export const goSnippets: Snippet[] = [
     concept: { pt: 'Interface', en: 'Interface' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Interface em Go é satisfeita implicitamente — qualquer tipo que implementa todos os métodos já se qualifica sem precisar declarar. Defina Reader com o método Read(p []byte) (n int, err error), seguindo a convenção da stdlib.',
-      en: 'Interfaces in Go are satisfied implicitly — any type that implements all methods qualifies without declaring it. Define Reader with the method Read(p []byte) (n int, err error), following the stdlib convention.',
+      pt: 'Interface em Go é satisfeita implicitamente -- qualquer tipo que implementa todos os métodos já se qualifica sem precisar declarar. Defina Reader com o método Read(p []byte) (n int, err error), seguindo a convenção da stdlib.',
+      en: 'Interfaces in Go are satisfied implicitly -- any type that implements all methods qualifies without declaring it. Define Reader with the method Read(p []byte) (n int, err error), following the stdlib convention.',
     },
     code: `type Reader interface {
     Read(p []byte) (n int, err error)
@@ -93,8 +93,8 @@ fmt.Println(msg)`,
     concept: { pt: 'Tratamento de Erros', en: 'Error Handling' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Em Go, erro é um valor retornado — a convenção é checar if err != nil na hora. Capture o erro de doSomething() e use fmt.Errorf com %w pra wrappear o erro original, preservando o contexto da falha.',
-      en: 'In Go, errors are returned values — the convention is to check if err != nil immediately. Capture the error from doSomething() and use fmt.Errorf with %w to wrap the original error, preserving failure context.',
+      pt: 'Em Go, erro é um valor retornado -- a convenção é checar if err != nil na hora. Capture o erro de doSomething() e use fmt.Errorf com %w pra wrappear o erro original, preservando o contexto da falha.',
+      en: 'In Go, errors are returned values -- the convention is to check if err != nil immediately. Capture the error from doSomething() and use fmt.Errorf with %w to wrap the original error, preserving failure context.',
     },
     code: `result, err := doSomething()
 if err != nil {
@@ -197,8 +197,8 @@ if score >= 70 {
     concept: { pt: 'Switch', en: 'Switch' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Switch em Go nao precisa de break — cada case para automaticamente. Use switch pra mapear um dia da semana a uma categoria, com default pra "Midweek".',
-      en: 'Switch in Go doesn\'t need break — each case stops automatically. Use switch to map a day of the week to a category, with default for "Midweek".',
+      pt: 'Switch em Go nao precisa de break -- cada case para automaticamente. Use switch pra mapear um dia da semana a uma categoria, com default pra "Midweek".',
+      en: 'Switch in Go doesn\'t need break -- each case stops automatically. Use switch to map a day of the week to a category, with default for "Midweek".',
     },
     code: `switch day {
 case "Monday", "Friday":
@@ -215,8 +215,8 @@ default:
     concept: { pt: 'If com Inicializador', en: 'If with Initializer' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Em Go, o if pode ter uma declaracao curta antes da condicao, separada por ";". Use isso pra abrir um arquivo e checar o erro na mesma linha — o escopo da variavel fica limitado ao bloco.',
-      en: 'In Go, if can have a short statement before the condition, separated by ";". Use this to open a file and check the error on the same line — the variable\'s scope is limited to the block.',
+      pt: 'Em Go, o if pode ter uma declaracao curta antes da condicao, separada por ";". Use isso pra abrir um arquivo e checar o erro na mesma linha -- o escopo da variavel fica limitado ao bloco.',
+      en: 'In Go, if can have a short statement before the condition, separated by ";". Use this to open a file and check the error on the same line -- the variable\'s scope is limited to the block.',
     },
     code: `if f, err := os.Open("config.json"); err != nil {
     log.Fatal(err)
@@ -314,8 +314,8 @@ fmt.Println(add(3, 4))`,
     concept: { pt: 'Closure', en: 'Closure' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Closures em Go capturam variaveis do escopo externo. Crie um contador que retorna uma funcao — cada chamada incrementa e retorna o valor capturado.',
-      en: 'Closures in Go capture variables from the outer scope. Create a counter that returns a function — each call increments and returns the captured value.',
+      pt: 'Closures em Go capturam variaveis do escopo externo. Crie um contador que retorna uma funcao -- cada chamada incrementa e retorna o valor capturado.',
+      en: 'Closures in Go capture variables from the outer scope. Create a counter that returns a function -- each call increments and returns the captured value.',
     },
     code: `func counter() func() int {
     count := 0
@@ -349,8 +349,8 @@ fmt.Println(add(3, 4))`,
     concept: { pt: 'For Classico', en: 'Classic For' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go so tem "for" como laco — nao existe while nem do-while. Use o for classico com inicializador, condicao e pos para imprimir de 0 a 4.',
-      en: 'Go only has "for" as a loop — there is no while or do-while. Use the classic for with init, condition, and post to print 0 through 4.',
+      pt: 'Go so tem "for" como laco -- nao existe while nem do-while. Use o for classico com inicializador, condicao e pos para imprimir de 0 a 4.',
+      en: 'Go only has "for" as a loop -- there is no while or do-while. Use the classic for with init, condition, and post to print 0 through 4.',
     },
     code: `for i := 0; i < 5; i++ {
     fmt.Println(i)
@@ -427,8 +427,8 @@ func (p Person) FullName() string {
     concept: { pt: 'Struct Aninhado', en: 'Nested Struct' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Go suporta composicao com embedding — o struct interno "promove" seus campos pro externo. Crie Address e Company com Address embutido.',
-      en: 'Go supports composition via embedding — the inner struct promotes its fields to the outer. Create Address and Company with embedded Address.',
+      pt: 'Go suporta composicao com embedding -- o struct interno "promove" seus campos pro externo. Crie Address e Company com Address embutido.',
+      en: 'Go supports composition via embedding -- the inner struct promotes its fields to the outer. Create Address and Company with embedded Address.',
     },
     code: `type Address struct {
     City, State string
@@ -651,8 +651,8 @@ wg.Wait()`,
     concept: { pt: 'Select com Channels', en: 'Select with Channels' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Select em Go e como um switch pra operacoes de channel — espera o primeiro channel que estiver pronto. Use com time.After pra timeout.',
-      en: 'Select in Go is like a switch for channel operations — waits for the first ready channel. Use it with time.After for a timeout.',
+      pt: 'Select em Go e como um switch pra operacoes de channel -- espera o primeiro channel que estiver pronto. Use com time.After pra timeout.',
+      en: 'Select in Go is like a switch for channel operations -- waits for the first ready channel. Use it with time.After for a timeout.',
     },
     code: `select {
 case msg := <-ch:
@@ -661,5 +661,298 @@ case <-time.After(5 * time.Second):
     fmt.Println("timeout")
 }`,
     slot: 'adv-macro',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'go-042',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Go.',
+      en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Go.',
+    },
+    code: `// O(1) -- acesso direto
+first := arr[0]
+
+// O(n) -- percorrer tudo
+func contains(arr []int, target int) bool {
+    for _, v := range arr {
+        if v == target { return true }
+    }
+    return false
+}
+
+// O(n²) -- loop aninhado
+func hasDuplicate(arr []int) bool {
+    for i := 0; i < len(arr); i++ {
+        for j := i + 1; j < len(arr); j++ {
+            if arr[i] == arr[j] { return true }
+        }
+    }
+    return false
+}`,
+  },
+  {
+    id: 'go-043',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Busca binária divide o slice ordenado ao meio -- O(log n). Implemente de forma iterativa.',
+      en: 'Binary search halves a sorted slice -- O(log n). Implement it iteratively.',
+    },
+    code: `func binarySearch(arr []int, target int) int {
+    left, right := 0, len(arr)-1
+    for left <= right {
+        mid := left + (right-left)/2
+        if arr[mid] == target {
+            return mid
+        } else if arr[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return -1
+}`,
+  },
+  {
+    id: 'go-044',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com parada antecipada.',
+      en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with early stop.',
+    },
+    code: `func bubbleSort(arr []int) []int {
+    a := make([]int, len(arr))
+    copy(a, arr)
+    for i := 0; i < len(a)-1; i++ {
+        swapped := false
+        for j := 0; j < len(a)-1-i; j++ {
+            if a[j] > a[j+1] {
+                a[j], a[j+1] = a[j+1], a[j]
+                swapped = true
+            }
+        }
+        if !swapped { break }
+    }
+    return a
+}`,
+  },
+  {
+    id: 'go-045',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com slices.',
+      en: 'Merge Sort recursively splits and merges -- O(n log n). Implement with slices.',
+    },
+    code: `func mergeSort(arr []int) []int {
+    if len(arr) <= 1 { return arr }
+    mid := len(arr) / 2
+    left := mergeSort(arr[:mid])
+    right := mergeSort(arr[mid:])
+    return merge(left, right)
+}
+
+func merge(a, b []int) []int {
+    result := make([]int, 0, len(a)+len(b))
+    i, j := 0, 0
+    for i < len(a) && j < len(b) {
+        if a[i] <= b[j] { result = append(result, a[i]); i++ } else { result = append(result, b[j]); j++ }
+    }
+    result = append(result, a[i:]...)
+    result = append(result, b[j:]...)
+    return result
+}`,
+  },
+  {
+    id: 'go-046',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente in-place.',
+      en: 'Quick Sort partitions around a pivot -- O(n log n) average. Implement in-place.',
+    },
+    code: `func quickSort(arr []int, lo, hi int) {
+    if lo >= hi { return }
+    pivot := arr[hi]
+    i := lo
+    for j := lo; j < hi; j++ {
+        if arr[j] < pivot {
+            arr[i], arr[j] = arr[j], arr[i]
+            i++
+        }
+    }
+    arr[i], arr[hi] = arr[hi], arr[i]
+    quickSort(arr, lo, i-1)
+    quickSort(arr, i+1, hi)
+}`,
+  },
+  {
+    id: 'go-047',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Go, um slice funciona como pilha com append e reslicing. Implemente uma struct Stack.',
+      en: 'In Go, a slice works as a stack with append and reslicing. Implement a Stack struct.',
+    },
+    code: `type Stack struct {
+    items []int
+}
+
+func (s *Stack) Push(v int)    { s.items = append(s.items, v) }
+func (s *Stack) Pop() int      { v := s.items[len(s.items)-1]; s.items = s.items[:len(s.items)-1]; return v }
+func (s *Stack) Peek() int     { return s.items[len(s.items)-1] }
+func (s *Stack) IsEmpty() bool { return len(s.items) == 0 }`,
+  },
+  {
+    id: 'go-048',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Uma fila em Go usa slice com append e reslicing do início. Implemente uma struct Queue.',
+      en: 'A queue in Go uses a slice with append and front reslicing. Implement a Queue struct.',
+    },
+    code: `type Queue struct {
+    items []string
+}
+
+func (q *Queue) Enqueue(v string) { q.items = append(q.items, v) }
+func (q *Queue) Dequeue() string  { v := q.items[0]; q.items = q.items[1:]; return v }
+func (q *Queue) Front() string    { return q.items[0] }
+func (q *Queue) IsEmpty() bool    { return len(q.items) == 0 }
+func (q *Queue) Size() int        { return len(q.items) }`,
+  },
+  {
+    id: 'go-049',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma lista ligada em Go usa structs com ponteiros. Implemente inserção e travessia.',
+      en: 'A linked list in Go uses structs with pointers. Implement insertion and traversal.',
+    },
+    code: `type Node struct {
+    Value int
+    Next  *Node
+}
+
+type LinkedList struct {
+    Head *Node
+}
+
+func (l *LinkedList) Prepend(v int) {
+    l.Head = &Node{Value: v, Next: l.Head}
+}
+
+func (l *LinkedList) ToSlice() []int {
+    var result []int
+    for n := l.Head; n != nil; n = n.Next {
+        result = append(result, n.Value)
+    }
+    return result
+}`,
+  },
+  {
+    id: 'go-050',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma BST em Go usa struct com ponteiros pra filhos. Implemente Insert e Search.',
+      en: 'A BST in Go uses struct with child pointers. Implement Insert and Search.',
+    },
+    code: `type TreeNode struct {
+    Val         int
+    Left, Right *TreeNode
+}
+
+func Insert(node *TreeNode, val int) *TreeNode {
+    if node == nil { return &TreeNode{Val: val} }
+    if val < node.Val { node.Left = Insert(node.Left, val) } else { node.Right = Insert(node.Right, val) }
+    return node
+}
+
+func Search(node *TreeNode, val int) bool {
+    if node == nil { return false }
+    if val == node.Val { return true }
+    if val < node.Val { return Search(node.Left, val) }
+    return Search(node.Right, val)
+}`,
+  },
+  {
+    id: 'go-051',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'BFS explora nível por nível com slice como fila. Implemente com map de adjacência.',
+      en: 'BFS explores level by level with slice as queue. Implement with adjacency map.',
+    },
+    code: `func bfs(graph map[string][]string, start string) []string {
+    visited := map[string]bool{start: true}
+    queue := []string{start}
+    var result []string
+    for len(queue) > 0 {
+        node := queue[0]
+        queue = queue[1:]
+        result = append(result, node)
+        for _, nb := range graph[node] {
+            if !visited[nb] {
+                visited[nb] = true
+                queue = append(queue, nb)
+            }
+        }
+    }
+    return result
+}`,
+  },
+  {
+    id: 'go-052',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'DFS explora o mais fundo possível com slice como pilha. Implemente iterativamente.',
+      en: 'DFS explores as deep as possible with slice as stack. Implement it iteratively.',
+    },
+    code: `func dfs(graph map[string][]string, start string) []string {
+    visited := map[string]bool{}
+    stack := []string{start}
+    var result []string
+    for len(stack) > 0 {
+        node := stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        if visited[node] { continue }
+        visited[node] = true
+        result = append(result, node)
+        neighbors := graph[node]
+        for i := len(neighbors) - 1; i >= 0; i-- {
+            if !visited[neighbors[i]] {
+                stack = append(stack, neighbors[i])
+            }
+        }
+    }
+    return result
+}`,
+  },
+  {
+    id: 'go-053',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'map é o hash map nativo de Go com acesso O(1) médio. Use operações comuns e iteração.',
+      en: 'map is Go\'s native hash map with O(1) average access. Use common operations and iteration.',
+    },
+    code: `scores := map[string]int{
+    "Alice": 95,
+    "Bob":   87,
+    "Carol": 92,
+}
+
+alice := scores["Alice"]
+dave, ok := scores["Dave"]
+if !ok { dave = 0 }
+
+for name, score := range scores {
+    fmt.Printf("%s: %d\\n", name, score)
+}`,
   },
 ]

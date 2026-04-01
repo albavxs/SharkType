@@ -103,4 +103,188 @@ kubectl create secret generic db-secret \\
 kubectl autoscale deployment api \\
   --min=2 --max=10 --cpu-percent=70`,
   },
+  {
+    id: 'k8s-007',
+    concept: { pt: 'Ingress', en: 'Ingress' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Ingress expõe serviços HTTP/HTTPS com roteamento por host e path. Configure um Ingress com TLS e múltiplas rotas.',
+      en: 'Ingress exposes HTTP/HTTPS services with host and path routing. Configure an Ingress with TLS and multiple routes.',
+    },
+    code: `apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+    - hosts:
+        - app.example.com
+      secretName: tls-secret
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api-service
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80`,
+  },
+  {
+    id: 'k8s-008',
+    concept: { pt: 'PersistentVolumeClaim', en: 'PersistentVolumeClaim' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'PVC requisita armazenamento persistente pro pod. Crie um PVC e monte-o num pod de banco de dados.',
+      en: 'PVC requests persistent storage for a pod. Create a PVC and mount it on a database pod.',
+    },
+    code: `apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pg-data
+      volumes:
+        - name: pg-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc`,
+  },
+  {
+    id: 'k8s-009',
+    concept: { pt: 'Liveness e Readiness Probes', en: 'Liveness and Readiness Probes' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Probes monitoram a saúde dos containers. livenessProbe reinicia se falhar, readinessProbe remove do balanceador.',
+      en: 'Probes monitor container health. livenessProbe restarts on failure, readinessProbe removes from the load balancer.',
+    },
+    code: `containers:
+  - name: api
+    image: minha-app:1.0
+    ports:
+      - containerPort: 3000
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 3000
+      initialDelaySeconds: 10
+      periodSeconds: 15
+      failureThreshold: 3
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 3000
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"`,
+  },
+  {
+    id: 'k8s-010',
+    concept: { pt: 'Namespaces', en: 'Namespaces' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Namespaces isolam recursos dentro do cluster. Crie, liste e troque entre namespaces.',
+      en: 'Namespaces isolate resources within the cluster. Create, list, and switch between namespaces.',
+    },
+    code: `kubectl create namespace staging
+kubectl create namespace production
+
+kubectl get namespaces
+kubectl get pods -n staging
+kubectl get all -n production
+
+kubectl config set-context --current --namespace=staging`,
+  },
+  {
+    id: 'k8s-011',
+    concept: { pt: 'Jobs e CronJobs', en: 'Jobs and CronJobs' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Jobs executam tarefas até conclusão e CronJobs agendam execuções periódicas. Crie um CronJob de backup.',
+      en: 'Jobs run tasks to completion and CronJobs schedule periodic runs. Create a backup CronJob.',
+    },
+    code: `apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: postgres:16
+              command:
+                - /bin/sh
+                - -c
+                - pg_dump -h $DB_HOST -U $DB_USER $DB_NAME > /backup/dump.sql
+              envFrom:
+                - secretRef:
+                    name: db-secret
+          restartPolicy: OnFailure`,
+  },
+  {
+    id: 'k8s-012',
+    concept: { pt: 'Depuração de Pods', en: 'Pod Debugging' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Comandos essenciais pra depurar pods com problemas: logs, exec, port-forward e eventos.',
+      en: 'Essential commands to debug problematic pods: logs, exec, port-forward, and events.',
+    },
+    code: `kubectl logs api-7d9f4b -n production --previous
+kubectl logs -f deployment/api --all-containers
+
+kubectl exec -it api-7d9f4b -- /bin/sh
+kubectl exec api-7d9f4b -- env
+
+kubectl port-forward svc/api-service 8080:80
+
+kubectl get events -n production --sort-by='.lastTimestamp'
+kubectl top pods -n production`,
+  },
 ]

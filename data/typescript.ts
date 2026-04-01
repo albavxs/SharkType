@@ -6,8 +6,8 @@ export const typescriptSnippets: Snippet[] = [
     concept: { pt: 'Interface', en: 'Interface' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Interface define a forma que um objeto precisa ter no TypeScript. Crie a interface User com os campos obrigatórios "name" (string) e "age" (number), e "email" como opcional — marcado com ? pra indicar que pode ser omitido.',
-      en: 'Interfaces define the expected shape of an object in TypeScript. Create the User interface with required fields "name" (string) and "age" (number), and an optional "email" field — marked with ? to indicate it can be omitted.',
+      pt: 'Interface define a forma que um objeto precisa ter no TypeScript. Crie a interface User com os campos obrigatórios "name" (string) e "age" (number), e "email" como opcional -- marcado com ? pra indicar que pode ser omitido.',
+      en: 'Interfaces define the expected shape of an object in TypeScript. Create the User interface with required fields "name" (string) and "age" (number), and an optional "email" field -- marked with ? to indicate it can be omitted.',
     },
     code: `interface User {
   name: string;
@@ -21,8 +21,8 @@ export const typescriptSnippets: Snippet[] = [
     concept: { pt: 'Alias de Tipo', en: 'Type Alias' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Type alias cria um nome pra tipos existentes ou pra uma união de tipos literais. Defina Status como um union type que só aceita três valores: "active", "inactive" e "pending" — qualquer outro valor o TypeScript rejeita.',
-      en: 'Type aliases create names for existing types or unions of literal types. Define Status as a union type that only accepts three possible values: "active", "inactive", and "pending" — TypeScript will reject anything else.',
+      pt: 'Type alias cria um nome pra tipos existentes ou pra uma união de tipos literais. Defina Status como um union type que só aceita três valores: "active", "inactive" e "pending" -- qualquer outro valor o TypeScript rejeita.',
+      en: 'Type aliases create names for existing types or unions of literal types. Define Status as a union type that only accepts three possible values: "active", "inactive", and "pending" -- TypeScript will reject anything else.',
     },
     code: `type Status = 'active' | 'inactive' | 'pending';`,
     slot: 'type-union',
@@ -32,8 +32,8 @@ export const typescriptSnippets: Snippet[] = [
     concept: { pt: 'Genéricos', en: 'Generics' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Funções genéricas funcionam com qualquer tipo sem perder a segurança de tipos. Escreva first<T>: ela recebe um array de tipo T e retorna o primeiro elemento — ou undefined se o array estiver vazio.',
-      en: 'Generic functions work with any type while preserving type safety. Write first<T>: it takes an array of any type T and returns the first element — or undefined if the array is empty.',
+      pt: 'Funções genéricas funcionam com qualquer tipo sem perder a segurança de tipos. Escreva first<T>: ela recebe um array de tipo T e retorna o primeiro elemento -- ou undefined se o array estiver vazio.',
+      en: 'Generic functions work with any type while preserving type safety. Write first<T>: it takes an array of any type T and returns the first element -- or undefined if the array is empty.',
     },
     code: `function first<T>(arr: T[]): T | undefined {
   return arr[0];
@@ -45,7 +45,7 @@ export const typescriptSnippets: Snippet[] = [
     concept: { pt: 'Enumeração', en: 'Enum' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Enum representa um conjunto fixo de valores nomeados. Defina Direction com quatro direções, dando pra cada uma um valor string explícito (UP, DOWN, LEFT, RIGHT) — facilita na hora de serializar e debugar.',
+      pt: 'Enum representa um conjunto fixo de valores nomeados. Defina Direction com quatro direções, dando pra cada uma um valor string explícito (UP, DOWN, LEFT, RIGHT) -- facilita na hora de serializar e debugar.',
       en: 'Enums represent a fixed set of named values. Define Direction with four navigation directions, assigning each an explicit string value (UP, DOWN, LEFT, RIGHT) for easier serialization and debugging.',
     },
     code: `enum Direction {
@@ -60,8 +60,8 @@ export const typescriptSnippets: Snippet[] = [
     concept: { pt: 'Estreitamento de Tipo', en: 'Type Narrowing' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Type narrowing refina o tipo de uma variável dentro de um bloco condicional. Implemente printId aceitando string | number e use typeof pra chamar .toUpperCase() em strings e .toFixed(2) em números — o TS entende cada branch.',
-      en: 'Type narrowing refines a variable\'s type within a block. Implement printId that accepts string | number and uses typeof to call .toUpperCase() on strings and .toFixed(2) on numbers — TypeScript understands each branch.',
+      pt: 'Type narrowing refina o tipo de uma variável dentro de um bloco condicional. Implemente printId aceitando string | number e use typeof pra chamar .toUpperCase() em strings e .toFixed(2) em números -- o TS entende cada branch.',
+      en: 'Type narrowing refines a variable\'s type within a block. Implement printId that accepts string | number and uses typeof to call .toUpperCase() on strings and .toFixed(2) on numbers -- TypeScript understands each branch.',
     },
     code: `function printId(id: string | number) {
   if (typeof id === 'string') {
@@ -90,8 +90,8 @@ type ReadonlyUser = Readonly<User>;`,
     concept: { pt: 'Restrição de Genéricos', en: 'Generic Constraint' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Generic constraints restringem quais tipos são aceitos usando "extends". Implemente getProperty com dois type parameters: T (o objeto) e K extends keyof T (uma chave válida de T) — retornando T[K] com type safety total.',
-      en: 'Generic constraints restrict which types are accepted using "extends". Implement getProperty with two type parameters: T (the object) and K extends keyof T (a valid key of T) — returning T[K] with full type safety.',
+      pt: 'Generic constraints restringem quais tipos são aceitos usando "extends". Implemente getProperty com dois type parameters: T (o objeto) e K extends keyof T (uma chave válida de T) -- retornando T[K] com type safety total.',
+      en: 'Generic constraints restrict which types are accepted using "extends". Implement getProperty with two type parameters: T (the object) and K extends keyof T (a valid key of T) -- returning T[K] with full type safety.',
     },
     code: `function getProperty<T, K extends keyof T>(
   obj: T,
@@ -106,8 +106,8 @@ type ReadonlyUser = Readonly<User>;`,
     concept: { pt: 'Tipo Mapeado', en: 'Mapped Type' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Mapped types percorrem as chaves de um tipo pra construir uma variação dele. Crie Optional<T> usando [K in keyof T]? pra tornar cada propriedade opcional — basicamente o equivalente manual do Partial<T> que já vem no TS.',
-      en: 'Mapped types iterate over a type\'s keys to build a variation. Create Optional<T> using [K in keyof T]? to make every property optional — the manual equivalent of the built-in Partial<T> utility type.',
+      pt: 'Mapped types percorrem as chaves de um tipo pra construir uma variação dele. Crie Optional<T> usando [K in keyof T]? pra tornar cada propriedade opcional -- basicamente o equivalente manual do Partial<T> que já vem no TS.',
+      en: 'Mapped types iterate over a type\'s keys to build a variation. Create Optional<T> using [K in keyof T]? to make every property optional -- the manual equivalent of the built-in Partial<T> utility type.',
     },
     code: `type Optional<T> = {
   [K in keyof T]?: T[K];
@@ -118,8 +118,8 @@ type ReadonlyUser = Readonly<User>;`,
     concept: { pt: 'Tipo Interseção', en: 'Intersection Type' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Intersection type (&) junta dois tipos num só que exige todos os campos de ambos. Crie Employee como a interseção de Person com um objeto que adiciona "company" e "role" — pra ser válido, tem que ter todos os campos.',
-      en: 'Intersection types (&) combine two types into one that requires all fields from both. Create Employee as the intersection of Person with an object that adds "company" and "role" — a valid instance must have all fields.',
+      pt: 'Intersection type (&) junta dois tipos num só que exige todos os campos de ambos. Crie Employee como a interseção de Person com um objeto que adiciona "company" e "role" -- pra ser válido, tem que ter todos os campos.',
+      en: 'Intersection types (&) combine two types into one that requires all fields from both. Create Employee as the intersection of Person with an object that adds "company" and "role" -- a valid instance must have all fields.',
     },
     code: `type Employee = Person & {
   company: string;
@@ -485,8 +485,8 @@ interface Person {
     concept: { pt: 'Classe Abstrata', en: 'Abstract Class' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Classes abstratas não podem ser instanciadas diretamente — servem como base que define métodos que as subclasses devem implementar.',
-      en: 'Abstract classes cannot be instantiated directly — they serve as a base that defines methods subclasses must implement.',
+      pt: 'Classes abstratas não podem ser instanciadas diretamente -- servem como base que define métodos que as subclasses devem implementar.',
+      en: 'Abstract classes cannot be instantiated directly -- they serve as a base that defines methods subclasses must implement.',
     },
     code: `abstract class Shape {
   abstract area(): number;
@@ -609,5 +609,277 @@ function area(s: Shape): number {
   fetchPosts(),
 ]);`,
     slot: 'adv-concurrent',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'ts-044',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com TypeScript tipado.',
+      en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with typed TypeScript.',
+    },
+    code: `// O(1) -- acesso direto
+const first: number = arr[0];
+
+// O(n) -- percorrer tudo
+function contains(arr: number[], target: number): boolean {
+  return arr.some(x => x === target);
+}
+
+// O(n²) -- loop aninhado
+function hasDuplicate(arr: number[]): boolean {
+  for (let i = 0; i < arr.length; i++)
+    for (let j = i + 1; j < arr.length; j++)
+      if (arr[i] === arr[j]) return true;
+  return false;
+}`,
+  },
+  {
+    id: 'ts-045',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Busca binária divide o array ordenado ao meio -- O(log n). Implemente com tipos explícitos.',
+      en: 'Binary search halves a sorted array -- O(log n). Implement with explicit types.',
+    },
+    code: `function binarySearch(arr: number[], target: number): number {
+  let left = 0;
+  let right = arr.length - 1;
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    if (arr[mid] === target) return mid;
+    if (arr[mid] < target) left = mid + 1;
+    else right = mid - 1;
+  }
+  return -1;
+}`,
+  },
+  {
+    id: 'ts-046',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com tipagem e parada antecipada.',
+      en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with typing and early stop.',
+    },
+    code: `function bubbleSort(arr: number[]): number[] {
+  const a = [...arr];
+  for (let i = 0; i < a.length - 1; i++) {
+    let swapped = false;
+    for (let j = 0; j < a.length - 1 - i; j++) {
+      if (a[j] > a[j + 1]) {
+        [a[j], a[j + 1]] = [a[j + 1], a[j]];
+        swapped = true;
+      }
+    }
+    if (!swapped) break;
+  }
+  return a;
+}`,
+  },
+  {
+    id: 'ts-047',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com tipagem forte.',
+      en: 'Merge Sort recursively splits and merges -- O(n log n). Implement with strong typing.',
+    },
+    code: `function mergeSort(arr: number[]): number[] {
+  if (arr.length <= 1) return arr;
+  const mid = Math.floor(arr.length / 2);
+  return merge(mergeSort(arr.slice(0, mid)), mergeSort(arr.slice(mid)));
+}
+
+function merge(a: number[], b: number[]): number[] {
+  const result: number[] = [];
+  let i = 0, j = 0;
+  while (i < a.length && j < b.length)
+    result.push(a[i] <= b[j] ? a[i++] : b[j++]);
+  return result.concat(a.slice(i), b.slice(j));
+}`,
+  },
+  {
+    id: 'ts-048',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente com filter.',
+      en: 'Quick Sort partitions around a pivot -- O(n log n) average. Implement with filter.',
+    },
+    code: `function quickSort(arr: number[]): number[] {
+  if (arr.length <= 1) return arr;
+  const pivot = arr[arr.length - 1];
+  const left = arr.slice(0, -1).filter(x => x < pivot);
+  const right = arr.slice(0, -1).filter(x => x >= pivot);
+  return [...quickSort(left), pivot, ...quickSort(right)];
+}`,
+  },
+  {
+    id: 'ts-049',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Uma pilha genérica segue LIFO. Implemente Stack<T> com push, pop, peek e isEmpty.',
+      en: 'A generic stack follows LIFO. Implement Stack<T> with push, pop, peek, and isEmpty.',
+    },
+    code: `class Stack<T> {
+  private items: T[] = [];
+  push(item: T): void { this.items.push(item); }
+  pop(): T | undefined { return this.items.pop(); }
+  peek(): T | undefined { return this.items[this.items.length - 1]; }
+  isEmpty(): boolean { return this.items.length === 0; }
+  get size(): number { return this.items.length; }
+}`,
+  },
+  {
+    id: 'ts-050',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Uma fila genérica segue FIFO. Implemente Queue<T> com enqueue, dequeue e front.',
+      en: 'A generic queue follows FIFO. Implement Queue<T> with enqueue, dequeue, and front.',
+    },
+    code: `class Queue<T> {
+  private items: T[] = [];
+  enqueue(item: T): void { this.items.push(item); }
+  dequeue(): T | undefined { return this.items.shift(); }
+  front(): T | undefined { return this.items[0]; }
+  isEmpty(): boolean { return this.items.length === 0; }
+  get size(): number { return this.items.length; }
+}`,
+  },
+  {
+    id: 'ts-051',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma lista ligada genérica usa Node<T>. Implemente prepend, append e toArray.',
+      en: 'A generic linked list uses Node<T>. Implement prepend, append, and toArray.',
+    },
+    code: `class ListNode<T> {
+  constructor(public value: T, public next: ListNode<T> | null = null) {}
+}
+
+class LinkedList<T> {
+  head: ListNode<T> | null = null;
+
+  prepend(value: T): void {
+    this.head = new ListNode(value, this.head);
+  }
+
+  toArray(): T[] {
+    const result: T[] = [];
+    let curr = this.head;
+    while (curr) { result.push(curr.value); curr = curr.next; }
+    return result;
+  }
+}`,
+  },
+  {
+    id: 'ts-052',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma BST mantém menores à esquerda e maiores à direita. Implemente com tipagem genérica.',
+      en: 'A BST keeps smaller left and larger right. Implement with generic typing.',
+    },
+    code: `class BSTNode {
+  left: BSTNode | null = null;
+  right: BSTNode | null = null;
+  constructor(public val: number) {}
+}
+
+class BST {
+  root: BSTNode | null = null;
+
+  insert(val: number): void {
+    this.root = this._insert(this.root, val);
+  }
+
+  private _insert(node: BSTNode | null, val: number): BSTNode {
+    if (!node) return new BSTNode(val);
+    if (val < node.val) node.left = this._insert(node.left, val);
+    else node.right = this._insert(node.right, val);
+    return node;
+  }
+
+  search(val: number): boolean {
+    let node = this.root;
+    while (node) {
+      if (val === node.val) return true;
+      node = val < node.val ? node.left : node.right;
+    }
+    return false;
+  }
+}`,
+  },
+  {
+    id: 'ts-053',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'BFS explora nível por nível com fila. Implemente com Record e Set tipados.',
+      en: 'BFS explores level by level with a queue. Implement with typed Record and Set.',
+    },
+    code: `function bfs(graph: Record<string, string[]>, start: string): string[] {
+  const visited = new Set<string>();
+  const queue: string[] = [start];
+  const result: string[] = [];
+  visited.add(start);
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+    result.push(node);
+    for (const nb of graph[node] ?? []) {
+      if (!visited.has(nb)) { visited.add(nb); queue.push(nb); }
+    }
+  }
+  return result;
+}`,
+  },
+  {
+    id: 'ts-054',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'DFS explora o mais fundo possível com pilha. Implemente iterativamente com tipagem.',
+      en: 'DFS explores as deep as possible with a stack. Implement iteratively with typing.',
+    },
+    code: `function dfs(graph: Record<string, string[]>, start: string): string[] {
+  const visited = new Set<string>();
+  const stack: string[] = [start];
+  const result: string[] = [];
+  while (stack.length > 0) {
+    const node = stack.pop()!;
+    if (visited.has(node)) continue;
+    visited.add(node);
+    result.push(node);
+    for (const nb of (graph[node] ?? []).reverse()) {
+      if (!visited.has(nb)) stack.push(nb);
+    }
+  }
+  return result;
+}`,
+  },
+  {
+    id: 'ts-055',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Map<K,V> é o hash map do TypeScript com acesso O(1) médio. Use set, get, has e iteração.',
+      en: 'Map<K,V> is TypeScript\'s hash map with O(1) average access. Use set, get, has, and iteration.',
+    },
+    code: `const scores = new Map<string, number>();
+scores.set("Alice", 95);
+scores.set("Bob", 87);
+scores.set("Carol", 92);
+
+const alice: number | undefined = scores.get("Alice");
+const hasBob: boolean = scores.has("Bob");
+
+for (const [name, score] of scores) {
+  console.log(\`\${name}: \${score}\`);
+}`,
   },
 ]

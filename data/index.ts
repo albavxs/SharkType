@@ -73,7 +73,7 @@ export const codeLanguages: Language[] = [
   { id: 'nodejs',           label: 'Node.js',          color: '#339933', snippets: nodejsSnippets },
   { id: 'testing',          label: 'Testing',          color: '#22c55e', snippets: testingSnippets },
   { id: 'patterns',         label: 'Design Patterns',  color: '#8b5cf6', snippets: patternsSnippets },
-  { id: 'algorithms',       label: 'Algorithms',       color: '#06b6d4', snippets: algorithmsSnippets },
+  { id: 'algorithms',       label: 'JavaScript',       color: '#f7df1e', snippets: algorithmsSnippets },
   { id: 'mongodb',          label: 'MongoDB',          color: '#47a248', snippets: mongodbSnippets },
   { id: 'jinja',            label: 'Jinja',            color: '#b41717', snippets: jinjaSnippets },
   { id: 'nextjs',           label: 'Next.js',          color: '#b0b0b0', snippets: nextjsSnippets },

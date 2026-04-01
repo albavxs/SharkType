@@ -19,8 +19,8 @@ let isOpen: Bool = true`,
     concept: { pt: 'Interpolação de String', en: 'String Interpolation' },
     difficulty: 'easy',
     prompt: {
-      pt: 'String interpolation em Swift usa \\(expressão) dentro de aspas duplas. Monte a mensagem juntando a variável "language" (String) e "year" (Int) numa frase — qualquer expressão Swift pode entrar ali dentro.',
-      en: 'Swift string interpolation uses the \\(expression) syntax inside double quotes. Build the message by combining the "language" (String) and "year" (Int) variables into a sentence — any Swift expression can be interpolated.',
+      pt: 'String interpolation em Swift usa \\(expressão) dentro de aspas duplas. Monte a mensagem juntando a variável "language" (String) e "year" (Int) numa frase -- qualquer expressão Swift pode entrar ali dentro.',
+      en: 'Swift string interpolation uses the \\(expression) syntax inside double quotes. Build the message by combining the "language" (String) and "year" (Int) variables into a sentence -- any Swift expression can be interpolated.',
     },
     code: `let language = "Swift"
 let year = 2014
@@ -32,8 +32,8 @@ let msg = "\\(language) foi lançado em \\(year)."`,
     concept: { pt: 'Vinculação Opcional', en: 'Optional Binding' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Optionals representam a ausência de valor em Swift. Use "if let" pra desembrulhar "email" com segurança: se o valor existir, fica disponível como "e" dentro do bloco — nada de force-unwrap (!) que dá crash se for nil.',
-      en: 'Optionals represent the absence of a value in Swift. Use "if let" to safely unwrap "email": if the value exists, it becomes available as "e" inside the block — no force-unwrap (!) which would crash on nil.',
+      pt: 'Optionals representam a ausência de valor em Swift. Use "if let" pra desembrulhar "email" com segurança: se o valor existir, fica disponível como "e" dentro do bloco -- nada de force-unwrap (!) que dá crash se for nil.',
+      en: 'Optionals represent the absence of a value in Swift. Use "if let" to safely unwrap "email": if the value exists, it becomes available as "e" inside the block -- no force-unwrap (!) which would crash on nil.',
     },
     code: `var email: String? = "user@example.com"
 if let e = email {
@@ -60,8 +60,8 @@ for fruit in fruits {
     concept: { pt: 'Estrutura', en: 'Struct' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Structs em Swift são value types (copiados na atribuição). Defina Point com duas coordenadas Double mutáveis e crie distance(to:) — um método que recebe outro Point e calcula a distância euclidiana entre os dois.',
-      en: 'Swift structs are value types (copied on assignment). Define Point with two mutable Double coordinates and implement distance(to:) — a method that takes another Point and calculates the Euclidean distance between them.',
+      pt: 'Structs em Swift são value types (copiados na atribuição). Defina Point com duas coordenadas Double mutáveis e crie distance(to:) -- um método que recebe outro Point e calcula a distância euclidiana entre os dois.',
+      en: 'Swift structs are value types (copied on assignment). Define Point with two mutable Double coordinates and implement distance(to:) -- a method that takes another Point and calculates the Euclidean distance between them.',
     },
     code: `struct Point {
     var x: Double
@@ -79,8 +79,8 @@ for fruit in fruits {
     concept: { pt: 'Guard Let', en: 'Guard Let' },
     difficulty: 'medium',
     prompt: {
-      pt: '"guard let" é o inverso de "if let": sai cedo se a condição falhar, deixando o happy path sem indentação maluca. Valide que "name" existe e não tá vazio — retorne a saudação padrão se qualquer condição falhar.',
-      en: '"guard let" is the opposite of "if let": it returns early if the condition fails, keeping the happy path without excessive indentation. Validate that "name" exists and is not empty — return the default greeting if either condition fails.',
+      pt: '"guard let" é o inverso de "if let": sai cedo se a condição falhar, deixando o happy path sem indentação maluca. Valide que "name" existe e não tá vazio -- retorne a saudação padrão se qualquer condição falhar.',
+      en: '"guard let" is the opposite of "if let": it returns early if the condition fails, keeping the happy path without excessive indentation. Validate that "name" exists and is not empty -- return the default greeting if either condition fails.',
     },
     code: `func greet(_ name: String?) -> String {
     guard let name = name, !name.isEmpty else {
@@ -111,8 +111,8 @@ let result: Result<Int> = .success(42)`,
     concept: { pt: 'Clausura', en: 'Closure' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Closures em Swift ficam bem enxutas usando $0, $1 pros parâmetros. Use sorted com { $0 < $1 } pra ordenar um array de inteiros e map com { $0 * 2 } pra dobrar cada elemento — tudo bem direto.',
-      en: 'Swift closures can be simplified with $0, $1 for parameters. Use sorted with { $0 < $1 } to sort an integer array and map with { $0 * 2 } to double each element — all in a concise way.',
+      pt: 'Closures em Swift ficam bem enxutas usando $0, $1 pros parâmetros. Use sorted com { $0 < $1 } pra ordenar um array de inteiros e map com { $0 * 2 } pra dobrar cada elemento -- tudo bem direto.',
+      en: 'Swift closures can be simplified with $0, $1 for parameters. Use sorted with { $0 < $1 } to sort an integer array and map with { $0 * 2 } to double each element -- all in a concise way.',
     },
     code: `let numbers = [3, 1, 4, 1, 5, 9]
 let sorted = numbers.sorted { $0 < $1 }
@@ -695,5 +695,239 @@ func loadProfile() async {
     print("\\(await name), \\(await age)")
 }`,
     slot: 'adv-concurrent',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'swift-042',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: { pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Swift.', en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Swift.' },
+    code: `// O(1) -- acesso direto
+let first = arr[0]
+
+// O(n) -- percorrer tudo
+func contains(_ arr: [Int], _ target: Int) -> Bool {
+    arr.contains(target)
+}
+
+// O(n²) -- loop aninhado
+func hasDuplicate(_ arr: [Int]) -> Bool {
+    for i in 0..<arr.count {
+        for j in (i + 1)..<arr.count {
+            if arr[i] == arr[j] { return true }
+        }
+    }
+    return false
+}`,
+  },
+  {
+    id: 'swift-043',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: { pt: 'Busca binária divide o array ordenado ao meio -- O(log n).', en: 'Binary search halves a sorted array -- O(log n).' },
+    code: `func binarySearch(_ arr: [Int], _ target: Int) -> Int? {
+    var left = 0, right = arr.count - 1
+    while left <= right {
+        let mid = (left + right) / 2
+        if arr[mid] == target { return mid }
+        if arr[mid] < target { left = mid + 1 }
+        else { right = mid - 1 }
+    }
+    return nil
+}`,
+  },
+  {
+    id: 'swift-044',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: { pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²).', en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²).' },
+    code: `func bubbleSort(_ arr: [Int]) -> [Int] {
+    var a = arr
+    for i in 0..<a.count - 1 {
+        var swapped = false
+        for j in 0..<a.count - 1 - i {
+            if a[j] > a[j + 1] {
+                a.swapAt(j, j + 1)
+                swapped = true
+            }
+        }
+        if !swapped { break }
+    }
+    return a
+}`,
+  },
+  {
+    id: 'swift-045',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Merge Sort divide recursivamente e intercala -- O(n log n).', en: 'Merge Sort recursively splits and merges -- O(n log n).' },
+    code: `func mergeSort(_ arr: [Int]) -> [Int] {
+    guard arr.count > 1 else { return arr }
+    let mid = arr.count / 2
+    return merge(mergeSort(Array(arr[..<mid])), mergeSort(Array(arr[mid...])))
+}
+
+func merge(_ a: [Int], _ b: [Int]) -> [Int] {
+    var result = [Int](), i = 0, j = 0
+    while i < a.count && j < b.count {
+        a[i] <= b[j] ? (result.append(a[i]); i += 1) : (result.append(b[j]); j += 1)
+    }
+    return result + Array(a[i...]) + Array(b[j...])
+}`,
+  },
+  {
+    id: 'swift-046',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio.', en: 'Quick Sort partitions around a pivot -- O(n log n) average.' },
+    code: `func quickSort(_ arr: [Int]) -> [Int] {
+    guard arr.count > 1 else { return arr }
+    let pivot = arr.last!
+    let rest = arr.dropLast()
+    let left = rest.filter { $0 < pivot }
+    let right = rest.filter { $0 >= pivot }
+    return quickSort(left) + [pivot] + quickSort(right)
+}`,
+  },
+  {
+    id: 'swift-047',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: { pt: 'Uma pilha genérica em Swift com push, pop e peek.', en: 'A generic stack in Swift with push, pop, and peek.' },
+    code: `struct Stack<T> {
+    private var items: [T] = []
+    mutating func push(_ item: T) { items.append(item) }
+    mutating func pop() -> T? { items.popLast() }
+    func peek() -> T? { items.last }
+    var isEmpty: Bool { items.isEmpty }
+    var count: Int { items.count }
+}`,
+  },
+  {
+    id: 'swift-048',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: { pt: 'Uma fila genérica em Swift com enqueue, dequeue e front.', en: 'A generic queue in Swift with enqueue, dequeue, and front.' },
+    code: `struct Queue<T> {
+    private var items: [T] = []
+    mutating func enqueue(_ item: T) { items.append(item) }
+    mutating func dequeue() -> T? { items.isEmpty ? nil : items.removeFirst() }
+    func front() -> T? { items.first }
+    var isEmpty: Bool { items.isEmpty }
+    var count: Int { items.count }
+}`,
+  },
+  {
+    id: 'swift-049',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma lista ligada em Swift usa class Node com Optional.', en: 'A linked list in Swift uses class Node with Optional.' },
+    code: `class Node<T> {
+    var value: T
+    var next: Node<T>?
+    init(_ value: T, next: Node<T>? = nil) {
+        self.value = value
+        self.next = next
+    }
+}
+
+class LinkedList<T> {
+    var head: Node<T>?
+
+    func prepend(_ value: T) {
+        head = Node(value, next: head)
+    }
+
+    func toArray() -> [T] {
+        var result: [T] = []
+        var curr = head
+        while let node = curr { result.append(node.value); curr = node.next }
+        return result
+    }
+}`,
+  },
+  {
+    id: 'swift-050',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma BST em Swift usa class com Optional pra filhos.', en: 'A BST in Swift uses class with Optional for children.' },
+    code: `class TreeNode {
+    var val: Int
+    var left: TreeNode?
+    var right: TreeNode?
+    init(_ val: Int) { self.val = val }
+}
+
+func insert(_ node: TreeNode?, _ val: Int) -> TreeNode {
+    guard let node = node else { return TreeNode(val) }
+    if val < node.val { node.left = insert(node.left, val) }
+    else { node.right = insert(node.right, val) }
+    return node
+}
+
+func search(_ node: TreeNode?, _ val: Int) -> Bool {
+    guard let node = node else { return false }
+    if val == node.val { return true }
+    return val < node.val ? search(node.left, val) : search(node.right, val)
+}`,
+  },
+  {
+    id: 'swift-051',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'BFS explora nível por nível com Array como fila e Set.', en: 'BFS explores level by level with Array as queue and Set.' },
+    code: `func bfs(_ graph: [String: [String]], start: String) -> [String] {
+    var visited: Set<String> = [start]
+    var queue = [start]
+    var result: [String] = []
+    while !queue.isEmpty {
+        let node = queue.removeFirst()
+        result.append(node)
+        for nb in graph[node, default: []] where !visited.contains(nb) {
+            visited.insert(nb)
+            queue.append(nb)
+        }
+    }
+    return result
+}`,
+  },
+  {
+    id: 'swift-052',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'DFS explora o mais fundo possível com Array como pilha.', en: 'DFS explores as deep as possible with Array as stack.' },
+    code: `func dfs(_ graph: [String: [String]], start: String) -> [String] {
+    var visited = Set<String>()
+    var stack = [start]
+    var result: [String] = []
+    while !stack.isEmpty {
+        let node = stack.removeLast()
+        guard visited.insert(node).inserted else { continue }
+        result.append(node)
+        for nb in graph[node, default: []].reversed() where !visited.contains(nb) {
+            stack.append(nb)
+        }
+    }
+    return result
+}`,
+  },
+  {
+    id: 'swift-053',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: { pt: 'Dictionary é o hash map do Swift com acesso O(1) médio.', en: 'Dictionary is Swift\'s hash map with O(1) average access.' },
+    code: `var scores: [String: Int] = [
+    "Alice": 95,
+    "Bob": 87,
+    "Carol": 92,
+]
+
+let alice = scores["Alice"]
+let hasBob = scores.keys.contains("Bob")
+let dave = scores["Dave", default: 0]
+
+for (name, score) in scores {
+    print("\\(name): \\(score)")
+}`,
   },
 ]

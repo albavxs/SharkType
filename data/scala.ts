@@ -108,8 +108,8 @@ val result = findUser(1)
     difficulty: 'medium',
     slot: 'class-abstract',
     prompt: {
-      pt: 'Traits funcionam como interfaces com implementação parcial — podem ter métodos abstratos e concretos. Declare Greeter com o método abstrato greet(name: String): String e crie FormalGreeter estendendo esse trait.',
-      en: 'Traits are like interfaces with partial implementation — they can have both abstract and concrete methods. Declare Greeter with the abstract method greet(name: String): String and implement FormalGreeter extending the trait.',
+      pt: 'Traits funcionam como interfaces com implementação parcial -- podem ter métodos abstratos e concretos. Declare Greeter com o método abstrato greet(name: String): String e crie FormalGreeter estendendo esse trait.',
+      en: 'Traits are like interfaces with partial implementation -- they can have both abstract and concrete methods. Declare Greeter with the abstract method greet(name: String): String and implement FormalGreeter extending the trait.',
     },
     code: `trait Greeter {
   def greet(name: String): String
@@ -143,8 +143,8 @@ def print[A](a: A)(using s: Show[A]): Unit =
     difficulty: 'hard',
     slot: 'adv-async',
     prompt: {
-      pt: 'Futures representam computações assíncronas que podem falhar. Encadeie duas Futures com for comprehension: primeiro fetchData, depois Future(data.trim) — o resultado vem junto no yield de forma declarativa.',
-      en: 'Futures represent async computations that can fail. Chain two Futures with a for comprehension: first fetchData, then Future(data.trim) — the result is combined with yield in a declarative way.',
+      pt: 'Futures representam computações assíncronas que podem falhar. Encadeie duas Futures com for comprehension: primeiro fetchData, depois Future(data.trim) -- o resultado vem junto no yield de forma declarativa.',
+      en: 'Futures represent async computations that can fail. Chain two Futures with a for comprehension: first fetchData, then Future(data.trim) -- the result is combined with yield in a declarative way.',
     },
     code: `import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -640,5 +640,217 @@ import scala.concurrent.ExecutionContext.Implicits.global
 val tasks = List(1, 2, 3).map(n => Future(n * 10))
 val all = Future.sequence(tasks)
 all.foreach(println)`,
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'scala-042',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: { pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Scala.', en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Scala.' },
+    code: `// O(1) -- acesso direto
+val first = arr(0)
+
+// O(n) -- percorrer tudo
+def contains(arr: List[Int], target: Int): Boolean =
+  arr.exists(_ == target)
+
+// O(n²) -- loop aninhado
+def hasDuplicate(arr: List[Int]): Boolean =
+  arr.indices.exists(i =>
+    (i + 1 until arr.length).exists(j => arr(i) == arr(j)))`,
+  },
+  {
+    id: 'scala-043',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: { pt: 'Busca binária divide o array ordenado ao meio -- O(log n).', en: 'Binary search halves a sorted array -- O(log n).' },
+    code: `def binarySearch(arr: Array[Int], target: Int): Int = {
+  var left = 0
+  var right = arr.length - 1
+  while (left <= right) {
+    val mid = left + (right - left) / 2
+    if (arr(mid) == target) return mid
+    if (arr(mid) < target) left = mid + 1
+    else right = mid - 1
+  }
+  -1
+}`,
+  },
+  {
+    id: 'scala-044',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: { pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²).', en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²).' },
+    code: `def bubbleSort(arr: Array[Int]): Array[Int] = {
+  val a = arr.clone()
+  for (i <- 0 until a.length - 1) {
+    var swapped = false
+    for (j <- 0 until a.length - 1 - i) {
+      if (a(j) > a(j + 1)) {
+        val tmp = a(j); a(j) = a(j + 1); a(j + 1) = tmp
+        swapped = true
+      }
+    }
+    if (!swapped) return a
+  }
+  a
+}`,
+  },
+  {
+    id: 'scala-045',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Merge Sort divide recursivamente e intercala -- O(n log n). Use estilo funcional com List.', en: 'Merge Sort recursively splits and merges -- O(n log n). Use functional style with List.' },
+    code: `def mergeSort(xs: List[Int]): List[Int] = xs match {
+  case Nil | _ :: Nil => xs
+  case _ =>
+    val (left, right) = xs.splitAt(xs.length / 2)
+    merge(mergeSort(left), mergeSort(right))
+}
+
+def merge(a: List[Int], b: List[Int]): List[Int] = (a, b) match {
+  case (Nil, _) => b
+  case (_, Nil) => a
+  case (x :: xs, y :: ys) =>
+    if (x <= y) x :: merge(xs, b) else y :: merge(a, ys)
+}`,
+  },
+  {
+    id: 'scala-046',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: { pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio.', en: 'Quick Sort partitions around a pivot -- O(n log n) average.' },
+    code: `def quickSort(xs: List[Int]): List[Int] = xs match {
+  case Nil | _ :: Nil => xs
+  case _ =>
+    val pivot = xs.last
+    val rest = xs.init
+    val (left, right) = rest.partition(_ < pivot)
+    quickSort(left) ::: pivot :: quickSort(right)
+}`,
+  },
+  {
+    id: 'scala-047',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: { pt: 'mutable.Stack oferece LIFO com push, pop e top em Scala.', en: 'mutable.Stack provides LIFO with push, pop, and top in Scala.' },
+    code: `import scala.collection.mutable
+
+val stack = mutable.Stack[Int]()
+stack.push(1)
+stack.push(2)
+stack.push(3)
+
+val top = stack.top  // 3
+val removed = stack.pop() // 3
+val empty = stack.isEmpty`,
+  },
+  {
+    id: 'scala-048',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: { pt: 'mutable.Queue oferece FIFO com enqueue, dequeue e front em Scala.', en: 'mutable.Queue provides FIFO with enqueue, dequeue, and front in Scala.' },
+    code: `import scala.collection.mutable
+
+val queue = mutable.Queue[String]()
+queue.enqueue("A")
+queue.enqueue("B")
+queue.enqueue("C")
+
+val front = queue.front  // "A"
+val removed = queue.dequeue() // "A"
+val size = queue.size`,
+  },
+  {
+    id: 'scala-049',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma lista ligada em Scala usa sealed trait e case class.', en: 'A linked list in Scala uses sealed trait and case class.' },
+    code: `sealed trait LinkedList[+A]
+case object Empty extends LinkedList[Nothing]
+case class Cons[A](head: A, tail: LinkedList[A]) extends LinkedList[A]
+
+def prepend[A](list: LinkedList[A], value: A): LinkedList[A] =
+  Cons(value, list)
+
+def toList[A](ll: LinkedList[A]): List[A] = ll match {
+  case Empty => Nil
+  case Cons(h, t) => h :: toList(t)
+}`,
+  },
+  {
+    id: 'scala-050',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: { pt: 'Uma BST em Scala usa case class com Option pra filhos.', en: 'A BST in Scala uses case class with Option for children.' },
+    code: `case class TreeNode(val: Int, var left: Option[TreeNode] = None, var right: Option[TreeNode] = None)
+
+def insert(node: Option[TreeNode], v: Int): TreeNode = node match {
+  case None => TreeNode(v)
+  case Some(n) =>
+    if (v < n.val) n.copy(left = Some(insert(n.left, v)))
+    else n.copy(right = Some(insert(n.right, v)))
+}
+
+def search(node: Option[TreeNode], v: Int): Boolean = node match {
+  case None => false
+  case Some(n) if v == n.val => true
+  case Some(n) => if (v < n.val) search(n.left, v) else search(n.right, v)
+}`,
+  },
+  {
+    id: 'scala-051',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'BFS explora nível por nível com mutable.Queue e mutable.Set.', en: 'BFS explores level by level with mutable.Queue and mutable.Set.' },
+    code: `import scala.collection.mutable
+
+def bfs(graph: Map[String, List[String]], start: String): List[String] = {
+  val visited = mutable.Set(start)
+  val queue = mutable.Queue(start)
+  val result = mutable.ListBuffer[String]()
+  while (queue.nonEmpty) {
+    val node = queue.dequeue()
+    result += node
+    for (nb <- graph.getOrElse(node, Nil) if visited.add(nb))
+      queue.enqueue(nb)
+  }
+  result.toList
+}`,
+  },
+  {
+    id: 'scala-052',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: { pt: 'DFS explora o mais fundo possível com mutable.Stack.', en: 'DFS explores as deep as possible with mutable.Stack.' },
+    code: `def dfs(graph: Map[String, List[String]], start: String): List[String] = {
+  val visited = mutable.Set[String]()
+  val stack = mutable.Stack(start)
+  val result = mutable.ListBuffer[String]()
+  while (stack.nonEmpty) {
+    val node = stack.pop()
+    if (visited.add(node)) {
+      result += node
+      graph.getOrElse(node, Nil).reverse.foreach(nb =>
+        if (!visited.contains(nb)) stack.push(nb))
+    }
+  }
+  result.toList
+}`,
+  },
+  {
+    id: 'scala-053',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: { pt: 'mutable.HashMap é o hash map do Scala com acesso O(1) médio.', en: 'mutable.HashMap is Scala\'s hash map with O(1) average access.' },
+    code: `import scala.collection.mutable
+
+val scores = mutable.HashMap("Alice" -> 95, "Bob" -> 87, "Carol" -> 92)
+
+val alice = scores("Alice")
+val hasBob = scores.contains("Bob")
+val dave = scores.getOrElse("Dave", 0)
+
+scores.foreach { case (name, score) => println(s"$name: $score") }`,
   },
 ]

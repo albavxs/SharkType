@@ -123,8 +123,8 @@ v.erase(std::unique(v.begin(), v.end()), v.end());`,
     concept: { pt: 'Vinculos Estruturados', en: 'Structured Bindings' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Structured bindings (C++17) desestruturaram pares e tuplas direto. Quando for iterar um std::map, use "const auto& [name, score]" pra pegar chave e valor sem .first/.second — fica muito mais legivel e menos propenso a erro.',
-      en: 'Structured bindings (C++17) destructure pairs and tuples directly. When iterating a std::map, use "const auto& [name, score]" to access key and value without .first/.second — more readable and less error-prone.',
+      pt: 'Structured bindings (C++17) desestruturaram pares e tuplas direto. Quando for iterar um std::map, use "const auto& [name, score]" pra pegar chave e valor sem .first/.second -- fica muito mais legivel e menos propenso a erro.',
+      en: 'Structured bindings (C++17) destructure pairs and tuples directly. When iterating a std::map, use "const auto& [name, score]" to access key and value without .first/.second -- more readable and less error-prone.',
     },
     code: `std::map<std::string, int> scores = {{"Alice", 95}};
 for (const auto& [name, score] : scores) {
@@ -313,8 +313,8 @@ increment();`,
     concept: { pt: 'Parametros Default', en: 'Default Parameters' },
     difficulty: 'easy',
     prompt: {
-      pt: 'C++ suporta parametros default nativamente — os ultimos parametros podem ter valores padrao. Crie greet com titulo default "Mr.".',
-      en: 'C++ supports native default parameters — trailing parameters can have default values. Create greet with default title "Mr.".',
+      pt: 'C++ suporta parametros default nativamente -- os ultimos parametros podem ter valores padrao. Crie greet com titulo default "Mr.".',
+      en: 'C++ supports native default parameters -- trailing parameters can have default values. Create greet with default title "Mr.".',
     },
     code: `std::string greet(const std::string& name,
                    const std::string& title = "Mr.") {
@@ -650,5 +650,273 @@ void increment() {
     counter++;
 }`,
     slot: 'adv-concurrent',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'cpp-042',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com operações em C++.',
+      en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with C++ operations.',
+    },
+    code: `// O(1) -- acesso direto
+auto first = vec[0];
+
+// O(n) -- percorrer tudo
+bool contains(const std::vector<int>& v, int target) {
+    for (auto x : v) if (x == target) return true;
+    return false;
+}
+
+// O(n²) -- loop aninhado
+bool hasDuplicate(const std::vector<int>& v) {
+    for (size_t i = 0; i < v.size(); i++)
+        for (size_t j = i + 1; j < v.size(); j++)
+            if (v[i] == v[j]) return true;
+    return false;
+}`,
+  },
+  {
+    id: 'cpp-043',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Busca binária divide o vetor ordenado ao meio -- O(log n). Implemente de forma iterativa.',
+      en: 'Binary search halves a sorted vector -- O(log n). Implement it iteratively.',
+    },
+    code: `int binarySearch(const std::vector<int>& v, int target) {
+    int left = 0, right = v.size() - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (v[mid] == target) return mid;
+        if (v[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}`,
+  },
+  {
+    id: 'cpp-044',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com std::swap e parada antecipada.',
+      en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with std::swap and early stop.',
+    },
+    code: `void bubbleSort(std::vector<int>& v) {
+    for (size_t i = 0; i < v.size() - 1; i++) {
+        bool swapped = false;
+        for (size_t j = 0; j < v.size() - 1 - i; j++) {
+            if (v[j] > v[j + 1]) {
+                std::swap(v[j], v[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break;
+    }
+}`,
+  },
+  {
+    id: 'cpp-045',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com vetores auxiliares.',
+      en: 'Merge Sort recursively splits and merges -- O(n log n). Implement with auxiliary vectors.',
+    },
+    code: `std::vector<int> mergeSort(std::vector<int> v) {
+    if (v.size() <= 1) return v;
+    auto mid = v.begin() + v.size() / 2;
+    auto left = mergeSort({v.begin(), mid});
+    auto right = mergeSort({mid, v.end()});
+    std::vector<int> result;
+    std::merge(left.begin(), left.end(),
+               right.begin(), right.end(),
+               std::back_inserter(result));
+    return result;
+}`,
+  },
+  {
+    id: 'cpp-046',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente com iteradores.',
+      en: 'Quick Sort partitions around a pivot -- O(n log n) average. Implement with iterators.',
+    },
+    code: `void quickSort(std::vector<int>& v, int lo, int hi) {
+    if (lo >= hi) return;
+    int pivot = v[hi], i = lo;
+    for (int j = lo; j < hi; j++) {
+        if (v[j] < pivot) std::swap(v[i++], v[j]);
+    }
+    std::swap(v[i], v[hi]);
+    quickSort(v, lo, i - 1);
+    quickSort(v, i + 1, hi);
+}`,
+  },
+  {
+    id: 'cpp-047',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'std::stack oferece LIFO com push, top e pop. Use pra empilhar e desempilhar valores.',
+      en: 'std::stack provides LIFO with push, top, and pop. Use it to push and pop values.',
+    },
+    code: `std::stack<int> s;
+s.push(1);
+s.push(2);
+s.push(3);
+
+int top = s.top(); // 3
+s.pop();
+bool empty = s.empty();
+size_t sz = s.size();`,
+  },
+  {
+    id: 'cpp-048',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'std::queue oferece FIFO com push, front e pop. Use pra enfileirar e desenfileirar.',
+      en: 'std::queue provides FIFO with push, front, and pop. Use it to enqueue and dequeue.',
+    },
+    code: `std::queue<std::string> q;
+q.push("A");
+q.push("B");
+q.push("C");
+
+auto front = q.front(); // "A"
+q.pop();
+auto sz = q.size();`,
+  },
+  {
+    id: 'cpp-049',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma lista ligada usa nós com ponteiros. Implemente com struct e inserção no início.',
+      en: 'A linked list uses nodes with pointers. Implement with struct and head insertion.',
+    },
+    code: `struct Node {
+    int value;
+    Node* next;
+    Node(int v) : value(v), next(nullptr) {}
+};
+
+class LinkedList {
+    Node* head = nullptr;
+public:
+    void prepend(int v) {
+        auto* n = new Node(v);
+        n->next = head;
+        head = n;
+    }
+    void print() {
+        for (auto* n = head; n; n = n->next)
+            std::cout << n->value << " -> ";
+        std::cout << "null\\n";
+    }
+};`,
+  },
+  {
+    id: 'cpp-050',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma BST mantém menores à esquerda e maiores à direita. Implemente com unique_ptr.',
+      en: 'A BST keeps smaller left and larger right. Implement with unique_ptr.',
+    },
+    code: `struct TreeNode {
+    int val;
+    std::unique_ptr<TreeNode> left, right;
+    TreeNode(int v) : val(v) {}
+};
+
+void insert(std::unique_ptr<TreeNode>& node, int val) {
+    if (!node) { node = std::make_unique<TreeNode>(val); return; }
+    if (val < node->val) insert(node->left, val);
+    else insert(node->right, val);
+}
+
+bool search(const std::unique_ptr<TreeNode>& node, int val) {
+    if (!node) return false;
+    if (val == node->val) return true;
+    return val < node->val ? search(node->left, val) : search(node->right, val);
+}`,
+  },
+  {
+    id: 'cpp-051',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'BFS explora nível por nível usando uma fila. Implemente com queue e unordered_set.',
+      en: 'BFS explores level by level using a queue. Implement with queue and unordered_set.',
+    },
+    code: `std::vector<std::string> bfs(
+    const std::unordered_map<std::string, std::vector<std::string>>& graph,
+    const std::string& start) {
+    std::vector<std::string> result;
+    std::unordered_set<std::string> visited;
+    std::queue<std::string> q;
+    q.push(start); visited.insert(start);
+    while (!q.empty()) {
+        auto node = q.front(); q.pop();
+        result.push_back(node);
+        if (graph.count(node))
+            for (auto& nb : graph.at(node))
+                if (visited.insert(nb).second) q.push(nb);
+    }
+    return result;
+}`,
+  },
+  {
+    id: 'cpp-052',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'DFS explora o mais fundo possível usando uma pilha. Implemente iterativamente.',
+      en: 'DFS explores as deep as possible using a stack. Implement it iteratively.',
+    },
+    code: `std::vector<std::string> dfs(
+    const std::unordered_map<std::string, std::vector<std::string>>& graph,
+    const std::string& start) {
+    std::vector<std::string> result;
+    std::unordered_set<std::string> visited;
+    std::stack<std::string> s;
+    s.push(start);
+    while (!s.empty()) {
+        auto node = s.top(); s.pop();
+        if (!visited.insert(node).second) continue;
+        result.push_back(node);
+        if (graph.count(node)) {
+            auto& nb = graph.at(node);
+            for (auto it = nb.rbegin(); it != nb.rend(); ++it)
+                if (!visited.count(*it)) s.push(*it);
+        }
+    }
+    return result;
+}`,
+  },
+  {
+    id: 'cpp-053',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'unordered_map armazena pares chave-valor com acesso O(1) médio. Use insert, find e iteração.',
+      en: 'unordered_map stores key-value pairs with O(1) average access. Use insert, find, and iteration.',
+    },
+    code: `std::unordered_map<std::string, int> scores;
+scores["Alice"] = 95;
+scores["Bob"] = 87;
+scores.insert({"Carol", 92});
+
+auto it = scores.find("Alice");
+if (it != scores.end())
+    std::cout << it->second << "\\n";
+
+for (const auto& [name, score] : scores)
+    std::cout << name << ": " << score << "\\n";`,
   },
 ]

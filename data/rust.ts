@@ -6,8 +6,8 @@ export const rustSnippets: Snippet[] = [
     concept: { pt: 'Function com Tipos', en: 'Function with Types' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Em Rust, todo tipo de parâmetro e de retorno precisa ser declarado explicitamente. Escreva a função "add" recebendo dois i32 e retornando i32 — o compilador não infere tipo de função pública.',
-      en: 'In Rust, all parameter and return types must be declared explicitly. Write the "add" function that takes two i32 parameters and returns an i32 — the compiler doesn\'t infer types for public functions.',
+      pt: 'Em Rust, todo tipo de parâmetro e de retorno precisa ser declarado explicitamente. Escreva a função "add" recebendo dois i32 e retornando i32 -- o compilador não infere tipo de função pública.',
+      en: 'In Rust, all parameter and return types must be declared explicitly. Write the "add" function that takes two i32 parameters and returns an i32 -- the compiler doesn\'t infer types for public functions.',
     },
     code: `fn add(a: i32, b: i32) -> i32 {
     a + b
@@ -19,8 +19,8 @@ export const rustSnippets: Snippet[] = [
     concept: { pt: 'Propriedade', en: 'Ownership' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Em Rust, mover um valor transfere o ownership — depois disso, a variável original fica inválida. Use .clone() pra criar uma cópia independente de s1 em s2, permitindo usar as duas sem violar o sistema de ownership.',
-      en: 'In Rust, moving a value transfers its ownership — after that, the original variable becomes invalid. Use .clone() to create an independent copy of s1 into s2, allowing both to be used without violating the ownership system.',
+      pt: 'Em Rust, mover um valor transfere o ownership -- depois disso, a variável original fica inválida. Use .clone() pra criar uma cópia independente de s1 em s2, permitindo usar as duas sem violar o sistema de ownership.',
+      en: 'In Rust, moving a value transfers its ownership -- after that, the original variable becomes invalid. Use .clone() to create an independent copy of s1 into s2, allowing both to be used without violating the ownership system.',
     },
     code: `let s1 = String::from("hello");
 let s2 = s1.clone();
@@ -31,8 +31,8 @@ println!("{s1} and {s2}");`,
     concept: { pt: 'Casamento de Padrões', en: 'Pattern Matching' },
     difficulty: 'medium',
     prompt: {
-      pt: 'O match em Rust é exaustivo: o compilador obriga você a cobrir todos os casos possíveis. Use pra tratar cada variante de Status — incluindo Inactive(reason) que tem dado associado — e um wildcard _ pro restante.',
-      en: 'Match in Rust is exhaustive: the compiler requires all possible cases to be covered. Use it to handle each Status variant — including the one with associated data Inactive(reason) — and a wildcard _ for the rest.',
+      pt: 'O match em Rust é exaustivo: o compilador obriga você a cobrir todos os casos possíveis. Use pra tratar cada variante de Status -- incluindo Inactive(reason) que tem dado associado -- e um wildcard _ pro restante.',
+      en: 'Match in Rust is exhaustive: the compiler requires all possible cases to be covered. Use it to handle each Status variant -- including the one with associated data Inactive(reason) -- and a wildcard _ for the rest.',
     },
     code: `match status {
     Status::Active => println!("active"),
@@ -46,8 +46,8 @@ println!("{s1} and {s2}");`,
     concept: { pt: 'Opção', en: 'Option' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Option<T> representa um valor que pode ou não existir — é o substituto seguro do null em Rust. Implemente find_user retornando Some(String) pra id == 1 e None pra qualquer outro — nada de null, -1 ou valor sentinela.',
-      en: 'Option<T> represents a value that may or may not exist, safely replacing null in Rust. Implement find_user returning Some(String) for id == 1 and None for anything else — no null, -1, or sentinel values.',
+      pt: 'Option<T> representa um valor que pode ou não existir -- é o substituto seguro do null em Rust. Implemente find_user retornando Some(String) pra id == 1 e None pra qualquer outro -- nada de null, -1 ou valor sentinela.',
+      en: 'Option<T> represents a value that may or may not exist, safely replacing null in Rust. Implement find_user returning Some(String) for id == 1 and None for anything else -- no null, -1, or sentinel values.',
     },
     code: `fn find_user(id: u32) -> Option<String> {
     if id == 1 {
@@ -719,5 +719,302 @@ async fn main() {
     println!("{name}, {age}");
 }`,
     slot: 'adv-concurrent',
+  },
+  // ── Algoritmos & Estruturas de Dados ──────────────────────
+  {
+    id: 'rs-044',
+    concept: { pt: 'Notação Big O', en: 'Big O Notation' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Rust.',
+      en: 'Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Rust.',
+    },
+    code: `// O(1) -- acesso direto
+let first = arr[0];
+
+// O(n) -- percorrer tudo
+fn contains(arr: &[i32], target: i32) -> bool {
+    arr.iter().any(|&x| x == target)
+}
+
+// O(n²) -- loop aninhado
+fn has_duplicate(arr: &[i32]) -> bool {
+    for i in 0..arr.len() {
+        for j in (i + 1)..arr.len() {
+            if arr[i] == arr[j] { return true; }
+        }
+    }
+    false
+}`,
+  },
+  {
+    id: 'rs-045',
+    concept: { pt: 'Busca Binária', en: 'Binary Search' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Busca binária divide o slice ordenado ao meio -- O(log n). Implemente de forma iterativa.',
+      en: 'Binary search halves a sorted slice -- O(log n). Implement it iteratively.',
+    },
+    code: `fn binary_search(arr: &[i32], target: i32) -> Option<usize> {
+    let (mut left, mut right) = (0, arr.len());
+    while left < right {
+        let mid = left + (right - left) / 2;
+        match arr[mid].cmp(&target) {
+            std::cmp::Ordering::Equal => return Some(mid),
+            std::cmp::Ordering::Less => left = mid + 1,
+            std::cmp::Ordering::Greater => right = mid,
+        }
+    }
+    None
+}`,
+  },
+  {
+    id: 'rs-046',
+    concept: { pt: 'Bubble Sort', en: 'Bubble Sort' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com swap e parada antecipada.',
+      en: 'Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with swap and early stop.',
+    },
+    code: `fn bubble_sort(arr: &mut Vec<i32>) {
+    let n = arr.len();
+    for i in 0..n {
+        let mut swapped = false;
+        for j in 0..n - 1 - i {
+            if arr[j] > arr[j + 1] {
+                arr.swap(j, j + 1);
+                swapped = true;
+            }
+        }
+        if !swapped { break; }
+    }
+}`,
+  },
+  {
+    id: 'rs-047',
+    concept: { pt: 'Merge Sort', en: 'Merge Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com Vec.',
+      en: 'Merge Sort recursively splits and merges -- O(n log n). Implement with Vec.',
+    },
+    code: `fn merge_sort(arr: Vec<i32>) -> Vec<i32> {
+    if arr.len() <= 1 { return arr; }
+    let mid = arr.len() / 2;
+    let left = merge_sort(arr[..mid].to_vec());
+    let right = merge_sort(arr[mid..].to_vec());
+    merge(&left, &right)
+}
+
+fn merge(a: &[i32], b: &[i32]) -> Vec<i32> {
+    let (mut i, mut j) = (0, 0);
+    let mut result = Vec::with_capacity(a.len() + b.len());
+    while i < a.len() && j < b.len() {
+        if a[i] <= b[j] { result.push(a[i]); i += 1; }
+        else { result.push(b[j]); j += 1; }
+    }
+    result.extend_from_slice(&a[i..]);
+    result.extend_from_slice(&b[j..]);
+    result
+}`,
+  },
+  {
+    id: 'rs-048',
+    concept: { pt: 'Quick Sort', en: 'Quick Sort' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente com slices.',
+      en: 'Quick Sort partitions around a pivot -- O(n log n) average. Implement with slices.',
+    },
+    code: `fn quick_sort(arr: &mut [i32]) {
+    if arr.len() <= 1 { return; }
+    let pivot_idx = partition(arr);
+    let (left, right) = arr.split_at_mut(pivot_idx);
+    quick_sort(left);
+    quick_sort(&mut right[1..]);
+}
+
+fn partition(arr: &mut [i32]) -> usize {
+    let pivot = arr[arr.len() - 1];
+    let mut i = 0;
+    for j in 0..arr.len() - 1 {
+        if arr[j] < pivot { arr.swap(i, j); i += 1; }
+    }
+    arr.swap(i, arr.len() - 1);
+    i
+}`,
+  },
+  {
+    id: 'rs-049',
+    concept: { pt: 'Pilha (Stack)', en: 'Stack' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'Em Rust, Vec funciona como pilha com push, pop e last. Demonstre operações LIFO.',
+      en: 'In Rust, Vec works as a stack with push, pop, and last. Demonstrate LIFO operations.',
+    },
+    code: `let mut stack: Vec<i32> = Vec::new();
+stack.push(1);
+stack.push(2);
+stack.push(3);
+
+let top = stack.last();      // Some(&3)
+let removed = stack.pop();   // Some(3)
+let is_empty = stack.is_empty();`,
+  },
+  {
+    id: 'rs-050',
+    concept: { pt: 'Fila (Queue)', en: 'Queue' },
+    difficulty: 'easy',
+    prompt: {
+      pt: 'VecDeque oferece FIFO eficiente com push_back e pop_front. Use como fila.',
+      en: 'VecDeque provides efficient FIFO with push_back and pop_front. Use it as a queue.',
+    },
+    code: `use std::collections::VecDeque;
+
+let mut queue = VecDeque::new();
+queue.push_back("A");
+queue.push_back("B");
+queue.push_back("C");
+
+let front = queue.front();       // Some(&"A")
+let removed = queue.pop_front(); // Some("A")
+let size = queue.len();`,
+  },
+  {
+    id: 'rs-051',
+    concept: { pt: 'Lista Ligada', en: 'Linked List' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma lista ligada em Rust usa enum e Box pra ownership. Implemente com push e to_vec.',
+      en: 'A linked list in Rust uses enum and Box for ownership. Implement with push and to_vec.',
+    },
+    code: `enum List {
+    Cons(i32, Box<List>),
+    Nil,
+}
+
+impl List {
+    fn push(self, val: i32) -> List {
+        List::Cons(val, Box::new(self))
+    }
+
+    fn to_vec(&self) -> Vec<i32> {
+        let mut result = Vec::new();
+        let mut current = self;
+        while let List::Cons(val, next) = current {
+            result.push(*val);
+            current = next;
+        }
+        result
+    }
+}`,
+  },
+  {
+    id: 'rs-052',
+    concept: { pt: 'Árvore Binária de Busca', en: 'Binary Search Tree' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'Uma BST em Rust usa Option<Box<Node>> pra filhos opcionais. Implemente insert e search.',
+      en: 'A BST in Rust uses Option<Box<Node>> for optional children. Implement insert and search.',
+    },
+    code: `struct BstNode {
+    val: i32,
+    left: Option<Box<BstNode>>,
+    right: Option<Box<BstNode>>,
+}
+
+impl BstNode {
+    fn new(val: i32) -> Self {
+        BstNode { val, left: None, right: None }
+    }
+
+    fn insert(&mut self, val: i32) {
+        let target = if val < self.val { &mut self.left } else { &mut self.right };
+        match target {
+            Some(node) => node.insert(val),
+            None => *target = Some(Box::new(BstNode::new(val))),
+        }
+    }
+
+    fn search(&self, val: i32) -> bool {
+        if val == self.val { return true; }
+        let next = if val < self.val { &self.left } else { &self.right };
+        next.as_ref().map_or(false, |n| n.search(val))
+    }
+}`,
+  },
+  {
+    id: 'rs-053',
+    concept: { pt: 'BFS (Busca em Largura)', en: 'BFS (Breadth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'BFS explora nível por nível com VecDeque e HashSet. Implemente pra um grafo com HashMap.',
+      en: 'BFS explores level by level with VecDeque and HashSet. Implement for a HashMap graph.',
+    },
+    code: `use std::collections::{HashMap, HashSet, VecDeque};
+
+fn bfs(graph: &HashMap<&str, Vec<&str>>, start: &str) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut visited = HashSet::new();
+    let mut queue = VecDeque::new();
+    queue.push_back(start);
+    visited.insert(start);
+    while let Some(node) = queue.pop_front() {
+        result.push(node.to_string());
+        if let Some(neighbors) = graph.get(node) {
+            for &nb in neighbors {
+                if visited.insert(nb) { queue.push_back(nb); }
+            }
+        }
+    }
+    result
+}`,
+  },
+  {
+    id: 'rs-054',
+    concept: { pt: 'DFS (Busca em Profundidade)', en: 'DFS (Depth-First Search)' },
+    difficulty: 'hard',
+    prompt: {
+      pt: 'DFS explora o mais fundo possível com Vec como pilha. Implemente iterativamente.',
+      en: 'DFS explores as deep as possible with Vec as stack. Implement it iteratively.',
+    },
+    code: `fn dfs(graph: &HashMap<&str, Vec<&str>>, start: &str) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut visited = HashSet::new();
+    let mut stack = vec![start];
+    while let Some(node) = stack.pop() {
+        if !visited.insert(node) { continue; }
+        result.push(node.to_string());
+        if let Some(neighbors) = graph.get(node) {
+            for &nb in neighbors.iter().rev() {
+                if !visited.contains(nb) { stack.push(nb); }
+            }
+        }
+    }
+    result
+}`,
+  },
+  {
+    id: 'rs-055',
+    concept: { pt: 'Hash Map', en: 'Hash Map' },
+    difficulty: 'medium',
+    prompt: {
+      pt: 'HashMap armazena pares chave-valor com acesso O(1) médio. Use insert, get, contains_key e iteração.',
+      en: 'HashMap stores key-value pairs with O(1) average access. Use insert, get, contains_key, and iteration.',
+    },
+    code: `use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+scores.insert("Alice", 95);
+scores.insert("Bob", 87);
+scores.insert("Carol", 92);
+
+let alice = scores.get("Alice"); // Some(&95)
+let has_bob = scores.contains_key("Bob");
+let dave = scores.get("Dave").copied().unwrap_or(0);
+
+for (name, score) in &scores {
+    println!("{name}: {score}");
+}`,
   },
 ]

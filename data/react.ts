@@ -48,8 +48,8 @@ function Counter() {
     concept: { pt: 'useEffect Hook', en: 'useEffect Hook' },
     difficulty: 'medium',
     prompt: {
-      pt: 'useEffect executa efeitos colaterais após a renderização — como chamadas HTTP, timers ou subscrições. Busque dados de uma API quando o componente montar.',
-      en: 'useEffect runs side effects after render — like HTTP calls, timers, or subscriptions. Fetch data from an API when the component mounts.',
+      pt: 'useEffect executa efeitos colaterais após a renderização -- como chamadas HTTP, timers ou subscrições. Busque dados de uma API quando o componente montar.',
+      en: 'useEffect runs side effects after render -- like HTTP calls, timers, or subscriptions. Fetch data from an API when the component mounts.',
     },
     code: `import { useState, useEffect } from 'react';
 
