@@ -3,6 +3,7 @@
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { getTrackById } from '@/data/tracks'
+import { stripCodeComments } from '@/lib/utils'
 import { textLanguages, languages } from '@/data'
 import { Snippet, Language, Difficulty } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
@@ -24,6 +25,7 @@ import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
+import HelpModal from '@/components/typing/HelpModal'
 import Link from 'next/link'
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
@@ -46,6 +48,7 @@ export default function TrackPracticePage() {
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [clientProgress, setClientProgress] = useState<UserProgress | null>(null)
   const [selectedLang, setSelectedLang] = useState<Language | null>(null)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
@@ -108,10 +111,6 @@ export default function TrackPracticePage() {
         .map(sid => selectedLang.snippets.find(s => s.id === sid))
         .filter((s): s is Snippet => Boolean(s))
     }
-    if (difficulty !== 'all') {
-      const filtered = snippets.filter(s => s.difficulty === difficulty)
-      if (filtered.length > 0) return filtered
-    }
     return snippets
   }, [track, selectedLang, difficulty])
 
@@ -141,7 +140,12 @@ export default function TrackPracticePage() {
     pendingAdvanceRef.current = true
   }, [timer])
 
-  const engine = useTypingEngine(snippet?.code ?? '', handleFinish)
+  const displayCode = useMemo(() => {
+    const raw = snippet?.code ?? ''
+    return difficulty === 'all' ? raw : stripCodeComments(raw)
+  }, [snippet, difficulty])
+
+  const engine = useTypingEngine(displayCode, handleFinish)
 
   // Start timer when typing starts
   useEffect(() => {
@@ -250,16 +254,17 @@ export default function TrackPracticePage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen relative">
+    <main className="flex flex-col h-screen relative">
       {!isMobile && <SceneWrapper />}
 
-      <div className="relative z-10 flex-1 flex flex-col min-h-screen">
+      <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
         <Toolbar
           language={selectedLang ?? languages[0]} difficulty={difficulty}
           seconds={displaySeconds} isTimerRunning={timer.isRunning}
           onLanguageChange={() => {}} onDifficultyChange={handleDifficultyChange}
           showControls={!(track.textLanguages && track.snippetIds.length > 0)}
-          onHomeClick={() => router.push('/')} onHelpClick={() => {}}
+          showLanguage={false}
+          onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
           level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
           locale={locale} onLocaleToggle={toggleLocale}
           isTyping={isTyping}
@@ -297,7 +302,7 @@ export default function TrackPracticePage() {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6 min-h-0">
           {!snippet ? (
             <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
           ) : showResult && finalStats ? (
@@ -316,7 +321,7 @@ export default function TrackPracticePage() {
               {/* Caps Lock warning — desktop: above text */}
               <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
 
-              <TypingArea code={snippet.code} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
+              <TypingArea code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
 
               {/* Caps Lock warning — mobile: below text */}
@@ -357,12 +362,16 @@ export default function TrackPracticePage() {
           )}
         </div>
 
-        <Footer onHelpClick={() => {}} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={isTyping} locale={locale} />
+      </div>
+
+      <div className="relative z-10 shrink-0">
+        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={isTyping} locale={locale} />
       </div>
 
       {showThemeSelector && (
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
     </main>
   )
 }

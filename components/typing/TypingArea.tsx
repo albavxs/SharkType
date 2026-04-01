@@ -63,6 +63,8 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
 
   const [cursorPos, setCursorPos] = useState({ left: 0, top: 0, height: 0 })
   const [cursorReady, setCursorReady] = useState(false)
+  const [expandedView, setExpandedView] = useState(false)
+  const [isOverflowing, setIsOverflowing] = useState(false)
 
   const lines = useMemo(() => {
     const result: { text: string; startIndex: number }[] = []
@@ -76,22 +78,36 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
 
   useEffect(() => { if (!disabled) textareaRef.current?.focus() }, [disabled, code])
 
-  // Position the sliding cursor
+  // Position the sliding cursor (+ auto-scroll for text mode)
   const updateCursorPos = useCallback(() => {
     const container = containerRef.current
     if (!container) return
     const charEl = container.querySelector(`[data-idx="${currentIndex}"]`) as HTMLElement | null
     if (charEl) {
+      // Auto-scroll to keep cursor visible (text mode + code default mode)
+      if (isTextMode || !expandedView) {
+        const charTop = charEl.offsetTop
+        const charBottom = charTop + charEl.offsetHeight
+        const visibleTop = container.scrollTop
+        const visibleBottom = visibleTop + container.clientHeight
+        const lineH = charEl.offsetHeight
+        if (charBottom > visibleBottom) {
+          container.scrollTop = charBottom - container.clientHeight + lineH
+        } else if (charTop < visibleTop) {
+          container.scrollTop = Math.max(0, charTop - lineH)
+        }
+      }
+
       const containerRect = container.getBoundingClientRect()
       const charRect = charEl.getBoundingClientRect()
       setCursorPos({
-        left: charRect.left - containerRect.left,
-        top: charRect.top - containerRect.top + charRect.height * 0.1,
+        left: charRect.left - containerRect.left + container.scrollLeft,
+        top: charRect.top - containerRect.top + container.scrollTop + charRect.height * 0.1,
         height: charRect.height * 0.8,
       })
       setCursorReady(true)
     }
-  }, [currentIndex])
+  }, [currentIndex, isTextMode, expandedView])
 
   useLayoutEffect(() => {
     updateCursorPos()
@@ -103,6 +119,22 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     return () => window.removeEventListener('resize', updateCursorPos)
   }, [updateCursorPos])
 
+  // Detect if code overflows container
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container || isTextMode) return
+    requestAnimationFrame(() => {
+      setIsOverflowing(container.scrollHeight > container.clientHeight)
+    })
+  }, [code, isTextMode, expandedView])
+
+  // Reset scroll position and expanded view on snippet change
+  useEffect(() => {
+    if (containerRef.current) containerRef.current.scrollTop = 0
+    setExpandedView(false)
+    setIsOverflowing(false)
+  }, [code])
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (disabled) return
     if (e.key === 'Dead') return
@@ -110,6 +142,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     if (e.key === 'Tab') { e.preventDefault(); onKey('Tab'); return }
     if (e.key === 'Enter') { e.preventDefault(); onKey('Enter'); return }
     if (e.key === 'Backspace') { e.preventDefault(); onKey('Backspace'); return }
+    if (e.key === 'F' && e.shiftKey && !isTextMode) { e.preventDefault(); setExpandedView(v => !v); return }
     if (e.key.length === 1) { e.preventDefault(); onKey(e.key) }
   }
 
@@ -148,7 +181,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
   const isIdle = currentIndex === 0 && !isTyping
 
   return (
-    <div className={`w-full mx-auto cursor-text overflow-hidden ${isTextMode ? 'max-w-5xl' : 'max-w-3xl'}`} onClick={() => textareaRef.current?.focus()}>
+    <div className={`w-full mx-auto cursor-text overflow-hidden ${isTextMode ? 'max-w-5xl' : 'max-w-6xl'}`} onClick={() => textareaRef.current?.focus()}>
       <textarea
         ref={textareaRef}
         className="absolute opacity-0 w-0 h-0"
@@ -162,8 +195,13 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
       />
 
       {isIdle && (
-        <div className="text-center mb-3 text-sm animate-fade-in" style={{ color: 'var(--sub)' }}>
-          {t('startTyping', locale)}
+        <div className={`mb-3 animate-fade-in ${isTextMode ? 'text-center' : 'text-left'}`} style={{ color: 'var(--sub)' }}>
+          <div className="text-sm">{t('startTyping', locale)}</div>
+          {!isTextMode && isOverflowing && !expandedView && (
+            <div className="text-xs mt-1" style={{ color: 'var(--main)', opacity: 0.7 }}>
+              Shift+F {locale === 'pt' ? 'para ver o código inteiro' : 'to see full code'}
+            </div>
+          )}
         </div>
       )}
 
@@ -175,7 +213,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
         </div>
       )}
 
-      <div ref={containerRef} className="relative">
+      <div ref={containerRef} className={`relative scrollbar-hide ${isTextMode ? 'overflow-hidden max-h-[65px] sm:max-h-[101px] md:max-h-[144px]' : expandedView ? 'overflow-y-auto max-h-[70vh]' : 'overflow-y-auto max-h-[55vh]'}`}>
         {/* Sliding cursor */}
         {cursorReady && (
           <div
@@ -203,13 +241,13 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
             ))}
           </div>
         ) : (
-          <div className="font-[family-name:var(--font-geist-mono)] text-base sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8]" style={{ fontVariantLigatures: 'none' }}>
+          <div className="font-[family-name:var(--font-geist-mono)] text-base sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8] pb-[3em]" style={{ fontVariantLigatures: 'none' }}>
             {lines.map((line, lineIdx) => (
               <div key={lineIdx} className="flex min-w-0">
                 <span className="select-none w-6 sm:w-10 text-right pr-2 sm:pr-4 text-[10px] sm:text-xs leading-[1.6] sm:leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>
                   {lineIdx + 1}
                 </span>
-                <span className="whitespace-pre-wrap flex-1 min-w-0" style={{ overflowWrap: 'anywhere', wordBreak: 'break-all' }}>
+                <span className="whitespace-pre flex-1 min-w-0">
                   {line.text.split('').map((char, charIdx) => {
                     const globalIdx = line.startIndex + charIdx
                     return (
@@ -227,6 +265,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
             ))}
           </div>
         )}
+
       </div>
     </div>
   )

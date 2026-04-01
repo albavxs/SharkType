@@ -208,9 +208,9 @@ export function useTypingEngine(
 
           // Auto-skip leading whitespace (not counted in WPM/accuracy)
           if (isCorrect) {
-            while (newIndex < codeRef.current.length && codeRef.current[newIndex] === ' ') {
+            while (newIndex < codeRef.current.length && (codeRef.current[newIndex] === ' ' || codeRef.current[newIndex] === '\n' || codeRef.current[newIndex] === '\t')) {
               newStatuses[newIndex] = 'correct'
-              newInput += ' '
+              newInput += codeRef.current[newIndex]
               newIndex++
             }
           }

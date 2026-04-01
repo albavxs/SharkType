@@ -37,6 +37,18 @@ export function calculateConsistency(wpmSamples: number[]): number {
   return Math.max(0, Math.min(100, Math.round(100 - (stddev / mean) * 100)))
 }
 
+export function stripCodeComments(code: string): string {
+  return code
+    .split('\n')
+    .filter(line => {
+      const t = line.trim()
+      return !t.startsWith('//') && !t.startsWith('#') && !t.startsWith('{#')
+    })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 export function generateChallengeSequence(snippets: Snippet[]): Snippet[] {
   const shuffled = [...snippets]
   for (let i = shuffled.length - 1; i > 0; i--) {
