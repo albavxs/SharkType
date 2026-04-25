@@ -400,6 +400,51 @@ export const tracks: Track[] = [
     section: 'focused',
   },
   {
+    id: 'angular-junior',
+    name: { pt: 'Angular Junior', en: 'Angular Junior' },
+    description: {
+      pt: 'Fundamentos de Angular moderno: componentes, templates, bindings, forms e rotas',
+      en: 'Modern Angular fundamentals: components, templates, bindings, forms, and routes',
+    },
+    snippetIds: [
+      'angular-001', 'angular-002', 'angular-003', 'angular-004', 'angular-005',
+      'angular-006', 'angular-007', 'angular-008', 'angular-009', 'angular-010',
+      'angular-011', 'angular-012', 'angular-013', 'angular-014', 'angular-015',
+      'angular-016', 'angular-017', 'angular-018', 'angular-019', 'angular-020',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'angular-pleno',
+    name: { pt: 'Angular Pleno', en: 'Angular Mid-Level' },
+    description: {
+      pt: 'Signals, reactive forms, rotas avancadas, interceptors, testes e arquitetura por feature',
+      en: 'Signals, reactive forms, advanced routes, interceptors, tests, and feature architecture',
+    },
+    snippetIds: [
+      'angular-021', 'angular-022', 'angular-023', 'angular-024', 'angular-025',
+      'angular-026', 'angular-027', 'angular-028', 'angular-029', 'angular-030',
+      'angular-031', 'angular-032', 'angular-033', 'angular-034', 'angular-035',
+      'angular-036', 'angular-037', 'angular-038', 'angular-039', 'angular-040',
+    ],
+    section: 'focused',
+  },
+  {
+    id: 'angular-senior',
+    name: { pt: 'Angular Senior', en: 'Angular Senior' },
+    description: {
+      pt: 'Performance, SSR, providers por rota, seguranca, acessibilidade e padroes enterprise',
+      en: 'Performance, SSR, route-level providers, security, accessibility, and enterprise patterns',
+    },
+    snippetIds: [
+      'angular-041', 'angular-042', 'angular-043', 'angular-044', 'angular-045',
+      'angular-046', 'angular-047', 'angular-048', 'angular-049', 'angular-050',
+      'angular-051', 'angular-052', 'angular-053', 'angular-054', 'angular-055',
+      'angular-056', 'angular-057', 'angular-058', 'angular-059', 'angular-060',
+    ],
+    section: 'focused',
+  },
+  {
     id: 'dom',
     name: { pt: 'DOM & Web APIs', en: 'DOM & Web APIs' },
     description: {

@@ -32,6 +32,7 @@ import { patternsSnippets } from './patterns'
 import { algorithmsSnippets } from './algorithms'
 import { mongodbSnippets } from './mongodb'
 import { nextjsSnippets } from './nextjs'
+import { angularSnippets } from './angular'
 import { typingSnippets } from './text-typing'
 import { ptbrSnippets } from './text-ptbr'
 import { enSnippets } from './text-en'
@@ -77,6 +78,7 @@ export const codeLanguages: Language[] = [
   { id: 'mongodb',          label: 'MongoDB',          color: '#47a248', snippets: mongodbSnippets },
   { id: 'jinja',            label: 'Jinja',            color: '#b41717', snippets: jinjaSnippets },
   { id: 'nextjs',           label: 'Next.js',          color: '#b0b0b0', snippets: nextjsSnippets },
+  { id: 'angular',          label: 'Angular',          color: '#dd0031', snippets: angularSnippets },
 ]
 
 export const textLanguages: Language[] = [
