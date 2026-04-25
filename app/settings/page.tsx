@@ -21,7 +21,11 @@ export default function SettingsPage() {
   const { locale } = useLocale()
 
   useEffect(() => {
-    setPrefs({ key: getSoundPref('key'), space: getSoundPref('space'), error: getSoundPref('error'), complete: getSoundPref('complete') })
+    const timeoutId = window.setTimeout(() => {
+      setPrefs({ key: getSoundPref('key'), space: getSoundPref('space'), error: getSoundPref('error'), complete: getSoundPref('complete') })
+    }, 0)
+
+    return () => window.clearTimeout(timeoutId)
   }, [])
 
   function handleChange(event: SoundEvent, profile: SoundProfile) {
@@ -45,7 +49,7 @@ export default function SettingsPage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="px-3 sm:px-6 py-4">
-        <Link href="/" className="flex items-center gap-1.5 text-sm transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer" style={{ color: 'var(--sub)' }}>
+        <Link href="/" className="relative z-20 inline-flex w-fit items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 pointer-events-auto cursor-pointer" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
           {t('back', locale)}
         </Link>

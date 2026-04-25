@@ -35,7 +35,7 @@ export default function Toolbar({
   const hide = isTyping ? 'opacity-0 pointer-events-none' : 'opacity-100'
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:relative px-3 sm:px-6 pt-3 pb-1 sm:py-2 gap-2 sm:gap-0">
+    <div className="relative z-20 flex flex-col sm:flex-row sm:items-center px-3 sm:px-6 pt-3 pb-1 sm:py-2 gap-2 sm:gap-0">
       {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
       <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-4 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
