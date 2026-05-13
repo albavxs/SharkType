@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { ensureProfileForUser, updateProfileIdentity } from '@/lib/server/auth-profile'
 import { isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 export async function GET() {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 503 })
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
+    return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
   const supabase = await createClient()
@@ -31,8 +33,10 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 503 })
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
+    return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
   const supabase = await createClient()

@@ -191,7 +191,9 @@ const dict: Record<string, Record<Locale, string>> = {
   authVerificationSuccess: { pt: 'Email confirmado com sucesso.', en: 'Email verified successfully.' },
   authVerificationResent: { pt: 'Enviamos um novo código para seu email.', en: 'We sent a new code to your email.' },
   authEmailPlaceholder: { pt: 'email pendente', en: 'pending email' },
-  authSupabaseMissing: { pt: 'Configure as variáveis públicas do Supabase para habilitar login, ranking global e sincronização.', en: 'Configure the public Supabase environment variables to enable login, global leaderboard, and sync.' },
+  authSupabaseMissing: { pt: 'As variáveis públicas do Supabase não entraram neste build, então login, ranking global e sincronização ficaram desativados.', en: 'The public Supabase variables are missing from this build, so sign-in, global leaderboard, and sync are disabled.' },
+  authSupabaseMissingVars: { pt: 'Env ausentes:', en: 'Missing envs:' },
+  authSupabaseRedeployHint: { pt: 'Depois de salvar as variáveis no Vercel, faça um novo deploy para publicar o bundle com os novos NEXT_PUBLIC_*.', en: 'After saving the variables in Vercel, redeploy so the new NEXT_PUBLIC_* values are included in the public bundle.' },
   authWorking: { pt: 'Processando...', en: 'Working...' },
 }
 

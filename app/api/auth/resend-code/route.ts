@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { createPublicClient } from '@/lib/supabase/public'
 
 export async function POST(request: Request) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 503 })
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
+    return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
   const body = (await request.json()) as { email?: string }

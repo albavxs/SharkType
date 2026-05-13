@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv } from '@/lib/supabase/env'
 import { ensureProfileForUser } from '@/lib/server/auth-profile'
 
 export async function GET(request: Request) {
@@ -10,7 +10,9 @@ export async function GET(request: Request) {
 
   if (!next.startsWith('/')) next = '/'
 
-  if (!isSupabaseConfigured()) {
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
     return NextResponse.redirect(`${origin}${next}`)
   }
 
