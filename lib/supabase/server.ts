@@ -1,13 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from './database'
-import { getSupabaseEnv } from './env'
+import { assertSupabaseConfigured, getSupabaseEnv } from './env'
 
 export async function createClient() {
-  const env = getSupabaseEnv()
-  if (!env.configured) {
-    throw new Error('Supabase env vars are missing.')
-  }
+  const env = assertSupabaseConfigured(getSupabaseEnv())
 
   const cookieStore = await cookies()
 

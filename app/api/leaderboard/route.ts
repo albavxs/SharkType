@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv } from '@/lib/supabase/env'
 import { createPublicClient } from '@/lib/supabase/public'
 import { listLeaderboard } from '@/lib/server/progress-store'
 
 export async function GET() {
-  if (!isSupabaseConfigured()) {
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
     return NextResponse.json({ entries: [] })
   }
 

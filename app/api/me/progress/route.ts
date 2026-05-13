@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createDefaultProgress } from '@/lib/gamification'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv } from '@/lib/supabase/env'
 import { bootstrapProfileAndProgress, resetRemoteProgress } from '@/lib/server/progress-store'
 
 export async function GET() {
-  if (!isSupabaseConfigured()) {
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
     return NextResponse.json({
       profile: null,
       progress: createDefaultProgress(),
@@ -34,7 +36,9 @@ export async function GET() {
 }
 
 export async function DELETE() {
-  if (!isSupabaseConfigured()) {
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
     return NextResponse.json({ ok: true })
   }
 
