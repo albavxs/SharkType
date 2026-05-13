@@ -13,7 +13,7 @@ export default function VerifyEmailClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { locale } = useLocale()
-  const { pendingVerificationEmail, resendEmailCode, verifyEmailCode } = useAuth()
+  const { pendingVerificationEmail, resendEmailCode, supabaseConfigured, supabaseMissingVars, verifyEmailCode } = useAuth()
   const email = useMemo(() => searchParams.get('email') ?? pendingVerificationEmail ?? '', [searchParams, pendingVerificationEmail])
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -115,9 +115,19 @@ export default function VerifyEmailClient() {
           </p>
         ) : null}
 
+        {!supabaseConfigured ? (
+          <div className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
+            <p>{t('authSupabaseMissing', locale)}</p>
+            <p className="mt-2 text-xs leading-5">
+              {t('authSupabaseMissingVars', locale)} {supabaseMissingVars.join(', ')}
+            </p>
+            <p className="mt-2 text-xs leading-5">{t('authSupabaseRedeployHint', locale)}</p>
+          </div>
+        ) : null}
+
         <button
           type="submit"
-          disabled={isSubmitting || !email}
+          disabled={isSubmitting || !email || !supabaseConfigured}
           className="w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
         >
@@ -127,7 +137,7 @@ export default function VerifyEmailClient() {
         <button
           type="button"
           onClick={handleResend}
-          disabled={isSubmitting || !email}
+          disabled={isSubmitting || !email || !supabaseConfigured}
           className="w-full rounded-2xl border px-4 py-3 text-sm font-medium transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', color: 'var(--text)' }}
         >

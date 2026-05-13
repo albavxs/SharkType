@@ -1,17 +1,22 @@
 'use client'
 
 import {
+  useCallback,
   createContext,
   startTransition,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import type { AuthActionResult, AuthProfile, SignUpActionResult } from '@/lib/auth-types'
 import { createClient } from '@/lib/supabase/client'
-import { getAuthCallbackUrl, isSupabaseConfigured } from '@/lib/supabase/env'
+import {
+  getAuthCallbackUrl,
+  getSupabaseEnv,
+  getSupabaseEnvErrorMessage,
+  type SupabaseEnvVarName,
+} from '@/lib/supabase/env'
 import { isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 interface AuthContextValue {
@@ -20,6 +25,7 @@ interface AuthContextValue {
   profile: AuthProfile | null
   isLoading: boolean
   supabaseConfigured: boolean
+  supabaseMissingVars: SupabaseEnvVarName[]
   pendingVerificationEmail: string | null
   signInWithGitHub: () => Promise<AuthActionResult>
   signInWithPassword: (email: string, password: string) => Promise<AuthActionResult>
@@ -50,21 +56,21 @@ async function parseJsonError(response: Response): Promise<string> {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const supabaseEnv = getSupabaseEnv()
+  const supabaseConfigured = supabaseEnv.configured
+  const supabaseMissingVars = supabaseEnv.missingVars
+  const supabaseConfigError = supabaseConfigured ? null : getSupabaseEnvErrorMessage(supabaseEnv)
+
   const [session, setSession] = useState<Session | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<AuthProfile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(supabaseConfigured)
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null
+    return window.localStorage.getItem(PENDING_VERIFICATION_KEY)
+  })
 
-  const supabaseConfigured = useMemo(() => isSupabaseConfigured(), [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const savedEmail = window.localStorage.getItem(PENDING_VERIFICATION_KEY)
-    if (savedEmail) setPendingVerificationEmail(savedEmail)
-  }, [])
-
-  async function refreshProfile() {
+  const refreshProfile = useCallback(async () => {
     if (!supabaseConfigured) return
 
     const response = await fetch('/api/me/profile', { cache: 'no-store' })
@@ -79,13 +85,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const payload = (await response.json()) as { profile: AuthProfile }
     setProfile(payload.profile)
-  }
+  }, [supabaseConfigured])
 
   useEffect(() => {
-    if (!supabaseConfigured) {
-      setIsLoading(false)
-      return
-    }
+    if (!supabaseConfigured) return
 
     const supabase = createClient()
     let active = true
@@ -136,11 +139,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       active = false
       subscription.unsubscribe()
     }
-  }, [supabaseConfigured])
+  }, [refreshProfile, supabaseConfigured])
 
   async function signInWithGitHub(): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
-      return { error: 'Supabase is not configured.' }
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
 
     try {
@@ -160,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function signInWithPassword(email: string, password: string): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
-      return { error: 'Supabase is not configured.' }
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
 
     try {
@@ -183,7 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     confirmPassword: string
   }): Promise<SignUpActionResult> {
     if (!supabaseConfigured) {
-      return { error: 'Supabase is not configured.', needsVerification: false }
+      return { error: supabaseConfigError ?? 'Supabase is not configured.', needsVerification: false }
     }
 
     const username = sanitizeUsername(input.username)
@@ -242,7 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function verifyEmailCode(email: string, token: string): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
-      return { error: 'Supabase is not configured.' }
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
 
     try {
@@ -267,7 +270,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function resendEmailCode(email: string): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
-      return { error: 'Supabase is not configured.' }
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
 
     try {
@@ -293,7 +296,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function updateProfile(input: { username: string; displayName?: string | null }): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
-      return { error: 'Supabase is not configured.' }
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
 
     try {
@@ -331,6 +334,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profile,
     isLoading,
     supabaseConfigured,
+    supabaseMissingVars,
     pendingVerificationEmail,
     signInWithGitHub,
     signInWithPassword,

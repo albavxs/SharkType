@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { saveRemoteSession } from '@/lib/server/progress-store'
 import type { SessionInput } from '@/lib/gamification'
 
@@ -20,8 +20,10 @@ function isSessionInput(value: unknown): value is SessionInput {
 }
 
 export async function POST(request: Request) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 503 })
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
+    return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
   const payload = (await request.json()) as unknown
