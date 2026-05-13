@@ -13,7 +13,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
-import { SessionOutput, UserProgress, loadProgress, getLevel } from '@/lib/gamification'
+import { SessionOutput, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import TypingArea from '@/components/typing/TypingArea'
@@ -49,17 +49,17 @@ export default function TrackPracticePage() {
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [clientProgress, setClientProgress] = useState<UserProgress | null>(null)
   const [selectedLang, setSelectedLang] = useState<Language | null>(null)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [accumulated, setAccumulated] = useState<SnippetResult[]>([])
+  const [trackXpEarned, setTrackXpEarned] = useState(0)
   const [finalStats, setFinalStats] = useState<SnippetResult | null>(null)
-  const { recordSession } = useProgress()
+  const { progress, recordSession } = useProgress()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
   const capsLock = useCapsLock()
 
-  const levelInfo = clientProgress ? getLevel(clientProgress.totalXP) : null
+  const levelInfo = getLevel(progress.totalXP)
 
   // Available languages for this track
   const availableLanguages = useMemo(() => {
@@ -160,34 +160,45 @@ export default function TrackPracticePage() {
     if (engine.state.status !== 'finished') return
     pendingAdvanceRef.current = false
 
-    const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-    const stats: SnippetResult = {
-      wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy,
-      errors: engine.state.errors, duration: dur,
-      wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples],
-    }
+    let active = true
 
-    if (selectedLang && snippet) {
-      recordSession({ languageId: selectedLang.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty })
-    }
+    void (async () => {
+      const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
+      const stats: SnippetResult = {
+        wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy,
+        errors: engine.state.errors, duration: dur,
+        wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples],
+      }
 
-    const next = [...accumulated, stats]
-    setAccumulated(next)
+      if (selectedLang && snippet) {
+        const output = await recordSession({ languageId: selectedLang.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty })
+        if (active) {
+          setSessionResult(output)
+          setTrackXpEarned((current) => current + output.xpEarned)
+        }
+      }
 
-    if (seqIndex >= trackSnippets.length - 1) {
-      // Last snippet — show aggregate result
-      const avgWpm = Math.round(next.reduce((s, r) => s + r.wpm, 0) / next.length)
-      const avgRawWpm = Math.round(next.reduce((s, r) => s + r.rawWpm, 0) / next.length)
-      const avgAcc = Math.round(next.reduce((s, r) => s + r.accuracy, 0) / next.length)
-      const totalErrors = next.reduce((s, r) => s + r.errors, 0)
-      const totalDur = next.reduce((s, r) => s + r.duration, 0)
-      setFinalStats({ wpm: avgWpm, rawWpm: avgRawWpm, accuracy: avgAcc, errors: totalErrors, duration: totalDur, wpmSamples: next.flatMap(r => r.wpmSamples), rawWpmSamples: next.flatMap(r => r.rawWpmSamples) })
-      setShowResult(true)
-      setClientProgress(loadProgress())
-    } else {
-      // Advance to next snippet
-      setSeqIndex(i => i + 1)
-      timer.reset(timerDurationRef.current)
+      const next = [...accumulated, stats]
+      if (!active) return
+
+      setAccumulated(next)
+
+      if (seqIndex >= trackSnippets.length - 1) {
+        const avgWpm = Math.round(next.reduce((s, r) => s + r.wpm, 0) / next.length)
+        const avgRawWpm = Math.round(next.reduce((s, r) => s + r.rawWpm, 0) / next.length)
+        const avgAcc = Math.round(next.reduce((s, r) => s + r.accuracy, 0) / next.length)
+        const totalErrors = next.reduce((s, r) => s + r.errors, 0)
+        const totalDur = next.reduce((s, r) => s + r.duration, 0)
+        setFinalStats({ wpm: avgWpm, rawWpm: avgRawWpm, accuracy: avgAcc, errors: totalErrors, duration: totalDur, wpmSamples: next.flatMap(r => r.wpmSamples), rawWpmSamples: next.flatMap(r => r.rawWpmSamples) })
+        setShowResult(true)
+      } else {
+        setSeqIndex(i => i + 1)
+        timer.reset(timerDurationRef.current)
+      }
+    })()
+
+    return () => {
+      active = false
     }
   }, [engine.state.status])
 
@@ -198,7 +209,6 @@ export default function TrackPracticePage() {
     const themeName = getThemePref()
     setCurrentTheme(themeName)
     applyTheme(getTheme(themeName))
-    setClientProgress(loadProgress())
   }, [])
 
   useEffect(() => {
@@ -215,6 +225,7 @@ export default function TrackPracticePage() {
     setSessionResult(null)
     setFinalStats(null)
     setAccumulated([])
+    setTrackXpEarned(0)
     engine.reset()
     timer.reset(timerDuration)
   }
@@ -230,6 +241,7 @@ export default function TrackPracticePage() {
     setSessionResult(null)
     setFinalStats(null)
     setAccumulated([])
+    setTrackXpEarned(0)
     engine.reset()
     timer.reset(timerDuration)
   }
@@ -265,7 +277,7 @@ export default function TrackPracticePage() {
           showControls={!(track.textLanguages && track.snippetIds.length > 0)}
           showLanguage={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
-          level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
+          level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
           isTyping={isTyping}
         />
@@ -309,8 +321,8 @@ export default function TrackPracticePage() {
             <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
               duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} wpmSamples={finalStats.wpmSamples}
               rawWpmSamples={finalStats.rawWpmSamples}
-              xpEarned={accumulated.length * 10} newLevel={levelInfo?.level ?? 1} leveledUp={false}
-              levelPercent={levelInfo ? Math.round(((clientProgress?.totalXP ?? 0) % 100)) : 0} streak={clientProgress?.streak.current ?? 0}
+              xpEarned={trackXpEarned} newLevel={sessionResult?.newLevel ?? levelInfo.level} leveledUp={sessionResult?.leveledUp ?? false}
+              levelPercent={sessionResult?.levelPercent ?? getLevel(progress.totalXP).percent} streak={progress.streak.current}
               onNext={handleRestartTrack} locale={locale} />
           ) : (
             <>
