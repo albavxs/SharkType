@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createDefaultProgress, type UserProgress } from '@/lib/gamification'
-import { isSupabaseConfigured } from '@/lib/supabase/env'
+import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { importLocalProgress } from '@/lib/server/progress-store'
 
 function normalizeProgressInput(progress?: Partial<UserProgress> | null): UserProgress {
@@ -21,8 +21,10 @@ function normalizeProgressInput(progress?: Partial<UserProgress> | null): UserPr
 }
 
 export async function POST(request: Request) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: 'Supabase is not configured.' }, { status: 503 })
+  const env = getSupabaseEnv()
+
+  if (!env.configured) {
+    return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
   const body = (await request.json()) as { progress?: Partial<UserProgress> }

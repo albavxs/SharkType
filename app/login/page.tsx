@@ -12,7 +12,7 @@ import { t } from '@/lib/i18n'
 export default function LoginPage() {
   const router = useRouter()
   const { locale } = useLocale()
-  const { signInWithGitHub, signInWithPassword, supabaseConfigured } = useAuth()
+  const { signInWithGitHub, signInWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -127,9 +127,13 @@ export default function LoginPage() {
           ) : null}
 
           {!supabaseConfigured ? (
-            <p className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
-              {t('authSupabaseMissing', locale)}
-            </p>
+            <div className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
+              <p>{t('authSupabaseMissing', locale)}</p>
+              <p className="mt-2 text-xs leading-5">
+                {t('authSupabaseMissingVars', locale)} {supabaseMissingVars.join(', ')}
+              </p>
+              <p className="mt-2 text-xs leading-5">{t('authSupabaseRedeployHint', locale)}</p>
+            </div>
           ) : null}
 
           <button
