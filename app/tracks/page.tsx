@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { tracks, Track, TrackSection } from '@/data/tracks'
 import { languages, textLanguages } from '@/data'
-import { loadProgress, UserProgress, getLevel } from '@/lib/gamification'
+import { getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
@@ -17,6 +17,7 @@ import SceneWrapper from '@/components/three/SceneWrapper'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { getLanguageById } from '@/data'
 import { Language, Difficulty } from '@/lib/types'
+import { useProgress } from '@/hooks/useProgress'
 
 const conceptTracks = tracks.filter(t => t.section === 'concept')
 const focusedTracks = tracks.filter(t => t.section === 'focused')
@@ -47,13 +48,13 @@ function getTrackLanguages(track: Track): Language[] {
 
 export default function TracksPage() {
   const router = useRouter()
-  const [progress, setProgress] = useState<UserProgress | null>(null)
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
-  const levelInfo = progress ? getLevel(progress.totalXP) : null
+  const { progress } = useProgress()
+  const levelInfo = getLevel(progress.totalXP)
 
   const dummyLang = getLanguageById(DEFAULT_LANGUAGE)!
 
@@ -69,11 +70,9 @@ export default function TracksPage() {
     const themeName = getThemePref()
     setCurrentTheme(themeName)
     applyTheme(getTheme(themeName))
-    setProgress(loadProgress())
   }, [])
 
   function getTrackProgress(snippetIds: string[]): number {
-    if (!progress) return 0
     let completed = 0
     for (const id of snippetIds) {
       for (const lp of Object.values(progress.languages)) {
@@ -126,7 +125,7 @@ export default function TracksPage() {
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
-          level={levelInfo?.level ?? null} streak={progress?.streak.current ?? 0}
+          level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
         />
 
