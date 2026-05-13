@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Supabase setup
+
+1. Copy `.env.example` to `.env.local`.
+2. Fill `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+3. Run the SQL migration in `supabase/migrations/202605130001_auth_progress.sql`.
+4. In Supabase Auth, enable `GitHub` and `Email` providers.
+5. Configure the signup email template to send the OTP token code (for example, `{{ .Token }}`) because SharkType verifies email with a code entry screen instead of a magic link.
+
 ## Getting Started
 
 First, run the development server:

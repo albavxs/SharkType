@@ -44,6 +44,9 @@ const dict: Record<string, Record<Locale, string>> = {
   navHelp:      { pt: 'Ajuda',         en: 'Help' },
   navSettings:  { pt: 'Configurações', en: 'Settings' },
   toggleLocale: { pt: 'Alternar idioma da interface', en: 'Toggle interface language' },
+  authSignInShort: { pt: 'entrar', en: 'sign in' },
+  authSignIn: { pt: 'Entrar', en: 'Sign in' },
+  authSignOut: { pt: 'Sair', en: 'Sign out' },
 
   // ── SnippetInfo ─────────────────────────────────────────────────────────
   hide: { pt: 'ocultar', en: 'hide' },
@@ -133,6 +136,12 @@ const dict: Record<string, Record<Locale, string>> = {
   colErrors:      { pt: 'erros',          en: 'errors' },
   colTime:        { pt: 'tempo',          en: 'time' },
   colDate:        { pt: 'data',           en: 'date' },
+  colXP:          { pt: 'xp',             en: 'xp' },
+  colStreak:      { pt: 'streak',         en: 'streak' },
+  globalPlayers:  { pt: 'Todos os jogadores, ordenados por XP total.', en: 'All players, ranked by total XP.' },
+  noPlayers:      { pt: 'Nenhum jogador ainda.', en: 'No players yet.' },
+  noPlayersHint:  { pt: 'Assim que as primeiras contas começarem a praticar, o ranking aparece aqui.', en: 'The leaderboard will appear here once players start practicing.' },
+  rankingGuestHint: { pt: 'Entre para sincronizar seu progresso e aparecer no ranking global.', en: 'Sign in to sync your progress and appear on the global leaderboard.' },
 
   // ── Stats page ──────────────────────────────────────────────────────────
   pageStats:     { pt: 'Estatísticas',    en: 'Statistics' },
@@ -155,6 +164,35 @@ const dict: Record<string, Record<Locale, string>> = {
   cancel:        { pt: 'Cancelar',        en: 'Cancel' },
   resetBtn:      { pt: 'Resetar',         en: 'Reset' },
   soundOff:      { pt: 'Desligado',       en: 'Off' },
+
+  // ── Auth pages ──────────────────────────────────────────────────────────
+  authLoginTitle: { pt: 'Entrar na sua conta', en: 'Sign in to your account' },
+  authLoginSubtitle: { pt: 'Use GitHub ou email para sincronizar seu progresso, streak e ranking global.', en: 'Use GitHub or email to sync your progress, streak, and global leaderboard.' },
+  authSignupTitle: { pt: 'Criar conta SharkType', en: 'Create your SharkType account' },
+  authSignupSubtitle: { pt: 'Cadastre um username público para salvar XP, histórico e competir com todos os jogadores.', en: 'Pick a public username to save XP, history, and compete with every player.' },
+  authVerifyTitle: { pt: 'Confirmar seu email', en: 'Verify your email' },
+  authVerifySubtitle: { pt: 'Digite o código enviado para concluir a criação da conta e liberar sua sessão.', en: 'Enter the code we sent to finish creating your account and unlock your session.' },
+  authNeedAccount: { pt: 'Ainda não tem conta? Criar agora', en: "Don't have an account? Create one" },
+  authHaveAccount: { pt: 'Já tem conta? Entrar', en: 'Already have an account? Sign in' },
+  authContinueGuest: { pt: 'Continuar como guest', en: 'Continue as guest' },
+  authContinueGithub: { pt: 'Continuar com GitHub', en: 'Continue with GitHub' },
+  authOr: { pt: 'ou', en: 'or' },
+  authEmail: { pt: 'Email', en: 'Email' },
+  authPassword: { pt: 'Senha', en: 'Password' },
+  authConfirmPassword: { pt: 'Confirmar senha', en: 'Confirm password' },
+  authUsername: { pt: 'Username', en: 'Username' },
+  authUsernameHint: { pt: 'Use 3-20 caracteres: letras minúsculas, números e underscore. Esse nome aparece no ranking global.', en: 'Use 3-20 characters: lowercase letters, numbers, and underscores. This name appears on the global leaderboard.' },
+  authCreateAccount: { pt: 'Criar conta', en: 'Create account' },
+  authBackToLogin: { pt: 'Voltar para login', en: 'Back to login' },
+  authVerifyHint: { pt: 'Se o código expirar, você pode reenviar abaixo.', en: 'If the code expires, you can resend it below.' },
+  authVerificationCode: { pt: 'Código de confirmação', en: 'Verification code' },
+  authVerifyButton: { pt: 'Confirmar código', en: 'Verify code' },
+  authResendCode: { pt: 'Reenviar código', en: 'Resend code' },
+  authVerificationSuccess: { pt: 'Email confirmado com sucesso.', en: 'Email verified successfully.' },
+  authVerificationResent: { pt: 'Enviamos um novo código para seu email.', en: 'We sent a new code to your email.' },
+  authEmailPlaceholder: { pt: 'email pendente', en: 'pending email' },
+  authSupabaseMissing: { pt: 'Configure as variáveis públicas do Supabase para habilitar login, ranking global e sincronização.', en: 'Configure the public Supabase environment variables to enable login, global leaderboard, and sync.' },
+  authWorking: { pt: 'Processando...', en: 'Working...' },
 }
 
 export function t(key: string, locale: Locale = 'en'): string {

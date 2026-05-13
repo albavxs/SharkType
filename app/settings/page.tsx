@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { resetProgress } from '@/lib/gamification'
 import { getSoundPref, setSoundPref, setAllSoundPrefs, SoundProfile, SoundEvent, soundProfiles, previewSound } from '@/lib/sounds'
 import { ArrowLeftIcon } from '@/components/icons'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Link from 'next/link'
+import { useProgress } from '@/hooks/useProgress'
 
 const soundEvents: { key: SoundEvent; labelKey: string }[] = [
   { key: 'key', labelKey: 'soundKey' },
@@ -19,6 +19,7 @@ export default function SettingsPage() {
   const [prefs, setPrefs] = useState<Record<SoundEvent, SoundProfile>>({ key: 'off', space: 'off', error: 'off', complete: 'off' })
   const [showConfirm, setShowConfirm] = useState(false)
   const { locale } = useLocale()
+  const { resetCurrentProgress } = useProgress()
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -40,8 +41,8 @@ export default function SettingsPage() {
     previewSound('key', profile)
   }
 
-  function handleReset() {
-    resetProgress()
+  async function handleReset() {
+    await resetCurrentProgress()
     setShowConfirm(false)
     window.location.href = '/'
   }

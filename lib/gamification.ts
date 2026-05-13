@@ -30,15 +30,15 @@ export interface UserProgress {
   history: SessionRecord[]
 }
 
-const STORAGE_KEY = 'syntaxlang-progress'
-const MAX_HISTORY = 50
+export const STORAGE_KEY = 'syntaxlang-progress'
+export const MAX_HISTORY = 50
 
 // Level thresholds: floor(25 * n^1.6)
 const LEVEL_THRESHOLDS: number[] = Array.from({ length: 21 }, (_, n) =>
   Math.floor(25 * Math.pow(n, 1.6))
 )
 
-function defaultProgress(): UserProgress {
+export function createDefaultProgress(): UserProgress {
   return {
     version: 1,
     totalXP: 0,
@@ -49,18 +49,34 @@ function defaultProgress(): UserProgress {
   }
 }
 
-export function loadProgress(): UserProgress {
-  if (typeof window === 'undefined') return defaultProgress()
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return defaultProgress()
-    return JSON.parse(raw) as UserProgress
-  } catch {
-    return defaultProgress()
+function normalizeProgress(progress?: Partial<UserProgress> | null): UserProgress {
+  if (!progress) return createDefaultProgress()
+
+  return {
+    version: 1,
+    totalXP: progress.totalXP ?? 0,
+    level: progress.level ?? 1,
+    streak: {
+      current: progress.streak?.current ?? 0,
+      lastPracticeDate: progress.streak?.lastPracticeDate ?? '',
+    },
+    languages: progress.languages ?? {},
+    history: Array.isArray(progress.history) ? progress.history.slice(0, MAX_HISTORY) : [],
   }
 }
 
-function persist(progress: UserProgress) {
+export function loadProgress(): UserProgress {
+  if (typeof window === 'undefined') return createDefaultProgress()
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return createDefaultProgress()
+    return normalizeProgress(JSON.parse(raw) as UserProgress)
+  } catch {
+    return createDefaultProgress()
+  }
+}
+
+export function persistProgress(progress: UserProgress) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
 }
 
@@ -129,9 +145,14 @@ export interface SessionOutput {
   streak: number
 }
 
-export function saveSession(input: SessionInput): SessionOutput {
-  const progress = loadProgress()
-
+export function applySessionToProgress(
+  progressInput: UserProgress,
+  input: SessionInput
+): {
+  progress: UserProgress
+  output: SessionOutput
+} {
+  const progress = normalizeProgress(progressInput)
   // XP calculation
   const baseXP = 10
   const wpmBonus = Math.floor(input.wpm / 10)
@@ -183,19 +204,27 @@ export function saveSession(input: SessionInput): SessionOutput {
     progress.history = progress.history.slice(0, MAX_HISTORY)
   }
 
-  persist(progress)
-
   return {
-    xpEarned,
-    leveledUp: newLevelInfo.level > oldLevel,
-    newLevel: newLevelInfo.level,
-    levelPercent: newLevelInfo.percent,
-    streak: progress.streak.current,
+    progress,
+    output: {
+      xpEarned,
+      leveledUp: newLevelInfo.level > oldLevel,
+      newLevel: newLevelInfo.level,
+      levelPercent: newLevelInfo.percent,
+      streak: progress.streak.current,
+    },
   }
 }
 
-export function getLanguageProgress(langId: string): LanguageProgress {
-  const progress = loadProgress()
+export function saveSession(input: SessionInput): SessionOutput {
+  const current = loadProgress()
+  const { progress, output } = applySessionToProgress(current, input)
+  persistProgress(progress)
+  return output
+}
+
+export function getLanguageProgress(langId: string, progressInput?: UserProgress): LanguageProgress {
+  const progress = progressInput ?? loadProgress()
   return progress.languages[langId] || {
     completedSnippetIds: [],
     bestWPM: 0,
@@ -206,4 +235,23 @@ export function getLanguageProgress(langId: string): LanguageProgress {
 
 export function resetProgress(): void {
   localStorage.removeItem(STORAGE_KEY)
+}
+
+export function hasMeaningfulProgress(progress: UserProgress): boolean {
+  return progress.totalXP > 0 || progress.history.length > 0 || Object.keys(progress.languages).length > 0
+}
+
+export function deriveProgressSummary(progressInput: UserProgress): {
+  bestWPM: number
+  bestAccuracy: number
+  totalSessions: number
+} {
+  const progress = normalizeProgress(progressInput)
+  const languageEntries = Object.values(progress.languages)
+
+  return {
+    bestWPM: languageEntries.reduce((best, entry) => Math.max(best, entry.bestWPM), 0),
+    bestAccuracy: languageEntries.reduce((best, entry) => Math.max(best, entry.bestAccuracy), 0),
+    totalSessions: progress.history.length,
+  }
 }

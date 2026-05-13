@@ -252,3 +252,28 @@ export const FileTextIcon = ({ size = 16, className = '' }: IconProps) => (
     <line x1="5.5" y1="11" x2="8.5" y2="11" />
   </svg>
 )
+
+export const GithubIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor" className={className}>
+    <path d="M8 .8A7.2 7.2 0 0 0 .8 8a7.2 7.2 0 0 0 4.92 6.84c.36.06.48-.16.48-.35v-1.24c-2 .43-2.42-.85-2.42-.85-.33-.84-.8-1.07-.8-1.07-.66-.45.05-.44.05-.44.73.05 1.12.75 1.12.75.65 1.11 1.7.79 2.11.61.06-.47.25-.79.46-.97-1.6-.18-3.28-.8-3.28-3.58 0-.79.28-1.43.74-1.93-.07-.18-.32-.92.07-1.91 0 0 .61-.2 2 .74a6.85 6.85 0 0 1 3.64 0c1.38-.94 1.99-.74 1.99-.74.39.99.15 1.73.08 1.91.46.5.74 1.14.74 1.93 0 2.79-1.68 3.39-3.28 3.57.26.22.49.66.49 1.33v1.97c0 .2.13.42.49.35A7.2 7.2 0 0 0 15.2 8 7.2 7.2 0 0 0 8 .8Z" />
+  </svg>
+)
+
+export const UserIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <circle cx="8" cy="5.2" r="2.5" />
+    <path d="M3 13c.8-2 2.7-3.2 5-3.2S12.2 11 13 13" />
+  </svg>
+)
+
+export const LogOutIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className}>
+    <path d="M6 2.5H4A1.5 1.5 0 0 0 2.5 4v8A1.5 1.5 0 0 0 4 13.5h2" />
+    <line x1="8" y1="8" x2="14" y2="8" />
+    <polyline points="11.5,5.5 14,8 11.5,10.5" />
+  </svg>
+)
