@@ -1,22 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { loadProgress, getLevel, UserProgress } from '@/lib/gamification'
+import { getLevel } from '@/lib/gamification'
 import { languages } from '@/data'
 import { ArrowLeftIcon, FlameIcon } from '@/components/icons'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Link from 'next/link'
+import { useProgress } from '@/hooks/useProgress'
 
 export default function StatsPage() {
-  const [progress, setProgress] = useState<UserProgress | null>(null)
   const { locale } = useLocale()
-
-  useEffect(() => {
-    setProgress(loadProgress())
-  }, [])
-
-  if (!progress) return null
+  const { progress } = useProgress()
 
   const levelInfo = getLevel(progress.totalXP)
   const langEntries = Object.entries(progress.languages)

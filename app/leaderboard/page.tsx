@@ -2,62 +2,70 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { loadProgress, UserProgress, getLevel, SessionRecord } from '@/lib/gamification'
+import type { LeaderboardEntry } from '@/lib/auth-types'
+import { getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
-import { getLanguageById } from '@/data'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
 import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
-import { codeLanguages, textLanguages } from '@/data'
+import { codeLanguages } from '@/data'
 import { Language, Difficulty } from '@/lib/types'
-
-const ALL_LANGUAGES = [...codeLanguages, ...textLanguages]
-
-function getLangLabel(id: string): string {
-  return getLanguageById(id)?.label ?? id
-}
-
-function getLangColor(id: string): string {
-  return getLanguageById(id)?.color ?? '#888'
-}
-
-function formatDate(iso: string): string {
-  const [y, m, d] = iso.split('-')
-  return `${d}/${m}/${y.slice(2)}`
-}
+import { useProgress } from '@/hooks/useProgress'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function LeaderboardPage() {
   const router = useRouter()
-  const [progress, setProgress] = useState<UserProgress | null>(null)
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
-  const [filterLang, setFilterLang] = useState<string>('all')
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
+  const { progress } = useProgress()
+  const { profile } = useAuth()
 
   useEffect(() => {
     const themeName = getThemePref()
     setCurrentTheme(themeName)
     applyTheme(getTheme(themeName))
-    setProgress(loadProgress())
   }, [])
 
-  const levelInfo = progress ? getLevel(progress.totalXP) : null
+  useEffect(() => {
+    let active = true
 
-  // Sorted history by WPM desc
-  const sortedHistory: SessionRecord[] = progress
-    ? [...progress.history].sort((a, b) => b.wpm - a.wpm)
-    : []
+    void (async () => {
+      try {
+        const response = await fetch('/api/leaderboard', { cache: 'no-store' })
+        const payload = (await response.json()) as { entries?: LeaderboardEntry[]; error?: string }
+        if (!active) return
 
-  const usedLangIds = Array.from(new Set(sortedHistory.map(r => r.languageId)))
+        if (!response.ok) {
+          setError(payload.error ?? 'Could not load leaderboard.')
+          setEntries([])
+        } else {
+          setEntries(payload.entries ?? [])
+          setError(null)
+        }
+      } catch {
+        if (!active) return
+        setError('Could not load leaderboard.')
+        setEntries([])
+      } finally {
+        if (active) setIsLoading(false)
+      }
+    })()
 
-  const filtered = filterLang === 'all'
-    ? sortedHistory
-    : sortedHistory.filter(r => r.languageId === filterLang)
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const levelInfo = getLevel(progress.totalXP)
 
   return (
     <main className="flex-1 flex flex-col min-h-screen relative">
@@ -70,113 +78,107 @@ export default function LeaderboardPage() {
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => {}}
-          level={levelInfo?.level ?? null} streak={progress?.streak.current ?? 0}
+          level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
         />
 
         <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
-          <div className="w-full max-w-3xl">
-            <div className="flex items-end justify-between mb-2">
+          <div className="w-full max-w-4xl">
+            <div className="mb-6">
               <h1 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
                 {t('pageRanking', locale)}
               </h1>
-              <span className="text-[10px] sm:text-xs pb-1" style={{ color: 'var(--sub)' }}>{t('globalSoon', locale)}</span>
+              <p className="mt-2 text-xs sm:text-sm" style={{ color: 'var(--sub)' }}>
+                {t('globalPlayers', locale)}
+              </p>
+              {!profile ? (
+                <p className="mt-2 text-xs" style={{ color: 'var(--main)' }}>
+                  {t('rankingGuestHint', locale)}
+                </p>
+              ) : null}
             </div>
-            <p className="text-xs sm:text-sm mb-4 sm:mb-6" style={{ color: 'var(--sub)' }}>
-              {t('bestSessions', locale)}
-            </p>
 
-            {/* Personal best cards */}
-            {progress && Object.keys(progress.languages).length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
-                {Object.entries(progress.languages)
-                  .filter(([, lp]) => lp.bestWPM > 0)
-                  .sort(([, a], [, b]) => b.bestWPM - a.bestWPM)
-                  .slice(0, 6)
-                  .map(([langId, lp]) => (
-                    <div key={langId} className="p-3 rounded-lg" style={{ backgroundColor: 'var(--sub-alt)' }}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: getLangColor(langId) }} />
-                        <span className="text-xs" style={{ color: 'var(--sub)' }}>{getLangLabel(langId)}</span>
-                      </div>
-                      <div className="text-2xl font-bold tabular-nums" style={{ color: 'var(--main)' }}>{lp.bestWPM}</div>
-                      <div className="text-[10px]" style={{ color: 'var(--sub)' }}>{t('bestWpm', locale)} · {lp.totalSessions} {t('sessions', locale)}</div>
-                    </div>
-                  ))}
+            {error ? (
+              <div className="rounded-2xl px-4 py-3 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 14%, transparent)', color: 'var(--error)' }}>
+                {error}
               </div>
-            )}
+            ) : null}
 
-            {/* Language filter tabs */}
-            {usedLangIds.length > 1 && (
-              <div className="flex items-center gap-2 flex-wrap mb-4">
-                <button
-                  onClick={() => setFilterLang('all')}
-                  className="px-3 py-1 text-xs rounded-full transition-opacity hover:opacity-80"
-                  style={{
-                    backgroundColor: filterLang === 'all' ? 'var(--main)' : 'var(--sub-alt)',
-                    color: filterLang === 'all' ? 'var(--bg)' : 'var(--sub)',
-                  }}
-                >
-                  {t('allFilter', locale)}
-                </button>
-                {usedLangIds.map(id => (
-                  <button
-                    key={id}
-                    onClick={() => setFilterLang(id)}
-                    className="flex items-center gap-1.5 px-3 py-1 text-xs rounded-full transition-opacity hover:opacity-80"
-                    style={{
-                      backgroundColor: filterLang === id ? 'var(--main)' : 'var(--sub-alt)',
-                      color: filterLang === id ? 'var(--bg)' : 'var(--sub)',
-                    }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: filterLang === id ? 'var(--bg)' : getLangColor(id) }} />
-                    {getLangLabel(id)}
-                  </button>
-                ))}
+            {isLoading ? (
+              <div className="py-16 text-center text-sm" style={{ color: 'var(--sub)' }}>
+                {t('loading', locale)}
               </div>
-            )}
-
-            {/* History table */}
-            {filtered.length === 0 ? (
-              <div className="text-center py-16" style={{ color: 'var(--sub)' }}>
-                <p className="text-sm">{t('noSessions', locale)}</p>
-                <p className="text-xs mt-1">{t('noSessionsHint', locale)}</p>
+            ) : entries.length === 0 ? (
+              <div className="py-16 text-center" style={{ color: 'var(--sub)' }}>
+                <p className="text-sm">{t('noPlayers', locale)}</p>
+                <p className="mt-1 text-xs">{t('noPlayersHint', locale)}</p>
               </div>
             ) : (
               <div className="overflow-x-auto -mx-3 sm:mx-0">
-                <div className="rounded-lg overflow-hidden min-w-[28rem]" style={{ border: '1px solid color-mix(in srgb, var(--sub) 20%, transparent)' }}>
-                  {/* Table header */}
-                  <div className="grid text-[10px] uppercase tracking-wider px-3 sm:px-4 py-2"
-                    style={{ gridTemplateColumns: '1.5rem 1fr 3.5rem 3.5rem 2.5rem 2.5rem 3.5rem', backgroundColor: 'var(--sub-alt)', color: 'var(--sub)' }}>
+                <div className="min-w-[34rem] overflow-hidden rounded-2xl border" style={{ borderColor: 'color-mix(in srgb, var(--sub) 20%, transparent)' }}>
+                  <div
+                    className="grid px-4 py-3 text-[10px] uppercase tracking-[0.24em]"
+                    style={{
+                      gridTemplateColumns: '3rem 1.4fr 5rem 4.5rem 4rem 5rem',
+                      backgroundColor: 'var(--sub-alt)',
+                      color: 'var(--sub)',
+                    }}
+                  >
                     <span>#</span>
-                    <span>{t('colLanguage', locale)}</span>
+                    <span>{t('authUsername', locale)}</span>
+                    <span className="text-right">{t('colXP', locale)}</span>
                     <span className="text-right">wpm</span>
-                    <span className="text-right">{t('colAccuracy', locale)}</span>
-                    <span className="text-right">{t('colErrors', locale)}</span>
-                    <span className="text-right">{t('colTime', locale)}</span>
-                    <span className="text-right">{t('colDate', locale)}</span>
+                    <span className="text-right">{t('colStreak', locale)}</span>
+                    <span className="text-right">{t('sessions', locale)}</span>
                   </div>
 
-                  {filtered.map((record, i) => (
-                    <div key={i}
-                      className="grid px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm"
+                  {entries.map((entry, index) => (
+                    <div
+                      key={entry.userId}
+                      className="grid items-center px-4 py-3 text-sm"
                       style={{
-                        gridTemplateColumns: '1.5rem 1fr 3.5rem 3.5rem 2.5rem 2.5rem 3.5rem',
-                        borderTop: i > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
-                        backgroundColor: i === 0 && filterLang === 'all' ? 'color-mix(in srgb, var(--main) 5%, transparent)' : 'transparent',
-                      }}>
-                      <span className="text-xs font-mono" style={{ color: i < 3 ? 'var(--main)' : 'var(--sub)' }}>
-                        {i + 1}
+                        gridTemplateColumns: '3rem 1.4fr 5rem 4.5rem 4rem 5rem',
+                        borderTop: index > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
+                        backgroundColor: profile?.id === entry.userId ? 'color-mix(in srgb, var(--main) 7%, transparent)' : 'transparent',
+                      }}
+                    >
+                      <span className="font-mono text-xs" style={{ color: index < 3 ? 'var(--main)' : 'var(--sub)' }}>
+                        {entry.rank}
                       </span>
-                      <span className="flex items-center gap-1.5 text-xs">
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: getLangColor(record.languageId) }} />
-                        <span style={{ color: 'var(--text)' }}>{getLangLabel(record.languageId)}</span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
+                          style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+                        >
+                          {entry.avatarUrl ? (
+                            <img src={entry.avatarUrl} alt={entry.username} className="h-full w-full object-cover" />
+                          ) : (
+                            entry.username.slice(0, 1).toUpperCase()
+                          )}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="truncate font-medium" style={{ color: 'var(--text)' }}>
+                            {entry.username}
+                          </div>
+                          {entry.displayName && entry.displayName !== entry.username ? (
+                            <div className="truncate text-xs" style={{ color: 'var(--sub)' }}>
+                              {entry.displayName}
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                      <span className="text-right font-semibold tabular-nums" style={{ color: 'var(--main)' }}>
+                        {entry.totalXP}
                       </span>
-                      <span className="text-right font-semibold tabular-nums" style={{ color: 'var(--main)' }}>{record.wpm}</span>
-                      <span className="text-right tabular-nums text-xs" style={{ color: 'var(--text)' }}>{record.accuracy}%</span>
-                      <span className="text-right tabular-nums text-xs" style={{ color: record.errors > 0 ? 'var(--error)' : 'var(--sub)' }}>{record.errors}</span>
-                      <span className="text-right tabular-nums text-xs" style={{ color: 'var(--sub)' }}>{record.duration}s</span>
-                      <span className="text-right text-xs" style={{ color: 'var(--sub)' }}>{formatDate(record.date)}</span>
+                      <span className="text-right tabular-nums" style={{ color: 'var(--text)' }}>
+                        {entry.bestWPM}
+                      </span>
+                      <span className="text-right tabular-nums" style={{ color: entry.currentStreak > 0 ? 'var(--main)' : 'var(--sub)' }}>
+                        {entry.currentStreak}d
+                      </span>
+                      <span className="text-right tabular-nums" style={{ color: 'var(--sub)' }}>
+                        {entry.totalSessions}
+                      </span>
                     </div>
                   ))}
                 </div>

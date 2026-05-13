@@ -1,12 +1,13 @@
 'use client'
 
 import { Language, Difficulty } from '@/lib/types'
-import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon } from '@/components/icons'
+import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
 import LanguageDropdown from './LanguageDropdown'
 import DifficultySelector from './DifficultySelector'
+import { useAuth } from '@/hooks/useAuth'
 
 interface ToolbarProps {
   language: Language
@@ -33,6 +34,11 @@ export default function Toolbar({
   isTyping = false, showControls = true, showLanguage = true,
 }: ToolbarProps) {
   const hide = isTyping ? 'opacity-0 pointer-events-none' : 'opacity-100'
+  const { profile, signOut } = useAuth()
+
+  async function handleSignOut() {
+    await signOut()
+  }
 
   return (
     <div className="relative z-20 flex flex-col sm:flex-row sm:items-center px-3 sm:px-6 pt-3 pb-1 sm:py-2 gap-2 sm:gap-0">
@@ -49,6 +55,11 @@ export default function Toolbar({
             <Link href="/leaderboard" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
               <TrophyIcon size={18} />
             </Link>
+            {profile && (
+              <Link href="/profile" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={locale === 'pt' ? 'Perfil' : 'Profile'}>
+                <UserIcon size={18} />
+              </Link>
+            )}
             <button onClick={onHelpClick} className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
               <HelpIcon size={22} />
             </button>
@@ -66,6 +77,33 @@ export default function Toolbar({
               style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}>
               {locale === 'pt' ? 'PT' : 'EN'}
             </button>
+          )}
+          {profile ? (
+            <Link
+              href="/profile"
+              className="flex items-center gap-1 rounded-full px-2 py-1 text-[10px] transition-all duration-150 hover:scale-105 active:scale-95"
+              style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+              title={locale === 'pt' ? 'Perfil' : 'Profile'}
+            >
+              <span
+                className="flex h-5 w-5 items-center justify-center overflow-hidden rounded-full text-[10px] font-semibold"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+              >
+                {profile.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
+                ) : (
+                  profile.username.slice(0, 1).toUpperCase()
+                )}
+              </span>
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-full px-2 py-1 text-[10px] font-medium transition-all duration-150 hover:scale-105 active:scale-95"
+              style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+            >
+              {t('authSignInShort', locale)}
+            </Link>
           )}
           {level && <span className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
           {streak > 0 && (
@@ -123,6 +161,49 @@ export default function Toolbar({
             title={t('toggleLocale', locale)}>
             {locale === 'pt' ? 'PT' : 'EN'}
           </button>
+        )}
+        {profile ? (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-full px-2 py-1" style={{ backgroundColor: 'var(--sub-alt)' }}>
+              <span
+                className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+              >
+                {profile.avatarUrl ? (
+                  <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
+                ) : (
+                  profile.username.slice(0, 1).toUpperCase()
+                )}
+              </span>
+              <span className="max-w-24 truncate text-sm" style={{ color: 'var(--text)' }}>
+                {profile.username}
+              </span>
+            </div>
+            <Link
+              href="/profile"
+              className="rounded-full p-2 transition-all duration-150 hover:scale-105 active:scale-95"
+              style={{ color: 'var(--sub)' }}
+              title={locale === 'pt' ? 'Perfil' : 'Profile'}
+            >
+              <UserIcon size={16} />
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="rounded-full p-2 transition-all duration-150 hover:scale-105 active:scale-95"
+              style={{ color: 'var(--sub)' }}
+              title={t('authSignOut', locale)}
+            >
+              <LogOutIcon size={16} />
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150 hover:scale-105 active:scale-95"
+            style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+          >
+            {t('authSignIn', locale)}
+          </Link>
         )}
         {(level || streak > 0) && (
           <>

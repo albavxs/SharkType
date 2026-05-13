@@ -10,7 +10,7 @@ import { useTimer } from '@/hooks/useTimer'
 import { useProgress } from '@/hooks/useProgress'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useIsMobile } from '@/hooks/useMediaQuery'
-import { SessionOutput, UserProgress, loadProgress, getLevel } from '@/lib/gamification'
+import { SessionOutput, getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import { useLocale } from '@/hooks/useLocale'
@@ -34,25 +34,20 @@ export default function Home() {
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
-  const [clientProgress, setClientProgress] = useState<UserProgress | null>(null)
   const { locale, toggleLocale } = useLocale()
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const isMobile = useIsMobile()
   const capsLock = useCapsLock()
-  const { recordSession } = useProgress()
+  const { progress, recordSession } = useProgress()
 
   // Init theme + progress on client
   useEffect(() => {
     const themeName = getThemePref()
     setCurrentTheme(themeName)
     applyTheme(getTheme(themeName))
-    setClientProgress(loadProgress())
   }, [])
-
-  // Refresh progress after result
-  useEffect(() => { if (showResult) setClientProgress(loadProgress()) }, [showResult])
 
   const timerDuration = difficulty === 'hard' ? 30 : difficulty === 'medium' ? 45 : difficulty === 'easy' ? 60 : 0
   const isCountdown = difficulty !== 'all'
@@ -86,10 +81,20 @@ export default function Home() {
 
   useEffect(() => {
     if (showResult && snippet && !sessionResult) {
+      let active = true
+
       const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
       const stats = { wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy, errors: engine.state.errors, duration: dur, wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples] }
       setFinalStats(stats)
-      setSessionResult(recordSession({ languageId: language.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty }))
+
+      void (async () => {
+        const output = await recordSession({ languageId: language.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty })
+        if (active) setSessionResult(output)
+      })()
+
+      return () => {
+        active = false
+      }
     }
   }, [showResult])
 
@@ -105,7 +110,7 @@ export default function Home() {
   useEffect(() => { if (engine.state.errors > prevErrors.current) { playError() }; prevErrors.current = engine.state.errors }, [engine.state.errors])
 
   const displaySeconds = isCountdown ? timer.seconds : engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-  const levelInfo = clientProgress ? getLevel(clientProgress.totalXP) : null
+  const levelInfo = getLevel(progress.totalXP)
   const isTextMode = language.id.startsWith('text-')
 
   return (
@@ -117,7 +122,7 @@ export default function Home() {
         <Toolbar language={language} difficulty={difficulty} seconds={displaySeconds}
           isTimerRunning={timer.isRunning} onLanguageChange={handleLanguageChange}
           onDifficultyChange={setDifficulty} onHomeClick={handleRestart} onHelpClick={() => setShowHelp(true)}
-          level={levelInfo?.level ?? null} streak={clientProgress?.streak.current ?? 0}
+          level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale} isTyping={engine.state.status === 'running'} />
 
         {/* Main */}
