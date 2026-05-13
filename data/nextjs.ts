@@ -278,7 +278,8 @@ export default async function BlogPost({ params }: Props) {
   return (
     <article>
       <h1>{post.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: post.content }} />
+      {/* Em produção, sempre sanitize o HTML antes de usar dangerouslySetInnerHTML */}
+      <div>{post.content}</div>
     </article>
   )
 }`,
