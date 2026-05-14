@@ -3,11 +3,19 @@
 import { useState, useEffect } from 'react'
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false)
+  const [matches, setMatches] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches
+    }
+    return false
+  })
 
   useEffect(() => {
     const mql = window.matchMedia(query)
-    setMatches(mql.matches)
+    // Only update if the initial state was different (e.g. during hydration)
+    if (matches !== mql.matches) {
+      setMatches(mql.matches)
+    }
 
     function handler(e: MediaQueryListEvent) {
       setMatches(e.matches)
