@@ -214,27 +214,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const supabase = createClient()
-      const { data, error } = await supabase.auth.signUp({
+      
+      // Armazenamos o username nos metadados para quando o usuário confirmar o OTP
+      const { error } = await supabase.auth.signInWithOtp({
         email: input.email,
-        password: input.password,
         options: {
           data: {
             username,
             display_name: username,
-            provider: 'email',
           },
+          shouldCreateUser: true, // Garante que cria a conta se não existir
         },
       })
 
       if (error) return { error: error.message, needsVerification: false }
 
-      const needsVerification = !data.session
-      if (needsVerification) {
-        window.localStorage.setItem(PENDING_VERIFICATION_KEY, input.email)
-        setPendingVerificationEmail(input.email)
-      }
+      // No fluxo de OTP, sempre precisamos de verificação
+      window.localStorage.setItem(PENDING_VERIFICATION_KEY, input.email)
+      setPendingVerificationEmail(input.email)
 
-      return { error: null, needsVerification }
+      return { error: null, needsVerification: true }
     } catch (error) {
       return {
         error: error instanceof Error ? error.message : 'Email sign-up failed.',
@@ -250,15 +249,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const supabase = createClient()
+      // Se o tipo for 'signup', tentamos 'email' primeiro caso venha do fluxo de signInWithOtp
+      const otpType = type === 'signup' ? 'email' : type
+
       const { error } = await supabase.auth.verifyOtp({
         email,
         token,
-        type,
+        type: otpType as any,
       })
 
       if (error) return { error: error.message }
 
-      if (type === 'signup') {
+      if (type === 'signup' || type === 'email') {
         window.localStorage.removeItem(PENDING_VERIFICATION_KEY)
         setPendingVerificationEmail(null)
       }
