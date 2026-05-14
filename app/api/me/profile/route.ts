@@ -49,7 +49,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const body = (await request.json()) as { username?: string; displayName?: string | null }
+  const body = (await request.json()) as { username?: string; displayName?: string | null; avatarUrl?: string | null }
   const username = sanitizeUsername(body.username ?? '')
 
   if (!isValidUsername(username)) {
@@ -63,6 +63,7 @@ export async function PATCH(request: Request) {
     const profile = await updateProfileIdentity(supabase, user.id, {
       username,
       displayName: body.displayName ?? null,
+      avatarUrl: body.avatarUrl,
       onboardingCompleted: true,
     })
 
@@ -70,7 +71,9 @@ export async function PATCH(request: Request) {
   } catch (profileError) {
     const message = profileError instanceof Error ? profileError.message : 'Could not update profile.'
     const normalized = message.toLowerCase()
-    const status = normalized.includes('duplicate') || normalized.includes('unique') ? 409 : 500
-    return NextResponse.json({ error: message }, { status })
+    const isDuplicate = normalized.includes('duplicate') || normalized.includes('unique')
+    const status = isDuplicate ? 409 : 500
+    const errorResponse = isDuplicate ? 'This username is already taken.' : message
+    return NextResponse.json({ error: errorResponse }, { status })
   }
 }

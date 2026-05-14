@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { getSoundPref, setSoundPref, setAllSoundPrefs, SoundProfile, SoundEvent, soundProfiles, previewSound } from '@/lib/sounds'
-import { ArrowLeftIcon } from '@/components/icons'
+import { ArrowLeftIcon, UserIcon } from '@/components/icons'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Link from 'next/link'
 import { useProgress } from '@/hooks/useProgress'
+import { useAuth } from '@/hooks/useAuth'
 
 const soundEvents: { key: SoundEvent; labelKey: string }[] = [
   { key: 'key', labelKey: 'soundKey' },
@@ -20,6 +21,24 @@ export default function SettingsPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const { locale } = useLocale()
   const { resetCurrentProgress } = useProgress()
+  const { profile, updateProfile, user } = useAuth()
+  const [profileForm, setProfileForm] = useState({
+    username: '',
+    displayName: '',
+    avatarUrl: ''
+  })
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
+  const [profileMessage, setProfileMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+
+  useEffect(() => {
+    if (profile) {
+      setProfileForm({
+        username: profile.username || '',
+        displayName: profile.displayName || '',
+        avatarUrl: profile.avatarUrl || ''
+      })
+    }
+  }, [profile])
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -47,6 +66,25 @@ export default function SettingsPage() {
     window.location.href = '/'
   }
 
+  async function onProfileSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setIsUpdatingProfile(true)
+    setProfileMessage(null)
+    
+    const result = await updateProfile({
+      username: profileForm.username,
+      displayName: profileForm.displayName,
+      avatarUrl: profileForm.avatarUrl
+    } as any)
+
+    setIsUpdatingProfile(false)
+    if (result.error) {
+      setProfileMessage({ type: 'error', text: result.error })
+    } else {
+      setProfileMessage({ type: 'success', text: t('profileSuccess', locale) })
+    }
+  }
+
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="px-3 sm:px-6 py-4">
@@ -61,6 +99,81 @@ export default function SettingsPage() {
           <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
             {t('pageSettings', locale)}
           </h1>
+
+          {/* Profile Section */}
+          {user && (
+            <div className="py-3 space-y-4" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>
+              <span className="text-sm font-medium block" style={{ color: 'var(--text)' }}>{t('sectionProfile', locale)}</span>
+              
+              <form onSubmit={onProfileSubmit} className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                  <div className="relative group">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border flex items-center justify-center" style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)' }}>
+                      {profileForm.avatarUrl ? (
+                        <img src={profileForm.avatarUrl} alt="Avatar" className="w-full h-full object-cover" onError={() => setProfileForm(p => ({ ...p, avatarUrl: '' }))} />
+                      ) : (
+                        <UserIcon size={32} style={{ color: 'var(--sub)' }} />
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 w-full space-y-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('profileUsername', locale)}</label>
+                      <input 
+                        type="text" 
+                        value={profileForm.username}
+                        onChange={e => setProfileForm(p => ({ ...p, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') }))}
+                        className="w-full bg-transparent border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:border-main"
+                        style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', color: 'var(--text)' }}
+                        placeholder="username"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('profileDisplayName', locale)}</label>
+                      <input 
+                        type="text" 
+                        value={profileForm.displayName}
+                        onChange={e => setProfileForm(p => ({ ...p, displayName: e.target.value }))}
+                        className="w-full bg-transparent border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:border-main"
+                        style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', color: 'var(--text)' }}
+                        placeholder="Display Name"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--sub)' }}>{t('profileAvatar', locale)}</label>
+                      <input 
+                        type="text" 
+                        value={profileForm.avatarUrl}
+                        onChange={e => setProfileForm(p => ({ ...p, avatarUrl: e.target.value }))}
+                        className="w-full bg-transparent border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:border-main"
+                        style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', color: 'var(--text)' }}
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {profileMessage && (
+                  <p className={`text-xs p-2 rounded-lg ${profileMessage.type === 'success' ? 'bg-main/10 text-main' : 'bg-error/10 text-error'}`} style={{ backgroundColor: profileMessage.type === 'success' ? 'color-mix(in srgb, var(--main) 12%, transparent)' : 'color-mix(in srgb, var(--error) 12%, transparent)' }}>
+                    {profileMessage.text}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isUpdatingProfile}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                  style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+                >
+                  {isUpdatingProfile ? t('authWorking', locale) : t('profileSave', locale)}
+                </button>
+              </form>
+            </div>
+          )}
 
           {/* Quick set all */}
           <div className="py-3" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>

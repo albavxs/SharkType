@@ -18,6 +18,8 @@ import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { getLanguageById } from '@/data'
 import { Language, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
+import { useAuth } from '@/hooks/useAuth'
+import { LockIcon } from '@/components/icons'
 
 const conceptTracks = tracks.filter(t => t.section === 'concept')
 const focusedTracks = tracks.filter(t => t.section === 'focused')
@@ -51,6 +53,8 @@ export default function TracksPage() {
   const [currentTheme, setCurrentTheme] = useState('dracula')
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [showGuestOverlay, setShowGuestOverlay] = useState(false)
+  const { user } = useAuth()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
   const { progress } = useProgress()
@@ -97,7 +101,14 @@ export default function TracksPage() {
 
   function TrackCard({ track, badges }: { track: Track; badges: Language[] }) {
     return (
-      <button onClick={() => router.push(`/tracks/${track.id}`)}
+      <button 
+        onClick={() => {
+          if (!user) {
+            setShowGuestOverlay(true)
+            return
+          }
+          router.push(`/tracks/${track.id}`)
+        }}
         className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
         <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
@@ -196,6 +207,40 @@ export default function TracksPage() {
 
       {showThemeSelector && (
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
+      )}
+
+      {showGuestOverlay && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/40">
+          <div className="w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300" style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}>
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-6 rounded-full p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
+                <LockIcon size={32} />
+              </div>
+              <h2 className="mb-2 text-xl font-bold" style={{ color: 'var(--text)' }}>
+                {t('tracksGuestTitle', locale)}
+              </h2>
+              <p className="mb-8 text-sm leading-relaxed" style={{ color: 'var(--sub)' }}>
+                {t('tracksGuestDesc', locale)}
+              </p>
+              <div className="flex w-full flex-col gap-3">
+                <button
+                  onClick={() => router.push('/login')}
+                  className="w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-all hover:brightness-110"
+                  style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+                >
+                  {t('tracksGuestButton', locale)}
+                </button>
+                <button
+                  onClick={() => setShowGuestOverlay(false)}
+                  className="w-full rounded-2xl px-4 py-3 text-sm font-medium transition-all hover:opacity-80"
+                  style={{ color: 'var(--sub)' }}
+                >
+                  {t('back', locale)}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </main>
   )
