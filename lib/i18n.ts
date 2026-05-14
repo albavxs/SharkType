@@ -195,6 +195,16 @@ const dict: Record<string, Record<Locale, string>> = {
   authSupabaseMissingVars: { pt: 'Env ausentes:', en: 'Missing envs:' },
   authSupabaseRedeployHint: { pt: 'Depois de salvar as variáveis no Vercel, faça um novo deploy para publicar o bundle com os novos NEXT_PUBLIC_*.', en: 'After saving the variables in Vercel, redeploy so the new NEXT_PUBLIC_* values are included in the public bundle.' },
   authWorking: { pt: 'Processando...', en: 'Working...' },
+  tracksGuestTitle: { pt: 'Trilhas bloqueadas', en: 'Tracks locked' },
+  tracksGuestDesc: { pt: 'Entre ou crie uma conta para acessar as trilhas, salvar seu progresso e ganhar XP.', en: 'Sign in or create an account to access tracks, save your progress, and earn XP.' },
+  tracksGuestButton: { pt: 'Entrar agora', en: 'Sign in now' },
+  sectionProfile: { pt: 'Perfil', en: 'Profile' },
+  profileUsername: { pt: 'Username', en: 'Username' },
+  profileDisplayName: { pt: 'Nome de exibição', en: 'Display name' },
+  profileAvatar: { pt: 'URL da Foto de perfil', en: 'Profile Picture URL' },
+  profileSave: { pt: 'Salvar alterações', en: 'Save changes' },
+  profileSuccess: { pt: 'Perfil atualizado com sucesso!', en: 'Profile updated successfully!' },
+  profileError: { pt: 'Erro ao atualizar perfil.', en: 'Error updating profile.' },
 }
 
 export function t(key: string, locale: Locale = 'en'): string {
