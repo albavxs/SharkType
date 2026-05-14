@@ -128,9 +128,13 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     })
   }, [code, isTextMode, expandedView])
 
-  // Reset scroll position and expanded view on snippet change
+  // Reset scroll position on snippet change
   useEffect(() => {
     if (containerRef.current) containerRef.current.scrollTop = 0
+  }, [code])
+
+  // Reset view states when code changes
+  useEffect(() => {
     setExpandedView(false)
     setIsOverflowing(false)
   }, [code])
