@@ -112,7 +112,9 @@ export default function SettingsPage() {
                       {profileForm.avatarUrl ? (
                         <img src={profileForm.avatarUrl} alt="Avatar" className="w-full h-full object-cover" onError={() => setProfileForm(p => ({ ...p, avatarUrl: '' }))} />
                       ) : (
-                        <UserIcon size={32} color="var(--sub)" />
+                        <div style={{ color: 'var(--sub)' }}>
+                          <UserIcon size={32} />
+                      </div>
                       )}
                     </div>
                   </div>
