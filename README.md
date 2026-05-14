@@ -1,77 +1,151 @@
-# SharkType
+# 🦈 SharkType
 
-![SharkType Logo](./icons/SHARK_logo.png)
-
-## 🇧🇷 Português
-
-### Sobre o Projeto
-O **SharkType** é uma aplicação interativa para prática de digitação, focada em melhorar a velocidade e precisão dos usuários através de snippets de código e textos.
-
-### Stack Tecnológica
-*   **Framework:** Next.js (App Router)
-*   **Frontend:** React + TailwindCSS
-*   **Backend/Auth:** Supabase
-*   **Linguagem:** TypeScript
-
-### Como Rodar Localmente
-
-1.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-
-2.  **Configure as variáveis de ambiente:**
-    Crie um arquivo `.env.local` na raiz e adicione suas chaves do Supabase:
-    ```env
-    NEXT_PUBLIC_SUPABASE_URL=sua_url_aqui
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sua_chave_aqui
-    ```
-
-3.  **Inicie o servidor de desenvolvimento:**
-    ```bash
-    npm run dev
-    ```
-    Acesse: [http://localhost:3000](http://localhost:3000)
-
-> **Importante (OTP):** O SharkType utiliza códigos numéricos (OTP) para todas as verificações. No painel do Supabase (Authentication > Email Templates), você deve alterar todos os templates para usar `{{ .Token }}` em vez de links.
-
-### Licença
-Este projeto está sob a [Licença MIT](LICENSE).
+🇧🇷 PT-BR | 🇺🇸 EN
 
 ---
 
-## 🇬🇧 English
+# 🇧🇷 Português
 
-### About
-**SharkType** is an interactive typing practice application focused on improving user speed and accuracy through code snippets and texts.
+## Sobre o Projeto
 
-### Tech Stack
-*   **Framework:** Next.js (App Router)
-*   **Frontend:** React + TailwindCSS
-*   **Backend/Auth:** Supabase
-*   **Language:** TypeScript
+O **SharkType** é uma aplicação interativa de prática de digitação focada em melhorar velocidade, precisão e consistência através de snippets de código e textos dinâmicos.
 
-### Local Setup
+A proposta é oferecer uma experiência moderna para desenvolvedores e entusiastas de tecnologia treinarem digitação em cenários mais próximos do dia a dia de programação.
 
-1.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+---
 
-2.  **Environment Variables:**
-    Create a `.env.local` file in the root and add your Supabase keys:
-    ```env
-    NEXT_PUBLIC_SUPABASE_URL=your_url_here
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_key_here
-    ```
+## ✨ Funcionalidades
 
-3.  **Run development server:**
-    ```bash
-    npm run dev
-    ```
-    Visit: [http://localhost:3000](http://localhost:3000)
+* ⚡ Testes de velocidade e precisão
+* 💻 Prática com snippets de código
+* 📊 Feedback instantâneo de desempenho
+* 🎨 Interface moderna e responsiva
+* 🔐 Sistema de autenticação
 
-> **Important (OTP):** SharkType uses numerical codes (OTP) for all verifications. In the Supabase dashboard (Authentication > Email Templates), you must change all templates to use `{{ .Token }}` instead of links.
+---
+
+## 🛠️ Stack Tecnológica
+
+| Tecnologia  | Descrição              |
+| ----------- | ---------------------- |
+| Next.js     | Framework principal    |
+| React       | Interface da aplicação |
+| TailwindCSS | Estilização            |
+| TypeScript  | Linguagem principal    |
+| Supabase    | Backend e autenticação |
+
+---
+
+## 🚀 Rodando Localmente
+
+### Clone o repositório
+
+```bash
+git clone <repo-url>
+```
+
+### Entre na pasta do projeto
+
+```bash
+cd sharktype
+```
+
+### Instale as dependências
+
+```bash
+npm install
+```
+
+### Inicie o projeto
+
+```bash
+npm run dev
+```
+
+### Abra no navegador
+
+```bash
+http://localhost:3000
+```
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT.
+
+---
+
+# 🇺🇸 English
+
+## About
+
+**SharkType** is an interactive typing practice application focused on improving typing speed, accuracy, and consistency through dynamic texts and code snippets.
+
+The project aims to provide a modern experience for developers and tech enthusiasts who want to practice typing in programming-oriented scenarios.
+
+---
+
+## ✨ Features
+
+* ⚡ Speed and accuracy tests
+* 💻 Code snippet typing practice
+* 📊 Instant performance feedback
+* 🎨 Modern and responsive UI
+* 🔐 Authentication system
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology  | Purpose                  |
+| ----------- | ------------------------ |
+| Next.js     | Main framework           |
+| React       | Frontend library         |
+| TailwindCSS | Styling                  |
+| TypeScript  | Main language            |
+| Supabase    | Backend & authentication |
+
+---
+
+## 🚀 Running Locally
+
+### Clone the repository
+
+```bash
+git clone <repo-url>
+```
+
+### Open the project folder
+
+```bash
+cd sharktype
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Start the development server
+
+```bash
+npm run dev
+```
+
+### Open in your browser
+
+```bash
+http://localhost:3000
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
 
 ### License
 This project is licensed under the [MIT License](LICENSE).
