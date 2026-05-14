@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type { Session, User, MobileOTPType } from '@supabase/supabase-js'
+import type { Session, User, MobileOtpType } from '@supabase/supabase-js'
 import type { AuthActionResult, AuthProfile, SignUpActionResult } from '@/lib/auth-types'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -35,7 +35,7 @@ interface AuthContextValue {
     password: string
     confirmPassword: string
   }) => Promise<SignUpActionResult>
-  verifyOtp: (email: string, token: string, type: MobileOTPType) => Promise<AuthActionResult>
+  verifyOtp: (email: string, token: string, type: MobileOtpType) => Promise<AuthActionResult>
   resendEmailCode: (email: string) => Promise<AuthActionResult>
   resetPassword: (email: string) => Promise<AuthActionResult>
   updateProfile: (input: { username: string; displayName?: string | null }) => Promise<AuthActionResult>
@@ -243,7 +243,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function verifyOtp(email: string, token: string, type: MobileOTPType): Promise<AuthActionResult> {
+  async function verifyOtp(email: string, token: string, type: MobileOtpType): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
       return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
