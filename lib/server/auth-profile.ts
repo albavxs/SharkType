@@ -113,16 +113,23 @@ export async function updateProfileIdentity(
   input: {
     username: string
     displayName?: string | null
+    avatarUrl?: string | null
     onboardingCompleted?: boolean
   }
 ): Promise<AuthProfile> {
+  const payload: any = {
+    username: input.username,
+    display_name: input.displayName ?? null,
+    onboarding_completed: input.onboardingCompleted ?? true,
+  }
+
+  if (input.avatarUrl !== undefined) {
+    payload.avatar_url = input.avatarUrl
+  }
+
   const { data, error } = await supabase
     .from('profiles')
-    .update({
-      username: input.username,
-      display_name: input.displayName ?? null,
-      onboarding_completed: input.onboardingCompleted ?? true,
-    })
+    .update(payload)
     .eq('id', userId)
     .select('*')
     .single()
