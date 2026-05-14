@@ -13,7 +13,7 @@ export default function VerifyEmailClient() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { locale } = useLocale()
-  const { pendingVerificationEmail, resendEmailCode, supabaseConfigured, supabaseMissingVars, verifyEmailCode } = useAuth()
+  const { pendingVerificationEmail, resendEmailCode, supabaseConfigured, supabaseMissingVars, verifyOtp } = useAuth()
   const email = useMemo(() => searchParams.get('email') ?? pendingVerificationEmail ?? '', [searchParams, pendingVerificationEmail])
   const [code, setCode] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +26,7 @@ export default function VerifyEmailClient() {
     setNotice(null)
     setIsSubmitting(true)
 
-    const result = await verifyEmailCode(email, code.trim())
+    const result = await verifyOtp(email, code.trim(), 'signup')
     setIsSubmitting(false)
 
     if (result.error) {
