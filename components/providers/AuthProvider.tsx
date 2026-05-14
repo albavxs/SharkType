@@ -223,7 +223,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username,
             display_name: username,
           },
-          shouldCreateUser: true, // Garante que cria a conta se não existir
+          shouldCreateUser: true,
+          emailRedirectTo: undefined, // Remove explicitamente qualquer redirecionamento
         },
       })
 
