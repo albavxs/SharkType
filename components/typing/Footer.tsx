@@ -25,7 +25,7 @@ export default function Footer({ onHelpClick, onThemeClick, currentThemeName, is
         <a href="mailto:contact@sharktype.dev" className={linkClass}>
           <MailIcon size={14} /> contact
         </a>
-        <a href="https://github.com/albavxs" target="_blank" rel="noopener noreferrer" className={linkClass}>
+        <a href="https://github.com/albavxs/SharkType" target="_blank" rel="noopener noreferrer" className={linkClass}>
           <CodeBranchIcon size={14} /> github
         </a>
         <Link href="/settings" className={linkClass}>

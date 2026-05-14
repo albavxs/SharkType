@@ -51,24 +51,26 @@ export function useTypingEngine(
   const samplerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Reset when code changes
-  if (codeRef.current !== code) {
-    codeRef.current = code
-    errorsRef.current = 0
-    totalKeypressesRef.current = 0
-    correctCharsRef.current = 0
-    rawCharsRef.current = 0
-    startTimeRef.current = null
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    if (samplerRef.current) clearInterval(samplerRef.current)
-    intervalRef.current = null
-    samplerRef.current = null
-    setState(createInitialState(code.length))
-    setWpm(0)
-    setRawWpm(0)
-    setAccuracy(100)
-    setWpmSamples([])
-    setRawWpmSamples([])
-  }
+  useEffect(() => {
+    if (codeRef.current !== code) {
+      codeRef.current = code
+      errorsRef.current = 0
+      totalKeypressesRef.current = 0
+      correctCharsRef.current = 0
+      rawCharsRef.current = 0
+      startTimeRef.current = null
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (samplerRef.current) clearInterval(samplerRef.current)
+      intervalRef.current = null
+      samplerRef.current = null
+      setState(createInitialState(code.length))
+      setWpm(0)
+      setRawWpm(0)
+      setAccuracy(100)
+      setWpmSamples([])
+      setRawWpmSamples([])
+    }
+  }, [code])
 
   // Stable WPM update interval (fixes flicker)
   useEffect(() => {
