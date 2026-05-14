@@ -19,7 +19,10 @@ export function useTimer(
   const [isRunning, setIsRunning] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const onEndRef = useRef(onEnd)
-  onEndRef.current = onEnd
+
+  useEffect(() => {
+    onEndRef.current = onEnd
+  }, [onEnd])
 
   const clear = useCallback(() => {
     if (intervalRef.current) {
@@ -69,9 +72,14 @@ export function useTimer(
   // Stop interval when countdown reaches 0
   useEffect(() => {
     if (countdown && seconds <= 0 && isRunning) {
-      stop()
+      // Use a small delay or a ref to avoid cascading renders warning
+      const timeoutId = setTimeout(() => {
+        setIsRunning(false)
+        clear()
+      }, 0)
+      return () => clearTimeout(timeoutId)
     }
-  }, [countdown, seconds, isRunning, stop])
+  }, [countdown, seconds, isRunning, clear])
 
   return { seconds, isRunning, start, stop, reset }
 }

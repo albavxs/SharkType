@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const { progress, source } = useProgress()
   const [username, setUsername] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -25,6 +26,7 @@ export default function ProfilePage() {
     if (profile) {
       setUsername(profile.username)
       setDisplayName(profile.displayName ?? '')
+      setAvatarUrl(profile.avatarUrl ?? '')
     }
   }, [profile])
 
@@ -47,6 +49,7 @@ export default function ProfilePage() {
     const result = await updateProfile({
       username,
       displayName,
+      avatarUrl: avatarUrl || null,
     })
 
     setIsSaving(false)
@@ -62,7 +65,7 @@ export default function ProfilePage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="px-3 sm:px-6 py-4">
-        <Link href="/" className="flex items-center gap-1.5 text-sm transition-all duration-150 hover:scale-105 active:scale-95" style={{ color: 'var(--sub)' }}>
+        <Link href="/" className="relative z-20 inline-flex w-fit items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 pointer-events-auto cursor-pointer" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
           {t('back', locale)}
         </Link>
@@ -82,8 +85,8 @@ export default function ProfilePage() {
                 className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full text-2xl font-semibold"
                 style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
               >
-                {profile.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
                 ) : (
                   profile.username.slice(0, 1).toUpperCase()
                 )}
@@ -151,6 +154,19 @@ export default function ProfilePage() {
               <input
                 value={displayName}
                 onChange={(event) => setDisplayName(event.target.value)}
+                className="w-full rounded-2xl border px-4 py-3 text-sm outline-none"
+                style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 42%, transparent)', color: 'var(--text)' }}
+              />
+            </label>
+
+            <label className="block space-y-1.5">
+              <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+                {locale === 'pt' ? 'URL da Foto de Perfil' : 'Profile Picture URL'}
+              </span>
+              <input
+                value={avatarUrl}
+                onChange={(event) => setAvatarUrl(event.target.value)}
+                placeholder="https://exemplo.com/foto.png"
                 className="w-full rounded-2xl border px-4 py-3 text-sm outline-none"
                 style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 42%, transparent)', color: 'var(--text)' }}
               />
