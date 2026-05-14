@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import type { Session, User, MobileOTPType } from '@supabase/supabase-js'
 import type { AuthActionResult, AuthProfile, SignUpActionResult } from '@/lib/auth-types'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -35,8 +35,9 @@ interface AuthContextValue {
     password: string
     confirmPassword: string
   }) => Promise<SignUpActionResult>
-  verifyEmailCode: (email: string, token: string) => Promise<AuthActionResult>
+  verifyOtp: (email: string, token: string, type: MobileOTPType) => Promise<AuthActionResult>
   resendEmailCode: (email: string) => Promise<AuthActionResult>
+  resetPassword: (email: string) => Promise<AuthActionResult>
   updateProfile: (input: { username: string; displayName?: string | null }) => Promise<AuthActionResult>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -243,7 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function verifyEmailCode(email: string, token: string): Promise<AuthActionResult> {
+  async function verifyOtp(email: string, token: string, type: MobileOTPType): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
       return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
@@ -253,18 +254,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.verifyOtp({
         email,
         token,
-        type: 'signup',
+        type,
       })
 
       if (error) return { error: error.message }
 
-      window.localStorage.removeItem(PENDING_VERIFICATION_KEY)
-      setPendingVerificationEmail(null)
+      if (type === 'signup') {
+        window.localStorage.removeItem(PENDING_VERIFICATION_KEY)
+        setPendingVerificationEmail(null)
+      }
+      
       await refreshProfile().catch(() => {})
 
       return { error: null }
     } catch (error) {
-      return { error: error instanceof Error ? error.message : 'Email verification failed.' }
+      return { error: error instanceof Error ? error.message : 'Verification failed.' }
     }
   }
 
@@ -291,6 +295,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: null }
     } catch (error) {
       return { error: error instanceof Error ? error.message : 'Could not resend the code.' }
+    }
+  }
+
+  async function resetPassword(email: string): Promise<AuthActionResult> {
+    if (!supabaseConfigured) {
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
+    }
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: getAuthCallbackUrl('/settings'),
+      })
+
+      return { error: error?.message ?? null }
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'Password reset request failed.' }
     }
   }
 
@@ -339,8 +360,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGitHub,
     signInWithPassword,
     signUpWithPassword,
-    verifyEmailCode,
+    verifyOtp,
     resendEmailCode,
+    resetPassword,
     updateProfile,
     signOut,
     refreshProfile,

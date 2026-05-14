@@ -33,6 +33,8 @@ O **SharkType** é uma aplicação interativa para prática de digitação, foca
     ```
     Acesse: [http://localhost:3000](http://localhost:3000)
 
+> **Importante (OTP):** O SharkType utiliza códigos numéricos (OTP) para todas as verificações. No painel do Supabase (Authentication > Email Templates), você deve alterar todos os templates para usar `{{ .Token }}` em vez de links.
+
 ### Licença
 Este projeto está sob a [Licença MIT](LICENSE).
 
@@ -68,6 +70,8 @@ Este projeto está sob a [Licença MIT](LICENSE).
     npm run dev
     ```
     Visit: [http://localhost:3000](http://localhost:3000)
+
+> **Important (OTP):** SharkType uses numerical codes (OTP) for all verifications. In the Supabase dashboard (Authentication > Email Templates), you must change all templates to use `{{ .Token }}` instead of links.
 
 ### License
 This project is licensed under the [MIT License](LICENSE).
