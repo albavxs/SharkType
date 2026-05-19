@@ -46,7 +46,7 @@ export const themes: Theme[] = [
   },
   {
     name: 'gruvbox light', bg: '#fbf1c7', main: '#d79921', caret: '#d79921', sub: '#a89984', subAlt: '#f2e5bc', text: '#3c3836', error: '#cc241d', errorExtra: '#9d0006',
-    syntax: { keyword: '#cc241d', string: '#79740e', number: '#8f3f71', comment: '#a89984', type: '#076678' },
+    syntax: { keyword: '#b57614', string: '#79740e', number: '#8f3f71', comment: '#a89984', type: '#076678' },
   },
   {
     name: 'monokai', bg: '#272822', main: '#f92672', caret: '#f8f8f2', sub: '#75715e', subAlt: '#1e1f1a', text: '#f8f8f2', error: '#f92672', errorExtra: '#9e1a47',
