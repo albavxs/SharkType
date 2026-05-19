@@ -129,21 +129,8 @@ npm run dev
 http://localhost:3000
 ```
 
----
 
-## 👨‍💻 Autor
 
-<img src="https://avatars.githubusercontent.com/u/126200347?v=4" width="100" style="border-radius: 50%;" alt="Paulo Guilherme Santos Alves">
-
-**Paulo Guilherme Santos Alves** ([@albavxs](https://github.com/albavxs))
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
----
 
 # 🇺🇸 English
 
@@ -270,15 +257,6 @@ npm run dev
 http://localhost:3000
 ```
 
----
-
-## 👨‍💻 Author
-
-<img src="https://avatars.githubusercontent.com/u/126200347?v=4" width="100" style="border-radius: 50%;" alt="Paulo Guilherme Santos Alves">
-
-**Paulo Guilherme Santos Alves** ([@albavxs](https://github.com/albavxs))
-
----
 
 ## 📄 License
 
