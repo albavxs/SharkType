@@ -25,12 +25,14 @@ SharkType is built using **Next.js 15+** with the **App Router**, following a mo
 
 ## ⚙️ Internal Workings
 
-### 1. Typing Engine (`useTypingEngine`)
-The core logic resides in the `useTypingEngine.ts` hook. It manages:
+### 1. Typing Engine ([`useTypingEngine`](../../hooks/useTypingEngine.ts))
+The core logic resides in [hooks/useTypingEngine.ts](../../hooks/useTypingEngine.ts). It manages:
 - User input state.
 - Real-time character validation (`pending`, `correct`, `incorrect`).
 - Calculation of metrics like **WPM** (Words Per Minute) and **Accuracy**.
 - Session state control (`idle`, `running`, `finished`).
+
+Related types: [lib/types.ts](../../lib/types.ts). Utilities (WPM, accuracy, stripCodeComments): [lib/utils.ts](../../lib/utils.ts).
 
 ### 2. Persistence and Authentication
 We use **Supabase** for:
@@ -48,10 +50,39 @@ We use **Supabase** for:
 ## 🛠️ Development Guide
 
 ### Adding New Languages
+
 To add a new programming language:
-1. Create a new file in `data/language-name.ts`.
-2. Follow the `Snippet` interface defined in `lib/types.ts`.
-3. Register the new language in the `data/index.ts` file.
+
+1. Create a new file in [data/](../../data/) following the `data/language-name.ts` pattern.
+2. Export a named array (`export const languageSnippets: Snippet[]`) following the `Snippet` interface in [lib/types.ts](../../lib/types.ts).
+3. Add an entry to [data/manifest.ts](../../data/manifest.ts) with `id`, `label`, `color`, `type` (`'code'` or `'text'`), and `module` (relative path).
+
+That's it. The [data/index.ts](../../data/index.ts) file consumes the manifest automatically — you do **not** need to add manual imports or array entries.
+
+#### Example
+
+```ts
+// data/elixir.ts
+import { Snippet } from '@/lib/types'
+
+export const elixirSnippets: Snippet[] = [
+  {
+    id: 'elx-001',
+    concept: { pt: 'Pattern Matching', en: 'Pattern Matching' },
+    difficulty: 'easy',
+    code: `{:ok, value} = {:ok, 42}`,
+  },
+]
+```
+
+```ts
+// data/manifest.ts (add entry)
+{ id: 'elixir', label: 'Elixir', color: '#4b275f', type: 'code', module: './elixir', exportName: 'elixirSnippets' },
+```
+
+#### Validation
+
+Snippets are validated with Zod at boot time (in development) — if any required field is missing, the console will show a detailed error. Schema in [lib/schemas.ts](../../lib/schemas.ts).
 
 ### Coding Standards
 - Use **TypeScript** for all new features.
