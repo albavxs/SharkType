@@ -1,20 +1,24 @@
-import { Language } from '@/lib/types'
+import { Language, Snippet } from '@/lib/types'
+import { languageManifest, type LanguageManifestEntry } from './manifest'
+
+// ── Imports estaticos (Next/webpack exige top-level imports) ─────────────
+// Ordem: code languages, depois cybersec (multi-export), depois frameworks, depois text.
+import { cppSnippets } from './cpp'
 import { javascriptSnippets } from './javascript'
 import { typescriptSnippets } from './typescript'
 import { pythonSnippets } from './python'
 import { rustSnippets } from './rust'
 import { goSnippets } from './go'
 import { javaSnippets } from './java'
-import { sqlSnippets } from './sql'
-import { bashSnippets } from './bash'
-import { cssSnippets } from './css'
-import { cppSnippets } from './cpp'
-import { swiftSnippets } from './swift'
+import { kotlinSnippets } from './kotlin'
 import { scalaSnippets } from './scala'
+import { swiftSnippets } from './swift'
 import { rubySnippets } from './ruby'
 import { luaSnippets } from './lua'
 import { htmlSnippets } from './html'
-import { kotlinSnippets } from './kotlin'
+import { cssSnippets } from './css'
+import { sqlSnippets } from './sql'
+import { bashSnippets } from './bash'
 import { dockerSnippets } from './docker'
 import { gitSnippets } from './git'
 import { linuxSnippets } from './linux'
@@ -22,73 +26,120 @@ import { kubernetesSnippets } from './kubernetes'
 import { terraformSnippets } from './terraform'
 import { ansibleSnippets } from './ansible'
 import { cicdSnippets } from './cicd'
-import { nmapSnippets, webReconSnippets, firewallSnippets, networkAnalysisSnippets, hardeningSnippets, cryptoSnippets } from './cybersec'
+
+import {
+  nmapSnippets,
+  webReconSnippets,
+  firewallSnippets,
+  networkAnalysisSnippets,
+  hardeningSnippets,
+  cryptoSnippets,
+} from './cybersec'
+
 import { vueSnippets } from './vue'
-import { jinjaSnippets } from './jinja'
 import { reactSnippets } from './react'
 import { nodejsSnippets } from './nodejs'
 import { testingSnippets } from './testing'
 import { patternsSnippets } from './patterns'
 import { algorithmsSnippets } from './algorithms'
 import { mongodbSnippets } from './mongodb'
+import { jinjaSnippets } from './jinja'
 import { nextjsSnippets } from './nextjs'
 import { angularSnippets } from './angular'
+
 import { typingSnippets } from './text-typing'
 import { ptbrSnippets } from './text-ptbr'
 import { enSnippets } from './text-en'
 import { esSnippets } from './text-es'
 import { frSnippets } from './text-fr'
 
-export const codeLanguages: Language[] = [
-  { id: 'cpp',        label: 'C++',        color: '#00599c', snippets: cppSnippets },
-  { id: 'javascript', label: 'JavaScript', color: '#f7df1e', snippets: javascriptSnippets },
-  { id: 'typescript', label: 'TypeScript', color: '#3178c6', snippets: typescriptSnippets },
-  { id: 'python',     label: 'Python',     color: '#3776ab', snippets: pythonSnippets },
-  { id: 'rust',       label: 'Rust',       color: '#ce422b', snippets: rustSnippets },
-  { id: 'go',         label: 'Go',         color: '#00add8', snippets: goSnippets },
-  { id: 'java',       label: 'Java',       color: '#e76f00', snippets: javaSnippets },
-  { id: 'kotlin',     label: 'Kotlin',     color: '#7f52ff', snippets: kotlinSnippets },
-  { id: 'scala',      label: 'Scala',      color: '#dc322f', snippets: scalaSnippets },
-  { id: 'swift',      label: 'Swift',      color: '#f05138', snippets: swiftSnippets },
-  { id: 'ruby',       label: 'Ruby',       color: '#cc342d', snippets: rubySnippets },
-  { id: 'lua',        label: 'Lua',        color: '#000080', snippets: luaSnippets },
-  { id: 'html',       label: 'HTML',       color: '#e34c26', snippets: htmlSnippets },
-  { id: 'css',        label: 'CSS',        color: '#264de4', snippets: cssSnippets },
-  { id: 'sql',        label: 'SQL',        color: '#336791', snippets: sqlSnippets },
-  { id: 'bash',       label: 'Bash',       color: '#4eaa25', snippets: bashSnippets },
-  { id: 'docker',     label: 'Docker',     color: '#2496ed', snippets: dockerSnippets },
-  { id: 'git',        label: 'Git',        color: '#f05032', snippets: gitSnippets },
-  { id: 'linux',      label: 'Linux',      color: '#fcc624', snippets: linuxSnippets },
-  { id: 'kubernetes', label: 'Kubernetes', color: '#326ce5', snippets: kubernetesSnippets },
-  { id: 'terraform',  label: 'Terraform',  color: '#7b42bc', snippets: terraformSnippets },
-  { id: 'ansible',    label: 'Ansible',    color: '#ee0000', snippets: ansibleSnippets },
-  { id: 'cicd',       label: 'CI/CD',      color: '#fc6d26', snippets: cicdSnippets },
-  { id: 'nmap',             label: 'Nmap',             color: '#4682b4', snippets: nmapSnippets },
-  { id: 'web-recon',        label: 'Web Recon',        color: '#00d4aa', snippets: webReconSnippets },
-  { id: 'firewall',         label: 'Firewall',         color: '#ff6347', snippets: firewallSnippets },
-  { id: 'network-analysis', label: 'Network Analysis', color: '#20b2aa', snippets: networkAnalysisSnippets },
-  { id: 'hardening',        label: 'Hardening',        color: '#daa520', snippets: hardeningSnippets },
-  { id: 'crypto',           label: 'Cryptography',     color: '#9370db', snippets: cryptoSnippets },
-  { id: 'vue',              label: 'Vue.js',           color: '#42b883', snippets: vueSnippets },
-  { id: 'react',            label: 'React',            color: '#61dafb', snippets: reactSnippets },
-  { id: 'nodejs',           label: 'Node.js',          color: '#339933', snippets: nodejsSnippets },
-  { id: 'testing',          label: 'Testing',          color: '#22c55e', snippets: testingSnippets },
-  { id: 'patterns',         label: 'Design Patterns',  color: '#8b5cf6', snippets: patternsSnippets },
-  { id: 'algorithms',       label: 'Algorithms',       color: '#f7df1e', snippets: algorithmsSnippets },
-  { id: 'mongodb',          label: 'MongoDB',          color: '#47a248', snippets: mongodbSnippets },
-  { id: 'jinja',            label: 'Jinja',            color: '#b41717', snippets: jinjaSnippets },
-  { id: 'nextjs',           label: 'Next.js',          color: '#b0b0b0', snippets: nextjsSnippets },
-  { id: 'angular',          label: 'Angular',          color: '#dd0031', snippets: angularSnippets },
-]
+// ── Resolver: mapa "module:exportName" -> Snippet[] ──────────────────────
+// Chave segue formato `${module}:${exportName ?? '<default>'}`. O builder
+// abaixo monta as Languages a partir do manifest + deste mapa.
+const snippetRegistry: Record<string, Snippet[]> = {
+  './cpp:cppSnippets': cppSnippets,
+  './javascript:javascriptSnippets': javascriptSnippets,
+  './typescript:typescriptSnippets': typescriptSnippets,
+  './python:pythonSnippets': pythonSnippets,
+  './rust:rustSnippets': rustSnippets,
+  './go:goSnippets': goSnippets,
+  './java:javaSnippets': javaSnippets,
+  './kotlin:kotlinSnippets': kotlinSnippets,
+  './scala:scalaSnippets': scalaSnippets,
+  './swift:swiftSnippets': swiftSnippets,
+  './ruby:rubySnippets': rubySnippets,
+  './lua:luaSnippets': luaSnippets,
+  './html:htmlSnippets': htmlSnippets,
+  './css:cssSnippets': cssSnippets,
+  './sql:sqlSnippets': sqlSnippets,
+  './bash:bashSnippets': bashSnippets,
+  './docker:dockerSnippets': dockerSnippets,
+  './git:gitSnippets': gitSnippets,
+  './linux:linuxSnippets': linuxSnippets,
+  './kubernetes:kubernetesSnippets': kubernetesSnippets,
+  './terraform:terraformSnippets': terraformSnippets,
+  './ansible:ansibleSnippets': ansibleSnippets,
+  './cicd:cicdSnippets': cicdSnippets,
 
-export const textLanguages: Language[] = [
-  { id: 'text-typing', label: 'Digitacao', color: '#10b981', snippets: typingSnippets },
-  { id: 'text-ptbr', label: 'Portugues', color: '#009739', snippets: ptbrSnippets },
-  { id: 'text-en',   label: 'English',   color: '#3c3b6e', snippets: enSnippets },
-  { id: 'text-es',   label: 'Espanol',   color: '#c60b1e', snippets: esSnippets },
-  { id: 'text-fr',   label: 'Francais',  color: '#002395', snippets: frSnippets },
-]
+  './cybersec:nmapSnippets': nmapSnippets,
+  './cybersec:webReconSnippets': webReconSnippets,
+  './cybersec:firewallSnippets': firewallSnippets,
+  './cybersec:networkAnalysisSnippets': networkAnalysisSnippets,
+  './cybersec:hardeningSnippets': hardeningSnippets,
+  './cybersec:cryptoSnippets': cryptoSnippets,
 
+  './vue:vueSnippets': vueSnippets,
+  './react:reactSnippets': reactSnippets,
+  './nodejs:nodejsSnippets': nodejsSnippets,
+  './testing:testingSnippets': testingSnippets,
+  './patterns:patternsSnippets': patternsSnippets,
+  './algorithms:algorithmsSnippets': algorithmsSnippets,
+  './mongodb:mongodbSnippets': mongodbSnippets,
+  './jinja:jinjaSnippets': jinjaSnippets,
+  './nextjs:nextjsSnippets': nextjsSnippets,
+  './angular:angularSnippets': angularSnippets,
+
+  './text-typing:typingSnippets': typingSnippets,
+  './text-ptbr:ptbrSnippets': ptbrSnippets,
+  './text-en:enSnippets': enSnippets,
+  './text-es:esSnippets': esSnippets,
+  './text-fr:frSnippets': frSnippets,
+}
+
+function defaultExportName(id: string): string {
+  // 'text-en' -> 'textEnSnippets', mas o padrao real do projeto e por arquivo
+  // (ex: text-en.ts exporta enSnippets). Por isso text-* sempre exige exportName explicito.
+  const camel = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
+  return `${camel}Snippets`
+}
+
+function resolveSnippets(entry: LanguageManifestEntry): Snippet[] {
+  const exportName = entry.exportName ?? defaultExportName(entry.id)
+  const key = `${entry.module}:${exportName}`
+  const snippets = snippetRegistry[key]
+  if (!snippets) {
+    throw new Error(
+      `[data/manifest] Snippet array nao encontrado para "${entry.id}" ` +
+        `(esperado em snippetRegistry["${key}"]). ` +
+        `Verifique se o import esta presente em data/index.ts.`,
+    )
+  }
+  return snippets
+}
+
+function buildLanguagesByType(type: 'code' | 'text'): Language[] {
+  return languageManifest
+    .filter(entry => entry.type === type)
+    .map(entry => ({
+      id: entry.id,
+      label: entry.label,
+      color: entry.color,
+      snippets: resolveSnippets(entry),
+    }))
+}
+
+export const codeLanguages: Language[] = buildLanguagesByType('code')
+export const textLanguages: Language[] = buildLanguagesByType('text')
 export const languages: Language[] = [...codeLanguages, ...textLanguages]
 
 export function getLanguageById(id: string): Language | undefined {
