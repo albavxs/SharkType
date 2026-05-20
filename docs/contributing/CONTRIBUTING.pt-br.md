@@ -25,12 +25,14 @@ O SharkType é construído utilizando **Next.js 15+** com a **App Router**, segu
 
 ## ⚙️ Funcionamento Interno
 
-### 1. Motor de Digitação (`useTypingEngine`)
-A lógica central reside no hook `useTypingEngine.ts`. Ele gerencia:
+### 1. Motor de Digitação ([`useTypingEngine`](../../hooks/useTypingEngine.ts))
+A lógica central reside no hook [hooks/useTypingEngine.ts](../../hooks/useTypingEngine.ts). Ele gerencia:
 - O estado de entrada do usuário.
 - A validação de caracteres em tempo real (`pending`, `correct`, `incorrect`).
 - O cálculo de métricas como **WPM** (Words Per Minute) e **Accuracy**.
 - O controle de estados da sessão (`idle`, `running`, `finished`).
+
+Tipos relacionados: [lib/types.ts](../../lib/types.ts). Utilitários (WPM, accuracy, stripCodeComments): [lib/utils.ts](../../lib/utils.ts).
 
 ### 2. Persistência e Autenticação
 Utilizamos o **Supabase** para:
@@ -48,10 +50,39 @@ Utilizamos o **Supabase** para:
 ## 🛠️ Guia de Desenvolvimento
 
 ### Adicionando Novas Linguagens
+
 Para adicionar uma nova linguagem de programação:
-1. Crie um novo arquivo em `data/nome-da-linguagem.ts`.
-2. Siga a interface `Snippet` definida em `lib/types.ts`.
-3. Registre a nova linguagem no arquivo `data/index.ts`.
+
+1. Crie um novo arquivo em [data/](../../data/) seguindo o padrão `data/nome-da-linguagem.ts`.
+2. Exporte um array nomeado (`export const nomeSnippets: Snippet[]`) seguindo a interface `Snippet` em [lib/types.ts](../../lib/types.ts).
+3. Adicione uma entrada em [data/manifest.ts](../../data/manifest.ts) com `id`, `label`, `color`, `type` (`'code'` ou `'text'`) e `module` (caminho relativo).
+
+Isso é tudo. O arquivo [data/index.ts](../../data/index.ts) consome o manifesto automaticamente — você **não** precisa adicionar import manual nem entry em array.
+
+#### Exemplo
+
+```ts
+// data/elixir.ts
+import { Snippet } from '@/lib/types'
+
+export const elixirSnippets: Snippet[] = [
+  {
+    id: 'elx-001',
+    concept: { pt: 'Pattern Matching', en: 'Pattern Matching' },
+    difficulty: 'easy',
+    code: `{:ok, value} = {:ok, 42}`,
+  },
+]
+```
+
+```ts
+// data/manifest.ts (adicionar entrada)
+{ id: 'elixir', label: 'Elixir', color: '#4b275f', type: 'code', module: './elixir', exportName: 'elixirSnippets' },
+```
+
+#### Validação
+
+Os snippets passam por validação Zod no boot (em desenvolvimento) — se algum campo obrigatório faltar, o console mostra erro detalhado. Schema em [lib/schemas.ts](../../lib/schemas.ts).
 
 ### Padronização de Código
 - Utilize **TypeScript** para todas as novas funcionalidades.
