@@ -1,4 +1,5 @@
 import { Language, Snippet } from '@/lib/types'
+import { validateLanguages } from '@/lib/schemas'
 import { languageManifest, type LanguageManifestEntry } from './manifest'
 
 // ── Imports estaticos (Next/webpack exige top-level imports) ─────────────
@@ -138,8 +139,8 @@ function buildLanguagesByType(type: 'code' | 'text'): Language[] {
     }))
 }
 
-export const codeLanguages: Language[] = buildLanguagesByType('code')
-export const textLanguages: Language[] = buildLanguagesByType('text')
+export const codeLanguages: Language[] = validateLanguages(buildLanguagesByType('code'), 'codeLanguages')
+export const textLanguages: Language[] = validateLanguages(buildLanguagesByType('text'), 'textLanguages')
 export const languages: Language[] = [...codeLanguages, ...textLanguages]
 
 export function getLanguageById(id: string): Language | undefined {
