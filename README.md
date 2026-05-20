@@ -76,13 +76,6 @@ Para detalhes técnicos sobre a arquitetura, estrutura de arquivos e como contri
 
 ---
 
-## 👨‍💻 Autor
-
-<img src="https://avatars.githubusercontent.com/u/126200347?v=4" width="100" style="border-radius: 50%;" alt="Paulo Guilherme Santos Alves">
-
-**Paulo Guilherme Santos Alves** ([@albavxs](https://github.com/albavxs))
-
----
 
 ## 📄 Licença
 
@@ -162,13 +155,7 @@ For technical details about the architecture, file structure, and how to contrib
 
 ---
 
-## 👨‍💻 Author
 
-<img src="https://avatars.githubusercontent.com/u/126200347?v=4" width="100" style="border-radius: 50%;" alt="Paulo Guilherme Santos Alves">
-
-**Paulo Guilherme Santos Alves** ([@albavxs](https://github.com/albavxs))
-
----
 
 ## 📄 License
 
