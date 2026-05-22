@@ -12,6 +12,8 @@ import {
 } from '@/lib/gamification'
 import type { Database } from '@/lib/supabase/database'
 import { ensureProfileForUser, getOwnProfile } from './auth-profile'
+import { checkUnlocks } from './achievements'
+import { recordFeedEvent } from './feed-store'
 
 type DBClient = SupabaseClient<any>
 
@@ -243,6 +245,28 @@ export async function saveRemoteSession(
   if (languageUpsert.error) throw languageUpsert.error
   if (sessionInsert.error) throw sessionInsert.error
 
+  // Hooks: achievements + feed events. Falhas aqui nao quebram a sessao.
+  try {
+    const newlyUnlocked = await checkUnlocks(supabase, userId, progress)
+    output.newlyUnlocked = newlyUnlocked
+
+    // Registra eventos no feed (best-effort)
+    await recordFeedEvent(supabase, userId, 'session', {
+      languageId: input.languageId,
+      wpm: input.wpm,
+      accuracy: input.accuracy,
+      xpEarned: output.xpEarned,
+    })
+    if (output.leveledUp) {
+      await recordFeedEvent(supabase, userId, 'level_up', { level: output.newLevel })
+    }
+    for (const a of newlyUnlocked) {
+      await recordFeedEvent(supabase, userId, 'achievement', { achievementId: a.id, name: a.name })
+    }
+  } catch {
+    // Achievements/feed sao secundarios — ignora falha silenciosamente
+  }
+
   return { progress, output }
 }
 
@@ -258,6 +282,36 @@ export async function resetRemoteProgress(supabase: DBClient, userId: string) {
 }
 
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
+  // Tenta usar a view nova com score combinado. Se nao existir (migration 003 ausente),
+  // cai pra global_leaderboard ordenado por total_xp.
+  const withScore = await supabase
+    .from('leaderboard_with_score')
+    .select('*')
+    .order('score', { ascending: false })
+    .order('total_xp', { ascending: false })
+    .order('current_streak', { ascending: false })
+    .limit(100)
+
+  if (!withScore.error && withScore.data) {
+    return (withScore.data as any[])
+      .filter(entry => entry.total_sessions > 0 || entry.total_xp > 0)
+      .map((entry, index) => ({
+        rank: index + 1,
+        userId: entry.user_id,
+        username: entry.username,
+        displayName: entry.display_name,
+        avatarUrl: entry.avatar_url,
+        totalXP: entry.total_xp,
+        bestWPM: entry.best_wpm,
+        avgWPM: entry.avg_wpm ?? 0,
+        currentStreak: entry.current_streak,
+        totalSessions: entry.total_sessions,
+        level: entry.level ?? getLevel(entry.total_xp).level,
+        score: entry.score ?? 0,
+      }))
+  }
+
+  // Fallback: view antiga
   const { data, error } = await supabase
     .from('global_leaderboard')
     .select('*')
@@ -270,15 +324,21 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
 
   return (data ?? [])
     .filter(entry => entry.total_sessions > 0 || entry.total_xp > 0)
-    .map((entry, index) => ({
-    rank: index + 1,
-    userId: entry.user_id,
-    username: entry.username,
-    displayName: entry.display_name,
-    avatarUrl: entry.avatar_url,
-    totalXP: entry.total_xp,
-    bestWPM: entry.best_wpm,
-    currentStreak: entry.current_streak,
-    totalSessions: entry.total_sessions,
-  }))
+    .map((entry, index) => {
+      const level = getLevel(entry.total_xp).level
+      return {
+        rank: index + 1,
+        userId: entry.user_id,
+        username: entry.username,
+        displayName: entry.display_name,
+        avatarUrl: entry.avatar_url,
+        totalXP: entry.total_xp,
+        bestWPM: entry.best_wpm,
+        avgWPM: 0,
+        currentStreak: entry.current_streak,
+        totalSessions: entry.total_sessions,
+        level,
+        score: entry.best_wpm + level * 10,
+      }
+    })
 }

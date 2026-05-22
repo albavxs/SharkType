@@ -143,6 +143,18 @@ export interface SessionOutput {
   newLevel: number
   levelPercent: number
   streak: number
+  /**
+   * Achievements desbloqueados nesta sessao. Populado pelo backend em saveRemoteSession.
+   * Guest mode: sempre vazio. Default: [].
+   */
+  newlyUnlocked?: Array<{
+    id: string
+    category: string
+    threshold: number | null
+    icon: string
+    name: { pt: string; en: string }
+    description: { pt: string; en: string }
+  }>
 }
 
 export function applySessionToProgress(
@@ -239,6 +251,26 @@ export function resetProgress(): void {
 
 export function hasMeaningfulProgress(progress: UserProgress): boolean {
   return progress.totalXP > 0 || progress.history.length > 0 || Object.keys(progress.languages).length > 0
+}
+
+/**
+ * Score combinado usado no leaderboard.
+ * Formula travada com PO: avgWPM + (level * 10).
+ * Mudar aqui propaga pra api/leaderboard e leaderboard_with_score view.
+ */
+export function computeScore(avgWPM: number, level: number): number {
+  return Math.round(avgWPM + level * 10)
+}
+
+/**
+ * Media de WPM das ultimas N sessoes. Default N=20 — equilibra usuario novo (poucas sessoes)
+ * com usuario veterano (sem deixar sessoes antigas dominarem).
+ */
+export function computeAverageWPM(wpmValues: number[], window = 20): number {
+  if (wpmValues.length === 0) return 0
+  const recent = wpmValues.slice(0, window)
+  const sum = recent.reduce((s, v) => s + v, 0)
+  return Math.round(sum / recent.length)
 }
 
 export function deriveProgressSummary(progressInput: UserProgress): {
