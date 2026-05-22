@@ -8,6 +8,72 @@ import { t } from '@/lib/i18n'
 import Link from 'next/link'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
+import { useFontScale } from '@/hooks/useFontScale'
+import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
+
+function A11ySection({ locale }: { locale: 'pt' | 'en' }) {
+  const font = useFontScale()
+  const lenient = useLenientKeyboard()
+  return (
+    <div className="mt-6 space-y-4 rounded-2xl p-4 sm:p-6" style={{ backgroundColor: 'var(--sub-alt)' }}>
+      <h2 className="text-sm font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+        {locale === 'pt' ? 'Acessibilidade' : 'Accessibility'}
+      </h2>
+
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm" style={{ color: 'var(--text)' }}>
+          {locale === 'pt' ? 'Tamanho da fonte do código' : 'Code font size'}
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={font.decrease}
+            disabled={!font.canDecrease}
+            className="rounded-full px-3 py-1 text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 60%, transparent)', color: 'var(--text)' }}
+            title={t('fontSizeDecrease', locale)}
+          >
+            A-
+          </button>
+          <span className="w-12 text-center text-sm tabular-nums" style={{ color: 'var(--sub)' }}>
+            {Math.round(font.scale * 100)}%
+          </span>
+          <button
+            onClick={font.increase}
+            disabled={!font.canIncrease}
+            className="rounded-full px-3 py-1 text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 60%, transparent)', color: 'var(--text)' }}
+            title={t('fontSizeIncrease', locale)}
+          >
+            A+
+          </button>
+        </div>
+      </div>
+
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={lenient.enabled}
+          onChange={lenient.toggle}
+          className="mt-1"
+        />
+        <div className="flex flex-col gap-1">
+          <span className="text-sm" style={{ color: 'var(--text)' }}>
+            {t('lenientKeyboard', locale)}
+          </span>
+          <span className="text-xs" style={{ color: 'var(--sub)' }}>
+            {t('lenientKeyboardHint', locale)}
+          </span>
+        </div>
+      </label>
+
+      <p className="text-xs" style={{ color: 'var(--sub)' }}>
+        {locale === 'pt'
+          ? 'Temas para daltonismo: selecione "a11y deuteranopia" ou "a11y protanopia" no seletor de temas.'
+          : 'Color-blind themes: choose "a11y deuteranopia" or "a11y protanopia" in the theme selector.'}
+      </p>
+    </div>
+  )
+}
 
 const soundEvents: { key: SoundEvent; labelKey: string }[] = [
   { key: 'key', labelKey: 'soundKey' },
@@ -236,6 +302,8 @@ export default function SettingsPage() {
             </Link>
           </div>
         </div>
+
+        <A11ySection locale={locale} />
       </div>
     </main>
   )
