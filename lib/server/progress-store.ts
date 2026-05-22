@@ -12,6 +12,8 @@ import {
 } from '@/lib/gamification'
 import type { Database } from '@/lib/supabase/database'
 import { ensureProfileForUser, getOwnProfile } from './auth-profile'
+import { checkUnlocks } from './achievements'
+import { recordFeedEvent } from './feed-store'
 
 type DBClient = SupabaseClient<any>
 
@@ -242,6 +244,28 @@ export async function saveRemoteSession(
   if (progressUpsert.error) throw progressUpsert.error
   if (languageUpsert.error) throw languageUpsert.error
   if (sessionInsert.error) throw sessionInsert.error
+
+  // Hooks: achievements + feed events. Falhas aqui nao quebram a sessao.
+  try {
+    const newlyUnlocked = await checkUnlocks(supabase, userId, progress)
+    output.newlyUnlocked = newlyUnlocked
+
+    // Registra eventos no feed (best-effort)
+    await recordFeedEvent(supabase, userId, 'session', {
+      languageId: input.languageId,
+      wpm: input.wpm,
+      accuracy: input.accuracy,
+      xpEarned: output.xpEarned,
+    })
+    if (output.leveledUp) {
+      await recordFeedEvent(supabase, userId, 'level_up', { level: output.newLevel })
+    }
+    for (const a of newlyUnlocked) {
+      await recordFeedEvent(supabase, userId, 'achievement', { achievementId: a.id, name: a.name })
+    }
+  } catch {
+    // Achievements/feed sao secundarios — ignora falha silenciosamente
+  }
 
   return { progress, output }
 }
