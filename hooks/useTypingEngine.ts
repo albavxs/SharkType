@@ -29,8 +29,10 @@ function createInitialState(codeLength: number): TypingState {
 
 export function useTypingEngine(
   code: string,
-  onFinish?: () => void
+  onFinish?: () => void,
+  options: { lenient?: boolean } = {}
 ): UseTypingEngineReturn {
+  const lenient = options.lenient ?? false
   const [state, setState] = useState<TypingState>(() =>
     createInitialState(code.length)
   )
@@ -235,7 +237,8 @@ export function useTypingEngine(
         if (idx >= codeRef.current.length) return prev
 
         const expected = codeRef.current[idx]
-        const isCorrect = actualKey === expected
+        // Modo lenient (teclados nao-QWERTY): aceita qualquer tecla como correta
+        const isCorrect = lenient ? true : actualKey === expected
         const newStatuses = [...prev.charStatuses]
         newStatuses[idx] = isCorrect ? 'correct' : 'incorrect'
 
@@ -261,7 +264,8 @@ export function useTypingEngine(
 
         return {
           ...prev,
-          input: prev.input + actualKey,
+          // Em lenient, registra o char esperado (nao o digitado) pra display nao quebrar
+          input: prev.input + (lenient ? expected : actualKey),
           charStatuses: newStatuses,
           currentIndex: newIndex,
           errors: errorsRef.current,
@@ -270,7 +274,7 @@ export function useTypingEngine(
         }
       })
     },
-    [onFinish]
+    [onFinish, lenient]
   )
 
   const reset = useCallback(() => {
