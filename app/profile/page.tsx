@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeftIcon, FlameIcon, TrophyIcon, UserIcon } from '@/components/icons'
@@ -9,6 +9,7 @@ import { useProgress } from '@/hooks/useProgress'
 import { getLevel } from '@/lib/gamification'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
+import XPBar from '@/components/profile/XPBar'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -21,6 +22,8 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (profile) {
@@ -62,6 +65,33 @@ export default function ProfilePage() {
     setMessage(locale === 'pt' ? 'Perfil salvo com sucesso.' : 'Profile saved successfully.')
   }
 
+  async function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    if (!file) return
+    setError(null)
+    setMessage(null)
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/me/avatar', { method: 'POST', body: formData })
+      const payload = await res.json()
+      if (!res.ok) {
+        setError(payload.error ?? t('uploadAvatarError', locale))
+        return
+      }
+      setAvatarUrl(payload.avatarUrl)
+      // Persiste no profile via PATCH normal — opcional, ja foi atualizado no backend
+      await updateProfile({ username, displayName, avatarUrl: payload.avatarUrl })
+      setMessage(locale === 'pt' ? 'Foto atualizada.' : 'Picture updated.')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t('uploadAvatarError', locale))
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="px-3 sm:px-6 py-4">
@@ -81,16 +111,32 @@ export default function ProfilePage() {
             )}
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <span
-                className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full text-2xl font-semibold"
-                style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
-              >
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
-                ) : (
-                  profile.username.slice(0, 1).toUpperCase()
-                )}
-              </span>
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full text-2xl font-semibold transition-all duration-150 hover:brightness-110 disabled:opacity-50 cursor-pointer"
+                  style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+                  title={t('uploadAvatar', locale)}
+                >
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
+                  ) : (
+                    profile.username.slice(0, 1).toUpperCase()
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+                <span className="text-[10px]" style={{ color: 'var(--sub)' }}>
+                  {isUploading ? t('authWorking', locale) : t('uploadAvatarHint', locale)}
+                </span>
+              </div>
               <div className="min-w-0">
                 <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
                   {profile.displayName || profile.username}
@@ -109,6 +155,8 @@ export default function ProfilePage() {
               </div>
             </div>
 
+            <XPBar totalXP={progress.totalXP} />
+
             <div className="grid gap-3 sm:grid-cols-4">
               {[
                 { label: 'XP', value: progress.totalXP, accent: 'var(--main)' },
@@ -122,6 +170,14 @@ export default function ProfilePage() {
                 </div>
               ))}
             </div>
+
+            <Link
+              href={`/profile/${profile.username}`}
+              className="inline-flex items-center gap-2 self-start rounded-2xl px-4 py-2 text-sm transition-all hover:brightness-110"
+              style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+            >
+              {locale === 'pt' ? 'Ver perfil público' : 'View public profile'}
+            </Link>
           </div>
 
           <form className="space-y-4 rounded-[2rem] border p-5 sm:p-7" onSubmit={handleSubmit} style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)' }}>
@@ -161,7 +217,7 @@ export default function ProfilePage() {
 
             <label className="block space-y-1.5">
               <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
-                {locale === 'pt' ? 'URL da Foto de Perfil' : 'Profile Picture URL'}
+                {locale === 'pt' ? 'URL da Foto de Perfil (opcional)' : 'Profile Picture URL (optional)'}
               </span>
               <input
                 value={avatarUrl}
@@ -170,6 +226,9 @@ export default function ProfilePage() {
                 className="w-full rounded-2xl border px-4 py-3 text-sm outline-none"
                 style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 42%, transparent)', color: 'var(--text)' }}
               />
+              <p className="text-xs" style={{ color: 'var(--sub)' }}>
+                {locale === 'pt' ? 'Ou faça upload clicando no avatar acima.' : 'Or upload by clicking the avatar above.'}
+              </p>
             </label>
 
             {error ? <div className="rounded-2xl px-4 py-3 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 14%, transparent)', color: 'var(--error)' }}>{error}</div> : null}
