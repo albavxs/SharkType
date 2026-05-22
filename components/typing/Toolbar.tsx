@@ -60,10 +60,10 @@ export default function Toolbar({
                 <UserIcon size={18} />
               </Link>
             )}
-            <button onClick={onHelpClick} className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
+            <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
               <HelpIcon size={22} />
             </button>
-            <Link href="/settings" className="hidden sm:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
+            <Link href="/settings" className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
               <SlidersIcon size={22} />
             </Link>
           </div>
@@ -153,7 +153,7 @@ export default function Toolbar({
       </div>}
 
       {/* Right (desktop): locale toggle + level + streak */}
-      <div className={`ml-auto hidden sm:flex items-center gap-4 shrink-0 transition-all duration-300 ${hide}`}>
+      <div className={`ml-auto hidden sm:flex items-center gap-2 lg:gap-4 shrink-0 transition-all duration-300 ${hide}`}>
         {onLocaleToggle && (
           <button onClick={onLocaleToggle}
             className="text-sm font-mono font-medium px-2 py-0.5 rounded transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95"
@@ -175,7 +175,7 @@ export default function Toolbar({
                   profile.username.slice(0, 1).toUpperCase()
                 )}
               </span>
-              <span className="max-w-24 truncate text-sm" style={{ color: 'var(--text)' }}>
+              <span className="hidden lg:inline-block max-w-24 truncate text-sm" style={{ color: 'var(--text)' }}>
                 {profile.username}
               </span>
             </div>
@@ -207,9 +207,9 @@ export default function Toolbar({
         )}
         {(level || streak > 0) && (
           <>
-            {level && <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
+            {level && <span className="text-xs lg:text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
             {streak > 0 && (
-              <span className="flex items-center gap-1 text-sm" style={{ color: 'var(--main)' }}>
+              <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: 'var(--main)' }}>
                 <FlameIcon size={16} />{streak}d
               </span>
             )}
