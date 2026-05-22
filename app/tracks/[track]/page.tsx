@@ -7,6 +7,8 @@ import { stripCodeComments } from '@/lib/utils'
 import { textLanguages, languages } from '@/data'
 import { Snippet, Language, Difficulty } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
+import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
+import { useFontScale } from '@/hooks/useFontScale'
 import { useTimer } from '@/hooks/useTimer'
 import { useProgress } from '@/hooks/useProgress'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
@@ -147,7 +149,9 @@ export default function TrackPracticePage() {
     return difficulty === 'all' ? raw : stripCodeComments(raw)
   }, [snippet, difficulty])
 
-  const engine = useTypingEngine(displayCode, handleFinish)
+  const { enabled: lenient } = useLenientKeyboard()
+  useFontScale() // apenas pra setar a CSS var no mount
+  const engine = useTypingEngine(displayCode, handleFinish, { lenient })
 
   // Start timer when typing starts
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { ArrowLeftIcon } from '@/components/icons'
@@ -11,6 +11,14 @@ import FeedItem from '@/components/feed/FeedItem'
 import type { FeedEvent } from '@/lib/server/feed-store'
 
 export default function FeedPage() {
+  return (
+    <Suspense fallback={null}>
+      <FeedPageInner />
+    </Suspense>
+  )
+}
+
+function FeedPageInner() {
   const { user } = useAuth()
   const { locale } = useLocale()
   const searchParams = useSearchParams()
