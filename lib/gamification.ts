@@ -143,6 +143,18 @@ export interface SessionOutput {
   newLevel: number
   levelPercent: number
   streak: number
+  /**
+   * Achievements desbloqueados nesta sessao. Populado pelo backend em saveRemoteSession.
+   * Guest mode: sempre vazio. Default: [].
+   */
+  newlyUnlocked?: Array<{
+    id: string
+    category: string
+    threshold: number | null
+    icon: string
+    name: { pt: string; en: string }
+    description: { pt: string; en: string }
+  }>
 }
 
 export function applySessionToProgress(

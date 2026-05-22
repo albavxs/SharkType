@@ -28,6 +28,9 @@ import LanguageTabs from '@/components/typing/LanguageTabs'
 import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 import HelpModal from '@/components/typing/HelpModal'
+import StreakToast from '@/components/gamification/StreakToast'
+import AchievementToast from '@/components/gamification/AchievementToast'
+import Link from 'next/link'
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
 
@@ -344,6 +347,8 @@ export default function TrackPracticePage() {
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
+      <StreakToast streak={progress.streak.current} locale={locale} />
+      <AchievementToast newlyUnlocked={sessionResult?.newlyUnlocked ?? []} locale={locale} />
     </main>
   )
 }
