@@ -237,7 +237,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
         )}
 
         {isTextMode ? (
-          <div className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.2] sm:leading-[1.4] md:leading-[1.5] w-full mx-auto text-center" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', fontVariantLigatures: 'none' }}>
+          <div className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.2] sm:leading-[1.4] md:leading-[1.5] w-full mx-auto text-center" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', fontVariantLigatures: 'none', fontSize: `calc(2rem * var(--code-font-scale, 1))` }}>
             {code.split('').map((char, i) => (
               <span key={i} data-idx={i} className="relative" style={getCharStyle(charStatuses[i], i)}>
                 {char}

@@ -148,6 +148,16 @@ export const themes: Theme[] = [
     name: 'viridescent', bg: '#394739', main: '#7db87d', caret: '#7db87d', sub: '#506650', subAlt: '#2f3d2f', text: '#d1d7c0', error: '#c74545', errorExtra: '#8a2e2e',
     syntax: { keyword: '#7db87d', string: '#b8d8a0', number: '#d7c080', comment: '#506650', type: '#80b0c0' },
   },
+  // ── A11y: deuteranopia (verde-fraco) ─ usa azul/laranja em vez de verde/vermelho
+  {
+    name: 'a11y deuteranopia', bg: '#1a1a1f', main: '#3b82f6', caret: '#fbbf24', sub: '#6b7280', subAlt: '#13131a', text: '#f3f4f6', error: '#f97316', errorExtra: '#9a3412',
+    syntax: { keyword: '#3b82f6', string: '#fbbf24', number: '#a78bfa', comment: '#6b7280', type: '#06b6d4' },
+  },
+  // ── A11y: protanopia (vermelho-fraco) ─ paleta azul/amarelo/cinza
+  {
+    name: 'a11y protanopia', bg: '#1c1c24', main: '#2563eb', caret: '#facc15', sub: '#71717a', subAlt: '#14141a', text: '#f4f4f5', error: '#eab308', errorExtra: '#a16207',
+    syntax: { keyword: '#2563eb', string: '#facc15', number: '#a855f7', comment: '#71717a', type: '#0891b2' },
+  },
 ]
 
 export const DEFAULT_THEME = 'dracula'
