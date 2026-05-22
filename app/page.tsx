@@ -21,6 +21,8 @@ import TypingArea from '@/components/typing/TypingArea'
 import SnippetInfo from '@/components/typing/SnippetInfo'
 import ResultScreen from '@/components/typing/ResultScreen'
 import Footer from '@/components/typing/Footer'
+import StreakToast from '@/components/gamification/StreakToast'
+import AchievementToast from '@/components/gamification/AchievementToast'
 import ThemeSelector from '@/components/typing/ThemeSelector'
 import HelpModal from '@/components/typing/HelpModal'
 import SceneWrapper from '@/components/three/SceneWrapper'
@@ -211,6 +213,8 @@ export default function Home() {
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
+      <StreakToast streak={progress.streak.current} locale={locale} />
+      <AchievementToast newlyUnlocked={sessionResult?.newlyUnlocked ?? []} locale={locale} />
     </main>
   )
 }
