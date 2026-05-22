@@ -16,6 +16,12 @@ interface UseTypingEngineReturn {
   wpmRef: React.RefObject<number>
 }
 
+/**
+ * Creates the initial state for a typing session.
+ * 
+ * @param codeLength - Length of the snippet to be typed
+ * @returns Initial TypingState object
+ */
 function createInitialState(codeLength: number): TypingState {
   return {
     input: '',
@@ -27,12 +33,18 @@ function createInitialState(codeLength: number): TypingState {
   }
 }
 
+/**
+ * Custom hook that manages the core typing logic, metrics, and state.
+ * Handles key presses, calculates WPM/accuracy in real-time, and manages session status.
+ * 
+ * @param code - The code snippet or text to be typed
+ * @param onFinish - Optional callback triggered when the session finishes
+ * @returns Object containing typing state, metrics, and control functions
+ */
 export function useTypingEngine(
   code: string,
-  onFinish?: () => void,
-  options: { lenient?: boolean } = {}
+  onFinish?: () => void
 ): UseTypingEngineReturn {
-  const lenient = options.lenient ?? false
   const [state, setState] = useState<TypingState>(() =>
     createInitialState(code.length)
   )
@@ -128,6 +140,11 @@ export function useTypingEngine(
     }
   }, [state.status])
 
+  /**
+   * Handles individual key presses and updates the typing state.
+   * 
+   * @param key - The key pressed by the user
+   */
   const handleKey = useCallback(
     (key: string) => {
       setState((prev) => {
@@ -237,8 +254,7 @@ export function useTypingEngine(
         if (idx >= codeRef.current.length) return prev
 
         const expected = codeRef.current[idx]
-        // Modo lenient (teclados nao-QWERTY): aceita qualquer tecla como correta
-        const isCorrect = lenient ? true : actualKey === expected
+        const isCorrect = actualKey === expected
         const newStatuses = [...prev.charStatuses]
         newStatuses[idx] = isCorrect ? 'correct' : 'incorrect'
 
@@ -264,8 +280,7 @@ export function useTypingEngine(
 
         return {
           ...prev,
-          // Em lenient, registra o char esperado (nao o digitado) pra display nao quebrar
-          input: prev.input + (lenient ? expected : actualKey),
+          input: prev.input + actualKey,
           charStatuses: newStatuses,
           currentIndex: newIndex,
           errors: errorsRef.current,
@@ -274,9 +289,12 @@ export function useTypingEngine(
         }
       })
     },
-    [onFinish, lenient]
+    [onFinish]
   )
 
+  /**
+   * Resets the typing session to its initial state.
+   */
   const reset = useCallback(() => {
     errorsRef.current = 0
     totalKeypressesRef.current = 0

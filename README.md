@@ -70,6 +70,13 @@ http://localhost:3000
 
 ---
 
+## 🤝 Contribuindo
+
+Para detalhes técnicos sobre a arquitetura, estrutura de arquivos e como contribuir, acesse o nosso **[Guia de Contribuição](docs/contributing/CONTRIBUTING.pt-br.md)**.
+
+---
+
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT.
@@ -142,10 +149,14 @@ http://localhost:3000
 
 ---
 
+## 🤝 Contributing
+
+For technical details about the architecture, file structure, and how to contribute, please check our **[Contributing Guide](docs/contributing/CONTRIBUTING.en.md)**.
+
+---
+
+
+
 ## 📄 License
 
-This project is licensed under the MIT License.
-
-
-### License
 This project is licensed under the [MIT License](LICENSE).

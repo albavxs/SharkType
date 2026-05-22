@@ -7,6 +7,8 @@ import { stripCodeComments } from '@/lib/utils'
 import { textLanguages, languages } from '@/data'
 import { Snippet, Language, Difficulty } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
+import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
+import { useFontScale } from '@/hooks/useFontScale'
 import { useTimer } from '@/hooks/useTimer'
 import { useProgress } from '@/hooks/useProgress'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
@@ -26,6 +28,8 @@ import SceneWrapper from '@/components/three/SceneWrapper'
 import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 import HelpModal from '@/components/typing/HelpModal'
+import StreakToast from '@/components/gamification/StreakToast'
+import AchievementToast from '@/components/gamification/AchievementToast'
 import Link from 'next/link'
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
@@ -145,7 +149,9 @@ export default function TrackPracticePage() {
     return difficulty === 'all' ? raw : stripCodeComments(raw)
   }, [snippet, difficulty])
 
-  const engine = useTypingEngine(displayCode, handleFinish)
+  const { enabled: lenient } = useLenientKeyboard()
+  useFontScale() // apenas pra setar a CSS var no mount
+  const engine = useTypingEngine(displayCode, handleFinish, { lenient })
 
   // Start timer when typing starts
   useEffect(() => {
@@ -384,6 +390,8 @@ export default function TrackPracticePage() {
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
+      <StreakToast streak={progress.streak.current} locale={locale} />
+      <AchievementToast newlyUnlocked={sessionResult?.newlyUnlocked ?? []} locale={locale} />
     </main>
   )
 }

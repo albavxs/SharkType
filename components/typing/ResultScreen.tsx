@@ -5,6 +5,7 @@ import { Snippet } from '@/lib/types'
 import { calculateConsistency } from '@/lib/utils'
 import { FlameIcon, ShareIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
 import WPMGraph from '@/components/stats/WPMGraph'
+import ShareCardModal from './ShareCardModal'
 import { Locale, t } from '@/lib/i18n'
 
 interface ResultScreenProps {
@@ -31,11 +32,11 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
   const animatedXP = useCountUp(xpEarned)
   const consistency = calculateConsistency(wpmSamples)
   const [copied, setCopied] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
   const diff = t(snippet.difficulty === 'easy' ? 'easy' : snippet.difficulty === 'medium' ? 'medium' : 'hard', locale)
 
   function handleShare() {
-    const text = `SharkType - ${languageLabel}\nWPM: ${wpm} | Raw: ${rawWpm} | Acc: ${accuracy}% | Consistency: ${consistency}%\n${snippet.concept[locale]} | ${duration}s`
-    navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000) })
+    setShowShareModal(true)
   }
 
   return (
@@ -107,9 +108,16 @@ export default function ResultScreen({ wpm, rawWpm, accuracy, errors, duration, 
           style={{ color: 'var(--sub)' }}
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
           onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
-          title={copied ? t('copied', locale) : t('share', locale)}>
+          title={t('share', locale)}>
           <ShareIcon size={20} />
         </button>
+        {showShareModal && (
+          <ShareCardModal
+            wpm={wpm} rawWpm={rawWpm} accuracy={accuracy} errors={errors} duration={duration}
+            snippet={snippet} languageLabel={languageLabel} locale={locale}
+            onClose={() => setShowShareModal(false)}
+          />
+        )}
         <button onClick={onNext}
           className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
           style={{ color: 'var(--sub)' }}

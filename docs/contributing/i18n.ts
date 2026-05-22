@@ -2,11 +2,22 @@ export type Locale = 'pt' | 'en'
 
 const LOCALE_KEY = 'sharktype-locale'
 
+/**
+ * Retrieves the user's preferred locale from localStorage.
+ * Defaults to 'en' if not set or if running on the server.
+ * 
+ * @returns The preferred locale ('pt' or 'en')
+ */
 export function getLocalePref(): Locale {
   if (typeof window === 'undefined') return 'en'
   return (localStorage.getItem(LOCALE_KEY) as Locale) || 'en'
 }
 
+/**
+ * Saves the user's preferred locale to localStorage.
+ * 
+ * @param l - The locale to save
+ */
 export function setLocalePref(l: Locale) {
   localStorage.setItem(LOCALE_KEY, l)
 }
@@ -50,7 +61,7 @@ const dict: Record<string, Record<Locale, string>> = {
 
   // ── SnippetInfo ─────────────────────────────────────────────────────────
   hide: { pt: 'ocultar', en: 'hide' },
-  show: { pt: 'mostrar', en: 'show' },
+  show: { pt: 'show', en: 'show' },
 
   // ── Footer ──────────────────────────────────────────────────────────────
   settings:      { pt: 'configurações', en: 'settings' },
@@ -203,49 +214,21 @@ const dict: Record<string, Record<Locale, string>> = {
   profileDisplayName: { pt: 'Nome de exibição', en: 'Display name' },
   profileAvatar: { pt: 'URL da Foto de perfil', en: 'Profile Picture URL' },
   profileSave: { pt: 'Salvar alterações', en: 'Save changes' },
-  profileSuccess: { pt: 'Perfil atualizado com sucesso!', en: 'Profile updated successfully!' },
+  profileSuccess: { pt: 'Perfil atualizado!', en: 'Profile updated!' },
   profileError: { pt: 'Erro ao atualizar perfil.', en: 'Error updating profile.' },
-
-  // ── Sprint social/gamificacao ──────────────────────────────────────────
-  profileNotFound: { pt: 'Perfil não encontrado.', en: 'Profile not found.' },
-  editProfile: { pt: 'Editar meu perfil', en: 'Edit my profile' },
-  uploadAvatar: { pt: 'Trocar foto', en: 'Change picture' },
-  uploadAvatarHint: { pt: 'JPEG, PNG ou WebP até 2MB', en: 'JPEG, PNG or WebP up to 2MB' },
-  uploadAvatarError: { pt: 'Erro ao enviar foto.', en: 'Error uploading picture.' },
-  follow: { pt: 'Seguir', en: 'Follow' },
-  unfollow: { pt: 'Deixar de seguir', en: 'Unfollow' },
-  followers: { pt: 'seguidores', en: 'followers' },
-  following: { pt: 'seguindo', en: 'following' },
-  topLanguages: { pt: 'Linguagens mais usadas', en: 'Top languages' },
-  sessionsShort: { pt: 'sess.', en: 'sess.' },
-  statsBestWPM: { pt: 'Melhor WPM', en: 'Best WPM' },
-  statsTotalSessions: { pt: 'Sessões', en: 'Sessions' },
-  statsBestAccuracy: { pt: 'Precisão', en: 'Accuracy' },
-  achievements: { pt: 'Conquistas', en: 'Achievements' },
-  achievementUnlocked: { pt: 'Conquista desbloqueada!', en: 'Achievement unlocked!' },
-  streakIncreased: { pt: 'Streak aumentou!', en: 'Streak increased!' },
-  dayStreak: { pt: 'dia', en: 'day' },
-  daysStreak: { pt: 'dias', en: 'days' },
-  navFeed: { pt: 'Feed', en: 'Feed' },
-  feedGlobal: { pt: 'Global', en: 'Global' },
-  feedFollowing: { pt: 'Seguindo', en: 'Following' },
-  feedEmpty: { pt: 'Nenhuma atividade ainda.', en: 'No activity yet.' },
-  feedEmptyFollowing: { pt: 'Siga jogadores para ver atividade aqui.', en: 'Follow players to see activity here.' },
-  feedSessionTitle: { pt: 'completou uma sessão', en: 'completed a session' },
-  feedAchievementTitle: { pt: 'desbloqueou uma conquista', en: 'unlocked an achievement' },
-  feedLevelUpTitle: { pt: 'subiu para o level', en: 'reached level' },
-  shareResult: { pt: 'Compartilhar resultado', en: 'Share result' },
-  downloadCard: { pt: 'Baixar PNG', en: 'Download PNG' },
-  shareCardSubtitle: { pt: 'Card pronto para Twitter / Discord', en: 'Card ready for Twitter / Discord' },
-  fontSizeIncrease: { pt: 'Aumentar fonte', en: 'Increase font' },
-  fontSizeDecrease: { pt: 'Diminuir fonte', en: 'Decrease font' },
-  lenientKeyboard: { pt: 'Teclado não-QWERTY (validação relaxada)', en: 'Non-QWERTY keyboard (lenient validation)' },
-  lenientKeyboardHint: {
-    pt: 'Aceita qualquer tecla — suporte completo a AZERTY/Dvorak/Colemak virá em uma próxima versão.',
-    en: 'Accepts any key — full AZERTY/Dvorak/Colemak support coming in a future version.',
-  },
+  profileUsernameTaken: { pt: 'Este username já está em uso.', en: 'This username is already taken.' },
+  profileInvalidUsername: { pt: 'Username inválido.', en: 'Invalid username.' },
+  profileAvatarInvalid: { pt: 'URL da imagem inválida.', en: 'Invalid image URL.' },
+  profileSyncing: { pt: 'Sincronizando...', en: 'Syncing...' },
 }
 
-export function t(key: string, locale: Locale = 'en'): string {
-  return dict[key]?.[locale] ?? key
+/**
+ * Translates a key to the specified locale.
+ * 
+ * @param key - The dictionary key to translate
+ * @param locale - The target locale ('pt' or 'en')
+ * @returns The translated string, or the key itself if not found
+ */
+export function t(key: string, locale: Locale): string {
+  return dict[key]?.[locale] || key
 }
