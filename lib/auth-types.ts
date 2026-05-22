@@ -17,8 +17,14 @@ export interface LeaderboardEntry {
   avatarUrl: string | null
   totalXP: number
   bestWPM: number
+  /** Media WPM das ultimas 20 sessoes (0 se view leaderboard_with_score ausente) */
+  avgWPM: number
   currentStreak: number
   totalSessions: number
+  /** Level calculado a partir de totalXP */
+  level: number
+  /** Score combinado: avgWPM + level*10 */
+  score: number
 }
 
 export type ProgressSource = 'guest' | 'supabase'
