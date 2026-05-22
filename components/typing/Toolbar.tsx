@@ -1,7 +1,7 @@
 'use client'
 
 import { Language, Difficulty } from '@/lib/types'
-import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon } from '@/components/icons'
+import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
@@ -54,6 +54,9 @@ export default function Toolbar({
             </Link>
             <Link href="/leaderboard" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
               <TrophyIcon size={18} />
+            </Link>
+            <Link href="/feed" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
+              <ChartIcon size={18} />
             </Link>
             {profile && (
               <Link href="/profile" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={locale === 'pt' ? 'Perfil' : 'Profile'}>
