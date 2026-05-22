@@ -41,4 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .supabase
-supabase/
+supabase/*
+!supabase/migrations
+!supabase/migrations/**
