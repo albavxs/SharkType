@@ -5,9 +5,11 @@
 /.pnp
 .pnp.*
 .yarn/*
-# this project uses npm — ignore other package managers' locks
+# this project uses npm — ignore other package managers' locks/configs
 pnpm-lock.yaml
+pnpm-workspace.yaml
 yarn.lock
+.yarnrc.yml
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
