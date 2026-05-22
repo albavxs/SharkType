@@ -6,6 +6,8 @@ import { generateChallengeSequence, stripCodeComments } from '@/lib/utils'
 import { Language, Snippet, Difficulty } from '@/lib/types'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
+import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
+import { useFontScale } from '@/hooks/useFontScale'
 import { useTimer } from '@/hooks/useTimer'
 import { useProgress } from '@/hooks/useProgress'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
@@ -71,7 +73,9 @@ export default function Home() {
   const handleFinish = useCallback(() => { setShowResult(true); playComplete(); timer.stop() }, [])
   const handleTimerEnd = useCallback(() => { setShowResult(true); playComplete() }, [])
 
-  const engine = useTypingEngine(displayCode, handleFinish)
+  const { enabled: lenient } = useLenientKeyboard()
+  useFontScale() // setta CSS var no mount
+  const engine = useTypingEngine(displayCode, handleFinish, { lenient })
   const timer = useTimer(timerDuration, isCountdown, handleTimerEnd)
 
   // Reset timer + engine when difficulty changes
