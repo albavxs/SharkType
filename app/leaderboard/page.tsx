@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import type { LeaderboardEntry } from '@/lib/auth-types'
 import { getLevel } from '@/lib/gamification'
 import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
@@ -133,9 +134,10 @@ export default function LeaderboardPage() {
                   </div>
 
                   {entries.map((entry, index) => (
-                    <div
+                    <Link
                       key={entry.userId}
-                      className="grid items-center px-4 py-3 text-sm"
+                      href={`/profile/${entry.username}`}
+                      className="grid items-center px-4 py-3 text-sm transition-all duration-150 hover:brightness-110"
                       style={{
                         gridTemplateColumns: '3rem 1.4fr 5rem 4.5rem 4rem 5rem',
                         borderTop: index > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
@@ -179,7 +181,7 @@ export default function LeaderboardPage() {
                       <span className="text-right tabular-nums" style={{ color: 'var(--sub)' }}>
                         {entry.totalSessions}
                       </span>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
