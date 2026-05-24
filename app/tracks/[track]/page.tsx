@@ -179,7 +179,7 @@ export default function TrackPracticePage() {
       }
 
       if (selectedLang && snippet) {
-        const output = await recordSession({ languageId: selectedLang.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty })
+        const output = await recordSession({ languageId: selectedLang.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty, lenient })
         if (active) {
           setSessionResult(output)
           setTrackXpEarned((current) => current + output.xpEarned)
