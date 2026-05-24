@@ -94,7 +94,7 @@ export default function Home() {
       setFinalStats(stats)
 
       void (async () => {
-        const output = await recordSession({ languageId: language.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty })
+        const output = await recordSession({ languageId: language.id, snippetId: snippet.id, wpm: stats.wpm, accuracy: stats.accuracy, errors: stats.errors, duration: dur, difficulty: snippet.difficulty, lenient })
         if (active) setSessionResult(output)
       })()
 
