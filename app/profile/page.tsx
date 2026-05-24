@@ -10,6 +10,7 @@ import { getLevel } from '@/lib/gamification'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import XPBar from '@/components/profile/XPBar'
+import SceneWrapper from '@/components/three/SceneWrapper'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -93,7 +94,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="flex-1 flex flex-col min-h-screen relative" style={{ backgroundColor: 'var(--bg)' }}>
+      <SceneWrapper />
+      <div className="relative z-10 flex-1 flex flex-col">
       <div className="px-3 sm:px-6 py-4">
         <Link href="/" className="relative z-20 inline-flex w-fit items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 pointer-events-auto cursor-pointer" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
@@ -250,6 +253,7 @@ export default function ProfilePage() {
             </div>
           </form>
         </div>
+      </div>
       </div>
     </main>
   )
