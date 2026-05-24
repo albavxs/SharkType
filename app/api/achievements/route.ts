@@ -25,7 +25,7 @@ export async function GET() {
     if (error.code === '42P01' || String(error.message ?? '').includes('does not exist')) {
       return NextResponse.json({ achievements: [] })
     }
-    return safeErrorResponse(err, 'Could not load profile.', 500)
+    return NextResponse.json({ error: "Could not load achievements." }, { status: 500 })
   }
 
   const achievements = (data ?? []).map(row => ({
