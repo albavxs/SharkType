@@ -135,6 +135,7 @@ export interface SessionInput {
   errors: number
   duration: number
   difficulty: Difficulty
+  lenient?: boolean
 }
 
 export interface SessionOutput {
