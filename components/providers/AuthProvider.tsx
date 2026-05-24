@@ -216,24 +216,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const supabase = createClient()
       
       // Armazenamos o username nos metadados para quando o usuário confirmar o OTP
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signUp({
         email: input.email,
+        password: input.password,
         options: {
           data: {
             username,
             display_name: username,
           },
-          shouldCreateUser: true,
-          emailRedirectTo: undefined, // Remove explicitamente qualquer redirecionamento
+          emailRedirectTo: getAuthCallbackUrl('/'),
         },
       })
 
       if (error) return { error: error.message, needsVerification: false }
 
-      // No fluxo de OTP, sempre precisamos de verificação
+      // Se já tem sessão, confirmação de email está desligada — login direto
+      if (data.session) {
+        return { error: null, needsVerification: false }
+      }
+
+      // Precisa confirmar email via OTP
       window.localStorage.setItem(PENDING_VERIFICATION_KEY, input.email)
       setPendingVerificationEmail(input.email)
-
       return { error: null, needsVerification: true }
     } catch (error) {
       return {

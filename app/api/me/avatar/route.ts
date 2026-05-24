@@ -34,8 +34,16 @@ export async function POST(request: Request) {
 
   const ext = file.type === 'image/jpeg' ? 'jpg' : file.type === 'image/png' ? 'png' : 'webp'
   const path = `${user.id}/avatar.${ext}`
-
   const arrayBuffer = await file.arrayBuffer()
+
+  // Magic bytes validation — rejeita SVG/HTML disfarçados de imagem (C3)
+  const bytes = new Uint8Array(arrayBuffer.slice(0, 12))
+  const isJPEG = bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF
+  const isPNG  = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47
+  const isWebP = bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
+  if (!isJPEG && !isPNG && !isWebP) {
+    return NextResponse.json({ error: 'Invalid file type. Use jpeg, png or webp.' }, { status: 415 })
+  }
 
   const { error: uploadErr } = await supabase.storage
     .from('avatars')
@@ -46,12 +54,13 @@ export async function POST(request: Request) {
     })
 
   if (uploadErr) {
-    return NextResponse.json({ error: uploadErr.message }, { status: 500 })
+    return NextResponse.json({ error: 'Could not upload avatar.' }, { status: 500 })
   }
 
   const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(path)
-  // Cache-busting param para forcar refresh imediato no client
-  const avatarUrl = `${publicUrlData.publicUrl}?v=${Date.now()}`
+  const hashBuf = await crypto.subtle.digest("SHA-256", arrayBuffer)
+  const hashHex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,"0")).join("").slice(0,8)
+  const avatarUrl = `${publicUrlData.publicUrl}?v=${hashHex}`
 
   const { error: updateErr } = await supabase
     .from('profiles')
@@ -59,7 +68,7 @@ export async function POST(request: Request) {
     .eq('id', user.id)
 
   if (updateErr) {
-    return NextResponse.json({ error: updateErr.message }, { status: 500 })
+    return NextResponse.json({ error: 'Could not update avatar.' }, { status: 500 })
   }
 
   return NextResponse.json({ avatarUrl })
