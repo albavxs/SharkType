@@ -10,6 +10,7 @@ import { t } from '@/lib/i18n'
 import ProfileHeader from '@/components/profile/ProfileHeader'
 import ProfileStats from '@/components/profile/ProfileStats'
 import BadgeGrid from '@/components/gamification/BadgeGrid'
+import SceneWrapper from '@/components/three/SceneWrapper'
 import type { PublicProfile } from '@/lib/server/profile-store'
 
 export default function PublicProfilePage() {
@@ -60,19 +61,25 @@ export default function PublicProfilePage() {
 
   if (loading) {
     return (
-      <main className="flex-1 flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-        <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
+      <main className="flex-1 flex items-center justify-center min-h-screen relative" style={{ backgroundColor: 'var(--bg)' }}>
+        <SceneWrapper />
+        <div className="relative z-10">
+          <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
+        </div>
       </main>
     )
   }
 
   if (error || !profile) {
     return (
-      <main className="flex-1 flex flex-col items-center justify-center gap-4 min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-        <p style={{ color: 'var(--sub)' }}>{error ?? t('profileNotFound', locale)}</p>
-        <Link href="/leaderboard" className="text-sm hover:opacity-80" style={{ color: 'var(--main)' }}>
-          {t('back', locale)}
-        </Link>
+      <main className="flex-1 flex flex-col items-center justify-center gap-4 min-h-screen relative" style={{ backgroundColor: 'var(--bg)' }}>
+        <SceneWrapper />
+        <div className="relative z-10 flex flex-col items-center justify-center gap-4">
+          <p style={{ color: 'var(--sub)' }}>{error ?? t('profileNotFound', locale)}</p>
+          <Link href="/leaderboard" className="text-sm hover:opacity-80" style={{ color: 'var(--main)' }}>
+            {t('back', locale)}
+          </Link>
+        </div>
       </main>
     )
   }
@@ -80,7 +87,9 @@ export default function PublicProfilePage() {
   const isOwn = Boolean(ownProfile && ownProfile.username === profile.username)
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="flex-1 flex flex-col min-h-screen relative" style={{ backgroundColor: 'var(--bg)' }}>
+      <SceneWrapper />
+      <div className="relative z-10 flex-1 flex flex-col">
       <div className="px-3 sm:px-6 py-4">
         <button
           onClick={() => router.back()}
@@ -112,6 +121,7 @@ export default function PublicProfilePage() {
             </Link>
           )}
         </div>
+      </div>
       </div>
     </main>
   )
