@@ -24,6 +24,6 @@ export async function GET(request: Request) {
     const events = await listFeedEvents(supabase, scope, user?.id ?? null, 50)
     return NextResponse.json({ events, scope })
   } catch (err) {
-    return NextResponse.json({ events: [], scope, error: err instanceof Error ? err.message : 'Failed' })
+    return NextResponse.json({ events: [], scope, error: "Could not load feed." }, { status: 500 })
   }
 }

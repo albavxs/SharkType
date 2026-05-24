@@ -50,6 +50,16 @@ export async function PATCH(request: Request) {
   }
 
   const body = (await request.json()) as { username?: string; displayName?: string | null; avatarUrl?: string | null }
+  if (body.avatarUrl != null && body.avatarUrl !== "") {
+    try {
+      const u = new URL(body.avatarUrl)
+      if (!["http:", "https:"].includes(u.protocol)) {
+        return NextResponse.json({ error: "Invalid avatar URL." }, { status: 400 })
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid avatar URL." }, { status: 400 })
+    }
+  }
   const username = sanitizeUsername(body.username ?? '')
 
   if (!isValidUsername(username)) {
