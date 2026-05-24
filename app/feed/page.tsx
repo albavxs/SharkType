@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import FeedItem from '@/components/feed/FeedItem'
+import SceneWrapper from '@/components/three/SceneWrapper'
 import type { FeedEvent } from '@/lib/server/feed-store'
 
 export default function FeedPage() {
@@ -56,7 +57,9 @@ function FeedPageInner() {
   }, [scope])
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="flex-1 flex flex-col min-h-screen relative" style={{ backgroundColor: 'var(--bg)' }}>
+      <SceneWrapper />
+      <div className="relative z-10 flex-1 flex flex-col">
       <div className="px-3 sm:px-6 py-4">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm hover:opacity-80" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
@@ -107,6 +110,7 @@ function FeedPageInner() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </main>
   )
