@@ -57,7 +57,7 @@ function buildInsertedSession(input: SessionInput, output: SessionOutput, create
   }
 }
 
-function buildProgressAggregate(userId: string, progress: UserProgress) {
+export function buildProgressAggregate(userId: string, progress: UserProgress) {
   const summary = deriveProgressSummary(progress)
 
   return {
@@ -263,9 +263,6 @@ export async function saveRemoteSession(
     })
     if (output.leveledUp) {
       await recordFeedEvent(supabase, userId, 'level_up', { level: output.newLevel })
-    }
-    for (const a of newlyUnlocked) {
-      await recordFeedEvent(supabase, userId, 'achievement', { achievementId: a.id, name: a.name })
     }
   } catch {
     // Achievements/feed sao secundarios — ignora falha silenciosamente

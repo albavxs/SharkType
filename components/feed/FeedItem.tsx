@@ -4,13 +4,21 @@ import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { getLanguageById } from '@/data'
 import LikeButton from './LikeButton'
-import type { FeedEvent } from '@/lib/server/feed-store'
+import type {
+  AchievementFeedEvent,
+  FeedEvent,
+  FeedLevelUpPayload,
+  FeedSessionPayload,
+  TrackCompletedFeedEvent,
+} from '@/lib/server/feed-store'
 
 interface FeedItemProps {
   event: FeedEvent
   locale: Locale
   currentUserId?: string | null
 }
+
+type AchievementLikeEvent = AchievementFeedEvent | TrackCompletedFeedEvent
 
 function timeAgo(iso: string, locale: Locale): string {
   const diffMs = Date.now() - new Date(iso).getTime()
@@ -70,8 +78,8 @@ export default function FeedItem({ event, locale, currentUserId = null }: FeedIt
   )
 }
 
-function FeedSessionBody({ payload, locale }: { payload: any; locale: Locale }) {
-  const lang = getLanguageById(String(payload.languageId ?? ''))
+function FeedSessionBody({ payload, locale }: { payload: FeedSessionPayload; locale: Locale }) {
+  const lang = getLanguageById(payload.languageId)
   return (
     <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
       {t('feedSessionTitle', locale)}
@@ -85,12 +93,12 @@ function FeedSessionBody({ payload, locale }: { payload: any; locale: Locale }) 
   )
 }
 
-function FeedAchievementBody({ event, locale }: { event: FeedEvent; locale: Locale }) {
-  const payload = event.payload
+function FeedAchievementBody({ event, locale }: { event: AchievementLikeEvent; locale: Locale }) {
   const isTrack = event.eventType === 'track_completed'
   const titleKey = isTrack ? 'feedTrackCompletedTitle' : 'feedAchievementTitle'
-  const name = payload.name?.[locale] ?? payload.achievementId ?? payload.trackId
-  const xp = payload.xp ?? 0
+  const fallbackId = isTrack ? event.payload.trackId : event.payload.achievementId
+  const name = event.payload.name[locale] || fallbackId
+  const xp = event.payload.xp ?? 0
 
   return (
     <div className="mt-2 rounded-lg p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>
@@ -114,7 +122,7 @@ function FeedAchievementBody({ event, locale }: { event: FeedEvent; locale: Loca
   )
 }
 
-function FeedLevelUpBody({ payload, locale }: { payload: any; locale: Locale }) {
+function FeedLevelUpBody({ payload, locale }: { payload: FeedLevelUpPayload; locale: Locale }) {
   return (
     <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
       ⬆️ {t('feedLevelUpTitle', locale)}{' '}

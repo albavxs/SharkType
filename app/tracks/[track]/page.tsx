@@ -202,7 +202,7 @@ export default function TrackPracticePage() {
         void fetch('/api/me/progress/track-complete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trackId: track.id }),
+          body: JSON.stringify({ trackId }),
         }).catch(err => console.error('Failed to record track completion:', err))
       } else {
         setSeqIndex(i => i + 1)
