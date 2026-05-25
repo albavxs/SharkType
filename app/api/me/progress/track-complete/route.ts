@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv } from '@/lib/supabase/env'
-import { getUserProgressSnapshot, buildProgressAggregate } from '@/lib/server/progress-store'
+import { getUserProgressSnapshot } from '@/lib/server/progress-store'
 import { checkUnlocks } from '@/lib/server/achievements'
 import { recordFeedEvent } from '@/lib/server/feed-store'
 import { getTrackById } from '@/data/tracks'
