@@ -6,30 +6,31 @@ import { FlameIcon } from '@/components/icons'
 import { t, type Locale } from '@/lib/i18n'
 
 interface StreakToastProps {
-  /** Valor atual de streak. Toast aparece quando o valor incrementa. */
+  /** Flag indicando se o streak foi incrementado nesta sessão */
+  streakIncremented: boolean
+  /** Valor atual de streak */
   streak: number
   locale: Locale
 }
 
 /**
  * Mostra toast/overlay quando streak incrementa.
- * Detecta diff usando ref interna — caller passa o valor crudo.
+ * Usa flag explícito do SessionOutput para evitar disparos falsos.
  */
-export default function StreakToast({ streak, locale }: StreakToastProps) {
+export default function StreakToast({ streakIncremented, streak, locale }: StreakToastProps) {
   const [visible, setVisible] = useState(false)
   const [displayStreak, setDisplayStreak] = useState(streak)
-  const [prev, setPrev] = useState(streak)
+  const [lastShownStreak, setLastShownStreak] = useState<number | null>(null)
 
   useEffect(() => {
-    if (streak > prev) {
+    if (streakIncremented && streak !== lastShownStreak) {
       setDisplayStreak(streak)
       setVisible(true)
-      const timeout = setTimeout(() => setVisible(false), 2500)
-      setPrev(streak)
+      setLastShownStreak(streak)
+      const timeout = setTimeout(() => setVisible(false), 3000)
       return () => clearTimeout(timeout)
     }
-    setPrev(streak)
-  }, [streak, prev])
+  }, [streakIncremented, streak, lastShownStreak])
 
   return (
     <AnimatePresence>

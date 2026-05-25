@@ -144,6 +144,8 @@ export interface SessionOutput {
   newLevel: number
   levelPercent: number
   streak: number
+  /** Flag indicando se o streak foi incrementado nesta sessão (não apenas mantido) */
+  streakIncremented: boolean
   /**
    * Achievements desbloqueados nesta sessao. Populado pelo backend em saveRemoteSession.
    * Guest mode: sempre vazio. Default: [].
@@ -200,7 +202,9 @@ export function applySessionToProgress(
   progress.level = newLevelInfo.level
 
   // Update streak
+  const oldStreakValue = progress.streak.current
   progress.streak = updateStreak(progress.streak)
+  const streakIncremented = progress.streak.current > oldStreakValue
 
   // Add history
   progress.history.unshift({
@@ -225,6 +229,7 @@ export function applySessionToProgress(
       newLevel: newLevelInfo.level,
       levelPercent: newLevelInfo.percent,
       streak: progress.streak.current,
+      streakIncremented,
     },
   }
 }
