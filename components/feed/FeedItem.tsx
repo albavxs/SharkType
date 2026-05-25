@@ -58,8 +58,8 @@ export default function FeedItem({ event, locale, currentUserId = null }: FeedIt
         {event.eventType === 'session' && (
           <FeedSessionBody payload={event.payload} locale={locale} />
         )}
-        {event.eventType === 'achievement' && (
-          <FeedAchievementBody payload={event.payload} locale={locale} />
+        {(event.eventType === 'achievement' || event.eventType === 'track_completed') && (
+          <FeedAchievementBody event={event} locale={locale} />
         )}
         {event.eventType === 'level_up' && (
           <FeedLevelUpBody payload={event.payload} locale={locale} />
@@ -85,13 +85,31 @@ function FeedSessionBody({ payload, locale }: { payload: any; locale: Locale }) 
   )
 }
 
-function FeedAchievementBody({ payload, locale }: { payload: any; locale: Locale }) {
-  const name = payload.name?.[locale] ?? payload.achievementId
+function FeedAchievementBody({ event, locale }: { event: FeedEvent; locale: Locale }) {
+  const payload = event.payload
+  const isTrack = event.eventType === 'track_completed'
+  const titleKey = isTrack ? 'feedTrackCompletedTitle' : 'feedAchievementTitle'
+  const name = payload.name?.[locale] ?? payload.achievementId ?? payload.trackId
+  const xp = payload.xp ?? 0
+
   return (
-    <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
-      🏆 {t('feedAchievementTitle', locale)}
-      {' • '}
-      <span className="font-semibold" style={{ color: 'var(--main)' }}>{name}</span>
+    <div className="mt-2 rounded-lg p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{isTrack ? '🗺️' : '🏆'}</span>
+        <div className="flex-1">
+          <p className="text-xs" style={{ color: 'var(--sub)' }}>
+            {t(titleKey, locale)}
+          </p>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+            {name}
+          </p>
+          {xp > 0 && (
+            <p className="text-xs" style={{ color: 'var(--main)' }}>
+              +{xp} XP
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

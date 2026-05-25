@@ -28,6 +28,7 @@ export interface UserProgress {
   }
   languages: Record<string, LanguageProgress>
   history: SessionRecord[]
+  completedTrackIds?: string[]
 }
 
 export const STORAGE_KEY = 'syntaxlang-progress'
@@ -50,6 +51,7 @@ export function createDefaultProgress(): UserProgress {
     streak: { current: 0, lastPracticeDate: '' },
     languages: {},
     history: [],
+    completedTrackIds: [],
   }
 }
 
@@ -66,6 +68,7 @@ function normalizeProgress(progress?: Partial<UserProgress> | null): UserProgres
     },
     languages: progress.languages ?? {},
     history: Array.isArray(progress.history) ? progress.history.slice(0, MAX_HISTORY) : [],
+    completedTrackIds: Array.isArray(progress.completedTrackIds) ? progress.completedTrackIds : [],
   }
 }
 
