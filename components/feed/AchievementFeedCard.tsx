@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { t, type Locale } from '@/lib/i18n'
+import { type Locale } from '@/lib/i18n'
 import LikeButton from './LikeButton'
-import type { FeedEvent } from '@/lib/server/feed-store'
+import type { AchievementFeedEvent, TrackCompletedFeedEvent } from '@/lib/server/feed-store'
 
 interface AchievementFeedCardProps {
-  event: FeedEvent
+  event: AchievementFeedEvent | TrackCompletedFeedEvent
   locale: Locale
   currentUserId: string | null
 }
@@ -30,7 +30,8 @@ export default function AchievementFeedCard({
   const username = event.username
   const displayName = event.displayName ?? event.username
   const time = timeAgo(event.createdAt, locale)
-  const achievementName = event.payload.name?.[locale] ?? event.payload.achievementId
+  const fallbackId = event.eventType === 'track_completed' ? event.payload.trackId : event.payload.achievementId
+  const achievementName = event.payload.name[locale] || fallbackId
   const xp = event.payload.xp ?? 0
 
   return (
@@ -76,7 +77,7 @@ export default function AchievementFeedCard({
         {/* Achievement badge and info */}
         <div className="mt-2 rounded-lg p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>
           <div className="flex items-center gap-2">
-            <span className="text-xl">🏆</span>
+            <span className="text-xl">{event.eventType === 'track_completed' ? '🗺️' : '🏆'}</span>
             <div className="flex-1">
               <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
                 {achievementName}
