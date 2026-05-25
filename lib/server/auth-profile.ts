@@ -39,6 +39,7 @@ function mapProfile(row: Database['public']['Tables']['profiles']['Row']): AuthP
     username: row.username,
     displayName: row.display_name,
     avatarUrl: row.avatar_url,
+    bio: row.bio,
     provider: row.provider,
     emailVerified: row.email_verified,
     localImportedAt: row.local_imported_at,
@@ -60,17 +61,27 @@ export async function getOwnProfile(supabase: DBClient, userId: string): Promise
 export async function ensureProfileForUser(supabase: DBClient, user: User): Promise<AuthProfile> {
   const existing = await getOwnProfile(supabase, user.id)
   const basePayload = {
-    display_name: inferDisplayName(user),
-    avatar_url: inferAvatarUrl(user),
     provider: inferProvider(user),
     email_verified: Boolean(user.email_confirmed_at),
     onboarding_completed: inferProvider(user) === 'email' ? true : existing?.onboardingCompleted ?? false,
   }
 
   if (existing) {
+    const updatePayload: Database['public']['Tables']['profiles']['Update'] = {
+      ...basePayload,
+    }
+
+    if (!existing.displayName) {
+      updatePayload.display_name = inferDisplayName(user)
+    }
+
+    if (!existing.avatarUrl) {
+      updatePayload.avatar_url = inferAvatarUrl(user)
+    }
+
     const { data, error } = await supabase
       .from('profiles')
-      .update(basePayload)
+      .update(updatePayload)
       .eq('id', user.id)
       .select('*')
       .single()
@@ -90,6 +101,8 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
         id: user.id,
         username,
         ...basePayload,
+        display_name: inferDisplayName(user),
+        avatar_url: inferAvatarUrl(user),
       })
       .select('*')
       .single()
@@ -114,10 +127,11 @@ export async function updateProfileIdentity(
     username: string
     displayName?: string | null
     avatarUrl?: string | null
+    bio?: string | null
     onboardingCompleted?: boolean
   }
 ): Promise<AuthProfile> {
-  const payload: any = {
+  const payload: Database['public']['Tables']['profiles']['Update'] = {
     username: input.username,
     display_name: input.displayName ?? null,
     onboarding_completed: input.onboardingCompleted ?? true,
@@ -125,6 +139,10 @@ export async function updateProfileIdentity(
 
   if (input.avatarUrl !== undefined) {
     payload.avatar_url = input.avatarUrl
+  }
+
+  if (input.bio !== undefined) {
+    payload.bio = input.bio
   }
 
   const { data, error } = await supabase

@@ -82,11 +82,11 @@ export const codeLanguages: Language[] = [
 ]
 
 export const textLanguages: Language[] = [
-  { id: 'text-typing', label: 'Digitacao', color: '#10b981', snippets: typingSnippets },
-  { id: 'text-ptbr', label: 'Portugues', color: '#009739', snippets: ptbrSnippets },
+  { id: 'text-typing', label: 'Digitação', color: '#10b981', snippets: typingSnippets },
+  { id: 'text-ptbr', label: 'Português', color: '#009739', snippets: ptbrSnippets },
   { id: 'text-en',   label: 'English',   color: '#3c3b6e', snippets: enSnippets },
-  { id: 'text-es',   label: 'Espanol',   color: '#c60b1e', snippets: esSnippets },
-  { id: 'text-fr',   label: 'Francais',  color: '#002395', snippets: frSnippets },
+  { id: 'text-es',   label: 'Español',   color: '#c60b1e', snippets: esSnippets },
+  { id: 'text-fr',   label: 'Français',  color: '#002395', snippets: frSnippets },
 ]
 
 export const languages: Language[] = [...codeLanguages, ...textLanguages]
