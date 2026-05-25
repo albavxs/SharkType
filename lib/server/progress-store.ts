@@ -57,7 +57,7 @@ function buildInsertedSession(input: SessionInput, output: SessionOutput, create
   }
 }
 
-function buildProgressAggregate(userId: string, progress: UserProgress) {
+export function buildProgressAggregate(userId: string, progress: UserProgress) {
   const summary = deriveProgressSummary(progress)
 
   return {
@@ -68,6 +68,7 @@ function buildProgressAggregate(userId: string, progress: UserProgress) {
     best_wpm: summary.bestWPM,
     best_accuracy: summary.bestAccuracy,
     total_sessions: progress.history.length,
+    completed_track_ids: progress.completedTrackIds || [],
   }
 }
 
@@ -103,7 +104,7 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
   const [progressResult, languagesResult, sessionsResult] = await Promise.all([
     supabase.from('user_progress').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('user_language_progress').select('*').eq('user_id', userId),
-    supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(50),
+    supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
   ])
 
   if (progressResult.error) throw progressResult.error
@@ -116,6 +117,9 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
       current: progressResult.data.current_streak,
       lastPracticeDate: progressResult.data.last_practice_date ?? '',
     }
+    progress.completedTrackIds = Array.isArray(progressResult.data.completed_track_ids)
+      ? progressResult.data.completed_track_ids
+      : []
   }
 
   for (const row of languagesResult.data ?? []) {
@@ -260,9 +264,6 @@ export async function saveRemoteSession(
     if (output.leveledUp) {
       await recordFeedEvent(supabase, userId, 'level_up', { level: output.newLevel })
     }
-    for (const a of newlyUnlocked) {
-      await recordFeedEvent(supabase, userId, 'achievement', { achievementId: a.id, name: a.name })
-    }
   } catch {
     // Achievements/feed sao secundarios — ignora falha silenciosamente
   }
@@ -290,7 +291,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .order('score', { ascending: false })
     .order('total_xp', { ascending: false })
     .order('current_streak', { ascending: false })
-    .limit(100)
+    .limit(1000)
 
   if (!withScore.error && withScore.data) {
     return (withScore.data as any[])
@@ -318,7 +319,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .order('total_xp', { ascending: false })
     .order('best_wpm', { ascending: false })
     .order('current_streak', { ascending: false })
-    .limit(100)
+    .limit(1000)
 
   if (error) throw error
 

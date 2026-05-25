@@ -35,6 +35,7 @@ export interface Database {
           local_imported_at?: string | null
           onboarding_completed?: boolean
         }
+        Relationships: []
       }
       user_progress: {
         Row: {
@@ -45,6 +46,7 @@ export interface Database {
           best_wpm: number
           best_accuracy: number
           total_sessions: number
+          completed_track_ids: string[] | null
           updated_at: string
         }
         Insert: {
@@ -55,6 +57,7 @@ export interface Database {
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
+          completed_track_ids?: string[] | null
         }
         Update: {
           total_xp?: number
@@ -63,7 +66,9 @@ export interface Database {
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
+          completed_track_ids?: string[] | null
         }
+        Relationships: []
       }
       user_language_progress: {
         Row: {
@@ -89,6 +94,7 @@ export interface Database {
           best_accuracy?: number
           total_sessions?: number
         }
+        Relationships: []
       }
       typing_sessions: {
         Row: {
@@ -127,6 +133,7 @@ export interface Database {
           xp_earned?: number
           created_at?: string
         }
+        Relationships: []
       }
       achievements: {
         Row: {
@@ -159,6 +166,7 @@ export interface Database {
           description_pt?: string
           description_en?: string
         }
+        Relationships: []
       }
       user_achievements: {
         Row: {
@@ -174,6 +182,7 @@ export interface Database {
         Update: {
           unlocked_at?: string
         }
+        Relationships: []
       }
       follows: {
         Row: {
@@ -186,21 +195,23 @@ export interface Database {
           following_id: string
         }
         Update: never
+        Relationships: []
       }
       feed_events: {
         Row: {
           id: number
           user_id: string
-          event_type: 'session' | 'achievement' | 'level_up'
+          event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed'
           payload: Json
           created_at: string
         }
         Insert: {
           user_id: string
-          event_type: 'session' | 'achievement' | 'level_up'
+          event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed'
           payload: Json
         }
         Update: never
+        Relationships: []
       }
     }
     Views: {
@@ -215,6 +226,7 @@ export interface Database {
           current_streak: number
           total_sessions: number
         }
+        Relationships: []
       }
       leaderboard_with_score: {
         Row: {
@@ -230,7 +242,17 @@ export interface Database {
           level: number
           score: number
         }
+        Relationships: []
       }
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
     }
   }
 }

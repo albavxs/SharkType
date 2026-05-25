@@ -28,7 +28,7 @@ export default function AchievementToast({ newlyUnlocked, locale }: AchievementT
     const next = queue[0]
     setCurrent(next)
     setQueue(q => q.slice(1))
-    const timeout = setTimeout(() => setCurrent(null), 3000)
+    const timeout = setTimeout(() => setCurrent(null), 5000)
     return () => clearTimeout(timeout)
   }, [queue, current])
 
