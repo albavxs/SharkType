@@ -5,7 +5,7 @@ import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const env = getSupabaseEnv()
   if (!env.configured) {
@@ -15,7 +15,8 @@ export async function GET(
   const supabase = (await createClient()) as unknown as SupabaseClient<any>
 
   try {
-    const feedEventId = parseInt(params.id, 10)
+    const { id } = await params
+  const feedEventId = parseInt(id, 10)
     if (isNaN(feedEventId)) {
       return NextResponse.json({ error: 'Invalid feed event ID' }, { status: 400 })
     }
