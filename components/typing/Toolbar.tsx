@@ -167,7 +167,12 @@ export default function Toolbar({
         )}
         {profile ? (
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 rounded-full px-2 py-1" style={{ backgroundColor: 'var(--sub-alt)' }}>
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 rounded-full px-2 py-1 transition-all duration-150 hover:scale-105 active:scale-95"
+              style={{ backgroundColor: 'var(--sub-alt)' }}
+              title={locale === 'pt' ? 'Perfil' : 'Profile'}
+            >
               <span
                 className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
                 style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
@@ -181,14 +186,6 @@ export default function Toolbar({
               <span className="hidden lg:inline-block max-w-24 truncate text-sm" style={{ color: 'var(--text)' }}>
                 {profile.username}
               </span>
-            </div>
-            <Link
-              href="/profile"
-              className="rounded-full p-2 transition-all duration-150 hover:scale-105 active:scale-95"
-              style={{ color: 'var(--sub)' }}
-              title={locale === 'pt' ? 'Perfil' : 'Profile'}
-            >
-              <UserIcon size={16} />
             </Link>
             <button
               onClick={handleSignOut}
