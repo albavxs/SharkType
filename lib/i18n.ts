@@ -236,6 +236,7 @@ const dict: Record<string, Record<Locale, string>> = {
   feedSessionTitle: { pt: 'completou uma sessão', en: 'completed a session' },
   feedAchievementTitle: { pt: 'desbloqueou uma conquista', en: 'unlocked an achievement' },
   feedLevelUpTitle: { pt: 'subiu para o level', en: 'reached level' },
+  feedTrackCompletedTitle: { pt: 'concluiu a trilha', en: 'completed the track' },
   shareResult: { pt: 'Compartilhar resultado', en: 'Share result' },
   downloadCard: { pt: 'Baixar PNG', en: 'Download PNG' },
   shareCardSubtitle: { pt: 'Card pronto para Twitter / Discord', en: 'Card ready for Twitter / Discord' },
