@@ -1,29 +1,226 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database, Json } from '@/lib/supabase/database'
+import type { I18nString } from '@/lib/types'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
+type FeedEventRow = Database['public']['Tables']['feed_events']['Row']
+type RawFeedEventType = FeedEventRow['event_type']
+type JsonObject = { [key: string]: Json | undefined }
 
-export type FeedEventType = 'session' | 'achievement' | 'level_up'
+export type FeedEventType = Exclude<RawFeedEventType, 'achievement_unlock'>
 
-export interface FeedEvent {
+export interface FeedSessionPayload extends JsonObject {
+  languageId: string
+  wpm: number
+  accuracy: number
+  xpEarned: number
+}
+
+export interface FeedAchievementPayload extends JsonObject {
+  achievementId: string
+  name: I18nString
+  xp?: number
+}
+
+export interface FeedLevelUpPayload extends JsonObject {
+  level: number
+}
+
+export interface FeedFollowPayload extends JsonObject {
+  targetId: string
+  targetUsername: string
+}
+
+export interface FeedTrackCompletedPayload extends JsonObject {
+  trackId: string
+  name: I18nString
+  xp?: number
+}
+
+export interface FeedPayloadMap {
+  session: FeedSessionPayload
+  achievement: FeedAchievementPayload
+  level_up: FeedLevelUpPayload
+  follow: FeedFollowPayload
+  track_completed: FeedTrackCompletedPayload
+}
+
+type FeedEventBase<T extends FeedEventType> = {
   id: number
   userId: string
   username: string
   displayName: string | null
   avatarUrl: string | null
-  eventType: FeedEventType
-  payload: Record<string, unknown>
+  eventType: T
+  payload: FeedPayloadMap[T]
   createdAt: string
+}
+
+export type SessionFeedEvent = FeedEventBase<'session'>
+export type AchievementFeedEvent = FeedEventBase<'achievement'>
+export type LevelUpFeedEvent = FeedEventBase<'level_up'>
+export type FollowFeedEvent = FeedEventBase<'follow'>
+export type TrackCompletedFeedEvent = FeedEventBase<'track_completed'>
+
+export type FeedEvent =
+  | SessionFeedEvent
+  | AchievementFeedEvent
+  | LevelUpFeedEvent
+  | FollowFeedEvent
+  | TrackCompletedFeedEvent
+
+type FeedEventQueryRow = Pick<FeedEventRow, 'id' | 'user_id' | 'event_type' | 'payload' | 'created_at'>
+
+function isJsonObject(value: Json | null): value is JsonObject {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function getString(value: JsonObject, key: string): string | null {
+  const result = value[key]
+  return typeof result === 'string' ? result : null
+}
+
+function getNumber(value: JsonObject, key: string): number | null {
+  const result = value[key]
+  return typeof result === 'number' ? result : null
+}
+
+function getI18nString(value: JsonObject, key: string): I18nString | null {
+  const raw = value[key]
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+
+  const record = raw as JsonObject
+  const pt = typeof record.pt === 'string' ? record.pt : null
+  const en = typeof record.en === 'string' ? record.en : null
+  if (!pt && !en) return null
+
+  return {
+    pt: pt ?? en ?? '',
+    en: en ?? pt ?? '',
+  }
+}
+
+function fallbackI18n(value: string, fallback = ''): I18nString {
+  const resolved = value || fallback
+  return { pt: resolved, en: resolved }
+}
+
+function normalizeAchievementPayload(payload: JsonObject): FeedAchievementPayload {
+  const achievementId = getString(payload, 'achievementId') ?? getString(payload, 'achievement_id') ?? 'achievement'
+  const name =
+    getI18nString(payload, 'name') ??
+    (() => {
+      const pt = getString(payload, 'achievement_name_pt')
+      const en = getString(payload, 'achievement_name_en')
+      if (!pt && !en) return null
+      return {
+        pt: pt ?? en ?? achievementId,
+        en: en ?? pt ?? achievementId,
+      }
+    })() ??
+    fallbackI18n(achievementId, 'achievement')
+
+  const xp = getNumber(payload, 'xp')
+
+  return xp === null
+    ? { achievementId, name }
+    : { achievementId, name, xp }
+}
+
+function normalizeTrackCompletedPayload(payload: JsonObject): FeedTrackCompletedPayload {
+  const trackId = getString(payload, 'trackId') ?? 'track'
+  const name = getI18nString(payload, 'name') ?? fallbackI18n(trackId, 'track')
+  const xp = getNumber(payload, 'xp')
+
+  return xp === null
+    ? { trackId, name }
+    : { trackId, name, xp }
+}
+
+function normalizeFeedEvent(row: FeedEventQueryRow): FeedEvent | null {
+  const payload = isJsonObject(row.payload) ? row.payload : {}
+
+  switch (row.event_type as RawFeedEventType) {
+    case 'session':
+      return {
+        id: row.id,
+        userId: row.user_id,
+        username: 'unknown',
+        displayName: null,
+        avatarUrl: null,
+        eventType: 'session',
+        payload: {
+          languageId: getString(payload, 'languageId') ?? '',
+          wpm: getNumber(payload, 'wpm') ?? 0,
+          accuracy: getNumber(payload, 'accuracy') ?? 0,
+          xpEarned: getNumber(payload, 'xpEarned') ?? 0,
+        },
+        createdAt: row.created_at,
+      }
+    case 'achievement':
+    case 'achievement_unlock':
+      return {
+        id: row.id,
+        userId: row.user_id,
+        username: 'unknown',
+        displayName: null,
+        avatarUrl: null,
+        eventType: 'achievement',
+        payload: normalizeAchievementPayload(payload),
+        createdAt: row.created_at,
+      }
+    case 'level_up':
+      return {
+        id: row.id,
+        userId: row.user_id,
+        username: 'unknown',
+        displayName: null,
+        avatarUrl: null,
+        eventType: 'level_up',
+        payload: {
+          level: getNumber(payload, 'level') ?? 0,
+        },
+        createdAt: row.created_at,
+      }
+    case 'follow':
+      return {
+        id: row.id,
+        userId: row.user_id,
+        username: 'unknown',
+        displayName: null,
+        avatarUrl: null,
+        eventType: 'follow',
+        payload: {
+          targetId: getString(payload, 'targetId') ?? '',
+          targetUsername: getString(payload, 'targetUsername') ?? 'unknown',
+        },
+        createdAt: row.created_at,
+      }
+    case 'track_completed':
+      return {
+        id: row.id,
+        userId: row.user_id,
+        username: 'unknown',
+        displayName: null,
+        avatarUrl: null,
+        eventType: 'track_completed',
+        payload: normalizeTrackCompletedPayload(payload),
+        createdAt: row.created_at,
+      }
+    default:
+      return null
+  }
 }
 
 /**
  * Insere evento no feed_events. Best-effort: erros sao swallowados
  * (chamado dentro de saveRemoteSession e checkUnlocks).
  */
-export async function recordFeedEvent(
+export async function recordFeedEvent<T extends FeedEventType>(
   supabase: DBClient,
   userId: string,
-  eventType: FeedEventType,
-  payload: Record<string, unknown>,
+  eventType: T,
+  payload: FeedPayloadMap[T],
 ): Promise<void> {
   try {
     await supabase.from('feed_events').insert({ user_id: userId, event_type: eventType, payload })
@@ -51,7 +248,7 @@ export async function listFeedEvents(
       .select('following_id')
       .eq('follower_id', viewerId)
     if (followsRes.error) return []
-    userIds = (followsRes.data ?? []).map((r: any) => r.following_id)
+    userIds = (followsRes.data ?? []).map((row) => row.following_id)
     if (userIds.length === 0) return []
   }
 
@@ -65,18 +262,14 @@ export async function listFeedEvents(
 
   const eventsRes = await query
   if (eventsRes.error) return []
-  const events = (eventsRes.data ?? []) as Array<{
-    id: number
-    user_id: string
-    event_type: FeedEventType
-    payload: Record<string, unknown>
-    created_at: string
-  }>
+  const events = (eventsRes.data ?? [])
+    .map(normalizeFeedEvent)
+    .filter((event): event is FeedEvent => Boolean(event))
 
   if (events.length === 0) return []
 
   // Hidrata com perfis (1 query batched)
-  const distinctUserIds = Array.from(new Set(events.map(e => e.user_id)))
+  const distinctUserIds = Array.from(new Set(events.map((event) => event.userId)))
   const profilesRes = await supabase
     .from('profiles')
     .select('id, username, display_name, avatar_url')
@@ -85,24 +278,20 @@ export async function listFeedEvents(
 
   const profileMap = new Map<string, { username: string; display_name: string | null; avatar_url: string | null }>()
   for (const p of profilesRes.data ?? []) {
-    profileMap.set((p as any).id, {
-      username: (p as any).username,
-      display_name: (p as any).display_name,
-      avatar_url: (p as any).avatar_url,
+    profileMap.set(p.id, {
+      username: p.username,
+      display_name: p.display_name,
+      avatar_url: p.avatar_url,
     })
   }
 
-  return events.map(e => {
-    const profile = profileMap.get(e.user_id)
+  return events.map((event) => {
+    const profile = profileMap.get(event.userId)
     return {
-      id: e.id,
-      userId: e.user_id,
+      ...event,
       username: profile?.username ?? 'unknown',
       displayName: profile?.display_name ?? null,
       avatarUrl: profile?.avatar_url ?? null,
-      eventType: e.event_type,
-      payload: e.payload,
-      createdAt: e.created_at,
     }
   })
 }

@@ -28,14 +28,19 @@ export interface UserProgress {
   }
   languages: Record<string, LanguageProgress>
   history: SessionRecord[]
+  completedTrackIds?: string[]
 }
 
 export const STORAGE_KEY = 'syntaxlang-progress'
-export const MAX_HISTORY = 50
+export const MAX_HISTORY = 1000 // Aumentado significativamente
 
 // Level thresholds: floor(25 * n^1.6)
-const LEVEL_THRESHOLDS: number[] = Array.from({ length: 21 }, (_, n) =>
-  Math.floor(25 * Math.pow(n, 1.6))
+export function getThresholdForLevel(n: number): number {
+  return Math.floor(25 * Math.pow(n, 1.6))
+}
+
+const LEVEL_THRESHOLDS: number[] = Array.from({ length: 101 }, (_, n) =>
+  getThresholdForLevel(n)
 )
 
 export function createDefaultProgress(): UserProgress {
@@ -46,6 +51,7 @@ export function createDefaultProgress(): UserProgress {
     streak: { current: 0, lastPracticeDate: '' },
     languages: {},
     history: [],
+    completedTrackIds: [],
   }
 }
 
@@ -62,6 +68,7 @@ function normalizeProgress(progress?: Partial<UserProgress> | null): UserProgres
     },
     languages: progress.languages ?? {},
     history: Array.isArray(progress.history) ? progress.history.slice(0, MAX_HISTORY) : [],
+    completedTrackIds: Array.isArray(progress.completedTrackIds) ? progress.completedTrackIds : [],
   }
 }
 
@@ -94,8 +101,8 @@ export function getLevel(xp: number): {
       break
     }
   }
-  const currentThreshold = LEVEL_THRESHOLDS[level - 1] || 0
-  const nextThreshold = LEVEL_THRESHOLDS[level] || currentThreshold + 100
+  const currentThreshold = getThresholdForLevel(level - 1)
+  const nextThreshold = getThresholdForLevel(level)
   const progress = xp - currentThreshold
   const needed = nextThreshold - currentThreshold
   return {
