@@ -103,7 +103,7 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
   const [progressResult, languagesResult, sessionsResult] = await Promise.all([
     supabase.from('user_progress').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('user_language_progress').select('*').eq('user_id', userId),
-    supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(50),
+    supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
   ])
 
   if (progressResult.error) throw progressResult.error
@@ -290,7 +290,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .order('score', { ascending: false })
     .order('total_xp', { ascending: false })
     .order('current_streak', { ascending: false })
-    .limit(100)
+    .limit(1000)
 
   if (!withScore.error && withScore.data) {
     return (withScore.data as any[])
@@ -318,7 +318,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .order('total_xp', { ascending: false })
     .order('best_wpm', { ascending: false })
     .order('current_streak', { ascending: false })
-    .limit(100)
+    .limit(1000)
 
   if (error) throw error
 
