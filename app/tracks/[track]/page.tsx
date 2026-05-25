@@ -25,7 +25,9 @@ import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
 import ThemeSelector from '@/components/typing/ThemeSelector'
 import SceneWrapper from '@/components/three/SceneWrapper'
-import { ArrowLeftIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
+import TrackBreadcrumb from '@/components/typing/TrackBreadcrumb'
+import LanguageTabs from '@/components/typing/LanguageTabs'
+import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 import HelpModal from '@/components/typing/HelpModal'
 import StreakToast from '@/components/gamification/StreakToast'
@@ -295,37 +297,21 @@ export default function TrackPracticePage() {
           isTyping={isTyping}
         />
 
-        {/* Breadcrumb + progress */}
-        <div className={`px-3 sm:px-6 py-2 flex items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
-          <Link href="/tracks" className="flex items-center gap-1.5 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--sub)' }}>
-            <ArrowLeftIcon size={14} /> {t('pageTracks', locale)}
-          </Link>
-          <span style={{ color: 'var(--sub)', opacity: 0.4 }}>/</span>
-          <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{track.name[locale]}</span>
-          {snippet && (
-            <span className="text-xs ml-auto" style={{ color: 'var(--sub)' }}>{seqIndex + 1}/{trackSnippets.length}</span>
-          )}
-        </div>
+        <TrackBreadcrumb
+          trackName={track.name[locale]}
+          current={seqIndex + 1}
+          total={trackSnippets.length}
+          showProgress={!!snippet}
+          locale={locale}
+          isTyping={isTyping}
+        />
 
-        {/* Language tabs */}
-        {availableLanguages.length > 0 && (
-          <div className={`px-3 sm:px-6 pb-3 flex items-center gap-1.5 sm:gap-2 flex-wrap transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
-            {availableLanguages.map(lang => (
-              <button
-                key={lang.id}
-                onClick={() => handleLangChange(lang)}
-                className="flex items-center gap-1.5 px-3 py-1 text-xs rounded-full transition-all duration-150 hover:brightness-110 hover:scale-105 active:scale-95 cursor-pointer"
-                style={{
-                  backgroundColor: lang.id === selectedLang?.id ? 'var(--main)' : 'var(--sub-alt)',
-                  color: lang.id === selectedLang?.id ? 'var(--bg)' : 'var(--text)',
-                }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: lang.id === selectedLang?.id ? 'var(--bg)' : lang.color }} />
-                {lang.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <LanguageTabs
+          languages={availableLanguages}
+          selectedId={selectedLang?.id ?? null}
+          onSelect={handleLangChange}
+          isTyping={isTyping}
+        />
 
         <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6 min-h-0">
           {!snippet ? (
@@ -357,32 +343,7 @@ export default function TrackPracticePage() {
                   {t('hintShiftTab', locale)}
                 </div>
               )}
-              {/* Nav buttons — icon-only, hide when typing */}
-              <div className={`w-full max-w-3xl mt-6 flex justify-center transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
-                <div className="flex items-center gap-4">
-                  <button onClick={handlePrev} className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
-                    style={{ color: 'var(--sub)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
-                    aria-label={t('prev', locale)} title={t('prev', locale)}>
-                    <ArrowLeftIcon size={18} />
-                  </button>
-                  <button onClick={handleRestart} className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
-                    style={{ color: 'var(--sub)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
-                    aria-label={t('restart', locale)} title={t('restart', locale)}>
-                    <RefreshIcon size={18} />
-                  </button>
-                  <button onClick={handleNext} className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
-                    style={{ color: 'var(--sub)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
-                    aria-label={t('next', locale)} title={t('next', locale)}>
-                    <ArrowRightIcon size={18} />
-                  </button>
-                </div>
-              </div>
+              <PracticeNavButtons onPrev={handlePrev} onRestart={handleRestart} onNext={handleNext} locale={locale} isTyping={isTyping} />
             </>
           )}
         </div>
