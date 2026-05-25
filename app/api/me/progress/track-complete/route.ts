@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv } from '@/lib/supabase/env'
-import { getUserProgressSnapshot } from '@/lib/server/progress-store'
+import { getUserProgressSnapshot, buildProgressAggregate } from '@/lib/server/progress-store'
 import { checkUnlocks } from '@/lib/server/achievements'
 import { recordFeedEvent } from '@/lib/server/feed-store'
 import { getTrackById } from '@/data/tracks'
@@ -56,14 +56,6 @@ export async function POST(request: Request) {
       trackId,
       name: track.name,
     })
-
-    // Registra achievements no feed
-    for (const a of newlyUnlocked) {
-      await recordFeedEvent(supabase, user.id, 'achievement', {
-        achievementId: a.id,
-        name: a.name,
-      })
-    }
 
     return NextResponse.json({
       ok: true,
