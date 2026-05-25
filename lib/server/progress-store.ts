@@ -228,6 +228,10 @@ async function seedHistoricalFeedFromSessions(
   }
 }
 
+function isMissingTable(error: any): boolean {
+  return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
+}
+
 export async function ensureUserSocialBackfill(supabase: DBClient, userId: string) {
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
@@ -235,7 +239,10 @@ export async function ensureUserSocialBackfill(supabase: DBClient, userId: strin
     .eq('id', userId)
     .maybeSingle()
 
-  if (profileError) throw profileError
+  if (profileError) {
+    if (isMissingTable(profileError)) return
+    throw profileError
+  }
   if (!profile) return
 
   const needsStats = !profile.stats_reconciled_at
@@ -261,20 +268,25 @@ export async function ensureUserSocialBackfill(supabase: DBClient, userId: strin
     ? await supabase.from('feed_events').select('id').eq('user_id', userId).limit(1)
     : null
 
-  if (needsStats) {
-    await syncProgressAggregates(supabase, userId, progress)
-  }
+  try {
+    if (needsStats) {
+      await syncProgressAggregates(supabase, userId, progress)
+    }
 
-  if (needsSocial) {
-    const shouldSeedHistoricalSessions = !existingFeed?.error && (existingFeed?.data ?? []).length === 0
-    await checkUnlocks(supabase, userId, progress)
-    await seedHistoricalFeedFromSessions(supabase, userId, sessions, shouldSeedHistoricalSessions)
-  }
+    if (needsSocial) {
+      const shouldSeedHistoricalSessions = !existingFeed?.error && (existingFeed?.data ?? []).length === 0
+      await checkUnlocks(supabase, userId, progress)
+      await seedHistoricalFeedFromSessions(supabase, userId, sessions, shouldSeedHistoricalSessions)
+    }
 
-  await markProfileSocialState(supabase, userId, {
-    stats_reconciled_at: needsStats ? now : profile.stats_reconciled_at,
-    social_seeded_at: needsSocial ? now : profile.social_seeded_at,
-  })
+    await markProfileSocialState(supabase, userId, {
+      stats_reconciled_at: needsStats ? now : profile.stats_reconciled_at,
+      social_seeded_at: needsSocial ? now : profile.social_seeded_at,
+    })
+  } catch (err) {
+    if (isMissingTable(err)) return
+    throw err
+  }
 }
 
 export async function getUserProgressSnapshot(supabase: DBClient, userId: string): Promise<UserProgress> {
@@ -286,9 +298,9 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
     supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
   ])
 
-  if (progressResult.error) throw progressResult.error
-  if (languagesResult.error) throw languagesResult.error
-  if (sessionsResult.error) throw sessionsResult.error
+  if (progressResult.error && !isMissingTable(progressResult.error)) throw progressResult.error
+  if (languagesResult.error && !isMissingTable(languagesResult.error)) throw languagesResult.error
+  if (sessionsResult.error && !isMissingTable(sessionsResult.error)) throw sessionsResult.error
 
   if (progressResult.data) {
     progress.totalXP = progressResult.data.total_xp
@@ -381,23 +393,28 @@ export async function replaceRemoteProgress(supabase: DBClient, userId: string, 
   const languageRows = buildLanguageRows(userId, progress)
   const sessionRows = buildImportedSessionRows(userId, progress.history)
 
-  const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
-  if (deleteLanguages.error) throw deleteLanguages.error
+  try {
+    const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
+    if (deleteLanguages.error && !isMissingTable(deleteLanguages.error)) throw deleteLanguages.error
 
-  const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
-  if (deleteSessions.error) throw deleteSessions.error
+    const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
+    if (deleteSessions.error && !isMissingTable(deleteSessions.error)) throw deleteSessions.error
 
-  const progressUpsert = await supabase.from('user_progress').upsert(aggregate, { onConflict: 'user_id' })
-  if (progressUpsert.error) throw progressUpsert.error
+    const progressUpsert = await supabase.from('user_progress').upsert(aggregate, { onConflict: 'user_id' })
+    if (progressUpsert.error && !isMissingTable(progressUpsert.error)) throw progressUpsert.error
 
-  if (languageRows.length > 0) {
-    const languageInsert = await supabase.from('user_language_progress').insert(languageRows)
-    if (languageInsert.error) throw languageInsert.error
-  }
+    if (languageRows.length > 0) {
+      const languageInsert = await supabase.from('user_language_progress').insert(languageRows)
+      if (languageInsert.error && !isMissingTable(languageInsert.error)) throw languageInsert.error
+    }
 
-  if (sessionRows.length > 0) {
-    const sessionInsert = await supabase.from('typing_sessions').insert(sessionRows)
-    if (sessionInsert.error) throw sessionInsert.error
+    if (sessionRows.length > 0) {
+      const sessionInsert = await supabase.from('typing_sessions').insert(sessionRows)
+      if (sessionInsert.error && !isMissingTable(sessionInsert.error)) throw sessionInsert.error
+    }
+  } catch (err) {
+    if (isMissingTable(err)) return
+    throw err
   }
 }
 
@@ -433,9 +450,9 @@ export async function saveRemoteSession(
     }),
   ])
 
-  if (progressUpsert.error) throw progressUpsert.error
-  if (languageUpsert.error) throw languageUpsert.error
-  if (sessionInsert.error) throw sessionInsert.error
+  if (progressUpsert.error && !isMissingTable(progressUpsert.error)) throw progressUpsert.error
+  if (languageUpsert.error && !isMissingTable(languageUpsert.error)) throw languageUpsert.error
+  if (sessionInsert.error && !isMissingTable(sessionInsert.error)) throw sessionInsert.error
 
   // Hooks: achievements + feed events. Falhas aqui nao quebram a sessao.
   try {
@@ -460,14 +477,19 @@ export async function saveRemoteSession(
 }
 
 export async function resetRemoteProgress(supabase: DBClient, userId: string) {
-  const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
-  if (deleteLanguages.error) throw deleteLanguages.error
+  try {
+    const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
+    if (deleteLanguages.error && !isMissingTable(deleteLanguages.error)) throw deleteLanguages.error
 
-  const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
-  if (deleteSessions.error) throw deleteSessions.error
+    const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
+    if (deleteSessions.error && !isMissingTable(deleteSessions.error)) throw deleteSessions.error
 
-  const deleteProgress = await supabase.from('user_progress').delete().eq('user_id', userId)
-  if (deleteProgress.error) throw deleteProgress.error
+    const deleteProgress = await supabase.from('user_progress').delete().eq('user_id', userId)
+    if (deleteProgress.error && !isMissingTable(deleteProgress.error)) throw deleteProgress.error
+  } catch (err) {
+    if (isMissingTable(err)) return
+    throw err
+  }
 }
 
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
