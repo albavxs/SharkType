@@ -54,7 +54,11 @@ export async function POST(request: Request) {
     })
 
   if (uploadErr) {
-    return NextResponse.json({ error: 'Could not upload avatar.' }, { status: 500 })
+    const uploadMessage = String(uploadErr.message ?? '')
+    const hint = uploadMessage
+      ? `${uploadMessage} Ensure the avatars bucket exists and allows authenticated uploads.`
+      : 'Could not upload avatar. Ensure the avatars bucket exists and allows authenticated uploads.'
+    return NextResponse.json({ error: hint }, { status: 500 })
   }
 
   const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(path)
@@ -68,7 +72,7 @@ export async function POST(request: Request) {
     .eq('id', user.id)
 
   if (updateErr) {
-    return NextResponse.json({ error: 'Could not update avatar.' }, { status: 500 })
+    return NextResponse.json({ error: 'Could not update avatar on the profile row.' }, { status: 500 })
   }
 
   return NextResponse.json({ avatarUrl })

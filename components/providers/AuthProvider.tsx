@@ -38,7 +38,12 @@ interface AuthContextValue {
   verifyOtp: (email: string, token: string, type: MobileOtpType) => Promise<AuthActionResult>
   resendEmailCode: (email: string) => Promise<AuthActionResult>
   resetPassword: (email: string) => Promise<AuthActionResult>
-  updateProfile: (input: { username: string; displayName?: string | null; avatarUrl?: string | null }) => Promise<AuthActionResult>
+  updateProfile: (input: {
+    username: string
+    displayName?: string | null
+    avatarUrl?: string | null
+    bio?: string | null
+  }) => Promise<AuthActionResult>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
@@ -321,7 +326,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function updateProfile(input: { username: string; displayName?: string | null; avatarUrl?: string | null }): Promise<AuthActionResult> {
+  async function updateProfile(input: {
+    username: string
+    displayName?: string | null
+    avatarUrl?: string | null
+    bio?: string | null
+  }): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
       return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
