@@ -226,6 +226,8 @@ const dict: Record<string, Record<Locale, string>> = {
   streakIncreased: { pt: 'Streak aumentou!', en: 'Streak increased!' },
   dayStreak: { pt: 'dia', en: 'day' },
   daysStreak: { pt: 'dias', en: 'days' },
+  newFollower: { pt: 'Novo seguidor!', en: 'New follower!' },
+  followedYou: { pt: 'seguiu você', en: 'followed you' },
   navFeed: { pt: 'Feed', en: 'Feed' },
   feedGlobal: { pt: 'Global', en: 'Global' },
   feedFollowing: { pt: 'Seguindo', en: 'Following' },
