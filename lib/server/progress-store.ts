@@ -68,6 +68,7 @@ function buildProgressAggregate(userId: string, progress: UserProgress) {
     best_wpm: summary.bestWPM,
     best_accuracy: summary.bestAccuracy,
     total_sessions: progress.history.length,
+    completed_track_ids: progress.completedTrackIds || [],
   }
 }
 
@@ -116,6 +117,9 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
       current: progressResult.data.current_streak,
       lastPracticeDate: progressResult.data.last_practice_date ?? '',
     }
+    progress.completedTrackIds = Array.isArray(progressResult.data.completed_track_ids)
+      ? progressResult.data.completed_track_ids
+      : []
   }
 
   for (const row of languagesResult.data ?? []) {
