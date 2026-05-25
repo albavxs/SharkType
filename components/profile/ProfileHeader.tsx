@@ -1,6 +1,5 @@
 'use client'
 
-import { getTierByLevel } from '@/lib/tiers'
 import { t, type Locale } from '@/lib/i18n'
 import StreakBadge from './StreakBadge'
 import FollowerCounts from './FollowerCounts'
@@ -13,15 +12,24 @@ interface ProfileHeaderProps {
   isOwn: boolean
   viewerAuthenticated: boolean
   onFollowChange?: (isFollowing: boolean) => void
+  isEditing?: boolean
+  onEditToggle?: () => void
 }
 
-export default function ProfileHeader({ profile, locale, isOwn, viewerAuthenticated, onFollowChange }: ProfileHeaderProps) {
-  const tier = getTierByLevel(profile.level)
-
+export default function ProfileHeader({
+  profile,
+  locale,
+  isOwn,
+  viewerAuthenticated,
+  onFollowChange,
+  isEditing = false,
+  onEditToggle,
+}: ProfileHeaderProps) {
+  const rank = profile.rank
   return (
     <div className="relative overflow-hidden rounded-[2rem] border" style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)' }}>
       {/* Banner */}
-      <div className="h-24 sm:h-32" style={{ background: tier.gradient }} />
+      <div className="h-28 sm:h-36" style={{ background: rank.gradient }} />
 
       {/* Conteudo */}
       <div className="flex flex-col gap-4 px-5 py-5 sm:px-7 sm:py-6" style={{ backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)' }}>
@@ -31,7 +39,7 @@ export default function ProfileHeader({ profile, locale, isOwn, viewerAuthentica
             <span
               className="-mt-16 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 text-3xl font-semibold sm:-mt-20 sm:h-28 sm:w-28"
               style={{
-                borderColor: tier.color,
+                borderColor: rank.color,
                 backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)',
                 color: 'var(--main)',
               }}
@@ -49,11 +57,31 @@ export default function ProfileHeader({ profile, locale, isOwn, viewerAuthentica
               </h1>
               <p className="text-sm" style={{ color: 'var(--sub)' }}>@{profile.username}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="rounded-full px-3 py-0.5 text-xs font-semibold" style={{ backgroundColor: tier.color, color: 'var(--bg)' }}>
-                  {tier.name[locale]}
+                <span className="rounded-full px-3 py-0.5 text-xs font-semibold" style={{ backgroundColor: rank.color, color: 'var(--bg)' }}>
+                  {rank.label[locale]}
                 </span>
                 <span className="text-xs" style={{ color: 'var(--sub)' }}>Level {profile.level}</span>
+                <span className="text-xs" style={{ color: 'var(--sub)' }}>{t('rankScore', locale)} {profile.score}</span>
                 <StreakBadge streak={profile.currentStreak} locale={locale} size="sm" />
+              </div>
+              {profile.bio ? (
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed" style={{ color: 'var(--text)' }}>
+                  {profile.bio}
+                </p>
+              ) : null}
+              <div className="mt-3 max-w-sm">
+                <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+                  <span>{t('rankProgress', locale)}</span>
+                  <span className="tabular-nums">
+                    {rank.maxScore !== null ? `${rank.score} / ${rank.maxScore}` : `${rank.score}+`}
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 42%, transparent)' }}>
+                  <div
+                    className="h-full transition-all duration-500 ease-out"
+                    style={{ width: `${rank.progressPercent}%`, backgroundColor: rank.color }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -61,6 +89,16 @@ export default function ProfileHeader({ profile, locale, isOwn, viewerAuthentica
           {/* Follow + counts */}
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <FollowerCounts followers={profile.followerCount} following={profile.followingCount} locale={locale} />
+            {isOwn && onEditToggle ? (
+              <button
+                type="button"
+                onClick={onEditToggle}
+                className="rounded-full px-4 py-1.5 text-sm font-semibold transition-all duration-150 hover:scale-105 active:scale-95"
+                style={{ backgroundColor: isEditing ? 'var(--main)' : 'var(--sub-alt)', color: isEditing ? 'var(--bg)' : 'var(--text)' }}
+              >
+                {isEditing ? t('profileDoneEditing', locale) : t('profileEditing', locale)}
+              </button>
+            ) : null}
             {!isOwn && viewerAuthenticated && (
               <FollowButton
                 username={profile.username}

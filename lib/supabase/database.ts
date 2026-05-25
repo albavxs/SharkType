@@ -9,10 +9,13 @@ export interface Database {
           username: string
           display_name: string | null
           avatar_url: string | null
+          bio: string | null
           provider: string | null
           email_verified: boolean
           local_imported_at: string | null
           onboarding_completed: boolean
+          stats_reconciled_at: string | null
+          social_seeded_at: string | null
           created_at: string
           updated_at: string
         }
@@ -21,19 +24,25 @@ export interface Database {
           username: string
           display_name?: string | null
           avatar_url?: string | null
+          bio?: string | null
           provider?: string | null
           email_verified?: boolean
           local_imported_at?: string | null
           onboarding_completed?: boolean
+          stats_reconciled_at?: string | null
+          social_seeded_at?: string | null
         }
         Update: {
           username?: string
           display_name?: string | null
           avatar_url?: string | null
+          bio?: string | null
           provider?: string | null
           email_verified?: boolean
           local_imported_at?: string | null
           onboarding_completed?: boolean
+          stats_reconciled_at?: string | null
+          social_seeded_at?: string | null
         }
         Relationships: []
       }
@@ -209,6 +218,7 @@ export interface Database {
           user_id: string
           event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed'
           payload: Json
+          created_at?: string
         }
         Update: never
         Relationships: []
