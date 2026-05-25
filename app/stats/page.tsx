@@ -18,7 +18,7 @@ export default function StatsPage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       <div className="px-3 sm:px-6 py-4">
-        <Link href="/" className="flex items-center gap-1.5 text-sm transition-all duration-150 hover:scale-105 active:scale-95" style={{ color: 'var(--sub)' }}>
+        <Link href="/" className="flex items-center gap-1.5 text-sm" style={{ color: 'var(--sub)' }}>
           <ArrowLeftIcon size={14} />
           {t('back', locale)}
         </Link>
