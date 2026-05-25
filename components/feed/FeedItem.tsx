@@ -1,11 +1,15 @@
+'use client'
+
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { getLanguageById } from '@/data'
+import LikeButton from './LikeButton'
 import type { FeedEvent } from '@/lib/server/feed-store'
 
 interface FeedItemProps {
   event: FeedEvent
   locale: Locale
+  currentUserId?: string | null
 }
 
 function timeAgo(iso: string, locale: Locale): string {
@@ -19,7 +23,7 @@ function timeAgo(iso: string, locale: Locale): string {
   return `${days}d`
 }
 
-export default function FeedItem({ event, locale }: FeedItemProps) {
+export default function FeedItem({ event, locale, currentUserId = null }: FeedItemProps) {
   const username = event.username
   const displayName = event.displayName ?? event.username
   const time = timeAgo(event.createdAt, locale)
@@ -60,6 +64,7 @@ export default function FeedItem({ event, locale }: FeedItemProps) {
         {event.eventType === 'level_up' && (
           <FeedLevelUpBody payload={event.payload} locale={locale} />
         )}
+        <LikeButton feedEventId={event.id} currentUserId={currentUserId} />
       </div>
     </div>
   )
