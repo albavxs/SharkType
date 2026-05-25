@@ -13,14 +13,19 @@ export default function ProfilePage() {
   const { user, profile, isLoading } = useAuth()
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isLoading) return
+
+    if (!user) {
       router.replace('/login')
       return
     }
 
-    if (!isLoading && user && profile) {
+    if (profile) {
       router.replace(`/profile/${profile.username}`)
+      return
     }
+
+    router.replace('/')
   }, [isLoading, user, profile, router])
 
   return (

@@ -331,7 +331,9 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
 }
 
 export async function getProfileAndProgress(supabase: DBClient, user: { id: string }) {
-  await ensureUserSocialBackfill(supabase, user.id)
+  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
+    console.error('[getProfileAndProgress] social backfill failed (non-fatal):', err)
+  })
   const profile = await getOwnProfile(supabase, user.id)
   if (!profile) {
     throw new Error('Profile not found for authenticated user.')
@@ -346,7 +348,9 @@ export async function bootstrapProfileAndProgress(
   user: Parameters<typeof ensureProfileForUser>[1]
 ) {
   const profile = await ensureProfileForUser(supabase, user)
-  await ensureUserSocialBackfill(supabase, user.id)
+  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
+    console.error('[bootstrapProfileAndProgress] social backfill failed (non-fatal):', err)
+  })
   const progress = await getUserProgressSnapshot(supabase, user.id)
   return { profile, progress }
 }
@@ -380,7 +384,9 @@ export async function importLocalProgress(
 
   if (error) throw error
 
-  await ensureUserSocialBackfill(supabase, user.id)
+  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
+    console.error('[importLocalProgress] social backfill failed (non-fatal):', err)
+  })
 
   return {
     profile: mapProfileRow(data),
@@ -423,7 +429,9 @@ export async function saveRemoteSession(
   userId: string,
   input: SessionInput
 ): Promise<{ progress: UserProgress; output: SessionOutput }> {
-  await ensureUserSocialBackfill(supabase, userId)
+  ensureUserSocialBackfill(supabase, userId).catch((err) => {
+    console.error('[saveRemoteSession] social backfill failed (non-fatal):', err)
+  })
   const current = await getUserProgressSnapshot(supabase, userId)
   const { progress, output } = applySessionToProgress(current, input)
 
