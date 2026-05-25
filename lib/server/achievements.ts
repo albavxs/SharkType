@@ -1,11 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { UserProgress } from '@/lib/gamification'
+import type { Database } from '@/lib/supabase/database'
+import { recordFeedEvent } from './feed-store'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
 
 export interface AchievementRow {
   id: string
-  category: 'sessions' | 'streak' | 'xp' | 'language' | 'ranking'
+  category: 'sessions' | 'streak' | 'xp' | 'language' | 'ranking' | 'track'
   threshold: number | null
   icon: string
   name: { pt: string; en: string }
@@ -20,6 +22,8 @@ interface UnlockContext {
   completedLanguagesCount: number
   /** Rank no leaderboard (1-indexed). null se nao estiver no top 100. */
   leaderboardRank: number | null
+  /** IDs das trilhas concluidas */
+  completedTrackIds: string[]
 }
 
 /**
@@ -61,7 +65,7 @@ export async function checkUnlocks(
   if (alreadyRes.error && !isMissingTable(alreadyRes.error)) {
     return []
   }
-  const alreadyIds = new Set<string>((alreadyRes.data ?? []).map((r: any) => r.achievement_id))
+  const alreadyIds = new Set<string>((alreadyRes.data ?? []).map((row) => row.achievement_id))
 
   // 3. Calcula contexto
   const ctx: UnlockContext = {
@@ -70,6 +74,7 @@ export async function checkUnlocks(
     totalXP: progress.totalXP,
     completedLanguagesCount: Object.values(progress.languages).filter(l => l.completedSnippetIds.length > 0).length,
     leaderboardRank,
+    completedTrackIds: progress.completedTrackIds || [],
   }
 
   // 4. Filtra novos unlocks
@@ -86,6 +91,19 @@ export async function checkUnlocks(
   // 5. Persiste
   const insertRows = newlyUnlocked.map(a => ({ user_id: userId, achievement_id: a.id }))
   await supabase.from('user_achievements').insert(insertRows)
+
+  // 6. Cria eventos sociais do feed usando o payload canonico.
+  await Promise.all(
+    newlyUnlocked.map((achievement) =>
+      recordFeedEvent(supabase, userId, 'achievement', {
+        achievementId: achievement.id,
+        name: {
+          pt: achievement.name_pt,
+          en: achievement.name_en,
+        },
+      })
+    )
+  )
 
   return newlyUnlocked.map(row => ({
     id: row.id,
@@ -104,6 +122,7 @@ function matchesUnlock(category: AchievementRow['category'], threshold: number, 
     case 'xp':       return ctx.totalXP >= threshold
     case 'language': return ctx.completedLanguagesCount >= threshold
     case 'ranking':  return ctx.leaderboardRank !== null && ctx.leaderboardRank <= threshold
+    case 'track':    return ctx.completedTrackIds.length >= threshold
     default: return false
   }
 }

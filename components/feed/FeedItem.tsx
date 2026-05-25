@@ -1,12 +1,24 @@
+'use client'
+
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { getLanguageById } from '@/data'
-import type { FeedEvent } from '@/lib/server/feed-store'
+import LikeButton from './LikeButton'
+import type {
+  AchievementFeedEvent,
+  FeedEvent,
+  FeedLevelUpPayload,
+  FeedSessionPayload,
+  TrackCompletedFeedEvent,
+} from '@/lib/server/feed-store'
 
 interface FeedItemProps {
   event: FeedEvent
   locale: Locale
+  currentUserId?: string | null
 }
+
+type AchievementLikeEvent = AchievementFeedEvent | TrackCompletedFeedEvent
 
 function timeAgo(iso: string, locale: Locale): string {
   const diffMs = Date.now() - new Date(iso).getTime()
@@ -19,7 +31,7 @@ function timeAgo(iso: string, locale: Locale): string {
   return `${days}d`
 }
 
-export default function FeedItem({ event, locale }: FeedItemProps) {
+export default function FeedItem({ event, locale, currentUserId = null }: FeedItemProps) {
   const username = event.username
   const displayName = event.displayName ?? event.username
   const time = timeAgo(event.createdAt, locale)
@@ -54,19 +66,20 @@ export default function FeedItem({ event, locale }: FeedItemProps) {
         {event.eventType === 'session' && (
           <FeedSessionBody payload={event.payload} locale={locale} />
         )}
-        {event.eventType === 'achievement' && (
-          <FeedAchievementBody payload={event.payload} locale={locale} />
+        {(event.eventType === 'achievement' || event.eventType === 'track_completed') && (
+          <FeedAchievementBody event={event} locale={locale} />
         )}
         {event.eventType === 'level_up' && (
           <FeedLevelUpBody payload={event.payload} locale={locale} />
         )}
+        <LikeButton feedEventId={event.id} currentUserId={currentUserId} />
       </div>
     </div>
   )
 }
 
-function FeedSessionBody({ payload, locale }: { payload: any; locale: Locale }) {
-  const lang = getLanguageById(String(payload.languageId ?? ''))
+function FeedSessionBody({ payload, locale }: { payload: FeedSessionPayload; locale: Locale }) {
+  const lang = getLanguageById(payload.languageId)
   return (
     <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
       {t('feedSessionTitle', locale)}
@@ -80,18 +93,36 @@ function FeedSessionBody({ payload, locale }: { payload: any; locale: Locale }) 
   )
 }
 
-function FeedAchievementBody({ payload, locale }: { payload: any; locale: Locale }) {
-  const name = payload.name?.[locale] ?? payload.achievementId
+function FeedAchievementBody({ event, locale }: { event: AchievementLikeEvent; locale: Locale }) {
+  const isTrack = event.eventType === 'track_completed'
+  const titleKey = isTrack ? 'feedTrackCompletedTitle' : 'feedAchievementTitle'
+  const fallbackId = isTrack ? event.payload.trackId : event.payload.achievementId
+  const name = event.payload.name[locale] || fallbackId
+  const xp = event.payload.xp ?? 0
+
   return (
-    <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
-      🏆 {t('feedAchievementTitle', locale)}
-      {' • '}
-      <span className="font-semibold" style={{ color: 'var(--main)' }}>{name}</span>
+    <div className="mt-2 rounded-lg p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{isTrack ? '🗺️' : '🏆'}</span>
+        <div className="flex-1">
+          <p className="text-xs" style={{ color: 'var(--sub)' }}>
+            {t(titleKey, locale)}
+          </p>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+            {name}
+          </p>
+          {xp > 0 && (
+            <p className="text-xs" style={{ color: 'var(--main)' }}>
+              +{xp} XP
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
 
-function FeedLevelUpBody({ payload, locale }: { payload: any; locale: Locale }) {
+function FeedLevelUpBody({ payload, locale }: { payload: FeedLevelUpPayload; locale: Locale }) {
   return (
     <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
       ⬆️ {t('feedLevelUpTitle', locale)}{' '}
