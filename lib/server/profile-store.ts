@@ -55,7 +55,9 @@ export async function getPublicProfile(
   if (!profile) return null
 
   const userId = profile.id
-  await ensureUserSocialBackfill(supabase, userId)
+  ensureUserSocialBackfill(supabase, userId).catch((err) => {
+    console.error('[getPublicProfile] social backfill failed (non-fatal):', err)
+  })
 
   const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes, recentSessionsRes] = await Promise.all([
     supabase
