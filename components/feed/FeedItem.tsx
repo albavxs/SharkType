@@ -7,6 +7,7 @@ import LikeButton from './LikeButton'
 import type {
   AchievementFeedEvent,
   FeedEvent,
+  FollowFeedEvent,
   FeedLevelUpPayload,
   FeedSessionPayload,
   TrackCompletedFeedEvent,
@@ -72,6 +73,9 @@ export default function FeedItem({ event, locale, currentUserId = null }: FeedIt
         {event.eventType === 'level_up' && (
           <FeedLevelUpBody payload={event.payload} locale={locale} />
         )}
+        {event.eventType === 'follow' && (
+          <FeedFollowBody event={event} locale={locale} />
+        )}
         <LikeButton feedEventId={event.id} currentUserId={currentUserId} />
       </div>
     </div>
@@ -127,6 +131,18 @@ function FeedLevelUpBody({ payload, locale }: { payload: FeedLevelUpPayload; loc
     <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
       ⬆️ {t('feedLevelUpTitle', locale)}{' '}
       <span className="font-semibold tabular-nums" style={{ color: 'var(--main)' }}>{payload.level}</span>
+    </div>
+  )
+}
+
+function FeedFollowBody({ event, locale }: { event: FollowFeedEvent; locale: Locale }) {
+  return (
+    <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
+      {t('feedFollowTitle', locale)}
+      {' • '}
+      <span className="font-semibold" style={{ color: 'var(--text)' }}>
+        @{event.payload.targetUsername}
+      </span>
     </div>
   )
 }

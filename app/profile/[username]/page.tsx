@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import ProfileHeader from '@/components/profile/ProfileHeader'
+import ProfileEditorCard from '@/components/profile/ProfileEditorCard'
 import ProfileStats from '@/components/profile/ProfileStats'
 import BadgeGrid from '@/components/gamification/BadgeGrid'
 import SceneWrapper from '@/components/three/SceneWrapper'
@@ -23,6 +24,7 @@ export default function PublicProfilePage() {
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -51,13 +53,6 @@ export default function PublicProfilePage() {
       cancelled = true
     }
   }, [username])
-
-  // Redireciona pro perfil proprio editavel se for o dono
-  useEffect(() => {
-    if (profile && ownProfile && profile.username === ownProfile.username) {
-      // Mantem na pagina publica — diferenciacao de "isOwn" eh visual
-    }
-  }, [profile, ownProfile])
 
   if (loading) {
     return (
@@ -108,18 +103,33 @@ export default function PublicProfilePage() {
             locale={locale}
             isOwn={isOwn}
             viewerAuthenticated={Boolean(user)}
+            isEditing={isEditing}
+            onEditToggle={isOwn ? () => setIsEditing((current) => !current) : undefined}
           />
+          {isOwn && isEditing ? (
+            <ProfileEditorCard
+              profile={profile}
+              locale={locale}
+              onAvatarUpdated={(avatarUrl) => {
+                setProfile((current) => current ? { ...current, avatarUrl } : current)
+              }}
+              onSaved={(payload) => {
+                setProfile((current) => current ? {
+                  ...current,
+                  username: payload.username,
+                  displayName: payload.displayName,
+                  avatarUrl: payload.avatarUrl,
+                  bio: payload.bio,
+                } : current)
+                setIsEditing(false)
+                if (payload.username !== username) {
+                  router.replace(`/profile/${payload.username}`)
+                }
+              }}
+            />
+          ) : null}
           <ProfileStats profile={profile} locale={locale} />
           <BadgeGrid unlockedIds={profile.achievementIds} locale={locale} />
-          {isOwn && (
-            <Link
-              href="/profile"
-              className="inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition-all hover:brightness-110"
-              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-            >
-              {t('editProfile', locale)}
-            </Link>
-          )}
         </div>
       </div>
       </div>

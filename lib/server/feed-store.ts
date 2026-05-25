@@ -221,9 +221,15 @@ export async function recordFeedEvent<T extends FeedEventType>(
   userId: string,
   eventType: T,
   payload: FeedPayloadMap[T],
+  options?: { createdAt?: string }
 ): Promise<void> {
   try {
-    await supabase.from('feed_events').insert({ user_id: userId, event_type: eventType, payload })
+    await supabase.from('feed_events').insert({
+      user_id: userId,
+      event_type: eventType,
+      payload,
+      created_at: options?.createdAt,
+    })
   } catch {
     // ignora — tabela pode nao existir ainda
   }

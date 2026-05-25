@@ -2,6 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { AuthProfile, LeaderboardEntry } from '@/lib/auth-types'
 import {
   applySessionToProgress,
+  computeAverageWPM,
+  computeScore,
   createDefaultProgress,
   deriveProgressSummary,
   getLevel,
@@ -16,12 +18,15 @@ import { checkUnlocks } from './achievements'
 import { recordFeedEvent } from './feed-store'
 
 type DBClient = SupabaseClient<any>
+type TypingSessionRow = Database['public']['Tables']['typing_sessions']['Row']
+type ProfileRow = Database['public']['Tables']['profiles']['Row']
 
 function mapProfileRow(row: Database['public']['Tables']['profiles']['Row']): AuthProfile {
   return {
     id: row.id,
     username: row.username,
     displayName: row.display_name,
+    bio: row.bio,
     avatarUrl: row.avatar_url,
     provider: row.provider,
     emailVerified: row.email_verified,
@@ -98,6 +103,192 @@ function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
   }))
 }
 
+function shiftISODate(date: string, offsetDays: number) {
+  const target = new Date(`${date}T00:00:00.000Z`)
+  target.setUTCDate(target.getUTCDate() + offsetDays)
+  return target.toISOString().slice(0, 10)
+}
+
+function deriveStreakFromSessionRows(rows: TypingSessionRow[]): UserProgress['streak'] {
+  if (rows.length === 0) {
+    return { current: 0, lastPracticeDate: '' }
+  }
+
+  const uniqueDates = Array.from(new Set(rows.map((row) => row.created_at.slice(0, 10))))
+  const lastPracticeDate = uniqueDates[0] ?? ''
+  if (!lastPracticeDate) {
+    return { current: 0, lastPracticeDate: '' }
+  }
+
+  let current = 0
+  let expectedDate = lastPracticeDate
+
+  for (const date of uniqueDates) {
+    if (date !== expectedDate) break
+    current += 1
+    expectedDate = shiftISODate(expectedDate, -1)
+  }
+
+  const today = new Date().toISOString().slice(0, 10)
+  const yesterday = shiftISODate(today, -1)
+  const isActive = lastPracticeDate === today || lastPracticeDate === yesterday
+
+  return {
+    current: isActive ? current : 0,
+    lastPracticeDate,
+  }
+}
+
+function buildProgressFromSessionRows(
+  rows: TypingSessionRow[],
+  completedTrackIds: string[]
+): UserProgress {
+  const progress = createDefaultProgress()
+  progress.completedTrackIds = completedTrackIds
+  progress.history = rows.map(mapSessionRow)
+  progress.streak = deriveStreakFromSessionRows(rows)
+
+  for (const row of rows) {
+    progress.totalXP += row.xp_earned
+
+    const current = progress.languages[row.language_id] ?? {
+      completedSnippetIds: [],
+      bestWPM: 0,
+      bestAccuracy: 0,
+      totalSessions: 0,
+    }
+
+    if (!current.completedSnippetIds.includes(row.snippet_id)) {
+      current.completedSnippetIds.push(row.snippet_id)
+    }
+
+    current.bestWPM = Math.max(current.bestWPM, row.wpm)
+    current.bestAccuracy = Math.max(current.bestAccuracy, row.accuracy)
+    current.totalSessions += 1
+
+    progress.languages[row.language_id] = current
+  }
+
+  progress.level = getLevel(progress.totalXP).level
+  return progress
+}
+
+async function syncProgressAggregates(supabase: DBClient, userId: string, progress: UserProgress) {
+  const aggregate = buildProgressAggregate(userId, progress)
+  const languageRows = buildLanguageRows(userId, progress)
+
+  const progressUpsert = await supabase.from('user_progress').upsert(aggregate, { onConflict: 'user_id' })
+  if (progressUpsert.error) throw progressUpsert.error
+
+  const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
+  if (deleteLanguages.error) throw deleteLanguages.error
+
+  if (languageRows.length > 0) {
+    const languageInsert = await supabase.from('user_language_progress').insert(languageRows)
+    if (languageInsert.error) throw languageInsert.error
+  }
+}
+
+async function markProfileSocialState(
+  supabase: DBClient,
+  userId: string,
+  payload: Partial<Pick<ProfileRow, 'stats_reconciled_at' | 'social_seeded_at'>>
+) {
+  const update = await supabase
+    .from('profiles')
+    .update(payload)
+    .eq('id', userId)
+
+  if (update.error) throw update.error
+}
+
+async function seedHistoricalFeedFromSessions(
+  supabase: DBClient,
+  userId: string,
+  sessions: TypingSessionRow[],
+  shouldSeed: boolean
+) {
+  if (!shouldSeed) {
+    return
+  }
+
+  for (const session of sessions.slice(0, 12)) {
+    await recordFeedEvent(
+      supabase,
+      userId,
+      'session',
+      {
+        languageId: session.language_id,
+        wpm: session.wpm,
+        accuracy: session.accuracy,
+        xpEarned: session.xp_earned,
+      },
+      { createdAt: session.created_at }
+    )
+  }
+}
+
+function isMissingTable(error: any): boolean {
+  return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
+}
+
+export async function ensureUserSocialBackfill(supabase: DBClient, userId: string) {
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (profileError) {
+    if (isMissingTable(profileError)) return
+    throw profileError
+  }
+  if (!profile) return
+
+  const needsStats = !profile.stats_reconciled_at
+  const needsSocial = !profile.social_seeded_at
+
+  if (!needsStats && !needsSocial) return
+
+  const [progressRowRes, sessionsRes] = await Promise.all([
+    supabase.from('user_progress').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+  ])
+
+  if (progressRowRes.error) throw progressRowRes.error
+  if (sessionsRes.error) throw sessionsRes.error
+
+  const completedTrackIds = Array.isArray(progressRowRes.data?.completed_track_ids)
+    ? progressRowRes.data.completed_track_ids
+    : []
+  const sessions = sessionsRes.data ?? []
+  const progress = buildProgressFromSessionRows(sessions, completedTrackIds)
+  const now = new Date().toISOString()
+  const existingFeed = needsSocial
+    ? await supabase.from('feed_events').select('id').eq('user_id', userId).limit(1)
+    : null
+
+  try {
+    if (needsStats) {
+      await syncProgressAggregates(supabase, userId, progress)
+    }
+
+    if (needsSocial) {
+      const shouldSeedHistoricalSessions = !existingFeed?.error && (existingFeed?.data ?? []).length === 0
+      await checkUnlocks(supabase, userId, progress)
+      await seedHistoricalFeedFromSessions(supabase, userId, sessions, shouldSeedHistoricalSessions)
+    }
+
+    await markProfileSocialState(supabase, userId, {
+      stats_reconciled_at: needsStats ? now : profile.stats_reconciled_at,
+      social_seeded_at: needsSocial ? now : profile.social_seeded_at,
+    })
+  } catch (err) {
+    if (isMissingTable(err)) return
+    throw err
+  }
+}
+
 export async function getUserProgressSnapshot(supabase: DBClient, userId: string): Promise<UserProgress> {
   const progress = createDefaultProgress()
 
@@ -107,9 +298,9 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
     supabase.from('typing_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
   ])
 
-  if (progressResult.error) throw progressResult.error
-  if (languagesResult.error) throw languagesResult.error
-  if (sessionsResult.error) throw sessionsResult.error
+  if (progressResult.error && !isMissingTable(progressResult.error)) throw progressResult.error
+  if (languagesResult.error && !isMissingTable(languagesResult.error)) throw languagesResult.error
+  if (sessionsResult.error && !isMissingTable(sessionsResult.error)) throw sessionsResult.error
 
   if (progressResult.data) {
     progress.totalXP = progressResult.data.total_xp
@@ -140,6 +331,7 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
 }
 
 export async function getProfileAndProgress(supabase: DBClient, user: { id: string }) {
+  await ensureUserSocialBackfill(supabase, user.id)
   const profile = await getOwnProfile(supabase, user.id)
   if (!profile) {
     throw new Error('Profile not found for authenticated user.')
@@ -154,6 +346,7 @@ export async function bootstrapProfileAndProgress(
   user: Parameters<typeof ensureProfileForUser>[1]
 ) {
   const profile = await ensureProfileForUser(supabase, user)
+  await ensureUserSocialBackfill(supabase, user.id)
   const progress = await getUserProgressSnapshot(supabase, user.id)
   return { profile, progress }
 }
@@ -172,6 +365,10 @@ export async function importLocalProgress(
   }
 
   await replaceRemoteProgress(supabase, user.id, progress)
+  await markProfileSocialState(supabase, user.id, {
+    stats_reconciled_at: null,
+    social_seeded_at: null,
+  })
 
   const now = new Date().toISOString()
   const { data, error } = await supabase
@@ -182,6 +379,8 @@ export async function importLocalProgress(
     .single()
 
   if (error) throw error
+
+  await ensureUserSocialBackfill(supabase, user.id)
 
   return {
     profile: mapProfileRow(data),
@@ -194,23 +393,28 @@ export async function replaceRemoteProgress(supabase: DBClient, userId: string, 
   const languageRows = buildLanguageRows(userId, progress)
   const sessionRows = buildImportedSessionRows(userId, progress.history)
 
-  const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
-  if (deleteLanguages.error) throw deleteLanguages.error
+  try {
+    const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
+    if (deleteLanguages.error && !isMissingTable(deleteLanguages.error)) throw deleteLanguages.error
 
-  const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
-  if (deleteSessions.error) throw deleteSessions.error
+    const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
+    if (deleteSessions.error && !isMissingTable(deleteSessions.error)) throw deleteSessions.error
 
-  const progressUpsert = await supabase.from('user_progress').upsert(aggregate, { onConflict: 'user_id' })
-  if (progressUpsert.error) throw progressUpsert.error
+    const progressUpsert = await supabase.from('user_progress').upsert(aggregate, { onConflict: 'user_id' })
+    if (progressUpsert.error && !isMissingTable(progressUpsert.error)) throw progressUpsert.error
 
-  if (languageRows.length > 0) {
-    const languageInsert = await supabase.from('user_language_progress').insert(languageRows)
-    if (languageInsert.error) throw languageInsert.error
-  }
+    if (languageRows.length > 0) {
+      const languageInsert = await supabase.from('user_language_progress').insert(languageRows)
+      if (languageInsert.error && !isMissingTable(languageInsert.error)) throw languageInsert.error
+    }
 
-  if (sessionRows.length > 0) {
-    const sessionInsert = await supabase.from('typing_sessions').insert(sessionRows)
-    if (sessionInsert.error) throw sessionInsert.error
+    if (sessionRows.length > 0) {
+      const sessionInsert = await supabase.from('typing_sessions').insert(sessionRows)
+      if (sessionInsert.error && !isMissingTable(sessionInsert.error)) throw sessionInsert.error
+    }
+  } catch (err) {
+    if (isMissingTable(err)) return
+    throw err
   }
 }
 
@@ -219,6 +423,7 @@ export async function saveRemoteSession(
   userId: string,
   input: SessionInput
 ): Promise<{ progress: UserProgress; output: SessionOutput }> {
+  await ensureUserSocialBackfill(supabase, userId)
   const current = await getUserProgressSnapshot(supabase, userId)
   const { progress, output } = applySessionToProgress(current, input)
 
@@ -245,9 +450,9 @@ export async function saveRemoteSession(
     }),
   ])
 
-  if (progressUpsert.error) throw progressUpsert.error
-  if (languageUpsert.error) throw languageUpsert.error
-  if (sessionInsert.error) throw sessionInsert.error
+  if (progressUpsert.error && !isMissingTable(progressUpsert.error)) throw progressUpsert.error
+  if (languageUpsert.error && !isMissingTable(languageUpsert.error)) throw languageUpsert.error
+  if (sessionInsert.error && !isMissingTable(sessionInsert.error)) throw sessionInsert.error
 
   // Hooks: achievements + feed events. Falhas aqui nao quebram a sessao.
   try {
@@ -272,14 +477,19 @@ export async function saveRemoteSession(
 }
 
 export async function resetRemoteProgress(supabase: DBClient, userId: string) {
-  const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
-  if (deleteLanguages.error) throw deleteLanguages.error
+  try {
+    const deleteLanguages = await supabase.from('user_language_progress').delete().eq('user_id', userId)
+    if (deleteLanguages.error && !isMissingTable(deleteLanguages.error)) throw deleteLanguages.error
 
-  const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
-  if (deleteSessions.error) throw deleteSessions.error
+    const deleteSessions = await supabase.from('typing_sessions').delete().eq('user_id', userId)
+    if (deleteSessions.error && !isMissingTable(deleteSessions.error)) throw deleteSessions.error
 
-  const deleteProgress = await supabase.from('user_progress').delete().eq('user_id', userId)
-  if (deleteProgress.error) throw deleteProgress.error
+    const deleteProgress = await supabase.from('user_progress').delete().eq('user_id', userId)
+    if (deleteProgress.error && !isMissingTable(deleteProgress.error)) throw deleteProgress.error
+  } catch (err) {
+    if (isMissingTable(err)) return
+    throw err
+  }
 }
 
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
@@ -327,6 +537,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .filter(entry => entry.total_sessions > 0 || entry.total_xp > 0)
     .map((entry, index) => {
       const level = getLevel(entry.total_xp).level
+      const avgWPM = computeAverageWPM([entry.best_wpm], 1)
       return {
         rank: index + 1,
         userId: entry.user_id,
@@ -335,11 +546,11 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
         avatarUrl: entry.avatar_url,
         totalXP: entry.total_xp,
         bestWPM: entry.best_wpm,
-        avgWPM: 0,
+        avgWPM,
         currentStreak: entry.current_streak,
         totalSessions: entry.total_sessions,
         level,
-        score: entry.best_wpm + level * 10,
+        score: computeScore(avgWPM, level),
       }
     })
 }

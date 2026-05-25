@@ -107,36 +107,25 @@ const snippetRegistry: Record<string, Snippet[]> = {
   './text-fr:frSnippets': frSnippets,
 }
 
-function defaultExportName(id: string): string {
-  // 'text-en' -> 'textEnSnippets', mas o padrao real do projeto e por arquivo
-  // (ex: text-en.ts exporta enSnippets). Por isso text-* sempre exige exportName explicito.
-  const camel = id.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
-  return `${camel}Snippets`
-}
-
-function resolveSnippets(entry: LanguageManifestEntry): Snippet[] {
-  const exportName = entry.exportName ?? defaultExportName(entry.id)
-  const key = `${entry.module}:${exportName}`
-  const snippets = snippetRegistry[key]
-  if (!snippets) {
-    throw new Error(
-      `[data/manifest] Snippet array nao encontrado para "${entry.id}" ` +
-        `(esperado em snippetRegistry["${key}"]). ` +
-        `Verifique se o import esta presente em data/index.ts.`,
-    )
-  }
-  return snippets
-}
-
 function buildLanguagesByType(type: 'code' | 'text'): Language[] {
   return languageManifest
     .filter(entry => entry.type === type)
-    .map(entry => ({
-      id: entry.id,
-      label: entry.label,
-      color: entry.color,
-      snippets: resolveSnippets(entry),
-    }))
+    .map(entry => {
+      const exportName = entry.exportName ?? `${entry.id}Snippets`
+      const key = `${entry.module}:${exportName}`
+      const snippets = snippetRegistry[key]
+
+      if (!snippets) {
+        throw new Error(`Snippet array not found for ${key}. Check data/index.ts imports.`)
+      }
+
+      return {
+        id: entry.id,
+        label: entry.label,
+        color: entry.color,
+        snippets,
+      }
+    })
 }
 
 export const codeLanguages: Language[] = validateLanguages(buildLanguagesByType('code'), 'codeLanguages')

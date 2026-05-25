@@ -1,6 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/lib/supabase/database'
-import { getLevel } from '@/lib/gamification'
+import { computeAverageWPM, computeScore, getLevel } from '@/lib/gamification'
+import { getRankFromScore, type RankState } from '@/lib/ranks'
+import { ensureUserSocialBackfill } from './progress-store'
 
 type DBClient = SupabaseClient<any>
 
@@ -16,9 +18,12 @@ export interface PublicProfile {
   username: string
   displayName: string | null
   avatarUrl: string | null
+  bio: string | null
   createdAt: string
   totalXP: number
   level: number
+  score: number
+  rank: RankState
   currentStreak: number
   totalSessions: number
   bestWPM: number
@@ -42,7 +47,7 @@ export async function getPublicProfile(
 ): Promise<PublicProfile | null> {
   const { data: profile, error: profileErr } = await supabase
     .from('profiles')
-    .select('id, username, display_name, avatar_url, created_at')
+    .select('*')
     .ilike('username', username)
     .maybeSingle()
 
@@ -50,8 +55,9 @@ export async function getPublicProfile(
   if (!profile) return null
 
   const userId = profile.id
+  await ensureUserSocialBackfill(supabase, userId)
 
-  const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
+  const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes, recentSessionsRes] = await Promise.all([
     supabase
       .from('user_progress')
       .select('total_xp, current_streak, total_sessions, best_wpm, best_accuracy')
@@ -81,21 +87,35 @@ export async function getPublicProfile(
             .limit(1),
         )
       : Promise.resolve({ data: [], error: null }),
+    supabase
+      .from('typing_sessions')
+      .select('wpm')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20),
   ])
 
   if (progressRes.error) throw progressRes.error
   if (languagesRes.error) throw languagesRes.error
+  if (recentSessionsRes.error) throw recentSessionsRes.error
 
   const totalXP = progressRes.data?.total_xp ?? 0
+  const level = getLevel(totalXP).level
+  const avgWPM = computeAverageWPM((recentSessionsRes.data ?? []).map((row) => row.wpm))
+  const score = computeScore(avgWPM, level)
+  const rank = getRankFromScore(score, progressRes.data?.total_sessions ?? 0)
 
   return {
     id: profile.id,
     username: profile.username,
     displayName: profile.display_name,
     avatarUrl: profile.avatar_url,
+    bio: profile.bio ?? null,
     createdAt: profile.created_at,
     totalXP,
-    level: getLevel(totalXP).level,
+    level,
+    score,
+    rank,
     currentStreak: progressRes.data?.current_streak ?? 0,
     totalSessions: progressRes.data?.total_sessions ?? 0,
     bestWPM: progressRes.data?.best_wpm ?? 0,
