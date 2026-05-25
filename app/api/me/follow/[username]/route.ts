@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { rateLimit } from '@/lib/server/rate-limit'
+import { recordFeedEvent } from '@/lib/server/feed-store'
 
 async function authedAndTarget(username: string) {
   const env = getSupabaseEnv()
@@ -43,6 +44,13 @@ export async function POST(_request: Request, { params }: { params: Promise<{ us
   if (error && !String(error.message ?? '').includes('duplicate')) {
     return NextResponse.json({ error: 'Could not follow user.' }, { status: 500 })
   }
+
+  // Registra evento no feed (best-effort)
+  await recordFeedEvent(ctx.supabase, ctx.viewer.id, 'follow', {
+    targetId: ctx.target.id,
+    targetUsername: ctx.target.username,
+  })
+
   return NextResponse.json({ following: true })
 }
 
