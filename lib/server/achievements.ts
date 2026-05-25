@@ -1,7 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { UserProgress } from '@/lib/gamification'
+import type { Database } from '@/lib/supabase/database'
+import { recordFeedEvent } from './feed-store'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
 
 export interface AchievementRow {
   id: string
@@ -63,7 +65,7 @@ export async function checkUnlocks(
   if (alreadyRes.error && !isMissingTable(alreadyRes.error)) {
     return []
   }
-  const alreadyIds = new Set<string>((alreadyRes.data ?? []).map((r: any) => r.achievement_id))
+  const alreadyIds = new Set<string>((alreadyRes.data ?? []).map((row) => row.achievement_id))
 
   // 3. Calcula contexto
   const ctx: UnlockContext = {
@@ -89,24 +91,20 @@ export async function checkUnlocks(
   // 5. Persiste
   const insertRows = newlyUnlocked.map(a => ({ user_id: userId, achievement_id: a.id }))
   await supabase.from('user_achievements').insert(insertRows)
- 
-  // 6. Cria eventos sociais do feed
-const feedRows = newlyUnlocked.map(a => ({
-  user_id: userId,
 
-  event_type: 'achievement_unlock',
+  // 6. Cria eventos sociais do feed usando o payload canonico.
+  await Promise.all(
+    newlyUnlocked.map((achievement) =>
+      recordFeedEvent(supabase, userId, 'achievement', {
+        achievementId: achievement.id,
+        name: {
+          pt: achievement.name_pt,
+          en: achievement.name_en,
+        },
+      })
+    )
+  )
 
-  payload: {
-    achievement_id: a.id,
-    achievement_icon: a.icon,
-    achievement_name_pt: a.name_pt,
-    achievement_name_en: a.name_en,
-    category: a.category,
-    threshold: a.threshold,
-  },
-}))
-
-await supabase.from('feed_events').insert(feedRows)
   return newlyUnlocked.map(row => ({
     id: row.id,
     category: row.category,
