@@ -3,6 +3,7 @@ export interface AuthProfile {
   username: string
   displayName: string | null
   avatarUrl: string | null
+  bio: string | null
   provider: string | null
   emailVerified: boolean
   localImportedAt: string | null

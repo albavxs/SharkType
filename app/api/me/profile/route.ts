@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { ensureProfileForUser, updateProfileIdentity } from '@/lib/server/auth-profile'
+import { ensureUserSocialBackfill } from '@/lib/server/progress-store'
 import { isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 export async function GET() {
@@ -23,6 +24,7 @@ export async function GET() {
 
   try {
     const profile = await ensureProfileForUser(supabase, user)
+    await ensureUserSocialBackfill(supabase, user.id)
     return NextResponse.json({ profile })
   } catch (profileError) {
     return NextResponse.json(
@@ -49,7 +51,12 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const body = (await request.json()) as { username?: string; displayName?: string | null; avatarUrl?: string | null }
+  const body = (await request.json()) as {
+    username?: string
+    displayName?: string | null
+    avatarUrl?: string | null
+    bio?: string | null
+  }
   if (body.avatarUrl != null && body.avatarUrl !== "") {
     try {
       const u = new URL(body.avatarUrl)
@@ -70,10 +77,12 @@ export async function PATCH(request: Request) {
   }
 
   try {
+    const bio = typeof body.bio === 'string' ? body.bio.trim() : null
     const profile = await updateProfileIdentity(supabase, user.id, {
       username,
       displayName: body.displayName ?? null,
       avatarUrl: body.avatarUrl,
+      bio,
       onboardingCompleted: true,
     })
 
