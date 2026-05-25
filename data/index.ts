@@ -82,13 +82,51 @@ const snippetRegistry: Record<string, Snippet[]> = {
   './ansible:ansibleSnippets': ansibleSnippets,
   './cicd:cicdSnippets': cicdSnippets,
 
-export const textLanguages: Language[] = [
-  { id: 'text-typing', label: 'Digitação', color: '#10b981', snippets: typingSnippets },
-  { id: 'text-ptbr', label: 'Português', color: '#009739', snippets: ptbrSnippets },
-  { id: 'text-en',   label: 'English',   color: '#3c3b6e', snippets: enSnippets },
-  { id: 'text-es',   label: 'Español',   color: '#c60b1e', snippets: esSnippets },
-  { id: 'text-fr',   label: 'Français',  color: '#002395', snippets: frSnippets },
-]
+  './cybersec:nmapSnippets': nmapSnippets,
+  './cybersec:webReconSnippets': webReconSnippets,
+  './cybersec:firewallSnippets': firewallSnippets,
+  './cybersec:networkAnalysisSnippets': networkAnalysisSnippets,
+  './cybersec:hardeningSnippets': hardeningSnippets,
+  './cybersec:cryptoSnippets': cryptoSnippets,
+
+  './vue:vueSnippets': vueSnippets,
+  './react:reactSnippets': reactSnippets,
+  './nodejs:nodejsSnippets': nodejsSnippets,
+  './testing:testingSnippets': testingSnippets,
+  './patterns:patternsSnippets': patternsSnippets,
+  './algorithms:algorithmsSnippets': algorithmsSnippets,
+  './mongodb:mongodbSnippets': mongodbSnippets,
+  './jinja:jinjaSnippets': jinjaSnippets,
+  './nextjs:nextjsSnippets': nextjsSnippets,
+  './angular:angularSnippets': angularSnippets,
+
+  './text-typing:typingSnippets': typingSnippets,
+  './text-ptbr:ptbrSnippets': ptbrSnippets,
+  './text-en:enSnippets': enSnippets,
+  './text-es:esSnippets': esSnippets,
+  './text-fr:frSnippets': frSnippets,
+}
+
+function buildLanguagesByType(type: 'code' | 'text'): Language[] {
+  return languageManifest
+    .filter(entry => entry.type === type)
+    .map(entry => {
+      const exportName = entry.exportName ?? `${entry.id}Snippets`
+      const key = `${entry.module}:${exportName}`
+      const snippets = snippetRegistry[key]
+
+      if (!snippets) {
+        throw new Error(`Snippet array not found for ${key}. Check data/index.ts imports.`)
+      }
+
+      return {
+        id: entry.id,
+        label: entry.label,
+        color: entry.color,
+        snippets,
+      }
+    })
+}
 
 export const codeLanguages: Language[] = validateLanguages(buildLanguagesByType('code'), 'codeLanguages')
 export const textLanguages: Language[] = validateLanguages(buildLanguagesByType('text'), 'textLanguages')
