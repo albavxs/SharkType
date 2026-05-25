@@ -28,9 +28,7 @@ export default function Footer({ onHelpClick, onThemeClick, currentThemeName, is
         <a href="https://github.com/albavxs/SharkType" target="_blank" rel="noopener noreferrer" className={linkClass}>
           <CodeBranchIcon size={14} /> github
         </a>
-        <Link href="/settings" className={linkClass}>
-          <SlidersIcon size={14} /> {t('settingsShort', locale)}
-        </Link>
+
         <button onClick={onHelpClick} className={linkClass}>
           <FileTextIcon size={14} /> help
         </button>
