@@ -89,7 +89,24 @@ export async function checkUnlocks(
   // 5. Persiste
   const insertRows = newlyUnlocked.map(a => ({ user_id: userId, achievement_id: a.id }))
   await supabase.from('user_achievements').insert(insertRows)
+ 
+  // 6. Cria eventos sociais do feed
+const feedRows = newlyUnlocked.map(a => ({
+  user_id: userId,
 
+  event_type: 'achievement_unlock',
+
+  payload: {
+    achievement_id: a.id,
+    achievement_icon: a.icon,
+    achievement_name_pt: a.name_pt,
+    achievement_name_en: a.name_en,
+    category: a.category,
+    threshold: a.threshold,
+  },
+}))
+
+await supabase.from('feed_events').insert(feedRows)
   return newlyUnlocked.map(row => ({
     id: row.id,
     category: row.category,
