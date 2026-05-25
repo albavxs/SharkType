@@ -148,7 +148,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
   }, [authLoading, user?.id, supabaseConfigured, checkNewFollowers])
 
   async function recordSession(input: SessionInput): Promise<SessionOutput> {
-    if (!user || !supabaseConfigured || source === 'guest') {
+    if (!user || !supabaseConfigured) {
       const output = saveGuestSession(input)
       setProgress(loadProgress())
       setSource('guest')
@@ -187,7 +187,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
   }
 
   async function resetCurrentProgress() {
-    if (!user || source === 'guest' || !supabaseConfigured) {
+    if (!user || !supabaseConfigured) {
       resetLocalProgress()
       setProgress(createDefaultProgress())
       setSource('guest')
