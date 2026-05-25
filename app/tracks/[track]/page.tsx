@@ -351,7 +351,7 @@ export default function TrackPracticePage() {
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
-      <StreakToast streak={progress.streak.current} locale={locale} />
+      <StreakToast streakIncremented={sessionResult?.streakIncremented ?? false} streak={progress.streak.current} locale={locale} />
       <AchievementToast newlyUnlocked={sessionResult?.newlyUnlocked ?? []} locale={locale} />
     </main>
   )
