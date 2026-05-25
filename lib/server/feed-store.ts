@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 type DBClient = SupabaseClient<any>
 
-export type FeedEventType = 'session' | 'achievement' | 'level_up' | 'follow'
+export type FeedEventType = 'session' | 'achievement' | 'level_up' | 'follow' | 'track_completed'
 
 export interface FeedEvent {
   id: number

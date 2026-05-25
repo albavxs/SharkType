@@ -5,7 +5,7 @@ type DBClient = SupabaseClient<any>
 
 export interface AchievementRow {
   id: string
-  category: 'sessions' | 'streak' | 'xp' | 'language' | 'ranking'
+  category: 'sessions' | 'streak' | 'xp' | 'language' | 'ranking' | 'track'
   threshold: number | null
   icon: string
   name: { pt: string; en: string }
@@ -20,6 +20,8 @@ interface UnlockContext {
   completedLanguagesCount: number
   /** Rank no leaderboard (1-indexed). null se nao estiver no top 100. */
   leaderboardRank: number | null
+  /** IDs das trilhas concluidas */
+  completedTrackIds: string[]
 }
 
 /**
@@ -70,6 +72,7 @@ export async function checkUnlocks(
     totalXP: progress.totalXP,
     completedLanguagesCount: Object.values(progress.languages).filter(l => l.completedSnippetIds.length > 0).length,
     leaderboardRank,
+    completedTrackIds: progress.completedTrackIds || [],
   }
 
   // 4. Filtra novos unlocks
@@ -104,6 +107,7 @@ function matchesUnlock(category: AchievementRow['category'], threshold: number, 
     case 'xp':       return ctx.totalXP >= threshold
     case 'language': return ctx.completedLanguagesCount >= threshold
     case 'ranking':  return ctx.leaderboardRank !== null && ctx.leaderboardRank <= threshold
+    case 'track':    return ctx.completedTrackIds.length >= threshold
     default: return false
   }
 }

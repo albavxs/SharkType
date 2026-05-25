@@ -197,6 +197,13 @@ export default function TrackPracticePage() {
         const totalDur = next.reduce((s, r) => s + r.duration, 0)
         setFinalStats({ wpm: avgWpm, rawWpm: avgRawWpm, accuracy: avgAcc, errors: totalErrors, duration: totalDur, wpmSamples: next.flatMap(r => r.wpmSamples), rawWpmSamples: next.flatMap(r => r.rawWpmSamples) })
         setShowResult(true)
+
+        // Marcar trilha como concluída no backend
+        void fetch('/api/me/progress/track-complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ trackId: track.id }),
+        }).catch(err => console.error('Failed to record track completion:', err))
       } else {
         setSeqIndex(i => i + 1)
         timer.reset(timerDurationRef.current)
