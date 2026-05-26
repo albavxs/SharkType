@@ -82,16 +82,18 @@ export function useFeedLikes(feedEventId: number, currentUserId: string | null) 
       const res = await fetch(`/api/feed/${feedEventId}/like`, { method })
 
       if (!res.ok) {
-        // Reverter optimistic update em caso de erro
-        setState(prev => ({
-          ...prev,
-          isLiked: wasLiked,
-          count: previousCount,
-          error: 'Failed to update like',
-        }))
-        return
-      }
-
+       if (res.status === 409) {
+       setState(prev => ({ ...prev, isLiked: true, error: null }))
+       return
+    }
+      setState(prev => ({
+        ...prev,
+       isLiked: wasLiked,
+      count: previousCount,
+      error: 'Failed to update like',
+    }))
+      return
+    }
       // Refetch likes para sincronizar
       const likesRes = await fetch(`/api/feed/${feedEventId}/likes`)
       if (likesRes.ok) {
