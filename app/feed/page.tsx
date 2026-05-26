@@ -22,7 +22,7 @@ export default function FeedPage() {
 }
 
 function FeedPageInner() {
-  const { user } = useAuth()
+  const { user, isLoading } = useAuth()
   const { locale } = useLocale()
   const isMobile = useIsMobile()
   const searchParams = useSearchParams()
@@ -83,7 +83,7 @@ function FeedPageInner() {
                   <button
                     key={s}
                     onClick={() => setScope(s)}
-                    disabled={s === 'following' && !user}
+                    disabled={s === 'following' && !isLoading && !user}
                     className="rounded-full px-3 py-1 text-xs font-medium transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: scope === s ? 'var(--main)' : 'transparent',
@@ -109,7 +109,7 @@ function FeedPageInner() {
             ) : (
               <div className="space-y-2">
                 {events.map(e => (
-                  <FeedItem key={e.id} event={e} locale={locale} />
+  <FeedItem key={e.id} event={e} locale={locale} currentUserId={user?.id ?? null} />
                 ))}
               </div>
             )}
