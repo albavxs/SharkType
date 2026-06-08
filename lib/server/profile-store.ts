@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/lib/supabase/database'
-import { computeAverageWPM, computeScore, getLevel } from '@/lib/gamification'
+import { getLevel } from '@/lib/gamification'
 import { getRankFromScore, type RankState } from '@/lib/ranks'
 import { ensureUserSocialBackfill } from './progress-store'
 
@@ -26,6 +26,7 @@ export interface PublicProfile {
   rank: RankState
   currentStreak: number
   totalSessions: number
+  rankedSessions: number
   bestWPM: number
   bestAccuracy: number
   topLanguages: PublicLanguageStat[]
@@ -62,7 +63,7 @@ export async function getPublicProfile(
   const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes, recentSessionsRes] = await Promise.all([
     supabase
       .from('user_progress')
-      .select('total_xp, current_streak, total_sessions, best_wpm, best_accuracy')
+      .select('total_xp, current_streak, total_sessions, best_wpm, best_accuracy, ranked_score, ranked_sessions')
       .eq('user_id', userId)
       .maybeSingle(),
     supabase
@@ -89,12 +90,7 @@ export async function getPublicProfile(
             .limit(1),
         )
       : Promise.resolve({ data: [], error: null }),
-    supabase
-      .from('typing_sessions')
-      .select('wpm')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(20),
+    safeCount(supabase, 'typing_sessions', q => q.select('id', { count: 'exact', head: true }).eq('user_id', userId)),
   ])
 
   if (progressRes.error) throw progressRes.error
@@ -103,9 +99,10 @@ export async function getPublicProfile(
 
   const totalXP = progressRes.data?.total_xp ?? 0
   const level = getLevel(totalXP).level
-  const avgWPM = computeAverageWPM((recentSessionsRes.data ?? []).map((row) => row.wpm))
-  const score = computeScore(avgWPM, level)
-  const rank = getRankFromScore(score, progressRes.data?.total_sessions ?? 0)
+  const score = progressRes.data?.ranked_score ?? 0
+  const rankedSessions = progressRes.data?.ranked_sessions ?? 0
+  const totalSessions = recentSessionsRes.count ?? progressRes.data?.total_sessions ?? 0
+  const rank = getRankFromScore(score, rankedSessions)
 
   return {
     id: profile.id,
@@ -119,7 +116,8 @@ export async function getPublicProfile(
     score,
     rank,
     currentStreak: progressRes.data?.current_streak ?? 0,
-    totalSessions: progressRes.data?.total_sessions ?? 0,
+    totalSessions,
+    rankedSessions,
     bestWPM: progressRes.data?.best_wpm ?? 0,
     bestAccuracy: progressRes.data?.best_accuracy ?? 0,
     topLanguages: (languagesRes.data ?? []).map(row => ({
@@ -156,5 +154,24 @@ async function safeSelect<T>(
     return { data: res.data as T[], error: null }
   } catch (e) {
     return { data: [], error: null }
+  }
+}
+
+async function safeCount(
+  supabase: DBClient,
+  table: string,
+  build: (q: any) => any,
+): Promise<{ count: number | null; error: any }> {
+  try {
+    const res = await build(supabase.from(table))
+    if (res.error) {
+      if (res.error.code === '42P01' || String(res.error.message ?? '').includes('does not exist')) {
+        return { count: 0, error: null }
+      }
+      return { count: null, error: res.error }
+    }
+    return { count: typeof res.count === 'number' ? res.count : 0, error: null }
+  } catch {
+    return { count: 0, error: null }
   }
 }
