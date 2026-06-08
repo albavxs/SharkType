@@ -32,7 +32,18 @@ The core logic resides in [hooks/useTypingEngine.ts](../../hooks/useTypingEngine
 - Calculation of metrics like **WPM** (Words Per Minute) and **Accuracy**.
 - Session state control (`idle`, `running`, `finished`).
 
-Related types: [lib/types.ts](../../lib/types.ts). Utilities (WPM, accuracy, stripCodeComments): [lib/utils.ts](../../lib/utils.ts).
+Related types: [lib/types.ts](../../lib/types.ts). Utilities (WPM, accuracy, practice sanitization): [lib/utils.ts](../../lib/utils.ts).
+
+### 1.1. Snippet Flow
+The current snippet pipeline remains in place and follows this order:
+
+1. [data/manifest.ts](../../data/manifest.ts) defines the catalog with `id`, `label`, `color`, `type`, `module`, and, when needed, `exportName`.
+2. [data/index.ts](../../data/index.ts) statically imports the `Snippet[]` arrays and builds `snippetRegistry`.
+3. The same [data/index.ts](../../data/index.ts) combines `languageManifest` + `snippetRegistry` to produce `codeLanguages`, `textLanguages`, and `languages`.
+4. [lib/schemas.ts](../../lib/schemas.ts) validates the assembled languages at boot time.
+5. Practice pages consume ready-to-use `Language.snippets` and only apply display sanitization before typing.
+
+Note: [data/cybersec.ts](../../data/cybersec.ts) remains the supported multi-export exception, resolved via `exportName` in the manifest.
 
 ### 2. Persistence and Authentication
 We use **Supabase** for:
