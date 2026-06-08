@@ -133,12 +133,6 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     if (containerRef.current) containerRef.current.scrollTop = 0
   }, [code])
 
-  // Reset view states when code changes
-  useEffect(() => {
-    setExpandedView(false)
-    setIsOverflowing(false)
-  }, [code])
-
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (disabled) return
     if (e.key === 'Dead') return
@@ -185,7 +179,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
   const isIdle = currentIndex === 0 && !isTyping
 
   return (
-    <div className={`w-full mx-auto cursor-text overflow-hidden ${isTextMode ? 'max-w-5xl' : 'max-w-6xl'}`} onClick={() => textareaRef.current?.focus()}>
+    <div className={`w-full mx-auto min-w-0 cursor-text overflow-hidden ${isTextMode ? 'max-w-5xl' : 'max-w-6xl'}`} onClick={() => textareaRef.current?.focus()}>
       <textarea
         ref={textareaRef}
         className="absolute opacity-0 w-0 h-0"
@@ -245,13 +239,13 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
             ))}
           </div>
         ) : (
-          <div className="font-[family-name:var(--font-geist-mono)] text-base sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8] pb-[3em]" style={{ fontVariantLigatures: 'none' }}>
+          <div className="font-[family-name:var(--font-geist-mono)] text-[0.95rem] sm:text-xl md:text-[1.75rem] leading-[1.6] sm:leading-[1.8] pb-[3em]" style={{ fontVariantLigatures: 'none' }}>
             {lines.map((line, lineIdx) => (
               <div key={lineIdx} className="flex min-w-0">
                 <span className="select-none w-6 sm:w-10 text-right pr-2 sm:pr-4 text-[10px] sm:text-xs leading-[1.6] sm:leading-[1.8] shrink-0 pt-[0.15em]" style={{ color: 'var(--sub)', opacity: 0.4 }}>
                   {lineIdx + 1}
                 </span>
-                <span className="whitespace-pre flex-1 min-w-0">
+                <span className="flex-1 min-w-0 break-words whitespace-pre-wrap sm:whitespace-pre">
                   {line.text.split('').map((char, charIdx) => {
                     const globalIdx = line.startIndex + charIdx
                     return (
