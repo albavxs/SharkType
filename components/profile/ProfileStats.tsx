@@ -47,7 +47,7 @@ export default function ProfileStats({ profile, locale }: ProfileStatsProps) {
                       {langInfo?.label ?? lang.languageId}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-xs tabular-nums" style={{ color: 'var(--sub)' }}>
+                  <div className="flex flex-col items-end gap-1 text-xs tabular-nums sm:flex-row sm:items-center sm:gap-4" style={{ color: 'var(--sub)' }}>
                     <span>{lang.totalSessions} {t('sessionsShort', locale)}</span>
                     <span>{lang.bestWPM} WPM</span>
                   </div>
