@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { tracks, Track, TrackSection } from '@/data/tracks'
+import { tracks, Track } from '@/data/tracks'
 import { languages, textLanguages } from '@/data'
 import { getLevel } from '@/lib/gamification'
-import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
+import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
@@ -50,7 +50,7 @@ function getTrackLanguages(track: Track): Language[] {
 
 export default function TracksPage() {
   const router = useRouter()
-  const [currentTheme, setCurrentTheme] = useState('dracula')
+  const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
@@ -72,9 +72,11 @@ export default function TracksPage() {
 
   useEffect(() => {
     const themeName = getThemePref()
-    setCurrentTheme(themeName)
-    applyTheme(getTheme(themeName))
-  }, [])
+    if (themeName !== currentTheme) {
+      queueMicrotask(() => setCurrentTheme(themeName))
+    }
+    applyTheme(getTheme(currentTheme))
+  }, [currentTheme])
 
   function getTrackProgress(snippetIds: string[]): number {
     let completed = 0
@@ -109,7 +111,7 @@ export default function TracksPage() {
           }
           router.push(`/tracks/${track.id}`)
         }}
-        className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
+        className="block w-full min-w-0 rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer sm:p-5"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
         <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
         <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description[locale]}</div>
@@ -211,7 +213,7 @@ export default function TracksPage() {
 
       {showGuestOverlay && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/40">
-          <div className="w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300" style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}>
+          <div className="max-h-[calc(100vh-2rem)] w-full max-w-sm overflow-y-auto rounded-3xl p-6 shadow-2xl animate-in fade-in zoom-in duration-300 sm:p-8" style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}>
             <div className="flex flex-col items-center text-center">
               <div className="mb-6 rounded-full p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
                 <LockIcon size={32} />
