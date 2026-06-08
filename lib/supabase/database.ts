@@ -55,6 +55,8 @@ export interface Database {
           best_wpm: number
           best_accuracy: number
           total_sessions: number
+          ranked_score: number
+          ranked_sessions: number
           completed_track_ids: string[] | null
           updated_at: string
         }
@@ -66,6 +68,8 @@ export interface Database {
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
+          ranked_score?: number
+          ranked_sessions?: number
           completed_track_ids?: string[] | null
         }
         Update: {
@@ -75,6 +79,8 @@ export interface Database {
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
+          ranked_score?: number
+          ranked_sessions?: number
           completed_track_ids?: string[] | null
         }
         Relationships: []
@@ -117,6 +123,8 @@ export interface Database {
           duration: number
           difficulty: string
           xp_earned: number
+          ranked_points: number
+          ranked_eligible: boolean
           created_at: string
         }
         Insert: {
@@ -129,6 +137,8 @@ export interface Database {
           duration: number
           difficulty: string
           xp_earned: number
+          ranked_points?: number
+          ranked_eligible?: boolean
           created_at?: string
         }
         Update: {
@@ -140,6 +150,8 @@ export interface Database {
           duration?: number
           difficulty?: string
           xp_earned?: number
+          ranked_points?: number
+          ranked_eligible?: boolean
           created_at?: string
         }
         Relationships: []
@@ -235,6 +247,8 @@ export interface Database {
           best_wpm: number
           current_streak: number
           total_sessions: number
+          ranked_score: number
+          ranked_sessions: number
         }
         Relationships: []
       }
@@ -251,6 +265,7 @@ export interface Database {
           total_sessions: number
           level: number
           score: number
+          ranked_sessions: number
         }
         Relationships: []
       }

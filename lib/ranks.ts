@@ -33,7 +33,7 @@ export interface RankState {
   label: I18nString
 }
 
-const DIVISION_SCORE_SPAN = 25
+const DIVISION_SCORE_SPAN = 100
 
 const RANK_TIERS: RankTierDefinition[] = [
   {

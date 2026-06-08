@@ -1,3 +1,4 @@
+import { getRankFromScore, type RankState } from './ranks'
 import { Difficulty } from './types'
 
 export interface LanguageProgress {
@@ -15,7 +16,10 @@ export interface SessionRecord {
   accuracy: number
   errors: number
   duration: number
+  difficulty?: Difficulty
   xpEarned: number
+  rankedEligible?: boolean
+  rankedPoints?: number
 }
 
 export interface UserProgress {
@@ -26,6 +30,8 @@ export interface UserProgress {
     current: number
     lastPracticeDate: string
   }
+  rankedScore: number
+  rankedSessions: number
   languages: Record<string, LanguageProgress>
   history: SessionRecord[]
   completedTrackIds?: string[]
@@ -49,6 +55,8 @@ export function createDefaultProgress(): UserProgress {
     totalXP: 0,
     level: 1,
     streak: { current: 0, lastPracticeDate: '' },
+    rankedScore: 0,
+    rankedSessions: 0,
     languages: {},
     history: [],
     completedTrackIds: [],
@@ -66,6 +74,8 @@ function normalizeProgress(progress?: Partial<UserProgress> | null): UserProgres
       current: progress.streak?.current ?? 0,
       lastPracticeDate: progress.streak?.lastPracticeDate ?? '',
     },
+    rankedScore: progress.rankedScore ?? 0,
+    rankedSessions: progress.rankedSessions ?? 0,
     languages: progress.languages ?? {},
     history: Array.isArray(progress.history) ? progress.history.slice(0, MAX_HISTORY) : [],
     completedTrackIds: Array.isArray(progress.completedTrackIds) ? progress.completedTrackIds : [],
@@ -151,6 +161,11 @@ export interface SessionOutput {
   newLevel: number
   levelPercent: number
   streak: number
+  streakEventKey: string | null
+  rankedPointsEarned: number
+  rankedEligible: boolean
+  rankedScore: number
+  rankedTier: RankState
   /** Flag indicando se o streak foi incrementado nesta sessão (não apenas mantido) */
   streakIncremented: boolean
   /**
@@ -175,12 +190,6 @@ export function applySessionToProgress(
   output: SessionOutput
 } {
   const progress = normalizeProgress(progressInput)
-  // XP calculation
-  const baseXP = 10
-  const wpmBonus = Math.floor(input.wpm / 10)
-  const accBonus = input.accuracy >= 95 ? 10 : input.accuracy >= 85 ? 5 : 0
-  const diffMult = input.difficulty === 'hard' ? 2 : input.difficulty === 'medium' ? 1.5 : 1
-
   // First-time snippet bonus
   const langProgress = progress.languages[input.languageId] || {
     completedSnippetIds: [],
@@ -190,8 +199,9 @@ export function applySessionToProgress(
   }
   const isFirstTime = !langProgress.completedSnippetIds.includes(input.snippetId)
   const firstTimeBonus = isFirstTime ? 5 : 0
-
-  const xpEarned = Math.floor((baseXP + wpmBonus + accBonus) * diffMult + firstTimeBonus)
+  const xpEarned = calculateXpEarned(input) + firstTimeBonus
+  const rankedEligible = isRankedEligibleLanguage(input.languageId) && !input.lenient
+  const rankedPointsEarned = rankedEligible ? calculateRankedPoints(input) : 0
 
   // Update language progress
   if (isFirstTime) {
@@ -207,11 +217,16 @@ export function applySessionToProgress(
   progress.totalXP += xpEarned
   const newLevelInfo = getLevel(progress.totalXP)
   progress.level = newLevelInfo.level
+  progress.rankedScore += rankedPointsEarned
+  if (rankedEligible) {
+    progress.rankedSessions += 1
+  }
 
   // Update streak
   const oldStreakValue = progress.streak.current
   progress.streak = updateStreak(progress.streak)
   const streakIncremented = progress.streak.current > oldStreakValue
+  const streakEventKey = streakIncremented ? `streak:${progress.streak.lastPracticeDate}` : null
 
   // Add history
   progress.history.unshift({
@@ -222,7 +237,10 @@ export function applySessionToProgress(
     accuracy: input.accuracy,
     errors: input.errors,
     duration: input.duration,
+    difficulty: input.difficulty,
     xpEarned,
+    rankedEligible,
+    rankedPoints: rankedPointsEarned,
   })
   if (progress.history.length > MAX_HISTORY) {
     progress.history = progress.history.slice(0, MAX_HISTORY)
@@ -236,6 +254,11 @@ export function applySessionToProgress(
       newLevel: newLevelInfo.level,
       levelPercent: newLevelInfo.percent,
       streak: progress.streak.current,
+      streakEventKey,
+      rankedPointsEarned,
+      rankedEligible,
+      rankedScore: progress.rankedScore,
+      rankedTier: getRankFromScore(progress.rankedScore, progress.rankedSessions),
       streakIncremented,
     },
   }
@@ -266,13 +289,59 @@ export function hasMeaningfulProgress(progress: UserProgress): boolean {
   return progress.totalXP > 0 || progress.history.length > 0 || Object.keys(progress.languages).length > 0
 }
 
+export function isRankedEligibleLanguage(languageId: string): boolean {
+  return !languageId.startsWith('text-')
+}
+
+export function calculateXpEarned(input: SessionInput): number {
+  const baseXP = 10
+  const wpmBonus = Math.floor(input.wpm / 10)
+  const accBonus = input.accuracy >= 95 ? 10 : input.accuracy >= 85 ? 5 : 0
+  const diffMult = input.difficulty === 'hard' ? 2 : input.difficulty === 'medium' ? 1.5 : 1
+  return Math.floor((baseXP + wpmBonus + accBonus) * diffMult)
+}
+
+export function calculateRankedPoints(input: Pick<SessionInput, 'languageId' | 'wpm' | 'accuracy' | 'errors' | 'difficulty'>): number {
+  if (!isRankedEligibleLanguage(input.languageId)) return 0
+
+  const accuracyBonus = Math.max(0, Math.floor((input.accuracy - 85) / 2))
+  const difficultyBonus = input.difficulty === 'hard' ? 28 : input.difficulty === 'medium' ? 12 : 0
+  const errorPenaltyMultiplier = input.difficulty === 'hard' ? 4 : input.difficulty === 'medium' ? 2 : 1
+
+  return Math.max(0, Math.round(input.wpm + accuracyBonus + difficultyBonus - (input.errors * errorPenaltyMultiplier)))
+}
+
+export function computeRankedAggregate(history: SessionRecord[]): {
+  rankedScore: number
+  rankedSessions: number
+} {
+  return history.reduce(
+    (acc, session) => {
+      const rankedEligible = session.rankedEligible ?? isRankedEligibleLanguage(session.languageId)
+      const rankedPoints = session.rankedPoints ?? calculateRankedPoints({
+        languageId: session.languageId,
+        wpm: session.wpm,
+        accuracy: session.accuracy,
+        errors: session.errors,
+        difficulty: session.difficulty ?? 'easy',
+      })
+
+      if (!rankedEligible) return acc
+
+      acc.rankedScore += rankedPoints
+      acc.rankedSessions += 1
+      return acc
+    },
+    { rankedScore: 0, rankedSessions: 0 }
+  )
+}
+
 /**
- * Score combinado usado no leaderboard.
- * Formula travada com PO: avgWPM + (level * 10).
- * Mudar aqui propaga pra api/leaderboard e leaderboard_with_score view.
+ * Compat shim: score agora e score ranked acumulativo.
+ * Preferir `computeRankedAggregate` ou `progress.rankedScore` em código novo.
  */
-export function computeScore(avgWPM: number, level: number): number {
-  return Math.round(avgWPM + level * 10)
+export function computeScore(rankedScore: number): number {
+  return Math.round(rankedScore)
 }
 
 /**

@@ -2,11 +2,12 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { AuthProfile, LeaderboardEntry } from '@/lib/auth-types'
 import {
   applySessionToProgress,
-  computeAverageWPM,
-  computeScore,
+  calculateRankedPoints,
+  computeRankedAggregate,
   createDefaultProgress,
   deriveProgressSummary,
   getLevel,
+  isRankedEligibleLanguage,
   type SessionInput,
   type SessionOutput,
   type SessionRecord,
@@ -44,7 +45,10 @@ function mapSessionRow(row: Database['public']['Tables']['typing_sessions']['Row
     accuracy: row.accuracy,
     errors: row.errors,
     duration: row.duration,
+    difficulty: row.difficulty as SessionRecord['difficulty'],
     xpEarned: row.xp_earned,
+    rankedEligible: row.ranked_eligible,
+    rankedPoints: row.ranked_points,
   }
 }
 
@@ -58,6 +62,8 @@ function buildInsertedSession(input: SessionInput, output: SessionOutput, create
     duration: input.duration,
     difficulty: input.difficulty,
     xp_earned: output.xpEarned,
+    ranked_points: output.rankedPointsEarned,
+    ranked_eligible: output.rankedEligible,
     created_at: createdAt,
   }
 }
@@ -72,7 +78,9 @@ export function buildProgressAggregate(userId: string, progress: UserProgress) {
     last_practice_date: progress.streak.lastPracticeDate || null,
     best_wpm: summary.bestWPM,
     best_accuracy: summary.bestAccuracy,
-    total_sessions: progress.history.length,
+    total_sessions: summary.totalSessions,
+    ranked_score: progress.rankedScore,
+    ranked_sessions: progress.rankedSessions,
     completed_track_ids: progress.completedTrackIds || [],
   }
 }
@@ -89,18 +97,30 @@ function buildLanguageRows(userId: string, progress: UserProgress) {
 }
 
 function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
-  return history.map((record, index) => ({
-    user_id: userId,
-    language_id: record.languageId,
-    snippet_id: record.snippetId,
-    wpm: record.wpm,
-    accuracy: record.accuracy,
-    errors: record.errors,
-    duration: record.duration,
-    difficulty: 'easy',
-    xp_earned: record.xpEarned,
-    created_at: `${record.date}T12:${String(index % 60).padStart(2, '0')}:00.000Z`,
-  }))
+  return history.map((record, index) => {
+    const difficulty = record.difficulty ?? 'easy'
+
+    return {
+      user_id: userId,
+      language_id: record.languageId,
+      snippet_id: record.snippetId,
+      wpm: record.wpm,
+      accuracy: record.accuracy,
+      errors: record.errors,
+      duration: record.duration,
+      difficulty,
+      xp_earned: record.xpEarned,
+      ranked_eligible: record.rankedEligible ?? isRankedEligibleLanguage(record.languageId),
+      ranked_points: record.rankedPoints ?? calculateRankedPoints({
+        languageId: record.languageId,
+        wpm: record.wpm,
+        accuracy: record.accuracy,
+        errors: record.errors,
+        difficulty,
+      }),
+      created_at: `${record.date}T12:${String(index % 60).padStart(2, '0')}:00.000Z`,
+    }
+  })
 }
 
 function shiftISODate(date: string, offsetDays: number) {
@@ -169,6 +189,9 @@ function buildProgressFromSessionRows(
     progress.languages[row.language_id] = current
   }
 
+  const rankedAggregate = computeRankedAggregate(progress.history)
+  progress.rankedScore = rankedAggregate.rankedScore
+  progress.rankedSessions = rankedAggregate.rankedSessions
   progress.level = getLevel(progress.totalXP).level
   return progress
 }
@@ -308,6 +331,8 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
       current: progressResult.data.current_streak,
       lastPracticeDate: progressResult.data.last_practice_date ?? '',
     }
+    progress.rankedScore = progressResult.data.ranked_score ?? 0
+    progress.rankedSessions = progressResult.data.ranked_sessions ?? 0
     progress.completedTrackIds = Array.isArray(progressResult.data.completed_track_ids)
       ? progressResult.data.completed_track_ids
       : []
@@ -324,7 +349,15 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
     }
   }
 
-  progress.history = (sessionsResult.data ?? []).map(mapSessionRow)
+  const sessionRows = sessionsResult.data ?? []
+  progress.history = sessionRows.map(mapSessionRow)
+  if (sessionRows.length > 0 || !progressResult.data) {
+    progress.totalXP = progress.history.reduce((sum, session) => sum + session.xpEarned, 0)
+    progress.streak = deriveStreakFromSessionRows(sessionRows)
+    const rankedAggregate = computeRankedAggregate(progress.history)
+    progress.rankedScore = rankedAggregate.rankedScore
+    progress.rankedSessions = rankedAggregate.rankedSessions
+  }
   progress.level = getLevel(progress.totalXP).level
 
   return progress
@@ -501,19 +534,19 @@ export async function resetRemoteProgress(supabase: DBClient, userId: string) {
 }
 
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
-  // Tenta usar a view nova com score combinado. Se nao existir (migration 003 ausente),
-  // cai pra global_leaderboard ordenado por total_xp.
+  // Tenta usar a view ranked. Se nao existir, cai no fallback legado.
   const withScore = await supabase
     .from('leaderboard_with_score')
     .select('*')
     .order('score', { ascending: false })
-    .order('total_xp', { ascending: false })
+    .order('best_wpm', { ascending: false })
     .order('current_streak', { ascending: false })
+    .order('total_sessions', { ascending: false })
     .limit(1000)
 
   if (!withScore.error && withScore.data) {
     return (withScore.data as any[])
-      .filter(entry => entry.total_sessions > 0 || entry.total_xp > 0)
+      .filter(entry => (entry.score ?? 0) > 0 || (entry.ranked_sessions ?? 0) > 0)
       .map((entry, index) => ({
         rank: index + 1,
         userId: entry.user_id,
@@ -525,6 +558,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
         avgWPM: entry.avg_wpm ?? 0,
         currentStreak: entry.current_streak,
         totalSessions: entry.total_sessions,
+        rankedSessions: entry.ranked_sessions ?? 0,
         level: entry.level ?? getLevel(entry.total_xp).level,
         score: entry.score ?? 0,
       }))
@@ -534,18 +568,18 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
   const { data, error } = await supabase
     .from('global_leaderboard')
     .select('*')
-    .order('total_xp', { ascending: false })
+    .order('ranked_score', { ascending: false })
     .order('best_wpm', { ascending: false })
     .order('current_streak', { ascending: false })
+    .order('total_sessions', { ascending: false })
     .limit(1000)
 
   if (error) throw error
 
   return (data ?? [])
-    .filter(entry => entry.total_sessions > 0 || entry.total_xp > 0)
+    .filter(entry => (entry.ranked_score ?? 0) > 0 || (entry.ranked_sessions ?? 0) > 0)
     .map((entry, index) => {
       const level = getLevel(entry.total_xp).level
-      const avgWPM = computeAverageWPM([entry.best_wpm], 1)
       return {
         rank: index + 1,
         userId: entry.user_id,
@@ -554,11 +588,12 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
         avatarUrl: entry.avatar_url,
         totalXP: entry.total_xp,
         bestWPM: entry.best_wpm,
-        avgWPM,
+        avgWPM: entry.best_wpm,
         currentStreak: entry.current_streak,
         totalSessions: entry.total_sessions,
+        rankedSessions: entry.ranked_sessions ?? 0,
         level,
-        score: computeScore(avgWPM, level),
+        score: entry.ranked_score ?? 0,
       }
     })
 }
