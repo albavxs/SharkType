@@ -2,8 +2,8 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { getTrackById } from '@/data/tracks'
-import { stripCodeComments } from '@/lib/utils'
+import { getTrackById, type Track } from '@/data/tracks'
+import { sanitizeSnippetForTyping } from '@/lib/utils'
 import { textLanguages, languages } from '@/data'
 import { Snippet, Language, Difficulty } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
@@ -16,7 +16,7 @@ import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { SessionOutput, getLevel } from '@/lib/gamification'
-import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
+import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import TypingArea from '@/components/typing/TypingArea'
 import SnippetInfo from '@/components/typing/SnippetInfo'
@@ -32,7 +32,6 @@ import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarnin
 import HelpModal from '@/components/typing/HelpModal'
 import StreakToast from '@/components/gamification/StreakToast'
 import AchievementToast from '@/components/gamification/AchievementToast'
-import Link from 'next/link'
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[] }
 
@@ -41,6 +40,32 @@ function getTrackTimerDuration(difficulty: Difficulty | 'all', snippetCount: num
   if (difficulty === 'medium') return 45 + snippetCount * 4
   if (difficulty === 'hard') return 30 + snippetCount * 3
   return 0
+}
+
+function getAvailableTrackLanguages(track: Track | null | undefined): Language[] {
+  if (!track) return []
+  if (track.textLanguages) {
+    if (track.snippetIds.length > 0) return textLanguages.filter(l => l.id === 'text-typing')
+    return textLanguages.filter(l => l.id !== 'text-typing')
+  }
+
+  if (track.slots && track.slots.length > 0) {
+    return languages.filter(lang =>
+      lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
+    )
+  }
+
+  const seen = new Set<string>()
+  const result: Language[] = []
+  for (const sid of track.snippetIds) {
+    for (const lang of languages) {
+      if (!seen.has(lang.id) && lang.snippets.find(s => s.id === sid)) {
+        seen.add(lang.id)
+        result.push(lang)
+      }
+    }
+  }
+  return result
 }
 
 export default function TrackPracticePage() {
@@ -52,14 +77,15 @@ export default function TrackPracticePage() {
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
-  const [currentTheme, setCurrentTheme] = useState('dracula')
+  const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [selectedLang, setSelectedLang] = useState<Language | null>(null)
+  const [selectedLang, setSelectedLang] = useState<Language | null>(() => getAvailableTrackLanguages(track)[0] ?? null)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [accumulated, setAccumulated] = useState<SnippetResult[]>([])
   const [trackXpEarned, setTrackXpEarned] = useState(0)
   const [finalStats, setFinalStats] = useState<SnippetResult | null>(null)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const { progress, recordSession } = useProgress()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -68,30 +94,7 @@ export default function TrackPracticePage() {
   const levelInfo = getLevel(progress.totalXP)
 
   // Available languages for this track
-  const availableLanguages = useMemo(() => {
-    if (!track) return []
-    if (track.textLanguages) {
-      if (track.snippetIds.length > 0) return textLanguages.filter(l => l.id === 'text-typing')
-      return textLanguages.filter(l => l.id !== 'text-typing')
-    }
-    // Slot-based tracks: find languages that have at least one snippet matching any slot
-    if (track.slots && track.slots.length > 0) {
-      return languages.filter(lang =>
-        lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
-      )
-    }
-    const seen = new Set<string>()
-    const result: Language[] = []
-    for (const sid of track.snippetIds) {
-      for (const lang of languages) {
-        if (!seen.has(lang.id) && lang.snippets.find(s => s.id === sid)) {
-          seen.add(lang.id)
-          result.push(lang)
-        }
-      }
-    }
-    return result
-  }, [track])
+  const availableLanguages = useMemo(() => getAvailableTrackLanguages(track), [track])
 
   // Snippets for selected language, filtered by difficulty
   const trackSnippets = useMemo((): Snippet[] => {
@@ -118,10 +121,9 @@ export default function TrackPracticePage() {
         .filter((s): s is Snippet => Boolean(s))
     }
     return snippets
-  }, [track, selectedLang, difficulty])
+  }, [track, selectedLang])
 
   const snippet = trackSnippets[seqIndex] ?? null
-  const isLastSnippet = seqIndex >= trackSnippets.length - 1
 
   // Timer — dynamic per-snippet duration based on difficulty + snippet count
   const snippetCount = trackSnippets.length
@@ -131,7 +133,10 @@ export default function TrackPracticePage() {
   // Pending advance flag — set by handleFinish or handleTimerEnd, consumed by useEffect
   const pendingAdvanceRef = useRef(false)
   const timerDurationRef = useRef(timerDuration)
-  timerDurationRef.current = timerDuration
+
+  useEffect(() => {
+    timerDurationRef.current = timerDuration
+  }, [timerDuration])
 
   const handleTimerEnd = useCallback(() => {
     playComplete()
@@ -148,8 +153,8 @@ export default function TrackPracticePage() {
 
   const displayCode = useMemo(() => {
     const raw = snippet?.code ?? ''
-    return difficulty === 'all' ? raw : stripCodeComments(raw)
-  }, [snippet, difficulty])
+    return sanitizeSnippetForTyping(raw, selectedLang?.id ?? '')
+  }, [selectedLang?.id, snippet])
 
   const { enabled: lenient } = useLenientKeyboard()
   useFontScale() // apenas pra setar a CSS var no mount
@@ -217,22 +222,30 @@ export default function TrackPracticePage() {
     }
   }, [engine.state.status])
 
-  const prevErrors = useMemo(() => ({ current: 0 }), [])
+  const prevErrors = useRef(0)
   const isTyping = engine.state.status === 'running'
 
   useEffect(() => {
     const themeName = getThemePref()
-    setCurrentTheme(themeName)
-    applyTheme(getTheme(themeName))
-  }, [])
-
-  useEffect(() => {
-    if (availableLanguages.length > 0 && !selectedLang) {
-      setSelectedLang(availableLanguages[0])
+    if (themeName !== currentTheme) {
+      queueMicrotask(() => setCurrentTheme(themeName))
     }
-  }, [availableLanguages])
+    applyTheme(getTheme(currentTheme))
+  }, [currentTheme])
 
   useEffect(() => { if (engine.state.errors > prevErrors.current) { playError() }; prevErrors.current = engine.state.errors }, [engine.state.errors])
+
+  useEffect(() => {
+    if (isCountdown || !engine.state.startTime || showResult) return
+
+    const updateElapsed = () => {
+      setElapsedSeconds(Math.floor((Date.now() - engine.state.startTime!) / 1000))
+    }
+
+    updateElapsed()
+    const intervalId = window.setInterval(updateElapsed, 1000)
+    return () => window.clearInterval(intervalId)
+  }, [engine.state.startTime, isCountdown, showResult])
 
   function handleRestartTrack() {
     setSeqIndex(0)
@@ -270,11 +283,11 @@ export default function TrackPracticePage() {
     timer.reset(newDur)
   }
 
-  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleRestartTrack : handleRestart, ShiftTab: handleRestart, Escape: () => setShowThemeSelector(false) }), [showResult]), true)
+  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleRestartTrack : handleRestart, ShiftTab: handleRestart, Escape: () => setShowThemeSelector(false) }), [handleRestart, handleRestartTrack, showResult]), true)
 
   const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); engine.handleKey(key) }, [engine])
 
-  const displaySeconds = isCountdown ? timer.seconds : (engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0)
+  const displaySeconds = isCountdown ? timer.seconds : engine.state.startTime ? elapsedSeconds : 0
 
   if (!track) {
     return <main className="flex-1 flex items-center justify-center"><p style={{ color: 'var(--sub)' }}>{t('trackNotFound', locale)}</p></main>
@@ -313,7 +326,7 @@ export default function TrackPracticePage() {
           isTyping={isTyping}
         />
 
-        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-6 min-h-0">
+        <div className="flex-1 flex flex-col items-center justify-center px-3 pb-3 sm:px-6 sm:pb-0 min-h-0 min-w-0">
           {!snippet ? (
             <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
           ) : showResult && finalStats ? (
@@ -326,20 +339,20 @@ export default function TrackPracticePage() {
           ) : (
             <>
               {/* Prompt — hide when typing */}
-              <div className={`w-full max-w-3xl mb-6 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
+              <div className={`w-full max-w-3xl min-w-0 mb-4 sm:mb-6 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
                 <SnippetInfo snippet={snippet} languageLabel={selectedLang?.label ?? ''} languageColor={selectedLang?.color ?? '#888'} current={seqIndex + 1} total={trackSnippets.length} locale={locale} />
               </div>
               {/* Caps Lock warning — desktop: above text */}
               <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
 
-              <TypingArea code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
+              <TypingArea key={`${selectedLang?.id ?? 'unknown'}:${snippet.id}`} code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
 
               {/* Caps Lock warning — mobile: below text */}
               <CapsLockWarning visible={capsLock && !showResult && !!isMobile} isMobile={true} locale={locale} />
 
               {isTyping && (
-                <div className="mt-3 text-[10px] animate-fade-in" style={{ color: 'var(--sub)', opacity: 0.4 }}>
+                <div className="mt-3 text-center text-[10px] animate-fade-in sm:text-left" style={{ color: 'var(--sub)', opacity: 0.4 }}>
                   {t('hintShiftTab', locale)}
                 </div>
               )}
