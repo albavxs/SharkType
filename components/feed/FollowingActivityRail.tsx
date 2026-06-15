@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getLanguageById } from '@/data'
+import { getLanguageMetaById } from '@/data/metadata'
 import { useAuth } from '@/hooks/useAuth'
 import { t, type Locale } from '@/lib/i18n'
 import type { FeedEvent } from '@/lib/server/feed-store'
@@ -25,7 +25,7 @@ function timeAgo(iso: string, locale: Locale): string {
 function describeEvent(event: FeedEvent, locale: Locale): string {
   switch (event.eventType) {
     case 'session': {
-      const language = getLanguageById(event.payload.languageId)
+      const language = getLanguageMetaById(event.payload.languageId)
       const label = language?.label ?? event.payload.languageId
       return `${label} • ${event.payload.wpm} WPM`
     }
@@ -46,8 +46,8 @@ export default function FollowingActivityRail({ locale }: FollowingActivityRailP
 
   useEffect(() => {
     if (!user) {
-      setEvents([])
-      return
+      const frameId = requestAnimationFrame(() => setEvents([]))
+      return () => cancelAnimationFrame(frameId)
     }
 
     let cancelled = false

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FlameIcon } from '@/components/icons'
 import { t, type Locale } from '@/lib/i18n'
@@ -8,6 +8,8 @@ import { t, type Locale } from '@/lib/i18n'
 interface StreakToastProps {
   /** Flag indicando se o streak foi incrementado nesta sessão */
   streakIncremented: boolean
+  /** Chave transitória do evento real de streak para deduplicar re-render/reload */
+  streakEventKey: string | null
   /** Valor atual de streak */
   streak: number
   locale: Locale
@@ -17,20 +19,20 @@ interface StreakToastProps {
  * Mostra toast/overlay quando streak incrementa.
  * Usa flag explícito do SessionOutput para evitar disparos falsos.
  */
-export default function StreakToast({ streakIncremented, streak, locale }: StreakToastProps) {
+export default function StreakToast({ streakIncremented, streakEventKey, streak, locale }: StreakToastProps) {
   const [visible, setVisible] = useState(false)
   const [displayStreak, setDisplayStreak] = useState(streak)
-  const [lastShownStreak, setLastShownStreak] = useState<number | null>(null)
+  const lastShownEventKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (streakIncremented && streak !== lastShownStreak) {
+    if (streakIncremented && streakEventKey && streakEventKey !== lastShownEventKeyRef.current) {
       setDisplayStreak(streak)
       setVisible(true)
-      setLastShownStreak(streak)
+      lastShownEventKeyRef.current = streakEventKey
       const timeout = setTimeout(() => setVisible(false), 3000)
       return () => clearTimeout(timeout)
     }
-  }, [streakIncremented, streak, lastShownStreak])
+  }, [streakIncremented, streakEventKey, streak])
 
   return (
     <AnimatePresence>

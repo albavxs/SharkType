@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import StreakToast from '@/components/gamification/StreakToast'
 import FollowerToast from '@/components/gamification/FollowerToast'
 import { useLocale } from '@/hooks/useLocale'
 import type { ProgressSource } from '@/lib/auth-types'
@@ -12,6 +13,7 @@ import {
   saveSession as saveGuestSession,
   type SessionInput,
   type SessionOutput,
+  type StreakNotification,
   type UserProgress,
 } from '@/lib/gamification'
 import { useAuth } from './AuthProvider'
@@ -24,6 +26,15 @@ interface PlayerProgressContextValue {
   recordSession: (input: SessionInput) => Promise<SessionOutput>
   reload: () => Promise<void>
   resetCurrentProgress: () => Promise<void>
+}
+
+interface FollowFeedEvent {
+  id: number
+  username: string
+  eventType: 'follow' | string
+  payload: {
+    targetId?: string
+  }
 }
 
 const PlayerProgressContext = createContext<PlayerProgressContextValue | null>(null)
@@ -48,6 +59,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
   const [isLoading, setIsLoading] = useState(true)
   const [isSyncing, setIsSyncing] = useState(false)
   const [newFollower, setNewFollower] = useState<string | null>(null)
+  const [streakNotification, setStreakNotification] = useState<StreakNotification | null>(null)
   const { locale } = useLocale()
 
   async function loadRemoteSnapshot() {
@@ -57,6 +69,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
     return (await response.json()) as {
       profile: { localImportedAt: string | null }
       progress: UserProgress
+      streakNotification: StreakNotification | null
     }
   }
 
@@ -79,15 +92,20 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
 
     if (!importResponse.ok) throw new Error(await parseJsonError(importResponse))
 
-    const payload = (await importResponse.json()) as { progress: UserProgress }
+    const payload = (await importResponse.json()) as {
+      profile: { localImportedAt: string | null }
+      progress: UserProgress
+      streakNotification: StreakNotification | null
+    }
     window.localStorage.setItem(importFlagKey, '1')
-    return payload.progress
+    return payload
   }
 
   async function reload() {
     if (!user || !supabaseConfigured) {
       setProgress(loadProgress())
       setSource('guest')
+      setStreakNotification(null)
       setIsLoading(false)
       return
     }
@@ -97,17 +115,23 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
     try {
       const remote = await loadRemoteSnapshot()
       let effectiveProgress = remote.progress
+      let effectiveStreakNotification = remote.streakNotification ?? null
 
       if (!remote.profile.localImportedAt) {
         const imported = await maybeImportGuestProgress().catch(() => null)
-        if (imported) effectiveProgress = imported
+        if (imported) {
+          effectiveProgress = imported.progress
+          effectiveStreakNotification = imported.streakNotification ?? null
+        }
       }
 
       setProgress(effectiveProgress)
       setSource('supabase')
+      setStreakNotification(effectiveStreakNotification)
     } catch {
       setProgress(loadProgress())
       setSource('guest')
+      setStreakNotification(null)
     } finally {
       setIsLoading(false)
     }
@@ -119,7 +143,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
       const response = await fetch('/api/feed?scope=global')
       if (!response.ok) return
 
-      const { events } = (await response.json()) as { events: any[] }
+      const { events } = (await response.json()) as { events: FollowFeedEvent[] }
       const followEvent = events.find(
         (e) => e.eventType === 'follow' && e.payload.targetId === userId
       )
@@ -143,7 +167,23 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
     void reload()
 
     if (user?.id && supabaseConfigured) {
-      void checkNewFollowers(user.id)
+      const hasIdleCallback = 'requestIdleCallback' in window
+      const schedule = hasIdleCallback
+        ? window.requestIdleCallback(() => {
+            void checkNewFollowers(user.id)
+          })
+        : window.setTimeout(() => {
+            void checkNewFollowers(user.id)
+          }, 250)
+
+      return () => {
+        if (hasIdleCallback && 'cancelIdleCallback' in window) {
+          window.cancelIdleCallback(schedule)
+          return
+        }
+
+        window.clearTimeout(schedule)
+      }
     }
   }, [authLoading, user?.id, supabaseConfigured, checkNewFollowers])
 
@@ -152,6 +192,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
       const output = saveGuestSession(input)
       setProgress(loadProgress())
       setSource('guest')
+      setStreakNotification(null)
       return output
     }
 
@@ -175,11 +216,13 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
 
       setProgress(payload.progress)
       setSource('supabase')
+      setStreakNotification(null)
       return payload.output
     } catch {
       const output = saveGuestSession(input)
       setProgress(loadProgress())
       setSource('guest')
+      setStreakNotification(null)
       return output
     } finally {
       setIsSyncing(false)
@@ -191,6 +234,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
       resetLocalProgress()
       setProgress(createDefaultProgress())
       setSource('guest')
+      setStreakNotification(null)
       return
     }
 
@@ -202,6 +246,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
 
     const fresh = createDefaultProgress()
     setProgress(fresh)
+    setStreakNotification(null)
   }
 
   const value: PlayerProgressContextValue = {
@@ -217,6 +262,12 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
   return (
     <PlayerProgressContext.Provider value={value}>
       {children}
+      <StreakToast
+        streakIncremented={Boolean(streakNotification)}
+        streakEventKey={streakNotification?.eventKey ?? null}
+        streak={streakNotification?.current ?? progress.streak.current}
+        locale={locale}
+      />
       <FollowerToast
         followerUsername={newFollower}
         locale={locale}

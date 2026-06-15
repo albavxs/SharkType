@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { tracks, Track } from '@/data/tracks'
-import { languages, textLanguages } from '@/data'
+import { codeLanguageMetas, getLanguageMetaById, textLanguageMetas } from '@/data/metadata'
 import { getLevel } from '@/lib/gamification'
 import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
@@ -11,42 +12,22 @@ import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
-import ThemeSelector from '@/components/typing/ThemeSelector'
-import HelpModal from '@/components/typing/HelpModal'
-import SceneWrapper from '@/components/three/SceneWrapper'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
-import { getLanguageById } from '@/data'
-import { Language, Difficulty } from '@/lib/types'
+import { LanguageMeta, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
 import { LockIcon } from '@/components/icons'
+
+const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
+const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
+const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 
 const conceptTracks = tracks.filter(t => t.section === 'concept')
 const focusedTracks = tracks.filter(t => t.section === 'focused')
 const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
 const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
-const idiomBadges = textLanguages.filter(l => l.id !== 'text-typing')
-
-function getTrackLanguages(track: Track): Language[] {
-  // Slot-based tracks
-  if (track.slots && track.slots.length > 0) {
-    return languages.filter(lang =>
-      lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
-    )
-  }
-  const seen = new Set<string>()
-  const result: Language[] = []
-  for (const sid of track.snippetIds) {
-    for (const lang of languages) {
-      if (!seen.has(lang.id) && lang.snippets.some(s => s.id === sid)) {
-        seen.add(lang.id)
-        result.push(lang)
-      }
-    }
-  }
-  return result
-}
+const idiomBadges = textLanguageMetas.filter((language) => language.id !== 'text-typing')
 
 export default function TracksPage() {
   const router = useRouter()
@@ -54,21 +35,14 @@ export default function TracksPage() {
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
+  const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
   const { user } = useAuth()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
   const { progress } = useProgress()
   const levelInfo = getLevel(progress.totalXP)
 
-  const dummyLang = getLanguageById(DEFAULT_LANGUAGE)!
-
-  const trackLangsMap = useMemo(() => {
-    const map = new Map<string, Language[]>()
-    for (const track of codeTracks) {
-      map.set(track.id, getTrackLanguages(track))
-    }
-    return map
-  }, [])
+  const dummyLang = getLanguageMetaById(DEFAULT_LANGUAGE) ?? codeLanguageMetas[0]
 
   useEffect(() => {
     const themeName = getThemePref()
@@ -77,6 +51,27 @@ export default function TracksPage() {
     }
     applyTheme(getTheme(currentTheme))
   }, [currentTheme])
+
+  useEffect(() => {
+    let active = true
+
+    void (async () => {
+      try {
+        const response = await fetch('/api/tracks/catalog', { cache: 'no-store' })
+        const payload = (await response.json()) as { trackLanguageBadges?: Record<string, LanguageMeta[]> }
+        if (!active || !response.ok) return
+        setTrackLangsMap(new Map(Object.entries(payload.trackLanguageBadges ?? {})))
+      } catch {
+        if (active) {
+          setTrackLangsMap(new Map())
+        }
+      }
+    })()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   function getTrackProgress(snippetIds: string[]): number {
     let completed = 0
@@ -101,7 +96,7 @@ export default function TracksPage() {
 
   const codeStats = getSectionStats(codeTracks)
 
-  function TrackCard({ track, badges }: { track: Track; badges: Language[] }) {
+  function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     return (
       <button 
         onClick={() => {
