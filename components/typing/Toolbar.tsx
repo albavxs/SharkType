@@ -1,6 +1,6 @@
 'use client'
 
-import { Language, Difficulty } from '@/lib/types'
+import { LanguageMeta, Difficulty } from '@/lib/types'
 import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
@@ -10,11 +10,11 @@ import DifficultySelector from './DifficultySelector'
 import { useAuth } from '@/hooks/useAuth'
 
 interface ToolbarProps {
-  language: Language
+  language: LanguageMeta
   difficulty: Difficulty | 'all'
   seconds: number
   isTimerRunning: boolean
-  onLanguageChange: (lang: Language) => void
+  onLanguageChange: (lang: LanguageMeta) => void
   onDifficultyChange: (d: Difficulty | 'all') => void
   onHomeClick: () => void
   onHelpClick: () => void
@@ -86,11 +86,9 @@ export default function Toolbar({
               </Link>
             )}
             {level && <span className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
-            {streak > 0 && (
-              <span className="flex items-center gap-0.5 text-[10px]" style={{ color: 'var(--main)' }}>
+            <span className="flex items-center gap-0.5 text-[10px]" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
                 <FlameIcon size={12} />{streak}d
-              </span>
-            )}
+            </span>
           </div>
         </div>
 
@@ -140,7 +138,7 @@ export default function Toolbar({
       {showControls && <div className={`sm:hidden flex justify-center transition-all duration-300 ${hide}`}>
         <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 px-3 py-1 rounded-2xl text-xs"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          {showLanguage && <><LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
+          {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
@@ -159,7 +157,7 @@ export default function Toolbar({
       {showControls && <div className={`absolute left-1/2 -translate-x-1/2 hidden sm:block transition-all duration-300 ${hide}`}>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          {showLanguage && <><LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
+          {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
@@ -224,16 +222,10 @@ export default function Toolbar({
             {t('authSignIn', locale)}
           </Link>
         )}
-        {(level || streak > 0) && (
-          <>
-            {level && <span className="text-xs lg:text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
-            {streak > 0 && (
-              <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: 'var(--main)' }}>
-                <FlameIcon size={16} />{streak}d
-              </span>
-            )}
-          </>
-        )}
+        {level && <span className="text-xs lg:text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
+        <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
+          <FlameIcon size={16} />{streak}d
+        </span>
       </div>
     </div>
   )
