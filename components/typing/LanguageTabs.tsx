@@ -1,9 +1,9 @@
-import type { Language } from '@/lib/types'
+import type { LanguageMeta } from '@/lib/types'
 
 interface LanguageTabsProps {
-  languages: Language[]
+  languages: LanguageMeta[]
   selectedId: string | null
-  onSelect: (lang: Language) => void
+  onSelect: (lang: LanguageMeta) => void
   isTyping: boolean
 }
 

@@ -16,16 +16,36 @@ function canCreateWebGLContext() {
 
 export default function SceneWrapper() {
   const [enabled, setEnabled] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
+    const enableScene = () => {
       setEnabled(canCreateWebGLContext())
-    }, 0)
+      setIsVisible(document.visibilityState !== 'hidden')
+    }
 
-    return () => window.clearTimeout(timeoutId)
+    const hasIdleCallback = 'requestIdleCallback' in window
+    const schedule = hasIdleCallback
+      ? window.requestIdleCallback(enableScene)
+      : window.setTimeout(enableScene, 150)
+
+    function handleVisibilityChange() {
+      setIsVisible(document.visibilityState !== 'hidden')
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      if (hasIdleCallback && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(schedule)
+        return
+      }
+      window.clearTimeout(schedule)
+    }
   }, [])
 
-  if (!enabled) return null
+  if (!enabled || !isVisible) return null
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">

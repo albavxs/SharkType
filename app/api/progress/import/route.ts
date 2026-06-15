@@ -14,9 +14,14 @@ function normalizeProgressInput(progress?: Partial<UserProgress> | null): UserPr
     streak: {
       current: progress?.streak?.current ?? empty.streak.current,
       lastPracticeDate: progress?.streak?.lastPracticeDate ?? empty.streak.lastPracticeDate,
+      lastActivityAt: progress?.streak?.lastActivityAt ?? empty.streak.lastActivityAt,
+      lastStreakAt: progress?.streak?.lastStreakAt ?? empty.streak.lastStreakAt,
     },
+    rankedScore: progress?.rankedScore ?? empty.rankedScore,
+    rankedSessions: progress?.rankedSessions ?? empty.rankedSessions,
     languages: progress?.languages ?? empty.languages,
     history: Array.isArray(progress?.history) ? progress.history : empty.history,
+    completedTrackIds: Array.isArray(progress?.completedTrackIds) ? progress.completedTrackIds : empty.completedTrackIds,
   }
 }
 
