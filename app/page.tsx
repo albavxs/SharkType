@@ -39,7 +39,7 @@ export default function Home() {
   const [selectedLanguageId, setSelectedLanguageId] = useState(DEFAULT_LANGUAGE)
   const [language, setLanguage] = useState<Language | null>(null)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
-  const [sequence, setSequence] = useState<Snippet[]>([])
+  const [sequence, setSequence] = useState<Snippet[]>(() => initialLanguage.snippets)
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
