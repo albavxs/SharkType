@@ -5,22 +5,31 @@ import {
   calculateRankedPoints,
   computeRankedAggregate,
   createDefaultProgress,
+  deriveStreakFromActivityTimestamps,
   deriveProgressSummary,
   getLevel,
   isRankedEligibleLanguage,
+  reconcileStreakOnLogin,
   type SessionInput,
   type SessionOutput,
   type SessionRecord,
+  type StreakNotification,
   type UserProgress,
 } from '@/lib/gamification'
 import type { Database } from '@/lib/supabase/database'
 import { ensureProfileForUser, getOwnProfile } from './auth-profile'
-import { checkUnlocks } from './achievements'
+import { collectProgressUnlocks, reconcileHistoricalUnlocks } from './achievements'
 import { recordFeedEvent } from './feed-store'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
 type TypingSessionRow = Database['public']['Tables']['typing_sessions']['Row']
 type ProfileRow = Database['public']['Tables']['profiles']['Row']
+
+export interface ProfileProgressPayload {
+  profile: AuthProfile
+  progress: UserProgress
+  streakNotification: StreakNotification | null
+}
 
 function mapProfileRow(row: Database['public']['Tables']['profiles']['Row']): AuthProfile {
   return {
@@ -42,6 +51,7 @@ function mapSessionRow(row: Database['public']['Tables']['typing_sessions']['Row
     languageId: row.language_id,
     snippetId: row.snippet_id,
     wpm: row.wpm,
+    rawWpm: row.raw_wpm,
     accuracy: row.accuracy,
     errors: row.errors,
     duration: row.duration,
@@ -57,6 +67,7 @@ function buildInsertedSession(input: SessionInput, output: SessionOutput, create
     language_id: input.languageId,
     snippet_id: input.snippetId,
     wpm: input.wpm,
+    raw_wpm: input.rawWpm,
     accuracy: input.accuracy,
     errors: input.errors,
     duration: input.duration,
@@ -76,6 +87,8 @@ export function buildProgressAggregate(userId: string, progress: UserProgress) {
     total_xp: progress.totalXP,
     current_streak: progress.streak.current,
     last_practice_date: progress.streak.lastPracticeDate || null,
+    last_activity_at: progress.streak.lastActivityAt || null,
+    last_streak_at: progress.streak.lastStreakAt || null,
     best_wpm: summary.bestWPM,
     best_accuracy: summary.bestAccuracy,
     total_sessions: summary.totalSessions,
@@ -105,6 +118,7 @@ function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
       language_id: record.languageId,
       snippet_id: record.snippetId,
       wpm: record.wpm,
+      raw_wpm: record.rawWpm ?? record.wpm,
       accuracy: record.accuracy,
       errors: record.errors,
       duration: record.duration,
@@ -114,49 +128,13 @@ function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
       ranked_points: record.rankedPoints ?? calculateRankedPoints({
         languageId: record.languageId,
         wpm: record.wpm,
-        accuracy: record.accuracy,
+        rawWpm: record.rawWpm ?? record.wpm,
         errors: record.errors,
         difficulty,
       }),
       created_at: `${record.date}T12:${String(index % 60).padStart(2, '0')}:00.000Z`,
     }
   })
-}
-
-function shiftISODate(date: string, offsetDays: number) {
-  const target = new Date(`${date}T00:00:00.000Z`)
-  target.setUTCDate(target.getUTCDate() + offsetDays)
-  return target.toISOString().slice(0, 10)
-}
-
-function deriveStreakFromSessionRows(rows: TypingSessionRow[]): UserProgress['streak'] {
-  if (rows.length === 0) {
-    return { current: 0, lastPracticeDate: '' }
-  }
-
-  const uniqueDates = Array.from(new Set(rows.map((row) => row.created_at.slice(0, 10))))
-  const lastPracticeDate = uniqueDates[0] ?? ''
-  if (!lastPracticeDate) {
-    return { current: 0, lastPracticeDate: '' }
-  }
-
-  let current = 0
-  let expectedDate = lastPracticeDate
-
-  for (const date of uniqueDates) {
-    if (date !== expectedDate) break
-    current += 1
-    expectedDate = shiftISODate(expectedDate, -1)
-  }
-
-  const today = new Date().toISOString().slice(0, 10)
-  const yesterday = shiftISODate(today, -1)
-  const isActive = lastPracticeDate === today || lastPracticeDate === yesterday
-
-  return {
-    current: isActive ? current : 0,
-    lastPracticeDate,
-  }
 }
 
 function buildProgressFromSessionRows(
@@ -166,7 +144,7 @@ function buildProgressFromSessionRows(
   const progress = createDefaultProgress()
   progress.completedTrackIds = completedTrackIds
   progress.history = rows.map(mapSessionRow)
-  progress.streak = deriveStreakFromSessionRows(rows)
+  progress.streak = deriveStreakFromActivityTimestamps(rows.map((row) => row.created_at))
 
   for (const row of rows) {
     progress.totalXP += row.xp_earned
@@ -212,6 +190,37 @@ async function syncProgressAggregates(supabase: DBClient, userId: string, progre
   }
 }
 
+async function persistProgressAggregate(supabase: DBClient, userId: string, progress: UserProgress) {
+  const aggregate = buildProgressAggregate(userId, progress)
+  const progressUpsert = await supabase.from('user_progress').upsert(aggregate, { onConflict: 'user_id' })
+  if (progressUpsert.error && !isMissingTable(progressUpsert.error)) throw progressUpsert.error
+}
+
+async function reconcileSnapshotStreak(
+  supabase: DBClient,
+  userId: string,
+  progress: UserProgress
+): Promise<{ progress: UserProgress; streakNotification: StreakNotification | null }> {
+  const { streak, notification } = reconcileStreakOnLogin(progress.streak)
+
+  if (
+    streak.current === progress.streak.current &&
+    streak.lastActivityAt === progress.streak.lastActivityAt &&
+    streak.lastStreakAt === progress.streak.lastStreakAt &&
+    streak.lastPracticeDate === progress.streak.lastPracticeDate
+  ) {
+    return { progress, streakNotification: notification }
+  }
+
+  const nextProgress: UserProgress = {
+    ...progress,
+    streak,
+  }
+
+  await persistProgressAggregate(supabase, userId, nextProgress)
+  return { progress: nextProgress, streakNotification: notification }
+}
+
 async function markProfileSocialState(
   supabase: DBClient,
   userId: string,
@@ -251,8 +260,45 @@ async function seedHistoricalFeedFromSessions(
   }
 }
 
-function isMissingTable(error: any): boolean {
-  return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
+function isMissingTable(error: unknown): boolean {
+  const candidate = error as { code?: string; message?: string } | null
+  return candidate?.code === '42P01' || String(candidate?.message ?? '').includes('does not exist')
+}
+
+function isMissingColumn(error: unknown, columnName: string): boolean {
+  const candidate = error as { code?: string; message?: string } | null
+  return candidate?.code === 'PGRST204' && String(candidate?.message ?? '').includes(`'${columnName}'`)
+}
+
+async function insertTypingSessionCompat(
+  supabase: DBClient,
+  row: Database['public']['Tables']['typing_sessions']['Insert']
+) {
+  const attempt = await supabase.from('typing_sessions').insert(row)
+  if (!attempt.error || !isMissingColumn(attempt.error, 'raw_wpm')) {
+    return attempt
+  }
+
+  const legacyRow: Record<string, unknown> = { ...row }
+  delete legacyRow.raw_wpm
+  return supabase.from('typing_sessions').insert(legacyRow as Database['public']['Tables']['typing_sessions']['Insert'])
+}
+
+async function insertTypingSessionsCompat(
+  supabase: DBClient,
+  rows: Database['public']['Tables']['typing_sessions']['Insert'][]
+) {
+  const attempt = await supabase.from('typing_sessions').insert(rows)
+  if (!attempt.error || !isMissingColumn(attempt.error, 'raw_wpm')) {
+    return attempt
+  }
+
+  const legacyRows = rows.map((row) => {
+    const legacyRow: Record<string, unknown> = { ...row }
+    delete legacyRow.raw_wpm
+    return legacyRow as Database['public']['Tables']['typing_sessions']['Insert']
+  })
+  return supabase.from('typing_sessions').insert(legacyRows)
 }
 
 export async function ensureUserSocialBackfill(supabase: DBClient, userId: string) {
@@ -298,7 +344,7 @@ export async function ensureUserSocialBackfill(supabase: DBClient, userId: strin
 
     if (needsSocial) {
       const shouldSeedHistoricalSessions = !existingFeed?.error && (existingFeed?.data ?? []).length === 0
-      await checkUnlocks(supabase, userId, progress)
+      await reconcileHistoricalUnlocks(supabase, userId, progress)
       await seedHistoricalFeedFromSessions(supabase, userId, sessions, shouldSeedHistoricalSessions)
     }
 
@@ -330,6 +376,8 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
     progress.streak = {
       current: progressResult.data.current_streak,
       lastPracticeDate: progressResult.data.last_practice_date ?? '',
+      lastActivityAt: progressResult.data.last_activity_at ?? '',
+      lastStreakAt: progressResult.data.last_streak_at ?? '',
     }
     progress.rankedScore = progressResult.data.ranked_score ?? 0
     progress.rankedSessions = progressResult.data.ranked_sessions ?? 0
@@ -353,39 +401,43 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
   progress.history = sessionRows.map(mapSessionRow)
   if (sessionRows.length > 0 || !progressResult.data) {
     progress.totalXP = progress.history.reduce((sum, session) => sum + session.xpEarned, 0)
-    progress.streak = deriveStreakFromSessionRows(sessionRows)
     const rankedAggregate = computeRankedAggregate(progress.history)
     progress.rankedScore = rankedAggregate.rankedScore
     progress.rankedSessions = rankedAggregate.rankedSessions
   }
+
+  if (!progressResult.data || !progress.streak.lastActivityAt) {
+    progress.streak = deriveStreakFromActivityTimestamps(sessionRows.map((row) => row.created_at))
+  }
+
   progress.level = getLevel(progress.totalXP).level
 
   return progress
 }
 
-export async function getProfileAndProgress(supabase: DBClient, user: { id: string }) {
-  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
-    console.error('[getProfileAndProgress] social backfill failed (non-fatal):', err)
-  })
+export async function getProfileAndProgress(supabase: DBClient, user: { id: string }): Promise<ProfileProgressPayload> {
+  await ensureUserSocialBackfill(supabase, user.id)
   const profile = await getOwnProfile(supabase, user.id)
   if (!profile) {
     throw new Error('Profile not found for authenticated user.')
   }
 
-  const progress = await getUserProgressSnapshot(supabase, user.id)
-  return { profile, progress }
+  const snapshot = await getUserProgressSnapshot(supabase, user.id)
+  await reconcileHistoricalUnlocks(supabase, user.id, snapshot)
+  const { progress, streakNotification } = await reconcileSnapshotStreak(supabase, user.id, snapshot)
+  return { profile, progress, streakNotification }
 }
 
 export async function bootstrapProfileAndProgress(
   supabase: DBClient,
   user: Parameters<typeof ensureProfileForUser>[1]
-) {
+): Promise<ProfileProgressPayload> {
   const profile = await ensureProfileForUser(supabase, user)
-  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
-    console.error('[bootstrapProfileAndProgress] social backfill failed (non-fatal):', err)
-  })
-  const progress = await getUserProgressSnapshot(supabase, user.id)
-  return { profile, progress }
+  await ensureUserSocialBackfill(supabase, user.id)
+  const snapshot = await getUserProgressSnapshot(supabase, user.id)
+  await reconcileHistoricalUnlocks(supabase, user.id, snapshot)
+  const { progress, streakNotification } = await reconcileSnapshotStreak(supabase, user.id, snapshot)
+  return { profile, progress, streakNotification }
 }
 
 export async function importLocalProgress(
@@ -395,9 +447,13 @@ export async function importLocalProgress(
 ) {
   const profile = await ensureProfileForUser(supabase, user)
   if (profile.localImportedAt) {
+    const snapshot = await getUserProgressSnapshot(supabase, user.id)
+    await reconcileHistoricalUnlocks(supabase, user.id, snapshot)
+    const { progress: reconciledProgress, streakNotification } = await reconcileSnapshotStreak(supabase, user.id, snapshot)
     return {
       profile,
-      progress: await getUserProgressSnapshot(supabase, user.id),
+      progress: reconciledProgress,
+      streakNotification,
     }
   }
 
@@ -417,13 +473,16 @@ export async function importLocalProgress(
 
   if (error) throw error
 
-  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
-    console.error('[importLocalProgress] social backfill failed (non-fatal):', err)
-  })
+  await ensureUserSocialBackfill(supabase, user.id)
+
+  const snapshot = await getUserProgressSnapshot(supabase, user.id)
+  await reconcileHistoricalUnlocks(supabase, user.id, snapshot)
+  const { progress: reconciledProgress, streakNotification } = await reconcileSnapshotStreak(supabase, user.id, snapshot)
 
   return {
     profile: mapProfileRow(data),
-    progress: await getUserProgressSnapshot(supabase, user.id),
+    progress: reconciledProgress,
+    streakNotification,
   }
 }
 
@@ -448,7 +507,7 @@ export async function replaceRemoteProgress(supabase: DBClient, userId: string, 
     }
 
     if (sessionRows.length > 0) {
-      const sessionInsert = await supabase.from('typing_sessions').insert(sessionRows)
+      const sessionInsert = await insertTypingSessionsCompat(supabase, sessionRows)
       if (sessionInsert.error && !isMissingTable(sessionInsert.error)) throw sessionInsert.error
     }
   } catch (err) {
@@ -462,9 +521,7 @@ export async function saveRemoteSession(
   userId: string,
   input: SessionInput
 ): Promise<{ progress: UserProgress; output: SessionOutput }> {
-  ensureUserSocialBackfill(supabase, userId).catch((err) => {
-    console.error('[saveRemoteSession] social backfill failed (non-fatal):', err)
-  })
+  await ensureUserSocialBackfill(supabase, userId)
   const current = await getUserProgressSnapshot(supabase, userId)
   const { progress, output } = applySessionToProgress(current, input)
 
@@ -485,7 +542,7 @@ export async function saveRemoteSession(
       },
       { onConflict: 'user_id,language_id' }
     ),
-    supabase.from('typing_sessions').insert({
+    insertTypingSessionCompat(supabase, {
       user_id: userId,
       ...buildInsertedSession(input, output, now),
     }),
@@ -497,7 +554,7 @@ export async function saveRemoteSession(
 
   // Hooks: achievements + feed events. Falhas aqui nao quebram a sessao.
   try {
-    const newlyUnlocked = await checkUnlocks(supabase, userId, progress)
+    const newlyUnlocked = await collectProgressUnlocks(supabase, userId, current, progress)
     output.newlyUnlocked = newlyUnlocked
 
     // Registra eventos no feed (best-effort)
@@ -545,7 +602,7 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .limit(1000)
 
   if (!withScore.error && withScore.data) {
-    return (withScore.data as any[])
+    return withScore.data
       .filter(entry => (entry.score ?? 0) > 0 || (entry.ranked_sessions ?? 0) > 0)
       .map((entry, index) => ({
         rank: index + 1,

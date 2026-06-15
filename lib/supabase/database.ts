@@ -52,6 +52,8 @@ export interface Database {
           total_xp: number
           current_streak: number
           last_practice_date: string | null
+          last_activity_at: string | null
+          last_streak_at: string | null
           best_wpm: number
           best_accuracy: number
           total_sessions: number
@@ -65,6 +67,8 @@ export interface Database {
           total_xp?: number
           current_streak?: number
           last_practice_date?: string | null
+          last_activity_at?: string | null
+          last_streak_at?: string | null
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
@@ -76,6 +80,8 @@ export interface Database {
           total_xp?: number
           current_streak?: number
           last_practice_date?: string | null
+          last_activity_at?: string | null
+          last_streak_at?: string | null
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
@@ -118,6 +124,7 @@ export interface Database {
           language_id: string
           snippet_id: string
           wpm: number
+          raw_wpm: number
           accuracy: number
           errors: number
           duration: number
@@ -132,6 +139,7 @@ export interface Database {
           language_id: string
           snippet_id: string
           wpm: number
+          raw_wpm?: number
           accuracy: number
           errors: number
           duration: number
@@ -145,6 +153,7 @@ export interface Database {
           language_id?: string
           snippet_id?: string
           wpm?: number
+          raw_wpm?: number
           accuracy?: number
           errors?: number
           duration?: number

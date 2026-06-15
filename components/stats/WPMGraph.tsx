@@ -1,13 +1,21 @@
+'use client'
+
 interface WPMGraphProps {
-  netSamples: number[]
-  rawSamples: number[]
-  errors?: number[]
+  primarySamples: number[]
+  secondarySamples?: number[]
+  leftAxisLabel?: string
+  animate?: boolean
 }
 
-export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphProps) {
-  if (netSamples.length < 2) return null
+export default function WPMGraph({
+  primarySamples,
+  secondarySamples = [],
+  leftAxisLabel,
+  animate = false,
+}: WPMGraphProps) {
+  if (primarySamples.length < 2) return null
 
-  const allValues = [...netSamples, ...rawSamples]
+  const allValues = [...primarySamples, ...secondarySamples]
   const maxWPM = Math.max(...allValues, 10)
   // Round up to a nice number for Y-axis
   const yMax = Math.ceil(maxWPM / 10) * 10
@@ -40,8 +48,8 @@ export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphPro
     return d
   }
 
-  const netPoints = toPoints(netSamples)
-  const rawPoints = rawSamples.length >= 2 ? toPoints(rawSamples) : []
+  const netPoints = toPoints(primarySamples)
+  const rawPoints = secondarySamples.length >= 2 ? toPoints(secondarySamples) : []
   const netPath = toSmoothPath(netPoints)
   const rawPath = rawPoints.length >= 2 ? toSmoothPath(rawPoints) : ''
 
@@ -55,7 +63,7 @@ export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphPro
   const yTicks = Array.from({ length: yTickCount + 1 }, (_, i) => Math.round((yMax / yTickCount) * i))
 
   // X-axis labels (seconds)
-  const totalSeconds = netSamples.length
+  const totalSeconds = primarySamples.length
   const xLabelStep = totalSeconds <= 10 ? 1 : totalSeconds <= 30 ? 5 : totalSeconds <= 60 ? 10 : 30
   const xLabels: number[] = []
   for (let s = 0; s <= totalSeconds - 1; s += xLabelStep) {
@@ -66,15 +74,16 @@ export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphPro
     xLabels.push(totalSeconds - 1)
   }
 
-  // Error max for right axis
-  const hasErrors = errors && errors.some(e => e > 0)
-  const maxErr = hasErrors ? Math.max(...errors!, 1) : 0
-
   return (
     <div className="w-full animate-fade-in relative">
       <div className="flex">
         {/* Y-axis labels (left) */}
         <div className="flex flex-col justify-between shrink-0 py-1 pr-1" style={{ height: '12rem', paddingTop: `${padTop}px`, paddingBottom: `${padBottom}px` }}>
+          {leftAxisLabel ? (
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--sub)', writingMode: 'vertical-rl', transform: 'rotate(180deg)', height: '100%', alignSelf: 'center' }}>
+              {leftAxisLabel}
+            </span>
+          ) : null}
           {[...yTicks].reverse().map((v, i) => (
             <span key={i} className="text-[9px] sm:text-[10px] tabular-nums leading-none text-right" style={{ color: 'var(--sub)', minWidth: '1.5rem' }}>{v}</span>
           ))}
@@ -103,35 +112,76 @@ export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphPro
             })}
 
             {/* Area fill */}
-            <path d={areaPath} fill="url(#netGradient)" />
+            <path
+              d={areaPath}
+              fill="url(#netGradient)"
+              style={{
+                opacity: animate ? 1 : 0,
+                transition: 'opacity 260ms ease 220ms',
+              }}
+            />
 
             {/* Raw WPM line — solid, sub color */}
             {rawPath && (
-              <path d={rawPath} fill="none" stroke="var(--sub)" strokeWidth="1.5" strokeOpacity="0.5" strokeLinecap="round" />
+              <path
+                d={rawPath}
+                pathLength={1}
+                fill="none"
+                stroke="var(--sub)"
+                strokeWidth="1.5"
+                strokeOpacity="0.5"
+                strokeLinecap="round"
+                strokeDasharray={1}
+                strokeDashoffset={animate ? 0 : 1}
+                style={{
+                  opacity: animate ? 1 : 0,
+                  transition: 'stroke-dashoffset 420ms cubic-bezier(0.22, 1, 0.36, 1) 160ms, opacity 220ms ease 160ms',
+                }}
+              />
             )}
 
             {/* Net WPM line — main color */}
-            <path d={netPath} fill="none" stroke="var(--main)" strokeWidth="2.5" strokeLinecap="round" />
-
-            {/* Error markers (X marks) */}
-            {hasErrors && errors!.map((e, i) => {
-              if (e === 0) return null
-              const x = padLeft + (i / (errors!.length - 1)) * chartW
-              return (
-                <g key={i}>
-                  <line x1={x - 3} y1={padTop + 4} x2={x + 3} y2={padTop + 10} stroke="var(--error)" strokeWidth="1.5" strokeOpacity="0.7" />
-                  <line x1={x + 3} y1={padTop + 4} x2={x - 3} y2={padTop + 10} stroke="var(--error)" strokeWidth="1.5" strokeOpacity="0.7" />
-                </g>
-              )
-            })}
+            <path
+              d={netPath}
+              pathLength={1}
+              fill="none"
+              stroke="var(--main)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray={1}
+              strokeDashoffset={animate ? 0 : 1}
+              style={{
+                opacity: animate ? 1 : 0.35,
+                transition: 'stroke-dashoffset 460ms cubic-bezier(0.22, 1, 0.36, 1) 220ms, opacity 220ms ease 220ms',
+              }}
+            />
 
             {/* Data point dots on net line */}
             {netPoints.map((pt, i) => (
-              <circle key={i} cx={pt.x} cy={pt.y} r="2.5" fill="var(--main)" opacity="0.6" />
+              <circle
+                key={i}
+                cx={pt.x}
+                cy={pt.y}
+                r="2.5"
+                fill="var(--main)"
+                opacity={animate ? 0.6 : 0}
+                style={{
+                  transition: `opacity 180ms ease ${280 + (i * 12)}ms`,
+                }}
+              />
             ))}
 
             {/* End point highlight */}
-            <circle cx={lastPt.x} cy={lastPt.y} r="4" fill="var(--main)" />
+            <circle
+              cx={lastPt.x}
+              cy={lastPt.y}
+              r="4"
+              fill="var(--main)"
+              opacity={animate ? 1 : 0}
+              style={{
+                transition: 'opacity 220ms ease 420ms',
+              }}
+            />
 
             {/* X-axis labels */}
             {xLabels.map((s, i) => {
@@ -144,15 +194,6 @@ export default function WPMGraph({ netSamples, rawSamples, errors }: WPMGraphPro
             })}
           </svg>
         </div>
-
-        {/* Y-axis labels (right) — errors */}
-        {hasErrors && (
-          <div className="flex flex-col justify-between shrink-0 py-1 pl-1" style={{ height: '12rem', paddingTop: `${padTop}px`, paddingBottom: `${padBottom}px` }}>
-            {[maxErr, Math.round(maxErr / 2), 0].map((v, i) => (
-              <span key={i} className="text-[9px] sm:text-[10px] tabular-nums leading-none" style={{ color: 'var(--error)', minWidth: '1rem', opacity: 0.6 }}>{v}</span>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   )

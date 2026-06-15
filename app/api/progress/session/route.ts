@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { saveRemoteSession } from '@/lib/server/progress-store'
-import { languages } from '@/data/index'
+import { getAllLanguageMetas } from '@/data/metadata'
 import { rateLimit } from '@/lib/server/rate-limit'
 import type { SessionInput } from '@/lib/gamification'
 
-const VALID_LANGUAGE_IDS = new Set(languages.map((l) => l.id))
+const VALID_LANGUAGE_IDS = new Set(getAllLanguageMetas().map((language) => language.id))
 const VALID_DIFFICULTIES = new Set(['easy', 'medium', 'hard'])
 
 function isSessionInput(value: unknown): value is SessionInput {
@@ -16,6 +16,7 @@ function isSessionInput(value: unknown): value is SessionInput {
     typeof input.languageId === 'string' &&
     typeof input.snippetId === 'string' &&
     typeof input.wpm === 'number' &&
+    typeof input.rawWpm === 'number' &&
     typeof input.accuracy === 'number' &&
     typeof input.errors === 'number' &&
     typeof input.duration === 'number' &&
@@ -26,6 +27,7 @@ function isSessionInput(value: unknown): value is SessionInput {
 function isValidSessionInput(input: SessionInput): boolean {
   return (
     input.wpm >= 0 && input.wpm <= 250 &&
+    input.rawWpm >= 0 && input.rawWpm <= 300 &&
     input.accuracy >= 0 && input.accuracy <= 100 &&
     input.errors >= 0 && input.errors <= 10000 &&
     input.duration >= 1 && input.duration <= 600 &&
@@ -72,7 +74,6 @@ export async function POST(request: Request) {
     const result = await saveRemoteSession(supabase, user.id, payload)
     return NextResponse.json(result)
   } catch (sessionError) {
-    console.error('[session] error:', sessionError)
     console.error('[session] error:', sessionError)
     return NextResponse.json(
       { error: 'Could not save session.' },

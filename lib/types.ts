@@ -15,10 +15,13 @@ export interface Snippet {
   slot?: string
 }
 
-export interface Language {
+export interface LanguageMeta {
   id: string
   label: string
   color: string
+}
+
+export interface Language extends LanguageMeta {
   snippets: Snippet[]
 }
 

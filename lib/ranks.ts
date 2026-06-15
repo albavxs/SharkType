@@ -122,8 +122,8 @@ function buildLabel(tier: RankTierDefinition, division: number | null): I18nStri
   }
 }
 
-export function getRankFromScore(score: number, totalSessions = 0): RankState {
-  if (totalSessions <= 0 || score <= 0) {
+export function getRankFromScore(score: number): RankState {
+  if (score <= 0) {
     const tier = RANK_TIERS[0]
     const normalizedScore = Math.max(0, score)
     return {
