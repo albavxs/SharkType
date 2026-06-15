@@ -52,9 +52,13 @@ export interface Database {
           total_xp: number
           current_streak: number
           last_practice_date: string | null
+          last_activity_at: string | null
+          last_streak_at: string | null
           best_wpm: number
           best_accuracy: number
           total_sessions: number
+          ranked_score: number
+          ranked_sessions: number
           completed_track_ids: string[] | null
           updated_at: string
         }
@@ -63,18 +67,26 @@ export interface Database {
           total_xp?: number
           current_streak?: number
           last_practice_date?: string | null
+          last_activity_at?: string | null
+          last_streak_at?: string | null
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
+          ranked_score?: number
+          ranked_sessions?: number
           completed_track_ids?: string[] | null
         }
         Update: {
           total_xp?: number
           current_streak?: number
           last_practice_date?: string | null
+          last_activity_at?: string | null
+          last_streak_at?: string | null
           best_wpm?: number
           best_accuracy?: number
           total_sessions?: number
+          ranked_score?: number
+          ranked_sessions?: number
           completed_track_ids?: string[] | null
         }
         Relationships: []
@@ -112,11 +124,14 @@ export interface Database {
           language_id: string
           snippet_id: string
           wpm: number
+          raw_wpm: number
           accuracy: number
           errors: number
           duration: number
           difficulty: string
           xp_earned: number
+          ranked_points: number
+          ranked_eligible: boolean
           created_at: string
         }
         Insert: {
@@ -124,22 +139,28 @@ export interface Database {
           language_id: string
           snippet_id: string
           wpm: number
+          raw_wpm?: number
           accuracy: number
           errors: number
           duration: number
           difficulty: string
           xp_earned: number
+          ranked_points?: number
+          ranked_eligible?: boolean
           created_at?: string
         }
         Update: {
           language_id?: string
           snippet_id?: string
           wpm?: number
+          raw_wpm?: number
           accuracy?: number
           errors?: number
           duration?: number
           difficulty?: string
           xp_earned?: number
+          ranked_points?: number
+          ranked_eligible?: boolean
           created_at?: string
         }
         Relationships: []
@@ -235,6 +256,8 @@ export interface Database {
           best_wpm: number
           current_streak: number
           total_sessions: number
+          ranked_score: number
+          ranked_sessions: number
         }
         Relationships: []
       }
@@ -251,6 +274,7 @@ export interface Database {
           total_sessions: number
           level: number
           score: number
+          ranked_sessions: number
         }
         Relationships: []
       }

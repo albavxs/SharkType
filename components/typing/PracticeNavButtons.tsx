@@ -13,7 +13,7 @@ function NavButton({ onClick, label, children }: { onClick: () => void; label: s
   return (
     <button
       onClick={onClick}
-      className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+      className="flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-150 hover:scale-110 active:scale-90 sm:h-auto sm:w-auto sm:p-2.5"
       style={{ color: 'var(--sub)' }}
       onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--main)' }}
       onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--sub)' }}
@@ -27,8 +27,8 @@ function NavButton({ onClick, label, children }: { onClick: () => void; label: s
 
 export default function PracticeNavButtons({ onPrev, onRestart, onNext, locale, isTyping }: PracticeNavButtonsProps) {
   return (
-    <div className={`w-full max-w-3xl mt-6 flex justify-center transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
-      <div className="flex items-center gap-4">
+    <div className={`mt-6 flex w-full max-w-3xl justify-center transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
         <NavButton onClick={onPrev} label={t('prev', locale)}>
           <ArrowLeftIcon size={18} />
         </NavButton>

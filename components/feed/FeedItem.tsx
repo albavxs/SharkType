@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
-import { getLanguageById } from '@/data'
+import { getLanguageMetaById } from '@/data/metadata'
 import LikeButton from './LikeButton'
 import type {
   AchievementFeedEvent,
@@ -83,7 +83,7 @@ export default function FeedItem({ event, locale, currentUserId = null }: FeedIt
 }
 
 function FeedSessionBody({ payload, locale }: { payload: FeedSessionPayload; locale: Locale }) {
-  const lang = getLanguageById(payload.languageId)
+  const lang = getLanguageMetaById(payload.languageId)
   return (
     <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
       {t('feedSessionTitle', locale)}

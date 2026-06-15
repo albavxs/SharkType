@@ -11,6 +11,7 @@ interface UseTypingEngineReturn {
   accuracy: number
   wpmSamples: number[]
   rawWpmSamples: number[]
+  errorSamples: number[]
   handleKey: (key: string) => void
   reset: () => void
   wpmRef: React.RefObject<number>
@@ -41,6 +42,7 @@ export function useTypingEngine(
   const [accuracy, setAccuracy] = useState(100)
   const [wpmSamples, setWpmSamples] = useState<number[]>([])
   const [rawWpmSamples, setRawWpmSamples] = useState<number[]>([])
+  const [errorSamples, setErrorSamples] = useState<number[]>([])
 
   const codeRef = useRef(code)
   const errorsRef = useRef(0)
@@ -65,12 +67,16 @@ export function useTypingEngine(
       if (samplerRef.current) clearInterval(samplerRef.current)
       intervalRef.current = null
       samplerRef.current = null
-      setState(createInitialState(code.length))
-      setWpm(0)
-      setRawWpm(0)
-      setAccuracy(100)
-      setWpmSamples([])
-      setRawWpmSamples([])
+      const frameId = requestAnimationFrame(() => {
+        setState(createInitialState(code.length))
+        setWpm(0)
+        setRawWpm(0)
+        setAccuracy(100)
+        setWpmSamples([])
+        setRawWpmSamples([])
+        setErrorSamples([])
+      })
+      return () => cancelAnimationFrame(frameId)
     }
   }, [code])
 
@@ -95,6 +101,7 @@ export function useTypingEngine(
         const raw = calculateWPM(rawCharsRef.current, elapsed)
         setWpmSamples(prev => [...prev, net])
         setRawWpmSamples(prev => [...prev, raw])
+        setErrorSamples(prev => [...prev, errorsRef.current])
       }, 1000)
     }
 
@@ -293,8 +300,9 @@ export function useTypingEngine(
     setAccuracy(100)
     setWpmSamples([])
     setRawWpmSamples([])
+    setErrorSamples([])
     wpmRef.current = 0
   }, [])
 
-  return { state, wpm, rawWpm, accuracy, wpmSamples, rawWpmSamples, handleKey, reset, wpmRef }
+  return { state, wpm, rawWpm, accuracy, wpmSamples, rawWpmSamples, errorSamples, handleKey, reset, wpmRef }
 }
