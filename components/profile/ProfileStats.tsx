@@ -1,7 +1,7 @@
 import XPBar from './XPBar'
 import { t, type Locale } from '@/lib/i18n'
 import type { PublicProfile } from '@/lib/server/profile-store'
-import { getLanguageById } from '@/data'
+import { getLanguageMetaById } from '@/data/metadata'
 
 interface ProfileStatsProps {
   profile: PublicProfile
@@ -37,7 +37,7 @@ export default function ProfileStats({ profile, locale }: ProfileStatsProps) {
           </h2>
           <div className="space-y-2">
             {profile.topLanguages.map(lang => {
-              const langInfo = getLanguageById(lang.languageId)
+              const langInfo = getLanguageMetaById(lang.languageId)
               return (
                 <div key={lang.languageId} className="flex items-center justify-between rounded-2xl px-4 py-3"
                   style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 42%, transparent)' }}>

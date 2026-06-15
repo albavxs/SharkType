@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv } from '@/lib/supabase/env'
 import { getUserProgressSnapshot, buildProgressAggregate } from '@/lib/server/progress-store'
-import { checkUnlocks } from '@/lib/server/achievements'
+import { collectProgressUnlocks } from '@/lib/server/achievements'
 import { recordFeedEvent } from '@/lib/server/feed-store'
 import { getTrackById } from '@/data/tracks'
 
@@ -29,19 +29,21 @@ export async function POST(request: Request) {
   }
 
   try {
-    const progress = await getUserProgressSnapshot(supabase, user.id)
+    const progressBefore = await getUserProgressSnapshot(supabase, user.id)
     
     // Se ja completou, nao faz nada mas retorna ok
-    if (progress.completedTrackIds?.includes(trackId)) {
+    if (progressBefore.completedTrackIds?.includes(trackId)) {
       return NextResponse.json({ ok: true, alreadyCompleted: true })
     }
 
     // Adiciona trilha concluida
-    const updatedCompletedTracks = [...(progress.completedTrackIds || []), trackId]
-    progress.completedTrackIds = updatedCompletedTracks
+    const progressAfter = {
+      ...progressBefore,
+      completedTrackIds: [...(progressBefore.completedTrackIds || []), trackId],
+    }
 
     // Salva no banco
-    const aggregate = buildProgressAggregate(user.id, progress)
+    const aggregate = buildProgressAggregate(user.id, progressAfter)
     const { error: updateError } = await supabase
       .from('user_progress')
       .upsert(aggregate, { onConflict: 'user_id' })
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
     if (updateError) throw updateError
 
     // Hooks: achievements + feed events
-    const newlyUnlocked = await checkUnlocks(supabase, user.id, progress)
+    const newlyUnlocked = await collectProgressUnlocks(supabase, user.id, progressBefore, progressAfter)
     
     // Registra evento de trilha concluida no feed
     await recordFeedEvent(supabase, user.id, 'track_completed', {

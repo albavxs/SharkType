@@ -37,6 +37,7 @@ const dict: Record<string, Record<Locale, string>> = {
   startTyping: { pt: 'Comece a digitar...', en: 'Start typing...' },
   back:        { pt: 'Voltar',      en: 'Back' },
   loading:     { pt: 'Carregando...', en: 'Loading...' },
+  resultSyncing: { pt: 'salvando resultado', en: 'saving result' },
 
   // ── Toolbar ─────────────────────────────────────────────────────────────
   navTracks:    { pt: 'Trilhas',       en: 'Tracks' },
@@ -137,8 +138,10 @@ const dict: Record<string, Record<Locale, string>> = {
   colTime:        { pt: 'tempo',          en: 'time' },
   colDate:        { pt: 'data',           en: 'date' },
   colXP:          { pt: 'xp',             en: 'xp' },
+  rankedPoints:   { pt: 'ranked points',  en: 'ranked points' },
+  rankedPointsShort: { pt: 'pts',         en: 'pts' },
   colStreak:      { pt: 'streak',         en: 'streak' },
-  globalPlayers:  { pt: 'Todos os jogadores, ordenados por XP total.', en: 'All players, ranked by total XP.' },
+  globalPlayers:  { pt: 'Todos os jogadores, ordenados por ranked points.', en: 'All players, ranked by ranked points.' },
   noPlayers:      { pt: 'Nenhum jogador ainda.', en: 'No players yet.' },
   noPlayersHint:  { pt: 'Assim que as primeiras contas começarem a praticar, o ranking aparece aqui.', en: 'The leaderboard will appear here once players start practicing.' },
   rankingGuestHint: { pt: 'Entre para sincronizar seu progresso e aparecer no ranking global.', en: 'Sign in to sync your progress and appear on the global leaderboard.' },
@@ -258,7 +261,7 @@ const dict: Record<string, Record<Locale, string>> = {
     pt: 'Nenhuma atividade recente dos perfis seguidos ainda.',
     en: 'No recent activity from followed profiles yet.',
   },
-  rankScore: { pt: 'Score', en: 'Score' },
+  rankScore: { pt: 'Ranked Points', en: 'Ranked Points' },
   rankProgress: { pt: 'Progresso do rank', en: 'Rank progress' },
   shareResult: { pt: 'Compartilhar resultado', en: 'Share result' },
   downloadCard: { pt: 'Baixar PNG', en: 'Download PNG' },

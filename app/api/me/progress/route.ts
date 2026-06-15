@@ -11,6 +11,7 @@ export async function GET() {
     return NextResponse.json({
       profile: null,
       progress: createDefaultProgress(),
+      streakNotification: null,
     })
   }
 

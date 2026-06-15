@@ -102,7 +102,7 @@ export async function getPublicProfile(
   const score = progressRes.data?.ranked_score ?? 0
   const rankedSessions = progressRes.data?.ranked_sessions ?? 0
   const totalSessions = recentSessionsRes.count ?? progressRes.data?.total_sessions ?? 0
-  const rank = getRankFromScore(score, rankedSessions)
+  const rank = getRankFromScore(score)
 
   return {
     id: profile.id,
