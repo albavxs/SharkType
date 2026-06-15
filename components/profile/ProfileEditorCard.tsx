@@ -69,6 +69,38 @@ export default function ProfileEditorCard({
     setMessage(t('profileSuccess', locale))
   }
 
+  async function compressImage(file: File, maxBytes: number): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      const objectUrl = URL.createObjectURL(file)
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl)
+        const canvas = document.createElement('canvas')
+        const MAX_DIM = 512
+        let { width, height } = img
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM }
+          else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM }
+        }
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height)
+        let quality = 0.9
+        const attempt = () => {
+          canvas.toBlob(blob => {
+            if (!blob) { reject(new Error('Compression failed')); return }
+            if (blob.size <= maxBytes || quality <= 0.3) { resolve(blob); return }
+            quality -= 0.1
+            attempt()
+          }, 'image/jpeg', quality)
+        }
+        attempt()
+      }
+      img.onerror = () => reject(new Error('Could not load image'))
+      img.src = objectUrl
+    })
+  }
+
   async function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
@@ -78,10 +110,21 @@ export default function ProfileEditorCard({
     setIsUploading(true)
 
     try {
+      const compressed = await compressImage(file, 1.5 * 1024 * 1024)
+      const compressedFile = new File([compressed], 'avatar.jpg', { type: 'image/jpeg' })
+
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', compressedFile)
       const response = await fetch('/api/me/avatar', { method: 'POST', body: formData })
-      const payload = (await response.json()) as { avatarUrl?: string; error?: string }
+
+      const text = await response.text()
+      let payload: { avatarUrl?: string; error?: string }
+      try {
+        payload = JSON.parse(text)
+      } catch {
+        setError('Erro inesperado no servidor.')
+        return
+      }
 
       if (!response.ok || !payload.avatarUrl) {
         setError(payload.error ?? t('uploadAvatarError', locale))

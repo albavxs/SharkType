@@ -24,7 +24,9 @@ export async function GET() {
 
   try {
     const profile = await ensureProfileForUser(supabase, user)
-    await ensureUserSocialBackfill(supabase, user.id)
+    ensureUserSocialBackfill(supabase, user.id).catch((backfillError) => {
+      console.error('[profile] social backfill failed (non-fatal):', backfillError)
+    })
     return NextResponse.json({ profile })
   } catch (profileError) {
     return NextResponse.json(

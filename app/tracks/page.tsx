@@ -1,79 +1,76 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { tracks, Track, TrackSection } from '@/data/tracks'
-import { languages, textLanguages } from '@/data'
+import { tracks, Track } from '@/data/tracks'
+import { codeLanguageMetas, getLanguageMetaById, textLanguageMetas } from '@/data/metadata'
 import { getLevel } from '@/lib/gamification'
-import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
+import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
-import ThemeSelector from '@/components/typing/ThemeSelector'
-import HelpModal from '@/components/typing/HelpModal'
-import SceneWrapper from '@/components/three/SceneWrapper'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
-import { getLanguageById } from '@/data'
-import { Language, Difficulty } from '@/lib/types'
+import { LanguageMeta, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
 import { LockIcon } from '@/components/icons'
+
+const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
+const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
+const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 
 const conceptTracks = tracks.filter(t => t.section === 'concept')
 const focusedTracks = tracks.filter(t => t.section === 'focused')
 const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
 const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
-const idiomBadges = textLanguages.filter(l => l.id !== 'text-typing')
-
-function getTrackLanguages(track: Track): Language[] {
-  // Slot-based tracks
-  if (track.slots && track.slots.length > 0) {
-    return languages.filter(lang =>
-      lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
-    )
-  }
-  const seen = new Set<string>()
-  const result: Language[] = []
-  for (const sid of track.snippetIds) {
-    for (const lang of languages) {
-      if (!seen.has(lang.id) && lang.snippets.some(s => s.id === sid)) {
-        seen.add(lang.id)
-        result.push(lang)
-      }
-    }
-  }
-  return result
-}
+const idiomBadges = textLanguageMetas.filter((language) => language.id !== 'text-typing')
 
 export default function TracksPage() {
   const router = useRouter()
-  const [currentTheme, setCurrentTheme] = useState('dracula')
+  const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
+  const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
   const { user } = useAuth()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
   const { progress } = useProgress()
   const levelInfo = getLevel(progress.totalXP)
 
-  const dummyLang = getLanguageById(DEFAULT_LANGUAGE)!
-
-  const trackLangsMap = useMemo(() => {
-    const map = new Map<string, Language[]>()
-    for (const track of codeTracks) {
-      map.set(track.id, getTrackLanguages(track))
-    }
-    return map
-  }, [])
+  const dummyLang = getLanguageMetaById(DEFAULT_LANGUAGE) ?? codeLanguageMetas[0]
 
   useEffect(() => {
     const themeName = getThemePref()
-    setCurrentTheme(themeName)
-    applyTheme(getTheme(themeName))
+    if (themeName !== currentTheme) {
+      queueMicrotask(() => setCurrentTheme(themeName))
+    }
+    applyTheme(getTheme(currentTheme))
+  }, [currentTheme])
+
+  useEffect(() => {
+    let active = true
+
+    void (async () => {
+      try {
+        const response = await fetch('/api/tracks/catalog', { cache: 'no-store' })
+        const payload = (await response.json()) as { trackLanguageBadges?: Record<string, LanguageMeta[]> }
+        if (!active || !response.ok) return
+        setTrackLangsMap(new Map(Object.entries(payload.trackLanguageBadges ?? {})))
+      } catch {
+        if (active) {
+          setTrackLangsMap(new Map())
+        }
+      }
+    })()
+
+    return () => {
+      active = false
+    }
   }, [])
 
   function getTrackProgress(snippetIds: string[]): number {
@@ -99,7 +96,7 @@ export default function TracksPage() {
 
   const codeStats = getSectionStats(codeTracks)
 
-  function TrackCard({ track, badges }: { track: Track; badges: Language[] }) {
+  function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     return (
       <button 
         onClick={() => {
@@ -109,7 +106,7 @@ export default function TracksPage() {
           }
           router.push(`/tracks/${track.id}`)
         }}
-        className="block p-5 rounded-xl text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer w-full"
+        className="block w-full min-w-0 rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer sm:p-5"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
         <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
         <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description[locale]}</div>
@@ -211,7 +208,7 @@ export default function TracksPage() {
 
       {showGuestOverlay && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/40">
-          <div className="w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300" style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}>
+          <div className="max-h-[calc(100vh-2rem)] w-full max-w-sm overflow-y-auto rounded-3xl p-6 shadow-2xl animate-in fade-in zoom-in duration-300 sm:p-8" style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}>
             <div className="flex flex-col items-center text-center">
               <div className="mb-6 rounded-full p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
                 <LockIcon size={32} />

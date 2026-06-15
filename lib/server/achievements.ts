@@ -14,119 +14,180 @@ export interface AchievementRow {
   description: { pt: string; en: string }
 }
 
+interface CatalogRow {
+  id: string
+  category: AchievementRow['category']
+  threshold: number | null
+  icon: string
+  name_pt: string
+  name_en: string
+  description_pt: string
+  description_en: string
+}
+
 interface UnlockContext {
   totalSessions: number
   streak: number
   totalXP: number
-  /** Numero de linguagens com pelo menos 1 snippet completo */
   completedLanguagesCount: number
-  /** Rank no leaderboard (1-indexed). null se nao estiver no top 100. */
   leaderboardRank: number | null
-  /** IDs das trilhas concluidas */
   completedTrackIds: string[]
 }
 
-/**
- * Verifica quais achievements o usuario acabou de desbloquear.
- * Compara unlocks ja registrados vs estado atual do progress.
- * Retorna apenas os NOVOS (e ja insere user_achievements).
- *
- * Se a tabela achievements nao existir (migration 004 ausente), retorna [].
- */
-export async function checkUnlocks(
-  supabase: DBClient,
-  userId: string,
-  progress: UserProgress,
-  leaderboardRank: number | null = null,
-): Promise<AchievementRow[]> {
-  // 1. Carrega catalogo
-  const catalogRes = await supabase.from('achievements').select('*')
-  if (catalogRes.error) {
-    if (isMissingTable(catalogRes.error)) return []
-    return []
-  }
-  const catalog = (catalogRes.data ?? []) as Array<{
-    id: string
-    category: AchievementRow['category']
-    threshold: number | null
-    icon: string
-    name_pt: string
-    name_en: string
-    description_pt: string
-    description_en: string
-  }>
-  if (catalog.length === 0) return []
-
-  // 2. Carrega ja desbloqueados
-  const alreadyRes = await supabase
-    .from('user_achievements')
-    .select('achievement_id')
-    .eq('user_id', userId)
-  if (alreadyRes.error && !isMissingTable(alreadyRes.error)) {
-    return []
-  }
-  const alreadyIds = new Set<string>((alreadyRes.data ?? []).map((row) => row.achievement_id))
-
-  // 3. Calcula contexto
-  const ctx: UnlockContext = {
-    totalSessions: progress.history.length,
-    streak: progress.streak.current,
-    totalXP: progress.totalXP,
-    completedLanguagesCount: Object.values(progress.languages).filter(l => l.completedSnippetIds.length > 0).length,
-    leaderboardRank,
-    completedTrackIds: progress.completedTrackIds || [],
-  }
-
-  // 4. Filtra novos unlocks
-  const newlyUnlocked: typeof catalog = []
-  for (const item of catalog) {
-    if (alreadyIds.has(item.id)) continue
-    if (matchesUnlock(item.category, item.threshold ?? 0, ctx)) {
-      newlyUnlocked.push(item)
-    }
-  }
-
-  if (newlyUnlocked.length === 0) return []
-
-  // 5. Persiste
-  const insertRows = newlyUnlocked.map(a => ({ user_id: userId, achievement_id: a.id }))
-  await supabase.from('user_achievements').insert(insertRows)
-
-  // 6. Cria eventos sociais do feed usando o payload canonico.
-  await Promise.all(
-    newlyUnlocked.map((achievement) =>
-      recordFeedEvent(supabase, userId, 'achievement', {
-        achievementId: achievement.id,
-        name: {
-          pt: achievement.name_pt,
-          en: achievement.name_en,
-        },
-      })
-    )
-  )
-
-  return newlyUnlocked.map(row => ({
+function mapAchievementRow(row: CatalogRow): AchievementRow {
+  return {
     id: row.id,
     category: row.category,
     threshold: row.threshold,
     icon: row.icon,
     name: { pt: row.name_pt, en: row.name_en },
     description: { pt: row.description_pt, en: row.description_en },
+  }
+}
+
+async function loadCatalog(supabase: DBClient): Promise<CatalogRow[]> {
+  const catalogRes = await supabase.from('achievements').select('*')
+  if (catalogRes.error) {
+    if (isMissingTable(catalogRes.error)) return []
+    return []
+  }
+
+  return (catalogRes.data ?? []) as CatalogRow[]
+}
+
+async function loadAlreadyUnlockedIds(supabase: DBClient, userId: string): Promise<Set<string>> {
+  const alreadyRes = await supabase
+    .from('user_achievements')
+    .select('achievement_id')
+    .eq('user_id', userId)
+
+  if (alreadyRes.error && !isMissingTable(alreadyRes.error)) {
+    return new Set()
+  }
+
+  return new Set<string>((alreadyRes.data ?? []).map((row) => row.achievement_id))
+}
+
+function buildUnlockContext(progress: UserProgress, leaderboardRank: number | null = null): UnlockContext {
+  return {
+    totalSessions: progress.history.length,
+    streak: progress.streak.current,
+    totalXP: progress.totalXP,
+    completedLanguagesCount: Object.values(progress.languages).filter((entry) => entry.completedSnippetIds.length > 0).length,
+    leaderboardRank,
+    completedTrackIds: progress.completedTrackIds || [],
+  }
+}
+
+function getEligibleAchievementIds(
+  catalog: CatalogRow[],
+  progress: UserProgress,
+  leaderboardRank: number | null = null
+): Set<string> {
+  const ctx = buildUnlockContext(progress, leaderboardRank)
+  const matched = new Set<string>()
+
+  for (const item of catalog) {
+    if (matchesUnlock(item.category, item.threshold ?? 0, ctx)) {
+      matched.add(item.id)
+    }
+  }
+
+  return matched
+}
+
+async function persistUnlocks(
+  supabase: DBClient,
+  userId: string,
+  achievements: CatalogRow[],
+  recordFeed: boolean
+): Promise<AchievementRow[]> {
+  if (achievements.length === 0) return []
+
+  const rows = achievements.map((achievement) => ({
+    user_id: userId,
+    achievement_id: achievement.id,
   }))
+
+  await supabase
+    .from('user_achievements')
+    .upsert(rows, { onConflict: 'user_id,achievement_id', ignoreDuplicates: true })
+
+  if (recordFeed) {
+    await Promise.all(
+      achievements.map((achievement) =>
+        recordFeedEvent(supabase, userId, 'achievement', {
+          achievementId: achievement.id,
+          name: {
+            pt: achievement.name_pt,
+            en: achievement.name_en,
+          },
+        })
+      )
+    )
+  }
+
+  return achievements.map(mapAchievementRow)
+}
+
+export async function reconcileHistoricalUnlocks(
+  supabase: DBClient,
+  userId: string,
+  progress: UserProgress,
+  leaderboardRank: number | null = null,
+): Promise<void> {
+  const [catalog, alreadyIds] = await Promise.all([
+    loadCatalog(supabase),
+    loadAlreadyUnlockedIds(supabase, userId),
+  ])
+
+  if (catalog.length === 0) return
+
+  const eligibleIds = getEligibleAchievementIds(catalog, progress, leaderboardRank)
+  const missingUnlocks = catalog.filter((item) => eligibleIds.has(item.id) && !alreadyIds.has(item.id))
+
+  await persistUnlocks(supabase, userId, missingUnlocks, false)
+}
+
+export async function collectProgressUnlocks(
+  supabase: DBClient,
+  userId: string,
+  before: UserProgress,
+  after: UserProgress,
+  leaderboardRank: number | null = null,
+): Promise<AchievementRow[]> {
+  const [catalog, alreadyIds] = await Promise.all([
+    loadCatalog(supabase),
+    loadAlreadyUnlockedIds(supabase, userId),
+  ])
+
+  if (catalog.length === 0) return []
+
+  const beforeEligibleIds = getEligibleAchievementIds(catalog, before, leaderboardRank)
+  const afterEligibleIds = getEligibleAchievementIds(catalog, after, leaderboardRank)
+  const crossedUnlocks = catalog.filter(
+    (item) =>
+      afterEligibleIds.has(item.id) &&
+      !beforeEligibleIds.has(item.id) &&
+      !alreadyIds.has(item.id)
+  )
+
+  return persistUnlocks(supabase, userId, crossedUnlocks, true)
 }
 
 function matchesUnlock(category: AchievementRow['category'], threshold: number, ctx: UnlockContext): boolean {
   switch (category) {
     case 'sessions': return ctx.totalSessions >= threshold
-    case 'streak':   return ctx.streak >= threshold
-    case 'xp':       return ctx.totalXP >= threshold
+    case 'streak': return ctx.streak >= threshold
+    case 'xp': return ctx.totalXP >= threshold
     case 'language': return ctx.completedLanguagesCount >= threshold
-    case 'ranking':  return ctx.leaderboardRank !== null && ctx.leaderboardRank <= threshold
-    case 'track':    return ctx.completedTrackIds.length >= threshold
+    case 'ranking': return ctx.leaderboardRank !== null && ctx.leaderboardRank <= threshold
+    case 'track': return ctx.completedTrackIds.length >= threshold
     default: return false
   }
 }
 
-function isMissingTable(error: any): boolean {
-  return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
+function isMissingTable(error: unknown): boolean {
+  const candidate = error as { code?: string; message?: string } | null
+  return candidate?.code === '42P01' || String(candidate?.message ?? '').includes('does not exist')
 }
