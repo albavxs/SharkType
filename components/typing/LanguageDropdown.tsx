@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { codeLanguages, textLanguages } from '@/data'
-import { Language } from '@/lib/types'
+import { codeLanguageMetas, textLanguageMetas } from '@/data/metadata'
+import { LanguageMeta } from '@/lib/types'
 import { ChevronDownIcon } from '@/components/icons'
 import { t, Locale } from '@/lib/i18n'
 
@@ -11,18 +11,18 @@ const MENU_MARGIN = 8
 const MENU_WIDTH_DESKTOP = 192
 const MENU_WIDTH_MOBILE = 176
 
-const sortedCodeLanguages = [...codeLanguages].sort((a, b) =>
+const sortedCodeLanguages = [...codeLanguageMetas].sort((a, b) =>
   a.label.localeCompare(b.label, 'en', { sensitivity: 'base' })
 )
-const idiomLanguages = textLanguages.filter(l => l.id !== 'text-typing')
+const idiomLanguages = textLanguageMetas.filter((language) => language.id !== 'text-typing')
 
 interface LanguageDropdownProps {
-  selected: Language
-  onSelect: (lang: Language) => void
+  selectedId: string
+  onSelect: (lang: LanguageMeta) => void
   locale?: Locale
 }
 
-export default function LanguageDropdown({ selected, onSelect, locale = 'pt' }: LanguageDropdownProps) {
+export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }: LanguageDropdownProps) {
   const [open, setOpen] = useState(false)
   const btnRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -69,23 +69,29 @@ export default function LanguageDropdown({ selected, onSelect, locale = 'pt' }: 
     }
   }, [open])
 
-  function renderItem(lang: Language) {
+  function renderItem(lang: LanguageMeta) {
     return (
       <button key={lang.id} onClick={() => { onSelect(lang); setOpen(false) }}
         className="w-full flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95"
-        style={{ color: 'var(--text)', opacity: lang.id === selected.id ? 1 : 0.7, backgroundColor: lang.id === selected.id ? 'var(--sub-alt)' : 'transparent' }}>
+        style={{ color: 'var(--text)', opacity: lang.id === selectedId ? 1 : 0.7, backgroundColor: lang.id === selectedId ? 'var(--sub-alt)' : 'transparent' }}>
         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: lang.color }} />
         {lang.label}
       </button>
     )
   }
 
+  const selected =
+    sortedCodeLanguages.find((language) => language.id === selectedId) ??
+    idiomLanguages.find((language) => language.id === selectedId) ??
+    textLanguageMetas.find((language) => language.id === selectedId) ??
+    codeLanguageMetas[0]
+
   return (
     <>
       <button ref={btnRef} type="button" onClick={handleToggle}
         className="relative z-30 flex items-center gap-1.5 px-2 py-1 rounded text-sm cursor-pointer pointer-events-auto transition-all duration-150 hover:scale-105 active:scale-95"
         style={{ color: 'var(--text)' }}>
-        <span>{selected.label}</span>
+        <span>{selected?.label ?? selectedId}</span>
         <ChevronDownIcon size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
