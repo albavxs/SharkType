@@ -473,7 +473,9 @@ export async function importLocalProgress(
 
   if (error) throw error
 
-  await ensureUserSocialBackfill(supabase, user.id)
+  ensureUserSocialBackfill(supabase, user.id).catch((err) => {
+    console.error('[importLocalProgress] social backfill failed (non-fatal):', err)
+  })
 
   const snapshot = await getUserProgressSnapshot(supabase, user.id)
   await reconcileHistoricalUnlocks(supabase, user.id, snapshot)
@@ -521,7 +523,9 @@ export async function saveRemoteSession(
   userId: string,
   input: SessionInput
 ): Promise<{ progress: UserProgress; output: SessionOutput }> {
-  await ensureUserSocialBackfill(supabase, userId)
+  ensureUserSocialBackfill(supabase, userId).catch((err) => {
+    console.error('[saveRemoteSession] social backfill failed (non-fatal):', err)
+  })
   const current = await getUserProgressSnapshot(supabase, userId)
   const { progress, output } = applySessionToProgress(current, input)
 

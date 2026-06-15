@@ -42,6 +42,32 @@ function getTrackTimerDuration(difficulty: Difficulty | 'all', snippetCount: num
   return 0
 }
 
+function getAvailableTrackLanguages(track: Track | null | undefined): Language[] {
+  if (!track) return []
+  if (track.textLanguages) {
+    if (track.snippetIds.length > 0) return textLanguages.filter(l => l.id === 'text-typing')
+    return textLanguages.filter(l => l.id !== 'text-typing')
+  }
+
+  if (track.slots && track.slots.length > 0) {
+    return languages.filter(lang =>
+      lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
+    )
+  }
+
+  const seen = new Set<string>()
+  const result: Language[] = []
+  for (const sid of track.snippetIds) {
+    for (const lang of languages) {
+      if (!seen.has(lang.id) && lang.snippets.find(s => s.id === sid)) {
+        seen.add(lang.id)
+        result.push(lang)
+      }
+    }
+  }
+  return result
+}
+
 export default function TrackPracticePage() {
   const params = useParams()
   const router = useRouter()
