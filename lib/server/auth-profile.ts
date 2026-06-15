@@ -84,10 +84,10 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
       .update(updatePayload)
       .eq('id', user.id)
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (error) throw error
-    return mapProfile(data)
+    return data ? mapProfile(data) : existing
   }
 
   const desired = inferRequestedUsername(user)
@@ -105,7 +105,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
         avatar_url: inferAvatarUrl(user),
       })
       .select('*')
-      .single()
+      .maybeSingle()
 
     if (!error && data) return mapProfile(data)
 

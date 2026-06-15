@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { t, type Locale } from '@/lib/i18n'
 import type { Achievement } from './BadgeGrid'
@@ -14,15 +14,22 @@ interface AchievementToastProps {
 export default function AchievementToast({ newlyUnlocked, locale }: AchievementToastProps) {
   const [queue, setQueue] = useState<Achievement[]>([])
   const [current, setCurrent] = useState<Achievement | null>(null)
+  const seenIdsRef = useRef<Set<string>>(new Set())
 
-  // Adiciona novos achievements ao queue quando a prop muda
   useEffect(() => {
-    if (newlyUnlocked.length > 0) {
-      setQueue(q => [...q, ...newlyUnlocked])
-    }
+    if (newlyUnlocked.length === 0) return
+
+    setQueue((queued) => {
+      const additions = newlyUnlocked.filter((achievement) => {
+        if (seenIdsRef.current.has(achievement.id)) return false
+        seenIdsRef.current.add(achievement.id)
+        return true
+      })
+
+      return additions.length > 0 ? [...queued, ...additions] : queued
+    })
   }, [newlyUnlocked])
 
-  // Processa queue: mostra 1 por vez, 3s cada
   useEffect(() => {
     if (current || queue.length === 0) return
     const next = queue[0]

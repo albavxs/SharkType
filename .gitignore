@@ -39,7 +39,7 @@ yarn-error.log*
 .env*
 !.env.example
 !.env.local.example
-
+.sql
 # vercel
 .vercel
 

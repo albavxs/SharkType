@@ -8,7 +8,7 @@ interface FollowerCountsProps {
 
 export default function FollowerCounts({ followers, following, locale }: FollowerCountsProps) {
   return (
-    <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--sub)' }}>
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--sub)' }}>
       <span>
         <span className="font-semibold tabular-nums" style={{ color: 'var(--text)' }}>{followers}</span>
         {' '}

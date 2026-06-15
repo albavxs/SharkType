@@ -1,6 +1,6 @@
 'use client'
 
-import { Language, Difficulty } from '@/lib/types'
+import { LanguageMeta, Difficulty } from '@/lib/types'
 import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
@@ -10,11 +10,11 @@ import DifficultySelector from './DifficultySelector'
 import { useAuth } from '@/hooks/useAuth'
 
 interface ToolbarProps {
-  language: Language
+  language: LanguageMeta
   difficulty: Difficulty | 'all'
   seconds: number
   isTimerRunning: boolean
-  onLanguageChange: (lang: Language) => void
+  onLanguageChange: (lang: LanguageMeta) => void
   onDifficultyChange: (d: Difficulty | 'all') => void
   onHomeClick: () => void
   onHelpClick: () => void
@@ -43,85 +43,102 @@ export default function Toolbar({
   return (
     <div className="relative z-20 flex flex-col sm:flex-row sm:items-center px-3 sm:px-6 pt-3 pb-1 sm:py-2 gap-2 sm:gap-0">
       {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
-      <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-4 shrink-0">
-        <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
           <button onClick={onHomeClick} className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
             Shark<span style={{ color: 'var(--main)' }}>Type</span>
           </button>
-          <div className={`flex items-center gap-1 sm:gap-3 transition-all duration-300 ${hide}`}>
-            <Link href="/tracks" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navTracks', locale)}>
-              <BookIcon size={18} />
-            </Link>
-            <Link href="/leaderboard" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
-              <TrophyIcon size={18} />
-            </Link>
-            <Link href="/feed" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
-              <ChartIcon size={18} />
-            </Link>
-            {profile && (
-              <Link href="/profile" className="p-1.5 sm:p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={locale === 'pt' ? 'Perfil' : 'Profile'}>
-                <UserIcon size={18} />
+
+          {/* Right side on mobile (locale + level + streak) */}
+          <div className={`flex items-center gap-2 shrink-0 transition-all duration-300 sm:hidden ${hide}`}>
+            {onLocaleToggle && (
+              <button onClick={onLocaleToggle}
+                className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded transition-all duration-150 hover:scale-105 active:scale-95"
+                style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}>
+                {locale === 'pt' ? 'PT' : 'EN'}
+              </button>
+            )}
+            {profile ? (
+              <Link
+                href="/profile"
+                className="flex items-center gap-1 rounded-full px-2 py-1 text-[10px] transition-all duration-150 hover:scale-105 active:scale-95"
+                style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+                title={locale === 'pt' ? 'Perfil' : 'Profile'}
+              >
+                <span
+                  className="flex h-5 w-5 items-center justify-center overflow-hidden rounded-full text-[10px] font-semibold"
+                  style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+                >
+                  {profile.avatarUrl ? (
+                    <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
+                  ) : (
+                    profile.username.slice(0, 1).toUpperCase()
+                  )}
+                </span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-full px-2 py-1 text-[10px] font-medium transition-all duration-150 hover:scale-105 active:scale-95"
+                style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+              >
+                {t('authSignInShort', locale)}
               </Link>
             )}
-            <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
-              <HelpIcon size={22} />
-            </button>
-            <Link href="/settings" className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
-              <SlidersIcon size={22} />
-            </Link>
+            {level && <span className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
+            <span className="flex items-center gap-0.5 text-[10px]" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
+                <FlameIcon size={12} />{streak}d
+            </span>
           </div>
         </div>
 
-        {/* Right side on mobile (locale + level + streak) */}
-        <div className={`flex sm:hidden items-center gap-2 transition-all duration-300 ${hide}`}>
-          {onLocaleToggle && (
-            <button onClick={onLocaleToggle}
-              className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded transition-all duration-150 hover:scale-105 active:scale-95"
-              style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}>
-              {locale === 'pt' ? 'PT' : 'EN'}
-            </button>
-          )}
-          {profile ? (
-            <Link
-              href="/profile"
-              className="flex items-center gap-1 rounded-full px-2 py-1 text-[10px] transition-all duration-150 hover:scale-105 active:scale-95"
-              style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
-              title={locale === 'pt' ? 'Perfil' : 'Profile'}
-            >
-              <span
-                className="flex h-5 w-5 items-center justify-center overflow-hidden rounded-full text-[10px] font-semibold"
-                style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
-              >
-                {profile.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
-                ) : (
-                  profile.username.slice(0, 1).toUpperCase()
-                )}
-              </span>
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-full px-2 py-1 text-[10px] font-medium transition-all duration-150 hover:scale-105 active:scale-95"
-              style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
-            >
-              {t('authSignInShort', locale)}
+        <div className={`hidden items-center gap-3 transition-all duration-300 sm:flex ${hide}`}>
+          <Link href="/tracks" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navTracks', locale)}>
+            <BookIcon size={18} />
+          </Link>
+          <Link href="/leaderboard" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
+            <TrophyIcon size={18} />
+          </Link>
+          <Link href="/feed" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
+            <ChartIcon size={18} />
+          </Link>
+          {profile && (
+            <Link href="/profile" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={locale === 'pt' ? 'Perfil' : 'Profile'}>
+              <UserIcon size={18} />
             </Link>
           )}
-          {level && <span className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
-          {streak > 0 && (
-            <span className="flex items-center gap-0.5 text-[10px]" style={{ color: 'var(--main)' }}>
-              <FlameIcon size={12} />{streak}d
-            </span>
-          )}
+          <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
+            <HelpIcon size={22} />
+          </button>
+          <Link href="/settings" className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
+            <SlidersIcon size={22} />
+          </Link>
+        </div>
+
+        <div className={`flex flex-wrap items-center gap-1 transition-all duration-300 sm:hidden ${hide}`}>
+          <Link href="/tracks" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navTracks', locale)}>
+            <BookIcon size={18} />
+          </Link>
+          <Link href="/leaderboard" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
+            <TrophyIcon size={18} />
+          </Link>
+          <Link href="/feed" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
+            <ChartIcon size={18} />
+          </Link>
+          <button onClick={onHelpClick} className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
+            <HelpIcon size={18} />
+          </button>
+          <Link href="/settings" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
+            <SlidersIcon size={18} />
+          </Link>
         </div>
       </div>
 
       {/* Row 2 (mobile): controls centered */}
       {showControls && <div className={`sm:hidden flex justify-center transition-all duration-300 ${hide}`}>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs"
+        <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 px-3 py-1 rounded-2xl text-xs"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          {showLanguage && <><LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
+          {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
@@ -140,7 +157,7 @@ export default function Toolbar({
       {showControls && <div className={`absolute left-1/2 -translate-x-1/2 hidden sm:block transition-all duration-300 ${hide}`}>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
-          {showLanguage && <><LanguageDropdown selected={language} onSelect={onLanguageChange} locale={locale} />
+          {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
           <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
           {(isTimerRunning || seconds > 0) && (
@@ -205,16 +222,10 @@ export default function Toolbar({
             {t('authSignIn', locale)}
           </Link>
         )}
-        {(level || streak > 0) && (
-          <>
-            {level && <span className="text-xs lg:text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
-            {streak > 0 && (
-              <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: 'var(--main)' }}>
-                <FlameIcon size={16} />{streak}d
-              </span>
-            )}
-          </>
-        )}
+        {level && <span className="text-xs lg:text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
+        <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
+          <FlameIcon size={16} />{streak}d
+        </span>
       </div>
     </div>
   )

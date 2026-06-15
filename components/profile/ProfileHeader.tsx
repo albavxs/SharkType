@@ -52,10 +52,10 @@ export default function ProfileHeader({
             </span>
 
             <div>
-              <h1 className="text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
+              <h1 className="break-words text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
                 {profile.displayName || profile.username}
               </h1>
-              <p className="text-sm" style={{ color: 'var(--sub)' }}>@{profile.username}</p>
+              <p className="break-all text-sm" style={{ color: 'var(--sub)' }}>@{profile.username}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="rounded-full px-3 py-0.5 text-xs font-semibold" style={{ backgroundColor: rank.color, color: 'var(--bg)' }}>
                   {rank.label[locale]}
@@ -87,13 +87,13 @@ export default function ProfileHeader({
           </div>
 
           {/* Follow + counts */}
-          <div className="flex flex-col items-start gap-2 sm:items-end">
+          <div className="flex w-full flex-col items-start gap-2 sm:w-auto sm:items-end">
             <FollowerCounts followers={profile.followerCount} following={profile.followingCount} locale={locale} />
             {isOwn && onEditToggle ? (
               <button
                 type="button"
                 onClick={onEditToggle}
-                className="rounded-full px-4 py-1.5 text-sm font-semibold transition-all duration-150 hover:scale-105 active:scale-95"
+                className="w-full rounded-full px-4 py-1.5 text-sm font-semibold transition-all duration-150 hover:scale-105 active:scale-95 sm:w-auto"
                 style={{ backgroundColor: isEditing ? 'var(--main)' : 'var(--sub-alt)', color: isEditing ? 'var(--bg)' : 'var(--text)' }}
               >
                 {isEditing ? t('profileDoneEditing', locale) : t('profileEditing', locale)}

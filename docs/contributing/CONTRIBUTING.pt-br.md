@@ -32,7 +32,18 @@ A lógica central reside no hook [hooks/useTypingEngine.ts](../../hooks/useTypin
 - O cálculo de métricas como **WPM** (Words Per Minute) e **Accuracy**.
 - O controle de estados da sessão (`idle`, `running`, `finished`).
 
-Tipos relacionados: [lib/types.ts](../../lib/types.ts). Utilitários (WPM, accuracy, stripCodeComments): [lib/utils.ts](../../lib/utils.ts).
+Tipos relacionados: [lib/types.ts](../../lib/types.ts). Utilitários (WPM, accuracy, sanitização para prática): [lib/utils.ts](../../lib/utils.ts).
+
+### 1.1. Fluxo dos Snippets
+O pipeline atual dos snippets foi mantido e segue esta ordem:
+
+1. [data/manifest.ts](../../data/manifest.ts) define o catálogo com `id`, `label`, `color`, `type`, `module` e, quando necessário, `exportName`.
+2. [data/index.ts](../../data/index.ts) importa estaticamente os arrays `Snippet[]` e monta o `snippetRegistry`.
+3. O mesmo [data/index.ts](../../data/index.ts) cruza `languageManifest` + `snippetRegistry` para gerar `codeLanguages`, `textLanguages` e `languages`.
+4. [lib/schemas.ts](../../lib/schemas.ts) valida as linguagens montadas no boot.
+5. As páginas de prática consomem `Language.snippets` prontos e aplicam apenas sanitização de exibição antes da digitação.
+
+Observação: [data/cybersec.ts](../../data/cybersec.ts) continua sendo a exceção suportada de multi-export, resolvida via `exportName` no manifesto.
 
 ### 2. Persistência e Autenticação
 Utilizamos o **Supabase** para:

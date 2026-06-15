@@ -22,9 +22,10 @@ export interface LeaderboardEntry {
   avgWPM: number
   currentStreak: number
   totalSessions: number
+  rankedSessions: number
   /** Level calculado a partir de totalXP */
   level: number
-  /** Score combinado: avgWPM + level*10 */
+  /** Score ranked acumulado */
   score: number
 }
 

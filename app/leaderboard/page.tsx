@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -11,12 +12,13 @@ import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
-import ThemeSelector from '@/components/typing/ThemeSelector'
-import SceneWrapper from '@/components/three/SceneWrapper'
-import { codeLanguages } from '@/data'
-import { Language, Difficulty } from '@/lib/types'
+import { codeLanguageMetas } from '@/data/metadata'
+import { Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
+
+const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
+const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 
 export default function LeaderboardPage() {
   const router = useRouter()
@@ -74,7 +76,7 @@ export default function LeaderboardPage() {
 
       <div className="relative z-10 flex-1 flex flex-col min-h-screen">
         <Toolbar
-          language={codeLanguages[0]} difficulty={'all' as Difficulty | 'all'}
+          language={codeLanguageMetas[0]} difficulty={'all' as Difficulty | 'all'}
           seconds={0} isTimerRunning={false}
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
@@ -115,42 +117,21 @@ export default function LeaderboardPage() {
                 <p className="mt-1 text-xs">{t('noPlayersHint', locale)}</p>
               </div>
             ) : (
-              <div className="overflow-x-auto -mx-3 sm:mx-0">
-                <div className="min-w-[34rem] overflow-hidden rounded-2xl border" style={{ borderColor: 'color-mix(in srgb, var(--sub) 20%, transparent)' }}>
-                  <div
-                    className="grid px-4 py-3 text-[10px] uppercase tracking-[0.24em]"
-                    style={{
-                      gridTemplateColumns: '3rem 1.4fr 5rem 5rem 4.5rem 4rem 5rem',
-                      backgroundColor: 'var(--sub-alt)',
-                      color: 'var(--sub)',
-                    }}
-                  >
-                    <span>#</span>
-                    <span>{t('authUsername', locale)}</span>
-                    <span className="text-right">score</span>
-                    <span className="text-right">{t('colXP', locale)}</span>
-                    <span className="text-right">wpm</span>
-                    <span className="text-right">{t('colStreak', locale)}</span>
-                    <span className="text-right">{t('sessions', locale)}</span>
-                  </div>
-
-                  {entries.map((entry, index) => (
+              <>
+                <div className="space-y-3 sm:hidden">
+                  {entries.map(entry => (
                     <Link
                       key={entry.userId}
                       href={`/profile/${entry.username}`}
-                      className="grid items-center px-4 py-3 text-sm transition-all duration-150 hover:brightness-110"
+                      className="block rounded-2xl border p-4 transition-all duration-150 hover:brightness-110"
                       style={{
-                        gridTemplateColumns: '3rem 1.4fr 5rem 5rem 4.5rem 4rem 5rem',
-                        borderTop: index > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
-                        backgroundColor: profile?.id === entry.userId ? 'color-mix(in srgb, var(--main) 7%, transparent)' : 'transparent',
+                        borderColor: 'color-mix(in srgb, var(--sub) 20%, transparent)',
+                        backgroundColor: profile?.id === entry.userId ? 'color-mix(in srgb, var(--main) 7%, transparent)' : 'color-mix(in srgb, var(--sub-alt) 60%, transparent)',
                       }}
                     >
-                      <span className="font-mono text-xs" style={{ color: index < 3 ? 'var(--main)' : 'var(--sub)' }}>
-                        {entry.rank}
-                      </span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-3">
                         <span
-                          className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
                           style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
                         >
                           {entry.avatarUrl ? (
@@ -159,36 +140,105 @@ export default function LeaderboardPage() {
                             entry.username.slice(0, 1).toUpperCase()
                           )}
                         </span>
-                        <div className="min-w-0">
-                          <div className="truncate font-medium" style={{ color: 'var(--text)' }}>
-                            {entry.username}
-                          </div>
-                          {entry.displayName && entry.displayName !== entry.username ? (
-                            <div className="truncate text-xs" style={{ color: 'var(--sub)' }}>
-                              {entry.displayName}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="truncate font-semibold" style={{ color: 'var(--text)' }}>
+                                #{entry.rank} {entry.username}
+                              </div>
+                              {entry.displayName && entry.displayName !== entry.username ? (
+                                <div className="truncate text-xs" style={{ color: 'var(--sub)' }}>
+                                  {entry.displayName}
+                                </div>
+                              ) : null}
                             </div>
-                          ) : null}
+                            <span className="text-sm font-semibold tabular-nums" style={{ color: 'var(--main)' }}>
+                              {entry.score}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid grid-cols-2 gap-2 text-xs tabular-nums" style={{ color: 'var(--sub)' }}>
+                            <span>{t('rankedPointsShort', locale)}: <span style={{ color: 'var(--text)' }}>{entry.score}</span></span>
+                            <span>WPM: <span style={{ color: 'var(--text)' }}>{entry.bestWPM}</span></span>
+                            <span>{t('colStreak', locale)}: <span style={{ color: entry.currentStreak > 0 ? 'var(--main)' : 'var(--text)' }}>{entry.currentStreak}d</span></span>
+                            <span>{t('sessions', locale)}: <span style={{ color: 'var(--text)' }}>{entry.totalSessions}</span></span>
+                          </div>
                         </div>
                       </div>
-                      <span className="text-right font-semibold tabular-nums" style={{ color: 'var(--main)' }}>
-                        {entry.score}
-                      </span>
-                      <span className="text-right tabular-nums" style={{ color: 'var(--text)' }}>
-                        {entry.totalXP}
-                      </span>
-                      <span className="text-right tabular-nums" style={{ color: 'var(--text)' }}>
-                        {entry.bestWPM}
-                      </span>
-                      <span className="text-right tabular-nums" style={{ color: entry.currentStreak > 0 ? 'var(--main)' : 'var(--sub)' }}>
-                        {entry.currentStreak}d
-                      </span>
-                      <span className="text-right tabular-nums" style={{ color: 'var(--sub)' }}>
-                        {entry.totalSessions}
-                      </span>
                     </Link>
                   ))}
                 </div>
-              </div>
+
+                <div className="hidden overflow-x-auto sm:block">
+                  <div className="min-w-[34rem] overflow-hidden rounded-2xl border" style={{ borderColor: 'color-mix(in srgb, var(--sub) 20%, transparent)' }}>
+                    <div
+                      className="grid px-4 py-3 text-[10px] uppercase tracking-[0.24em]"
+                      style={{
+                        gridTemplateColumns: '3rem 1.4fr 6rem 4.5rem 4rem 5rem',
+                        backgroundColor: 'var(--sub-alt)',
+                        color: 'var(--sub)',
+                      }}
+                    >
+                      <span>#</span>
+                      <span>{t('authUsername', locale)}</span>
+                      <span className="text-right">{t('rankScore', locale)}</span>
+                      <span className="text-right">wpm</span>
+                      <span className="text-right">{t('colStreak', locale)}</span>
+                      <span className="text-right">{t('sessions', locale)}</span>
+                    </div>
+
+                    {entries.map((entry, index) => (
+                      <Link
+                        key={entry.userId}
+                        href={`/profile/${entry.username}`}
+                        className="grid items-center px-4 py-3 text-sm transition-all duration-150 hover:brightness-110"
+                        style={{
+                          gridTemplateColumns: '3rem 1.4fr 6rem 4.5rem 4rem 5rem',
+                          borderTop: index > 0 ? '1px solid color-mix(in srgb, var(--sub) 10%, transparent)' : 'none',
+                          backgroundColor: profile?.id === entry.userId ? 'color-mix(in srgb, var(--main) 7%, transparent)' : 'transparent',
+                        }}
+                      >
+                        <span className="font-mono text-xs" style={{ color: index < 3 ? 'var(--main)' : 'var(--sub)' }}>
+                          {entry.rank}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
+                            style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+                          >
+                            {entry.avatarUrl ? (
+                              <img src={entry.avatarUrl} alt={entry.username} className="h-full w-full object-cover" />
+                            ) : (
+                              entry.username.slice(0, 1).toUpperCase()
+                            )}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="truncate font-medium" style={{ color: 'var(--text)' }}>
+                              {entry.username}
+                            </div>
+                            {entry.displayName && entry.displayName !== entry.username ? (
+                              <div className="truncate text-xs" style={{ color: 'var(--sub)' }}>
+                                {entry.displayName}
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                        <span className="text-right font-semibold tabular-nums" style={{ color: 'var(--main)' }}>
+                          {entry.score}
+                        </span>
+                        <span className="text-right tabular-nums" style={{ color: 'var(--text)' }}>
+                          {entry.bestWPM}
+                        </span>
+                        <span className="text-right tabular-nums" style={{ color: entry.currentStreak > 0 ? 'var(--main)' : 'var(--sub)' }}>
+                          {entry.currentStreak}d
+                        </span>
+                        <span className="text-right tabular-nums" style={{ color: 'var(--sub)' }}>
+                          {entry.totalSessions}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
