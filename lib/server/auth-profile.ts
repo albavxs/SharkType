@@ -42,6 +42,7 @@ function mapProfile(row: Database['public']['Tables']['profiles']['Row']): AuthP
     bio: row.bio,
     provider: row.provider,
     emailVerified: row.email_verified,
+    isSuperUser: row.is_super_user,
     localImportedAt: row.local_imported_at,
     onboardingCompleted: row.onboarding_completed,
   }

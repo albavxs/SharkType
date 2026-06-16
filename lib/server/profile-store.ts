@@ -6,6 +6,18 @@ import { ensureUserSocialBackfill } from './progress-store'
 
 type DBClient = SupabaseClient<any>
 
+function isMissingTableError(error: { code?: string; message?: string } | null | undefined): boolean {
+  return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
+}
+
+function logSafeQueryError(scope: string, table: string, error: unknown) {
+  const candidate = error as { code?: string; message?: string } | null
+  console.error(`[profile-store] ${scope} failed for ${table}:`, {
+    code: candidate?.code ?? 'unknown',
+    message: candidate?.message ?? String(error),
+  })
+}
+
 export interface PublicLanguageStat {
   languageId: string
   totalSessions: number
@@ -60,7 +72,7 @@ export async function getPublicProfile(
     console.error('[getPublicProfile] social backfill failed (non-fatal):', err)
   })
 
-  const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes, recentSessionsRes] = await Promise.all([
+  const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
     supabase
       .from('user_progress')
       .select('total_xp, current_streak, total_sessions, best_wpm, best_accuracy, ranked_score, ranked_sessions')
@@ -90,18 +102,16 @@ export async function getPublicProfile(
             .limit(1),
         )
       : Promise.resolve({ data: [], error: null }),
-    safeCount(supabase, 'typing_sessions', q => q.select('id', { count: 'exact', head: true }).eq('user_id', userId)),
   ])
 
   if (progressRes.error) throw progressRes.error
   if (languagesRes.error) throw languagesRes.error
-  if (recentSessionsRes.error) throw recentSessionsRes.error
 
   const totalXP = progressRes.data?.total_xp ?? 0
   const level = getLevel(totalXP).level
   const score = progressRes.data?.ranked_score ?? 0
   const rankedSessions = progressRes.data?.ranked_sessions ?? 0
-  const totalSessions = recentSessionsRes.count ?? progressRes.data?.total_sessions ?? 0
+  const totalSessions = progressRes.data?.total_sessions ?? 0
   const rank = getRankFromScore(score)
 
   return {
@@ -146,32 +156,15 @@ async function safeSelect<T>(
     const res = await build(supabase.from(table))
     if (res.error) {
       // 42P01 = undefined_table no Postgres
-      if (res.error.code === '42P01' || String(res.error.message ?? '').includes('does not exist')) {
+      if (isMissingTableError(res.error)) {
         return { data: [], error: null }
       }
+      logSafeQueryError('safeSelect', table, res.error)
       return { data: null, error: res.error }
     }
     return { data: res.data as T[], error: null }
-  } catch (e) {
+  } catch (error) {
+    logSafeQueryError('safeSelect', table, error)
     return { data: [], error: null }
-  }
-}
-
-async function safeCount(
-  supabase: DBClient,
-  table: string,
-  build: (q: any) => any,
-): Promise<{ count: number | null; error: any }> {
-  try {
-    const res = await build(supabase.from(table))
-    if (res.error) {
-      if (res.error.code === '42P01' || String(res.error.message ?? '').includes('does not exist')) {
-        return { count: 0, error: null }
-      }
-      return { count: null, error: res.error }
-    }
-    return { count: typeof res.count === 'number' ? res.count : 0, error: null }
-  } catch {
-    return { count: 0, error: null }
   }
 }

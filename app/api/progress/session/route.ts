@@ -2,39 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { saveRemoteSession } from '@/lib/server/progress-store'
-import { getAllLanguageMetas } from '@/data/metadata'
 import { rateLimit } from '@/lib/server/rate-limit'
-import type { SessionInput } from '@/lib/gamification'
-
-const VALID_LANGUAGE_IDS = new Set(getAllLanguageMetas().map((language) => language.id))
-const VALID_DIFFICULTIES = new Set(['easy', 'medium', 'hard'])
-
-function isSessionInput(value: unknown): value is SessionInput {
-  if (!value || typeof value !== 'object') return false
-  const input = value as Record<string, unknown>
-  return (
-    typeof input.languageId === 'string' &&
-    typeof input.snippetId === 'string' &&
-    typeof input.wpm === 'number' &&
-    typeof input.rawWpm === 'number' &&
-    typeof input.accuracy === 'number' &&
-    typeof input.errors === 'number' &&
-    typeof input.duration === 'number' &&
-    typeof input.difficulty === 'string'
-  )
-}
-
-function isValidSessionInput(input: SessionInput): boolean {
-  return (
-    input.wpm >= 0 && input.wpm <= 250 &&
-    input.rawWpm >= 0 && input.rawWpm <= 300 &&
-    input.accuracy >= 0 && input.accuracy <= 100 &&
-    input.errors >= 0 && input.errors <= 10000 &&
-    input.duration >= 1 && input.duration <= 600 &&
-    VALID_DIFFICULTIES.has(input.difficulty) &&
-    VALID_LANGUAGE_IDS.has(input.languageId)
-  )
-}
+import { isSessionInput, isValidSessionInput } from '@/lib/server/session-validation'
 
 export async function POST(request: Request) {
   const env = getSupabaseEnv()
