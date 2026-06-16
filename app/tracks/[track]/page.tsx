@@ -90,6 +90,8 @@ export default function TrackPracticePage() {
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [accumulated, setAccumulated] = useState<SnippetResult[]>([])
   const [trackXpEarned, setTrackXpEarned] = useState(0)
+  const [trackRankedPointsEarned, setTrackRankedPointsEarned] = useState(0)
+  const [trackLeveledUp, setTrackLeveledUp] = useState(false)
   const [finalStats, setFinalStats] = useState<SnippetResult | null>(null)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [isResultSyncing, setIsResultSyncing] = useState(false)
@@ -225,12 +227,17 @@ export default function TrackPracticePage() {
       if (seqIndex >= trackSnippets.length - 1) {
         let optimisticOutput: SessionOutput | null = null
         let optimisticXpEarned = 0
+        let optimisticRankedPointsEarned = 0
 
         if (input) {
           optimisticOutput = applySessionToProgress(progress, input).output
           optimisticXpEarned = optimisticOutput.xpEarned
+          optimisticRankedPointsEarned = optimisticOutput.rankedPointsEarned
+          const optimisticLeveledUp = optimisticOutput.leveledUp
           setSessionResult(optimisticOutput)
           setTrackXpEarned((current) => current + optimisticXpEarned)
+          setTrackRankedPointsEarned((current) => current + optimisticRankedPointsEarned)
+          setTrackLeveledUp((current) => current || optimisticLeveledUp)
           setIsResultSyncing(true)
         }
 
@@ -257,6 +264,8 @@ export default function TrackPracticePage() {
             if (!active) return
             setSessionResult(output)
             setTrackXpEarned((current) => current - optimisticXpEarned + output.xpEarned)
+            setTrackRankedPointsEarned((current) => current - optimisticRankedPointsEarned + output.rankedPointsEarned)
+            setTrackLeveledUp((current) => current || output.leveledUp)
             setIsResultSyncing(false)
           })()
         }
@@ -273,6 +282,8 @@ export default function TrackPracticePage() {
           if (!active) return
           setSessionResult(output)
           setTrackXpEarned((current) => current + output.xpEarned)
+          setTrackRankedPointsEarned((current) => current + output.rankedPointsEarned)
+          setTrackLeveledUp((current) => current || output.leveledUp)
         }
         setSeqIndex(i => i + 1)
         resetTimer(timerDurationRef.current)
@@ -316,6 +327,8 @@ export default function TrackPracticePage() {
     setFinalStats(null)
     setAccumulated([])
     setTrackXpEarned(0)
+    setTrackRankedPointsEarned(0)
+    setTrackLeveledUp(false)
     setIsResultSyncing(false)
     resetEngine()
     resetTimer(timerDuration)
@@ -335,6 +348,8 @@ export default function TrackPracticePage() {
     setFinalStats(null)
     setAccumulated([])
     setTrackXpEarned(0)
+    setTrackRankedPointsEarned(0)
+    setTrackLeveledUp(false)
     setIsResultSyncing(false)
     resetEngine()
     resetTimer(timerDuration)
@@ -348,6 +363,8 @@ export default function TrackPracticePage() {
     setFinalStats(null)
     setAccumulated([])
     setTrackXpEarned(0)
+    setTrackRankedPointsEarned(0)
+    setTrackLeveledUp(false)
     setIsResultSyncing(false)
     resetEngine()
     const newDur = getTrackTimerDuration(d, snippetCount)
@@ -403,12 +420,12 @@ export default function TrackPracticePage() {
           ) : !snippet ? (
             <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
           ) : showResult && finalStats ? (
-            <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
+            <ResultScreen wpm={finalStats.wpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
               duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} wpmSamples={finalStats.wpmSamples}
               rawWpmSamples={finalStats.rawWpmSamples} errorSamples={finalStats.errorSamples} languageId={selectedLang?.id ?? ''}
-              xpEarned={trackXpEarned} rankedPointsEarned={sessionResult?.rankedPointsEarned ?? 0} newLevel={sessionResult?.newLevel ?? levelInfo.level} leveledUp={sessionResult?.leveledUp ?? false}
+              xpEarned={trackXpEarned} rankedPointsEarned={trackRankedPointsEarned} newLevel={sessionResult?.newLevel ?? levelInfo.level} leveledUp={trackLeveledUp}
               levelPercent={sessionResult?.levelPercent ?? getLevel(progress.totalXP).percent} streak={progress.streak.current}
-              onNext={handleRestartTrack} isSyncing={isResultSyncing} locale={locale} />
+              onNext={handleRestartTrack} locale={locale} />
           ) : (
             <>
               {/* Prompt — hide when typing */}

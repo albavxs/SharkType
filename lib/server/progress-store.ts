@@ -3,6 +3,7 @@ import type { AuthProfile, LeaderboardEntry } from '@/lib/auth-types'
 import {
   applySessionToProgress,
   calculateRankedPoints,
+  calculateXpEarned,
   computeRankedAggregate,
   createDefaultProgress,
   deriveStreakFromActivityTimestamps,
@@ -17,6 +18,7 @@ import {
   type UserProgress,
 } from '@/lib/gamification'
 import type { Database } from '@/lib/supabase/database'
+import type { ImportedProgressSnapshot, ImportedSessionRecord } from '@/lib/server/session-validation'
 import { ensureProfileForUser, getOwnProfile } from './auth-profile'
 import { collectProgressUnlocks, reconcileHistoricalUnlocks } from './achievements'
 import { recordFeedEvent } from './feed-store'
@@ -40,6 +42,7 @@ function mapProfileRow(row: Database['public']['Tables']['profiles']['Row']): Au
     avatarUrl: row.avatar_url,
     provider: row.provider,
     emailVerified: row.email_verified,
+    isSuperUser: row.is_super_user,
     localImportedAt: row.local_imported_at,
     onboardingCompleted: row.onboarding_completed,
   }
@@ -79,6 +82,28 @@ function buildInsertedSession(input: SessionInput, output: SessionOutput, create
   }
 }
 
+function buildImportedCreatedAt(date: string, index: number): string {
+  const hour = 12 + (Math.floor(index / 3600) % 12)
+  const minute = Math.floor(index / 60) % 60
+  const second = index % 60
+  const hh = String(hour).padStart(2, '0')
+  const mm = String(minute).padStart(2, '0')
+  const ss = String(second).padStart(2, '0')
+  return `${date}T${hh}:${mm}:${ss}.000Z`
+}
+
+function orderImportedHistory(history: ImportedSessionRecord[]): ImportedSessionRecord[] {
+  return [...history]
+    .map((record, index) => ({ record, index }))
+    .sort((a, b) => {
+      if (a.record.date === b.record.date) {
+        return a.index - b.index
+      }
+      return a.record.date.localeCompare(b.record.date)
+    })
+    .map((entry) => entry.record)
+}
+
 export function buildProgressAggregate(userId: string, progress: UserProgress) {
   const summary = deriveProgressSummary(progress)
 
@@ -110,7 +135,7 @@ function buildLanguageRows(userId: string, progress: UserProgress) {
 }
 
 function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
-  return history.map((record, index) => {
+  return [...history].reverse().map((record, index) => {
     const difficulty = record.difficulty ?? 'easy'
 
     return {
@@ -132,9 +157,88 @@ function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
         errors: record.errors,
         difficulty,
       }),
-      created_at: `${record.date}T12:${String(index % 60).padStart(2, '0')}:00.000Z`,
+      created_at: buildImportedCreatedAt(record.date, index),
     }
   })
+}
+
+function buildProgressFromImportedSnapshot(snapshot: ImportedProgressSnapshot): UserProgress {
+  const progress = createDefaultProgress()
+  progress.completedTrackIds = snapshot.completedTrackIds
+
+  if (snapshot.history.length === 0) {
+    return progress
+  }
+
+  const orderedHistory = orderImportedHistory(snapshot.history)
+  const persistedHistory: SessionRecord[] = []
+  const activityTimestamps: string[] = []
+
+  for (const record of orderedHistory) {
+    const languageProgress = progress.languages[record.languageId] ?? {
+      completedSnippetIds: [],
+      bestWPM: 0,
+      bestAccuracy: 0,
+      totalSessions: 0,
+    }
+    const isFirstTime = !languageProgress.completedSnippetIds.includes(record.snippetId)
+    const xpEarned = calculateXpEarned({
+      languageId: record.languageId,
+      snippetId: record.snippetId,
+      wpm: record.wpm,
+      rawWpm: record.rawWpm,
+      accuracy: record.accuracy,
+      errors: record.errors,
+      duration: record.duration,
+      difficulty: record.difficulty,
+    }) + (isFirstTime ? 5 : 0)
+    const rankedEligible = isRankedEligibleLanguage(record.languageId)
+    const rankedPoints = rankedEligible
+      ? calculateRankedPoints({
+          languageId: record.languageId,
+          wpm: record.wpm,
+          rawWpm: record.rawWpm,
+          errors: record.errors,
+          difficulty: record.difficulty,
+        })
+      : 0
+
+    if (isFirstTime) {
+      languageProgress.completedSnippetIds.push(record.snippetId)
+    }
+
+    languageProgress.bestWPM = Math.max(languageProgress.bestWPM, record.wpm)
+    languageProgress.bestAccuracy = Math.max(languageProgress.bestAccuracy, record.accuracy)
+    languageProgress.totalSessions += 1
+    progress.languages[record.languageId] = languageProgress
+
+    progress.totalXP += xpEarned
+    if (rankedEligible) {
+      progress.rankedSessions += 1
+    }
+    progress.rankedScore += rankedPoints
+
+    persistedHistory.push({
+      date: record.date,
+      languageId: record.languageId,
+      snippetId: record.snippetId,
+      wpm: record.wpm,
+      rawWpm: record.rawWpm,
+      accuracy: record.accuracy,
+      errors: record.errors,
+      duration: record.duration,
+      difficulty: record.difficulty,
+      xpEarned,
+      rankedEligible,
+      rankedPoints,
+    })
+    activityTimestamps.push(buildImportedCreatedAt(record.date, persistedHistory.length - 1))
+  }
+
+  progress.history = persistedHistory.reverse()
+  progress.streak = deriveStreakFromActivityTimestamps(activityTimestamps)
+  progress.level = getLevel(progress.totalXP).level
+  return progress
 }
 
 function buildProgressFromSessionRows(
@@ -443,7 +547,7 @@ export async function bootstrapProfileAndProgress(
 export async function importLocalProgress(
   supabase: DBClient,
   user: Parameters<typeof ensureProfileForUser>[1],
-  progress: UserProgress
+  importedSnapshot: ImportedProgressSnapshot
 ) {
   const profile = await ensureProfileForUser(supabase, user)
   if (profile.localImportedAt) {
@@ -457,7 +561,7 @@ export async function importLocalProgress(
     }
   }
 
-  await replaceRemoteProgress(supabase, user.id, progress)
+  await replaceRemoteProgress(supabase, user.id, importedSnapshot)
   await markProfileSocialState(supabase, user.id, {
     stats_reconciled_at: null,
     social_seeded_at: null,
@@ -488,7 +592,12 @@ export async function importLocalProgress(
   }
 }
 
-export async function replaceRemoteProgress(supabase: DBClient, userId: string, progress: UserProgress) {
+export async function replaceRemoteProgress(
+  supabase: DBClient,
+  userId: string,
+  snapshot: ImportedProgressSnapshot
+) {
+  const progress = buildProgressFromImportedSnapshot(snapshot)
   const aggregate = buildProgressAggregate(userId, progress)
   const languageRows = buildLanguageRows(userId, progress)
   const sessionRows = buildImportedSessionRows(userId, progress.history)

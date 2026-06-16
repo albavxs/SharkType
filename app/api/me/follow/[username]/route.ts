@@ -59,6 +59,11 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const ctx = await authedAndTarget(username)
   if ('error' in ctx) return ctx.error
 
+  const { success } = rateLimit(`follow:${ctx.viewer.id}`, 30, 60_000)
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
+  }
+
   const { error } = await ctx.supabase
     .from('follows')
     .delete()
