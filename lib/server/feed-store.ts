@@ -8,6 +8,7 @@ type RawFeedEventType = FeedEventRow['event_type']
 type JsonObject = { [key: string]: Json | undefined }
 
 export type FeedEventType = Exclude<RawFeedEventType, 'achievement_unlock'>
+export type ManualPostCategory = 'ranked_tip' | 'language_fact' | 'announcement'
 
 export interface FeedSessionPayload extends JsonObject {
   languageId: string
@@ -37,12 +38,20 @@ export interface FeedTrackCompletedPayload extends JsonObject {
   xp?: number
 }
 
+export interface FeedManualPostPayload extends JsonObject {
+  title: I18nString
+  body: I18nString
+  category: ManualPostCategory
+  seedKey?: string
+}
+
 export interface FeedPayloadMap {
   session: FeedSessionPayload
   achievement: FeedAchievementPayload
   level_up: FeedLevelUpPayload
   follow: FeedFollowPayload
   track_completed: FeedTrackCompletedPayload
+  manual_post: FeedManualPostPayload
 }
 
 type FeedEventBase<T extends FeedEventType> = {
@@ -61,6 +70,7 @@ export type AchievementFeedEvent = FeedEventBase<'achievement'>
 export type LevelUpFeedEvent = FeedEventBase<'level_up'>
 export type FollowFeedEvent = FeedEventBase<'follow'>
 export type TrackCompletedFeedEvent = FeedEventBase<'track_completed'>
+export type ManualPostFeedEvent = FeedEventBase<'manual_post'>
 
 export type FeedEvent =
   | SessionFeedEvent
@@ -68,6 +78,7 @@ export type FeedEvent =
   | LevelUpFeedEvent
   | FollowFeedEvent
   | TrackCompletedFeedEvent
+  | ManualPostFeedEvent
 
 type FeedEventQueryRow = Pick<FeedEventRow, 'id' | 'user_id' | 'event_type' | 'payload' | 'created_at'>
 
@@ -105,6 +116,13 @@ function fallbackI18n(value: string, fallback = ''): I18nString {
   return { pt: resolved, en: resolved }
 }
 
+function normalizeManualCategory(value: string | null): ManualPostCategory {
+  if (value === 'ranked_tip' || value === 'language_fact' || value === 'announcement') {
+    return value
+  }
+  return 'announcement'
+}
+
 function normalizeAchievementPayload(payload: JsonObject): FeedAchievementPayload {
   const achievementId = getString(payload, 'achievementId') ?? getString(payload, 'achievement_id') ?? 'achievement'
   const name =
@@ -121,10 +139,7 @@ function normalizeAchievementPayload(payload: JsonObject): FeedAchievementPayloa
     fallbackI18n(achievementId, 'achievement')
 
   const xp = getNumber(payload, 'xp')
-
-  return xp === null
-    ? { achievementId, name }
-    : { achievementId, name, xp }
+  return xp === null ? { achievementId, name } : { achievementId, name, xp }
 }
 
 function normalizeTrackCompletedPayload(payload: JsonObject): FeedTrackCompletedPayload {
@@ -132,9 +147,16 @@ function normalizeTrackCompletedPayload(payload: JsonObject): FeedTrackCompleted
   const name = getI18nString(payload, 'name') ?? fallbackI18n(trackId, 'track')
   const xp = getNumber(payload, 'xp')
 
-  return xp === null
-    ? { trackId, name }
-    : { trackId, name, xp }
+  return xp === null ? { trackId, name } : { trackId, name, xp }
+}
+
+function normalizeManualPostPayload(payload: JsonObject): FeedManualPostPayload {
+  const title = getI18nString(payload, 'title') ?? fallbackI18n('Post', 'post')
+  const body = getI18nString(payload, 'body') ?? fallbackI18n('', '')
+  const category = normalizeManualCategory(getString(payload, 'category'))
+  const seedKey = getString(payload, 'seedKey') ?? getString(payload, 'seed_key') ?? undefined
+
+  return seedKey ? { title, body, category, seedKey } : { title, body, category }
 }
 
 function normalizeFeedEvent(row: FeedEventQueryRow): FeedEvent | null {
@@ -207,15 +229,53 @@ function normalizeFeedEvent(row: FeedEventQueryRow): FeedEvent | null {
         payload: normalizeTrackCompletedPayload(payload),
         createdAt: row.created_at,
       }
+    case 'manual_post':
+      return {
+        id: row.id,
+        userId: row.user_id,
+        username: 'unknown',
+        displayName: null,
+        avatarUrl: null,
+        eventType: 'manual_post',
+        payload: normalizeManualPostPayload(payload),
+        createdAt: row.created_at,
+      }
     default:
       return null
   }
 }
 
-/**
- * Insere evento no feed_events. Best-effort: erros sao swallowados
- * (chamado dentro de saveRemoteSession e checkUnlocks).
- */
+async function hydrateFeedEvents(supabase: DBClient, events: FeedEvent[]): Promise<FeedEvent[]> {
+  if (events.length === 0) return []
+
+  const distinctUserIds = Array.from(new Set(events.map((event) => event.userId)))
+  const profilesRes = await supabase
+    .from('profiles')
+    .select('id, username, display_name, avatar_url')
+    .in('id', distinctUserIds)
+
+  if (profilesRes.error) return []
+
+  const profileMap = new Map<string, { username: string; display_name: string | null; avatar_url: string | null }>()
+  for (const profile of profilesRes.data ?? []) {
+    profileMap.set(profile.id, {
+      username: profile.username,
+      display_name: profile.display_name,
+      avatar_url: profile.avatar_url,
+    })
+  }
+
+  return events.map((event) => {
+    const profile = profileMap.get(event.userId)
+    return {
+      ...event,
+      username: profile?.username ?? 'unknown',
+      displayName: profile?.display_name ?? null,
+      avatarUrl: profile?.avatar_url ?? null,
+    }
+  })
+}
+
 export async function recordFeedEvent<T extends FeedEventType>(
   supabase: DBClient,
   userId: string,
@@ -235,17 +295,31 @@ export async function recordFeedEvent<T extends FeedEventType>(
   }
 }
 
-/**
- * Lista eventos do feed. scope='global' retorna todos, scope='following'
- * exige viewerId e filtra apenas usuarios seguidos.
- */
+export async function getFeedEventById(
+  supabase: DBClient,
+  id: number,
+): Promise<FeedEvent | null> {
+  const result = await supabase
+    .from('feed_events')
+    .select('id, user_id, event_type, payload, created_at')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (result.error || !result.data) return null
+
+  const normalized = normalizeFeedEvent(result.data)
+  if (!normalized) return null
+
+  const [hydrated] = await hydrateFeedEvents(supabase, [normalized])
+  return hydrated ?? null
+}
+
 export async function listFeedEvents(
   supabase: DBClient,
   scope: 'global' | 'following',
   viewerId: string | null,
   limit = 50,
 ): Promise<FeedEvent[]> {
-  // Buscar IDs seguidos primeiro se scope=following
   let userIds: string[] | null = null
   if (scope === 'following') {
     if (!viewerId) return []
@@ -268,36 +342,10 @@ export async function listFeedEvents(
 
   const eventsRes = await query
   if (eventsRes.error) return []
+
   const events = (eventsRes.data ?? [])
     .map(normalizeFeedEvent)
     .filter((event): event is FeedEvent => Boolean(event))
 
-  if (events.length === 0) return []
-
-  // Hidrata com perfis (1 query batched)
-  const distinctUserIds = Array.from(new Set(events.map((event) => event.userId)))
-  const profilesRes = await supabase
-    .from('profiles')
-    .select('id, username, display_name, avatar_url')
-    .in('id', distinctUserIds)
-  if (profilesRes.error) return []
-
-  const profileMap = new Map<string, { username: string; display_name: string | null; avatar_url: string | null }>()
-  for (const p of profilesRes.data ?? []) {
-    profileMap.set(p.id, {
-      username: p.username,
-      display_name: p.display_name,
-      avatar_url: p.avatar_url,
-    })
-  }
-
-  return events.map((event) => {
-    const profile = profileMap.get(event.userId)
-    return {
-      ...event,
-      username: profile?.username ?? 'unknown',
-      displayName: profile?.display_name ?? null,
-      avatarUrl: profile?.avatar_url ?? null,
-    }
-  })
+  return hydrateFeedEvents(supabase, events)
 }
