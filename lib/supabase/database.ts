@@ -12,6 +12,7 @@ export interface Database {
           bio: string | null
           provider: string | null
           email_verified: boolean
+          is_super_user: boolean
           local_imported_at: string | null
           onboarding_completed: boolean
           stats_reconciled_at: string | null
@@ -27,6 +28,7 @@ export interface Database {
           bio?: string | null
           provider?: string | null
           email_verified?: boolean
+          is_super_user?: boolean
           local_imported_at?: string | null
           onboarding_completed?: boolean
           stats_reconciled_at?: string | null
@@ -39,6 +41,7 @@ export interface Database {
           bio?: string | null
           provider?: string | null
           email_verified?: boolean
+          is_super_user?: boolean
           local_imported_at?: string | null
           onboarding_completed?: boolean
           stats_reconciled_at?: string | null
@@ -231,13 +234,13 @@ export interface Database {
         Row: {
           id: number
           user_id: string
-          event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed'
+          event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed' | 'manual_post'
           payload: Json
           created_at: string
         }
         Insert: {
           user_id: string
-          event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed'
+          event_type: 'session' | 'achievement' | 'achievement_unlock' | 'level_up' | 'follow' | 'track_completed' | 'manual_post'
           payload: Json
           created_at?: string
         }
