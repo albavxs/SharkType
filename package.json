@@ -20,7 +20,7 @@
     "@supabase/supabase-js": "^2.105.4",
     "framer-motion": "^12.38.0",
     "html-to-image": "^1.11.13",
-    "next": "^16.2.9",
+    "next": "16.3.0-canary.52",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "three": "^0.182.0",
@@ -33,7 +33,7 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "16.3.0-canary.52",
     "postcss": "^8.5.15",
     "tailwindcss": "^4",
     "typescript": "^5"
