@@ -4,7 +4,7 @@ import { getLevel } from '@/lib/gamification'
 import { getRankFromScore, type RankState } from '@/lib/ranks'
 import { ensureUserSocialBackfill } from './progress-store'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
 
 function isMissingTableError(error: { code?: string; message?: string } | null | undefined): boolean {
   return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
@@ -153,7 +153,9 @@ async function safeSelect<T>(
   build: (q: any) => any,
 ): Promise<{ data: T[] | null; error: any }> {
   try {
-    const res = await build(supabase.from(table))
+    // table eh string generica porque safeSelect tolera tabela inexistente
+    // (caso migration ainda nao aplicada). Cast intencional aqui.
+    const res = await build(supabase.from(table as never))
     if (res.error) {
       // 42P01 = undefined_table no Postgres
       if (isMissingTableError(res.error)) {

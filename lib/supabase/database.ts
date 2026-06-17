@@ -247,6 +247,21 @@ export interface Database {
         Update: never
         Relationships: []
       }
+      feed_likes: {
+        Row: {
+          id: number
+          feed_event_id: number
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          feed_event_id: number
+          user_id: string
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
     }
     Views: {
       global_leaderboard: {
