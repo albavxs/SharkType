@@ -231,12 +231,12 @@ export default function Home() {
               {t('loading', locale)}
             </div>
           ) : showResult && sessionResult && finalStats ? (
-            <ResultScreen wpm={finalStats.wpm} rawWpm={finalStats.rawWpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
+            <ResultScreen wpm={finalStats.wpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
               duration={finalStats.duration} snippet={snippet} languageLabel={language.label} wpmSamples={finalStats.wpmSamples}
               rawWpmSamples={finalStats.rawWpmSamples} errorSamples={finalStats.errorSamples} languageId={language.id}
               xpEarned={sessionResult.xpEarned} rankedPointsEarned={sessionResult.rankedPointsEarned} newLevel={sessionResult.newLevel}
               leveledUp={sessionResult.leveledUp} levelPercent={sessionResult.levelPercent} streak={sessionResult.streak}
-              onNext={handleNext} isSyncing={isResultSyncing} locale={locale} />
+              onNext={handleNext} locale={locale} />
           ) : (
             <>
               {!isTextMode && (
