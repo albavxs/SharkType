@@ -9,7 +9,9 @@ import type {
   FeedEvent,
   FollowFeedEvent,
   FeedLevelUpPayload,
+  FeedManualPostPayload,
   FeedSessionPayload,
+  ManualPostCategory,
   TrackCompletedFeedEvent,
 } from '@/lib/server/feed-store'
 
@@ -20,6 +22,21 @@ interface FeedItemProps {
 }
 
 type AchievementLikeEvent = AchievementFeedEvent | TrackCompletedFeedEvent
+
+function getManualCategoryLabel(category: ManualPostCategory, locale: Locale): string {
+  if (category === 'ranked_tip') return t('feedCategoryRankedTip', locale)
+  if (category === 'language_fact') return t('feedCategoryLanguageFact', locale)
+  return t('feedCategoryAnnouncement', locale)
+}
+
+function getLocalizedText(value: { pt: string; en: string }, locale: Locale): string {
+  return value[locale] || value.en || value.pt
+}
+
+function truncateText(value: string, maxLength: number): string {
+  if (value.length <= maxLength) return value
+  return `${value.slice(0, maxLength - 1).trimEnd()}…`
+}
 
 function timeAgo(iso: string, locale: Locale): string {
   const diffMs = Date.now() - new Date(iso).getTime()
@@ -75,6 +92,9 @@ export default function FeedItem({ event, locale, currentUserId = null }: FeedIt
         )}
         {event.eventType === 'follow' && (
           <FeedFollowBody event={event} locale={locale} />
+        )}
+        {event.eventType === 'manual_post' && (
+          <FeedManualPostBody payload={event.payload} locale={locale} />
         )}
         <LikeButton feedEventId={event.id} currentUserId={currentUserId} />
       </div>
@@ -143,6 +163,34 @@ function FeedFollowBody({ event, locale }: { event: FollowFeedEvent; locale: Loc
       <span className="font-semibold" style={{ color: 'var(--text)' }}>
         @{event.payload.targetUsername}
       </span>
+    </div>
+  )
+}
+
+function FeedManualPostBody({ payload, locale }: { payload: FeedManualPostPayload; locale: Locale }) {
+  const title = getLocalizedText(payload.title, locale)
+  const body = truncateText(getLocalizedText(payload.body, locale), 220)
+  const categoryLabel = getManualCategoryLabel(payload.category, locale)
+
+  return (
+    <div className="mt-2 rounded-xl p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)' }}>
+      <div className="mb-2 flex items-center gap-2">
+        <span
+          className="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+          style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+        >
+          {categoryLabel}
+        </span>
+        <span className="text-xs" style={{ color: 'var(--sub)' }}>
+          {t('feedManualPostTitle', locale)}
+        </span>
+      </div>
+      <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+        {title}
+      </p>
+      <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--sub)' }}>
+        {body}
+      </p>
     </div>
   )
 }

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { getLanguageMetaById } from '@/data/metadata'
 import { useAuth } from '@/hooks/useAuth'
 import { t, type Locale } from '@/lib/i18n'
-import type { FeedEvent } from '@/lib/server/feed-store'
+import type { FeedEvent, ManualPostCategory } from '@/lib/server/feed-store'
 
 interface FollowingActivityRailProps {
   locale: Locale
@@ -35,9 +35,20 @@ function describeEvent(event: FeedEvent, locale: Locale): string {
       return `${t('feedAchievementTitle', locale)} • ${event.payload.name[locale] || event.payload.achievementId}`
     case 'level_up':
       return `${t('feedLevelUpTitle', locale)} ${event.payload.level}`
+    case 'manual_post': {
+      const label = getManualCategoryLabel(event.payload.category, locale)
+      const title = event.payload.title[locale] || event.payload.title.en || event.payload.title.pt
+      return `${label} • ${title}`
+    }
     default:
       return ''
   }
+}
+
+function getManualCategoryLabel(category: ManualPostCategory, locale: Locale): string {
+  if (category === 'ranked_tip') return t('feedCategoryRankedTip', locale)
+  if (category === 'language_fact') return t('feedCategoryLanguageFact', locale)
+  return t('feedCategoryAnnouncement', locale)
 }
 
 export default function FollowingActivityRail({ locale }: FollowingActivityRailProps) {
@@ -77,7 +88,7 @@ export default function FollowingActivityRail({ locale }: FollowingActivityRailP
     }
   }, [user])
 
-  const allowedTypes = new Set<FeedEvent['eventType']>(['session', 'track_completed', 'achievement', 'level_up'])
+  const allowedTypes = new Set<FeedEvent['eventType']>(['session', 'track_completed', 'achievement', 'level_up', 'manual_post'])
   const seenUsers = new Set<string>()
   const groupedEvents: FeedEvent[] = []
 
