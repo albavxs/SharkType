@@ -3,7 +3,7 @@ import type { AuthProfile } from '@/lib/auth-types'
 import type { Database } from '@/lib/supabase/database'
 import { buildUsernameCandidate, sanitizeUsername } from '@/lib/usernames'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
 
 function inferProvider(user: User): string | null {
   return user.app_metadata.provider ?? user.identities?.[0]?.provider ?? null

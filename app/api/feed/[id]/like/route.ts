@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 
@@ -14,7 +13,7 @@ export async function POST(
     return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
@@ -77,7 +76,7 @@ export async function DELETE(
     return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
