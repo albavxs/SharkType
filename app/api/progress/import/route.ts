@@ -35,6 +35,15 @@ export async function POST(request: Request) {
   const body = (await request.json()) as { progress?: Partial<UserProgress> }
   const progress = normalizeProgressInput(body.progress)
 
+  const MAX_RANKED_IMPORT = 50
+  const rankedHistoryCount = progress.history.filter((s) => s.rankedEligible).length
+  if (rankedHistoryCount > MAX_RANKED_IMPORT) {
+    return NextResponse.json(
+      { error: 'Import limit exceeded for ranked sessions.' },
+      { status: 400 }
+    )
+  }
+
   const supabase = await createClient()
   const {
     data: { user },
