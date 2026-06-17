@@ -13,7 +13,14 @@ export async function GET() {
   try {
     const supabase = createPublicClient()
     const entries = await listLeaderboard(supabase)
-    return NextResponse.json({ entries })
+    return NextResponse.json(
+      { entries },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600',
+        },
+      }
+    )
   } catch (leaderboardError) {
     return NextResponse.json(
       { error: leaderboardError instanceof Error ? leaderboardError.message : 'Could not load leaderboard.' },

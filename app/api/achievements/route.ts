@@ -36,5 +36,12 @@ export async function GET() {
     description: { pt: row.description_pt, en: row.description_en },
   }))
 
-  return NextResponse.json({ achievements })
+  return NextResponse.json(
+    { achievements },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600',
+      },
+    }
+  )
 }
