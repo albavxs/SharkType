@@ -332,15 +332,49 @@ export async function listFeedEvents(
     if (userIds.length === 0) return []
   }
 
+  // Tenta single-query com embedded profile (PostgREST relationship).
+  // Se o relationship nao estiver definido no DB (FK ausente), cai pro fallback 2-query.
   let query = supabase
     .from('feed_events')
-    .select('id, user_id, event_type, payload, created_at')
+    .select('id, user_id, event_type, payload, created_at, profiles:profiles!feed_events_user_id_fkey(id, username, display_name, avatar_url)')
     .order('created_at', { ascending: false })
     .limit(limit)
 
   if (userIds) query = query.in('user_id', userIds)
 
-  const eventsRes = await query
+  const joinedRes = await query
+  if (!joinedRes.error && joinedRes.data) {
+    return joinedRes.data
+      .map((row: any) => {
+        const event = normalizeFeedEvent({
+          id: row.id,
+          user_id: row.user_id,
+          event_type: row.event_type,
+          payload: row.payload,
+          created_at: row.created_at,
+        })
+        if (!event) return null
+        const p = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles
+        return {
+          ...event,
+          username: p?.username ?? 'unknown',
+          displayName: p?.display_name ?? null,
+          avatarUrl: p?.avatar_url ?? null,
+        }
+      })
+      .filter((event): event is FeedEvent => Boolean(event))
+  }
+
+  // Fallback: 2-query (FK nao declarada). Mantem comportamento antigo.
+  let fallbackQuery = supabase
+    .from('feed_events')
+    .select('id, user_id, event_type, payload, created_at')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (userIds) fallbackQuery = fallbackQuery.in('user_id', userIds)
+
+  const eventsRes = await fallbackQuery
   if (eventsRes.error) return []
 
   const events = (eventsRes.data ?? [])
