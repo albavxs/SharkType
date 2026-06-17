@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
+import { rateLimit } from '@/lib/server/rate-limit'
+
+const FEED_LIKE_WINDOW_MS = 60_000
+const FEED_LIKE_LIMIT = 120
 
 export async function POST(
   request: NextRequest,
@@ -19,6 +23,11 @@ export async function POST(
 
   if (!user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  }
+
+  const { success } = rateLimit(`feed-like:${user.id}`, FEED_LIKE_LIMIT, FEED_LIKE_WINDOW_MS)
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
   }
 
   try {
@@ -82,6 +91,11 @@ export async function DELETE(
 
   if (!user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  }
+
+  const { success } = rateLimit(`feed-like:${user.id}`, FEED_LIKE_LIMIT, FEED_LIKE_WINDOW_MS)
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
   }
 
   try {

@@ -6,6 +6,7 @@ export interface AuthProfile {
   bio: string | null
   provider: string | null
   emailVerified: boolean
+  isSuperUser: boolean
   localImportedAt: string | null
   onboardingCompleted: boolean
 }
