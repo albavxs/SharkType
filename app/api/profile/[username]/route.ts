@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { getPublicProfile } from '@/lib/server/profile-store'
@@ -15,7 +14,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ use
     return NextResponse.json({ error: 'Invalid username.' }, { status: 400 })
   }
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   try {

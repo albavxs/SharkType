@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { rateLimit } from '@/lib/server/rate-limit'
@@ -10,7 +9,7 @@ async function authedAndTarget(username: string) {
   if (!env.configured) {
     return { error: NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 }) }
   }
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user }, error: authErr } = await supabase.auth.getUser()
   if (authErr || !user) {
     return { error: NextResponse.json({ error: 'Unauthorized.' }, { status: 401 }) }
