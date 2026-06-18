@@ -165,7 +165,7 @@ increment(&x)`,
     concept: { pt: 'If-Else', en: 'If-Else' },
     difficulty: 'easy',
     prompt: {
-      pt: 'If-else em Go segue a mesma regra: sem parenteses e a chave abre na mesma linha. Classifique score como "Pass" ou "Fail" e guarde numa variavel.',
+      pt: 'If-else em Go segue a mesma regra: sem parenteses e a chave abre na mesma linha. Classifique score como "Pass" ou "Fail" e guarde numa variável.',
       en: 'If-else in Go follows the same rule: no parentheses and the brace opens on the same line. Classify score as "Pass" or "Fail" and store in a variable.',
     },
     code: `var result string
@@ -181,7 +181,7 @@ if score >= 70 {
     concept: { pt: 'Expressao Condicional Curta', en: 'Short Conditional' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go nao tem operador ternario, mas uma func helper inline resolve. Crie uma funcao ternary generica com Go 1.18+ que recebe uma condicao bool e dois valores.',
+      pt: 'Go nao tem operador ternario, mas uma func helper inline resolve. Crie uma função ternary genérica com Go 1.18+ que recebe uma condicao bool e dois valores.',
       en: 'Go has no ternary operator, but an inline helper function works. Create a generic ternary function with Go 1.18+ that takes a bool condition and two values.',
     },
     code: `func ternary[T any](cond bool, a, b T) T {
@@ -215,7 +215,7 @@ default:
     concept: { pt: 'If com Inicializador', en: 'If with Initializer' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Em Go, o if pode ter uma declaracao curta antes da condicao, separada por ";". Use isso pra abrir um arquivo e checar o erro na mesma linha -- o escopo da variavel fica limitado ao bloco.',
+      pt: 'Em Go, o if pode ter uma declaracao curta antes da condicao, separada por ";". Use isso pra abrir um arquivo e checar o erro na mesma linha -- o escopo da variável fica limitado ao bloco.',
       en: 'In Go, if can have a short statement before the condition, separated by ";". Use this to open a file and check the error on the same line -- the variable\'s scope is limited to the block.',
     },
     code: `if f, err := os.Open("config.json"); err != nil {
@@ -228,10 +228,10 @@ default:
   // ── Variaveis ──────────────────────────────────────────────
   {
     id: 'go-016',
-    concept: { pt: 'Declaracao de Variavel', en: 'Variable Declaration' },
+    concept: { pt: 'Declaracao de Variável', en: 'Variable Declaration' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go tem dois jeitos de declarar variavel: "var" com tipo explicito e ":=" com inferencia. Declare uma string com var e um inteiro com :=.',
+      pt: 'Go tem dois jeitos de declarar variável: "var" com tipo explicito e ":=" com inferencia. Declare uma string com var e um inteiro com :=.',
       en: 'Go has two ways to declare variables: "var" with explicit type and ":=" with inference. Declare a string with var and an int with :=.',
     },
     code: `var name string = "Alice"
@@ -254,10 +254,10 @@ age := 25`,
   },
   {
     id: 'go-018',
-    concept: { pt: 'Interpolacao com Sprintf', en: 'String Interpolation' },
+    concept: { pt: 'Interpolação com Sprintf', en: 'String Interpolation' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go nao tem interpolacao nativa, mas fmt.Sprintf formata strings com verbos como %s e %d. Construa uma saudacao usando Sprintf.',
+      pt: 'Go nao tem interpolação nativa, mas fmt.Sprintf formata strings com verbos como %s e %d. Construa uma saudacao usando Sprintf.',
       en: 'Go doesn\'t have native interpolation, but fmt.Sprintf formats strings with verbs like %s and %d. Build a greeting using Sprintf.',
     },
     code: `name := "Alice"
@@ -270,7 +270,7 @@ msg := fmt.Sprintf("Hello, %s! You are %d.", name, age)`,
     concept: { pt: 'Slice', en: 'Slice' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Slice e o array dinamico de Go. Crie um slice literal de strings, adicione um elemento com append e imprima o tamanho com len.',
+      pt: 'Slice e o array dinâmico de Go. Crie um slice literal de strings, adicione um elemento com append e imprima o tamanho com len.',
       en: 'Slices are Go\'s dynamic arrays. Create a string slice literal, add an element with append, and print the length with len.',
     },
     code: `fruits := []string{"apple", "banana"}
@@ -297,10 +297,10 @@ fmt.Println(len(fruits))`,
   // ── Funcoes ────────────────────────────────────────────────
   {
     id: 'go-021',
-    concept: { pt: 'Funcao Anonima', en: 'Anonymous Function' },
+    concept: { pt: 'Função Anônima', en: 'Anonymous Function' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go suporta funcoes anonimas que podem ser atribuidas a variaveis. Crie uma funcao anonima que soma dois inteiros e atribua a variavel "add".',
+      pt: 'Go suporta funções anônimas que podem ser atribuidas a variáveis. Crie uma função anônima que soma dois inteiros e atribua a variável "add".',
       en: 'Go supports anonymous functions that can be assigned to variables. Create an anonymous function that adds two ints and assign it to the variable "add".',
     },
     code: `add := func(a, b int) int {
@@ -314,7 +314,7 @@ fmt.Println(add(3, 4))`,
     concept: { pt: 'Closure', en: 'Closure' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Closures em Go capturam variaveis do escopo externo. Crie um contador que retorna uma funcao -- cada chamada incrementa e retorna o valor capturado.',
+      pt: 'Closures em Go capturam variáveis do escopo externo. Crie um contador que retorna uma função -- cada chamada incrementa e retorna o valor capturado.',
       en: 'Closures in Go capture variables from the outer scope. Create a counter that returns a function -- each call increments and returns the captured value.',
     },
     code: `func counter() func() int {
@@ -328,10 +328,10 @@ fmt.Println(add(3, 4))`,
   },
   {
     id: 'go-023',
-    concept: { pt: 'Parametros Variadicos', en: 'Variadic Parameters' },
+    concept: { pt: 'Parâmetros Variadicos', en: 'Variadic Parameters' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go usa "..." pra parametros variadicos, permitindo passar qualquer quantidade de argumentos. Crie sum que aceita multiplos inteiros e retorna a soma.',
+      pt: 'Go usa "..." pra parâmetros variadicos, permitindo passar qualquer quantidade de argumentos. Crie sum que aceita multiplos inteiros e retorna a soma.',
       en: 'Go uses "..." for variadic parameters, allowing any number of arguments. Create sum that accepts multiple ints and returns the total.',
     },
     code: `func sum(nums ...int) int {
@@ -407,10 +407,10 @@ for _, n := range nums {
   // ── Objetos (struct patterns) ──────────────────────────────
   {
     id: 'go-028',
-    concept: { pt: 'Metodo em Struct', en: 'Struct Method' },
+    concept: { pt: 'Método em Struct', en: 'Struct Method' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Em Go, metodos sao funcoes com um receiver. Adicione um metodo FullName ao struct Person que concatena FirstName e LastName.',
+      pt: 'Em Go, métodos sao funções com um receiver. Adicione um método FullName ao struct Person que concatena FirstName e LastName.',
       en: 'In Go, methods are functions with a receiver. Add a FullName method to the Person struct that concatenates FirstName and LastName.',
     },
     code: `type Person struct {
@@ -427,7 +427,7 @@ func (p Person) FullName() string {
     concept: { pt: 'Struct Aninhado', en: 'Nested Struct' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Go suporta composicao com embedding -- o struct interno "promove" seus campos pro externo. Crie Address e Company com Address embutido.',
+      pt: 'Go suporta composição com embedding -- o struct interno "promove" seus campos pro externo. Crie Address e Company com Address embutido.',
       en: 'Go supports composition via embedding -- the inner struct promotes its fields to the outer. Create Address and Company with embedded Address.',
     },
     code: `type Address struct {
@@ -446,7 +446,7 @@ type Company struct {
     concept: { pt: 'Struct com Constructor', en: 'Struct Constructor' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Go nao tem classes, mas a convencao e criar funcoes New* que funcionam como construtores. Crie NewUser que valida os campos e retorna *User.',
+      pt: 'Go nao tem classes, mas a convencao e criar funções New* que funcionam como construtores. Crie NewUser que valida os campos e retorna *User.',
       en: 'Go has no classes, but the convention is New* functions as constructors. Create NewUser that validates fields and returns *User.',
     },
     code: `func NewUser(name string, age int) *User {
@@ -459,10 +459,10 @@ type Company struct {
   },
   {
     id: 'go-031',
-    concept: { pt: 'Composicao (Heranca)', en: 'Composition (Inheritance)' },
+    concept: { pt: 'Composição (Heranca)', en: 'Composition (Inheritance)' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Go usa composicao em vez de heranca. Embuta Animal dentro de Dog pra "herdar" seus campos e metodos de forma implicita.',
+      pt: 'Go usa composição em vez de heranca. Embuta Animal dentro de Dog pra "herdar" seus campos e métodos de forma implicita.',
       en: 'Go uses composition instead of inheritance. Embed Animal inside Dog to "inherit" its fields and methods implicitly.',
     },
     code: `type Animal struct {
@@ -481,10 +481,10 @@ type Dog struct {
   },
   {
     id: 'go-032',
-    concept: { pt: 'Sobrescrita de Metodo', en: 'Method Override' },
+    concept: { pt: 'Sobrescrita de Método', en: 'Method Override' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Em Go, o struct externo pode redefinir um metodo do struct embutido, "sobrescrevendo" o comportamento. Faca Dog redefinir Speak de Animal.',
+      pt: 'Em Go, o struct externo pode redefinir um método do struct embutido, "sobrescrevendo" o comportamento. Faca Dog redefinir Speak de Animal.',
       en: 'In Go, the outer struct can redefine a method from the embedded struct, "overriding" the behavior. Make Dog override Animal\'s Speak.',
     },
     code: `func (d Dog) Speak() string {
@@ -540,7 +540,7 @@ func (e *ValidationError) Error() string {
     concept: { pt: 'Resultado com ok', en: 'Result with ok' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Go usa o padrao "valor, ok" pra indicar sucesso ou falha sem erro explicito. Use esse padrao pra buscar num map e tratar a ausencia.',
+      pt: 'Go usa o padrão "valor, ok" pra indicar sucesso ou falha sem erro explicito. Use esse padrão pra buscar num map e tratar a ausencia.',
       en: 'Go uses the "value, ok" pattern to indicate success or failure without an explicit error. Use this pattern to look up a map and handle absence.',
     },
     code: `func lookup(users map[string]User, key string) (User, bool) {
@@ -552,10 +552,10 @@ func (e *ValidationError) Error() string {
   // ── Tipos ──────────────────────────────────────────────────
   {
     id: 'go-036',
-    concept: { pt: 'Generico', en: 'Generic' },
+    concept: { pt: 'Genérico', en: 'Generic' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Go 1.18+ suporta generics com type parameters. Crie uma funcao Filter generica que aceita um slice de qualquer tipo e um predicado.',
+      pt: 'Go 1.18+ suporta generics com type parameters. Crie uma função Filter genérica que aceita um slice de qualquer tipo e um predicado.',
       en: 'Go 1.18+ supports generics with type parameters. Create a generic Filter function that accepts a slice of any type and a predicate.',
     },
     code: `func Filter[T any](s []T, fn func(T) bool) []T {
@@ -574,7 +574,7 @@ func (e *ValidationError) Error() string {
     concept: { pt: 'Union com Interface', en: 'Union with Interface' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Go 1.18+ permite union types em constraints de interface. Defina Number como constraint que aceita int ou float64 e crie Sum generico.',
+      pt: 'Go 1.18+ permite union types em constraints de interface. Defina Number como constraint que aceita int ou float64 e crie Sum genérico.',
       en: 'Go 1.18+ allows union types in interface constraints. Define Number as a constraint accepting int or float64 and create a generic Sum.',
     },
     code: `type Number interface {
@@ -595,7 +595,7 @@ func Sum[T Number](nums []T) T {
     concept: { pt: 'Constraint de Tipo', en: 'Type Constraint' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Constraints em Go restringem quais tipos um generico aceita. Use comparable pra garantir que o tipo suporta == e crie Contains generico.',
+      pt: 'Constraints em Go restringem quais tipos um genérico aceita. Use comparable pra garantir que o tipo suporta == e crie Contains genérico.',
       en: 'Constraints in Go restrict which types a generic accepts. Use comparable to ensure the type supports == and create a generic Contains.',
     },
     code: `func Contains[T comparable](s []T, target T) bool {
@@ -613,7 +613,7 @@ func Sum[T Number](nums []T) T {
     concept: { pt: 'Tipo Utilitario', en: 'Utility Type' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Em Go, tipos utilitarios sao criados com generics e interfaces. Crie um tipo Pair generico que agrupa dois valores de tipos diferentes.',
+      pt: 'Em Go, tipos utilitarios sao criados com generics e interfaces. Crie um tipo Pair genérico que agrupa dois valores de tipos diferentes.',
       en: 'In Go, utility types are built with generics and interfaces. Create a generic Pair type that groups two values of different types.',
     },
     code: `type Pair[A, B any] struct {
@@ -651,7 +651,7 @@ wg.Wait()`,
     concept: { pt: 'Select com Channels', en: 'Select with Channels' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Select em Go e como um switch pra operacoes de channel -- espera o primeiro channel que estiver pronto. Use com time.After pra timeout.',
+      pt: 'Select em Go e como um switch pra operações de channel -- espera o primeiro channel que estiver pronto. Use com time.After pra timeout.',
       en: 'Select in Go is like a switch for channel operations -- waits for the first ready channel. Use it with time.After for a timeout.',
     },
     code: `select {
