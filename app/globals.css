@@ -54,29 +54,24 @@ body {
 .animate-shake { animation: shake 200ms ease-out; }
 
 .community-ticker-track {
-  display: flex;
+  display: inline-flex;
   width: max-content;
   min-width: 100%;
+  white-space: nowrap;
   animation: communityTickerMarquee 18s linear infinite;
 }
 
 .community-ticker-segment {
-  display: inline-flex;
+  display: inline-block;
   flex: 0 0 auto;
-  align-items: center;
-  gap: 0.7rem;
   padding-inline: 0.75rem;
   white-space: nowrap;
+  line-height: 1.15;
   color: var(--text);
   font-size: 0.64rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.community-ticker-segment::after {
-  content: '•';
-  color: var(--main);
 }
 
 @media (prefers-reduced-motion: reduce) {
