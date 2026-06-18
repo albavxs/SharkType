@@ -47,10 +47,48 @@ body {
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+@keyframes communityTickerMarquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
 
 .animate-fade-in { animation: fadeIn 200ms ease-out; }
 .animate-slide-up { animation: slideUp 300ms ease-out; }
 .animate-shake { animation: shake 200ms ease-out; }
+
+.community-ticker-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  animation: communityTickerMarquee 18s linear infinite;
+}
+
+.community-ticker-segment {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding-inline: 0.75rem;
+  white-space: nowrap;
+  color: var(--text);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.community-ticker-segment::after {
+  content: '•';
+  color: var(--main);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .community-ticker-track {
+    width: 100%;
+    animation: none;
+  }
+
+  .community-ticker-segment:last-child {
+    display: none;
+  }
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

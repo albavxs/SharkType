@@ -42,6 +42,7 @@ const dict: Record<string, Record<Locale, string>> = {
   // ── Toolbar ─────────────────────────────────────────────────────────────
   navTracks:    { pt: 'Trilhas',       en: 'Tracks' },
   navRanking:   { pt: 'Ranking',       en: 'Leaderboard' },
+  navCommunity: { pt: 'Comunidade',    en: 'Community' },
   navHelp:      { pt: 'Ajuda',         en: 'Help' },
   navSettings:  { pt: 'Configurações', en: 'Settings' },
   toggleLocale: { pt: 'Alternar idioma da interface', en: 'Toggle interface language' },
@@ -56,6 +57,7 @@ const dict: Record<string, Record<Locale, string>> = {
   // ── Footer ──────────────────────────────────────────────────────────────
   settings:      { pt: 'configurações', en: 'settings' },
   settingsShort: { pt: 'config',        en: 'config' },
+  footerContact: { pt: 'contato',       en: 'contact' },
 
   // ── LanguageDropdown ────────────────────────────────────────────────────
   sectionCode: { pt: 'Código', en: 'Code' },
@@ -88,6 +90,14 @@ const dict: Record<string, Record<Locale, string>> = {
   helpThemesDesc: {
     pt: 'Clique no nome do tema no canto inferior direito para trocar. Mais de 30 temas disponíveis. As cores do tema também afetam o syntax highlighting do código.',
     en: 'Click the theme name in the bottom-right corner to switch. Over 30 themes available. Theme colors also affect code syntax highlighting.',
+  },
+  communityTicker: {
+    pt: 'Entre na comunidade Few • Discord da comunidade • contribua com a Few Soldiers no GitHub • conheça a Few Company',
+    en: 'Join the Few community • community Discord • contribute with Few Soldiers on GitHub • meet Few Company',
+  },
+  communityTickerExtra: {
+    pt: 'Projetos open source • colaboração real • feedback da comunidade • mais gente construindo junto',
+    en: 'Open-source projects • real collaboration • community feedback • more people building together',
   },
 
   // ── Tracks page ─────────────────────────────────────────────────────────
@@ -285,6 +295,36 @@ const dict: Record<string, Record<Locale, string>> = {
     pt: 'Aceita qualquer tecla — suporte completo a AZERTY/Dvorak/Colemak virá em uma próxima versão.',
     en: 'Accepts any key — full AZERTY/Dvorak/Colemak support coming in a future version.',
   },
+  pageCommunityEyebrow: { pt: 'comunidade e contribuição', en: 'community and contribution' },
+  pageCommunity: { pt: 'Comunidade Few', en: 'Few Community' },
+  communitySubtitle: {
+    pt: 'Junte-se ao Discord, acompanhe a Few Soldiers no GitHub e conheça a Few Company. Este é o ponto de entrada para quem quer acompanhar, colaborar e construir junto.',
+    en: 'Join the Discord, follow Few Soldiers on GitHub, and meet Few Company. This is the main hub for people who want to follow, contribute, and build together.',
+  },
+  communityDiscordTitle: { pt: 'Discord da comunidade', en: 'Community Discord' },
+  communityDiscordBody: {
+    pt: 'Converse com quem está praticando, compartilhe ideias, peça ajuda e acompanhe novidades da comunidade em tempo real.',
+    en: 'Talk to people practicing, share ideas, ask for help, and follow community updates in real time.',
+  },
+  communityDiscordAction: { pt: 'Entrar no Discord', en: 'Join Discord' },
+  communityGithubTitle: { pt: 'Few Soldiers no GitHub', en: 'Few Soldiers on GitHub' },
+  communityGithubBody: {
+    pt: 'Veja os repositórios da organização, acompanhe o trabalho aberto e encontre um caminho para contribuir com código e ideias.',
+    en: 'Explore the organization repositories, follow the open work, and find a path to contribute code and ideas.',
+  },
+  communityGithubAction: { pt: 'Abrir GitHub', en: 'Open GitHub' },
+  communityWebsiteTitle: { pt: 'Few Company', en: 'Few Company' },
+  communityWebsiteBody: {
+    pt: 'Conheça a empresa por trás da organização, a visão do projeto e o contexto maior da comunidade.',
+    en: 'Meet the company behind the organization, the project vision, and the broader community context.',
+  },
+  communityWebsiteAction: { pt: 'Visitar site', en: 'Visit website' },
+  communityContributionTitle: { pt: 'Quer contribuir?', en: 'Want to contribute?' },
+  communityContributionBody: {
+    pt: 'Comece pelo Discord para se apresentar, depois explore os repositórios da Few Soldiers. A ideia é facilitar a entrada de quem quer somar com código, revisão, conteúdo ou feedback.',
+    en: 'Start in Discord to introduce yourself, then explore the Few Soldiers repositories. The goal is to make it easier for people to contribute with code, review, content, or feedback.',
+  },
+  communityBackHome: { pt: 'Voltar para prática', en: 'Back to practice' },
 }
 
 export function t(key: string, locale: Locale = 'en'): string {
