@@ -433,7 +433,7 @@ export const tracks: Track[] = [
     id: 'angular-senior',
     name: { pt: 'Angular Senior', en: 'Angular Senior' },
     description: {
-      pt: 'Performance, SSR, providers por rota, seguranca, acessibilidade e padroes enterprise',
+      pt: 'Performance, SSR, providers por rota, seguranca, acessibilidade e padrões enterprise',
       en: 'Performance, SSR, route-level providers, security, accessibility, and enterprise patterns',
     },
     snippetIds: [

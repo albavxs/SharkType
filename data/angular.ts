@@ -6,7 +6,7 @@ export const angularSnippets: Snippet[] = [
     concept: { pt: 'Componente Standalone', en: 'Standalone Component' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Componentes Angular modernos sao standalone por padrao. Crie um componente simples com selector, template inline e styles locais.',
+      pt: 'Componentes Angular modernos sao standalone por padrão. Crie um componente simples com selector, template inline e styles locais.',
       en: 'Modern Angular components are standalone by default. Create a simple component with a selector, inline template, and local styles.',
     },
     code: `import { Component } from '@angular/core';
@@ -51,10 +51,10 @@ export class ProfileCardComponent {
   },
   {
     id: 'angular-003',
-    concept: { pt: 'Interpolacao', en: 'Interpolation' },
+    concept: { pt: 'Interpolação', en: 'Interpolation' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Interpolacao exibe valores da classe no template. Mostre titulo, usuario e status calculado.',
+      pt: 'Interpolação exibe valores da classe no template. Mostre titulo, usuario e status calculado.',
       en: 'Interpolation displays class values in the template. Show a title, user, and calculated status.',
     },
     code: `import { Component } from '@angular/core';
@@ -101,7 +101,7 @@ export class AvatarComponent {
     concept: { pt: 'Event Binding', en: 'Event Binding' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Event binding chama metodos da classe a partir de eventos do template. Crie um contador com cliques.',
+      pt: 'Event binding chama métodos da classe a partir de eventos do template. Crie um contador com cliques.',
       en: 'Event binding calls class methods from template events. Create a click counter.',
     },
     code: `import { Component } from '@angular/core';
@@ -130,7 +130,7 @@ export class ClickCounterComponent {
     concept: { pt: 'Two-Way Binding', en: 'Two-Way Binding' },
     difficulty: 'easy',
     prompt: {
-      pt: 'FormsModule habilita ngModel para ligacao bidirecional. Crie um campo de busca que atualiza a preview em tempo real.',
+      pt: 'FormsModule habilita ngModel para ligação bidirecional. Crie um campo de busca que atualiza a preview em tempo real.',
       en: 'FormsModule enables ngModel for two-way binding. Create a search field that updates a preview in real time.',
     },
     code: `import { Component } from '@angular/core';
@@ -235,7 +235,7 @@ export class OrderRowComponent {
   },
   {
     id: 'angular-010',
-    concept: { pt: 'Classes Dinamicas', en: 'Dynamic Classes' },
+    concept: { pt: 'Classes Dinâmicas', en: 'Dynamic Classes' },
     difficulty: 'easy',
     prompt: {
       pt: 'Class binding aplica classes conforme o estado. Mostre um badge ativo ou inativo.',
@@ -310,7 +310,7 @@ export class CartItemComponent {
   },
   {
     id: 'angular-013',
-    concept: { pt: 'Lifecycle Basico', en: 'Basic Lifecycle' },
+    concept: { pt: 'Lifecycle Básico', en: 'Basic Lifecycle' },
     difficulty: 'easy',
     prompt: {
       pt: 'ngOnInit roda quando o componente inicializa e ngOnDestroy limpa recursos. Controle um intervalo simples.',
@@ -340,7 +340,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     concept: { pt: 'Service Simples', en: 'Simple Service' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Services isolam logica reutilizavel. Crie um servico de formatacao e injete no componente.',
+      pt: 'Services isolam lógica reutilizavel. Crie um servico de formatacao e injete no componente.',
       en: 'Services isolate reusable logic. Create a formatting service and inject it into a component.',
     },
     code: `import { Component, Injectable, inject } from '@angular/core';
@@ -363,10 +363,10 @@ export class TitlePreviewComponent {
   },
   {
     id: 'angular-015',
-    concept: { pt: 'Injecao de Dependencia', en: 'Dependency Injection' },
+    concept: { pt: 'Injeção de Dependencia', en: 'Dependency Injection' },
     difficulty: 'easy',
     prompt: {
-      pt: 'inject() solicita dependencias ao injetor do Angular. Use um token simples de configuracao.',
+      pt: 'inject() solicita dependencias ao injetor do Angular. Use um token simples de configuração.',
       en: 'inject() asks Angular injector for dependencies. Use a simple configuration token.',
     },
     code: `import { Component, InjectionToken, inject } from '@angular/core';
@@ -386,7 +386,7 @@ export class ApiLabelComponent {
   },
   {
     id: 'angular-016',
-    concept: { pt: 'HttpClient Basico', en: 'Basic HttpClient' },
+    concept: { pt: 'HttpClient Básico', en: 'Basic HttpClient' },
     difficulty: 'easy',
     prompt: {
       pt: 'HttpClient busca dados tipados do backend. Crie um componente que carrega usuarios.',
@@ -472,10 +472,10 @@ export const routes: Routes = [
   },
   {
     id: 'angular-019',
-    concept: { pt: 'Navegacao', en: 'Navigation' },
+    concept: { pt: 'Navegação', en: 'Navigation' },
     difficulty: 'easy',
     prompt: {
-      pt: 'RouterLink cria navegacao declarativa. Monte um menu simples e marque o link ativo.',
+      pt: 'RouterLink cria navegação declarativa. Monte um menu simples e marque o link ativo.',
       en: 'RouterLink creates declarative navigation. Build a simple menu and mark the active link.',
     },
     code: `import { Component } from '@angular/core';
@@ -636,7 +636,7 @@ export class CartLineComponent {
   },
   {
     id: 'angular-025',
-    concept: { pt: 'Composicao de Componentes', en: 'Component Composition' },
+    concept: { pt: 'Composição de Componentes', en: 'Component Composition' },
     difficulty: 'medium',
     prompt: {
       pt: 'Componentes standalone importam outros componentes diretamente. Monte um painel com header e lista.',
@@ -698,7 +698,7 @@ export class ProfileFormComponent {
     concept: { pt: 'Validador Customizado', en: 'Custom Validator' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Validadores customizados encapsulam regra de dominio. Crie um validator para username sem espacos.',
+      pt: 'Validadores customizados encapsulam regra de dominio. Crie um validator para username sem espaços.',
       en: 'Custom validators encapsulate domain rules. Create a validator for usernames without spaces.',
     },
     code: `import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
@@ -715,10 +715,10 @@ username: ['', [Validators.required, noSpaces()]]`,
   },
   {
     id: 'angular-028',
-    concept: { pt: 'Parametros de Rota', en: 'Route Params' },
+    concept: { pt: 'Parâmetros de Rota', en: 'Route Params' },
     difficulty: 'medium',
     prompt: {
-      pt: 'ActivatedRoute le parametros dinamicos. Carregue um produto pelo id da URL.',
+      pt: 'ActivatedRoute le parâmetros dinâmicos. Carregue um produto pelo id da URL.',
       en: 'ActivatedRoute reads dynamic parameters. Load a product from the URL id.',
     },
     code: `import { Component, inject } from '@angular/core';
@@ -747,7 +747,7 @@ export class ProductPage {
     concept: { pt: 'Route Guard', en: 'Route Guard' },
     difficulty: 'medium',
     prompt: {
-      pt: 'CanActivateFn protege rotas com uma funcao. Redirecione usuarios anonimos para login.',
+      pt: 'CanActivateFn protege rotas com uma função. Redirecione usuarios anonimos para login.',
       en: 'CanActivateFn protects routes with a function. Redirect anonymous users to login.',
     },
     code: `import { inject } from '@angular/core';
@@ -767,7 +767,7 @@ export const authGuard: CanActivateFn = () => {
     concept: { pt: 'Resolver de Dados', en: 'Data Resolver' },
     difficulty: 'medium',
     prompt: {
-      pt: 'ResolveFn carrega dados antes da rota renderizar. Resolva um usuario pelo parametro id.',
+      pt: 'ResolveFn carrega dados antes da rota renderizar. Resolva um usuario pelo parâmetro id.',
       en: 'ResolveFn loads data before the route renders. Resolve a user from the id parameter.',
     },
     code: `import { inject } from '@angular/core';
@@ -893,7 +893,7 @@ export class MetricsComponent {
     concept: { pt: 'Service com Estado', en: 'Stateful Service' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Um service pode expor state readonly e metodos de mutacao. Crie uma store simples de carrinho.',
+      pt: 'Um service pode expor state readonly e métodos de mutacao. Crie uma store simples de carrinho.',
       en: 'A service can expose readonly state and mutation methods. Create a simple cart store.',
     },
     code: `import { Injectable, computed, signal } from '@angular/core';
@@ -1392,7 +1392,7 @@ export class SafeCommentComponent {
     concept: { pt: 'Teste de Routing', en: 'Routing Test' },
     difficulty: 'hard',
     prompt: {
-      pt: 'RouterTestingHarness testa navegacao real. Verifique uma rota protegida ou parametrizada.',
+      pt: 'RouterTestingHarness testa navegação real. Verifique uma rota protegida ou parametrizada.',
       en: 'RouterTestingHarness tests real navigation. Verify a protected or parameterized route.',
     },
     code: `import { TestBed } from '@angular/core/testing';
@@ -1444,7 +1444,7 @@ export class UiButtonHarness extends ComponentHarness {
   },
   {
     id: 'angular-055',
-    concept: { pt: 'Refactor de Modulos', en: 'Module Refactor' },
+    concept: { pt: 'Refactor de Módulos', en: 'Module Refactor' },
     difficulty: 'hard',
     prompt: {
       pt: 'Migracoes incrementais podem importar componentes standalone em NgModules legados. Isole a mudanca.',
@@ -1578,7 +1578,7 @@ export class AppErrorHandler implements ErrorHandler {
   },
   {
     id: 'angular-060',
-    concept: { pt: 'Padrao Enterprise', en: 'Enterprise Pattern' },
+    concept: { pt: 'Padrão Enterprise', en: 'Enterprise Pattern' },
     difficulty: 'hard',
     prompt: {
       pt: 'Fachadas escondem detalhes de estado, HTTP e roteamento. Exponha uma API simples para a pagina.',

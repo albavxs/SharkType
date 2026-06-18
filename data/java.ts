@@ -6,7 +6,7 @@ export const javaSnippets: Snippet[] = [
     concept: { pt: 'Classe', en: 'Class' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Classe em Java encapsula estado com campos privados e expoe comportamento com metodos publicos. Defina User com dois campos private (name e age) e um constructor publico que inicializa eles com "this.campo = parametro".',
+      pt: 'Classe em Java encapsula estado com campos privados e expoe comportamento com métodos publicos. Defina User com dois campos private (name e age) e um constructor publico que inicializa eles com "this.campo = parâmetro".',
       en: 'Classes in Java encapsulate state with private fields and expose behavior through public methods. Define User with two private fields (name and age) and a public constructor that initializes them using "this.field = parameter".',
     },
     code: `public class User {
@@ -25,7 +25,7 @@ export const javaSnippets: Snippet[] = [
     concept: { pt: 'Interface', en: 'Interface' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Interface em Java define um contrato; metodos default oferecem implementacao opcional pra manter retrocompatibilidade. Declare Printable com o metodo abstrato print() e um metodo default format() que so chama toString().',
+      pt: 'Interface em Java define um contrato; métodos default oferecem implementacao opcional pra manter retrocompatibilidade. Declare Printable com o método abstrato print() e um método default format() que so chama toString().',
       en: 'Java interfaces define contracts; default methods provide optional implementations for backward compatibility. Declare Printable with the abstract method print() and a default format() method that simply calls toString().',
     },
     code: `public interface Printable {
@@ -38,10 +38,10 @@ export const javaSnippets: Snippet[] = [
   },
   {
     id: 'java-003',
-    concept: { pt: 'Genericos', en: 'Generics' },
+    concept: { pt: 'Genéricos', en: 'Generics' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Metodo generico em Java aceita qualquer tipo que bata com a constraint. Implemente max<T extends Comparable<T>>: receba dois objetos do mesmo tipo comparavel e retorne o maior usando .compareTo() >= 0.',
+      pt: 'Método genérico em Java aceita qualquer tipo que bata com a constraint. Implemente max<T extends Comparable<T>>: receba dois objetos do mesmo tipo comparavel e retorne o maior usando .compareTo() >= 0.',
       en: 'Generic methods in Java accept any type that satisfies the constraint. Implement max<T extends Comparable<T>>: take two objects of the same comparable type and return the greater one using .compareTo() >= 0.',
     },
     code: `public <T extends Comparable<T>> T max(T a, T b) {
@@ -69,7 +69,7 @@ export const javaSnippets: Snippet[] = [
     concept: { pt: 'Lambda', en: 'Lambda' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Lambda substitui instancia de interface funcional com uma sintaxe enxuta. Crie um Comparator<User> que ordena por idade usando Integer.compare -- sem precisar criar uma classe anonima inteira.',
+      pt: 'Lambda substitui instancia de interface funcional com uma sintaxe enxuta. Crie um Comparator<User> que ordena por idade usando Integer.compare -- sem precisar criar uma classe anônima inteira.',
       en: 'Lambda expressions replace functional interface instances with concise syntax. Create a Comparator<User> that sorts by age using Integer.compare -- no need to declare an entire anonymous class.',
     },
     code: `Comparator<User> byAge = (a, b) ->
@@ -95,7 +95,7 @@ String name = user
     concept: { pt: 'Registro', en: 'Record' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Record (Java 14+) e uma classe imutavel de dados com constructor, getters, equals e toString gerados automaticamente. Declare Point com coordenadas x e y, e adicione um metodo distance() que calcula a distancia ate a origem.',
+      pt: 'Record (Java 14+) e uma classe imutavel de dados com constructor, getters, equals e toString gerados automaticamente. Declare Point com coordenadas x e y, e adicione um método distance() que calcula a distancia ate a origem.',
       en: 'Records (Java 14+) are immutable data classes with constructor, getters, equals, and toString generated automatically. Declare Point with x and y coordinates, and add an instance method distance() calculating the distance from the origin.',
     },
     code: `public record Point(double x, double y) {
@@ -125,7 +125,7 @@ String name = user
     concept: { pt: 'Try com Recursos', en: 'Try-With-Resources' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Try-with-resources garante o fechamento automatico de qualquer Closeable ao sair do bloco. Declare o BufferedReader na clausula try(...) -- ele fecha sozinho, mesmo se rolar uma excecao durante a leitura.',
+      pt: 'Try-with-resources garante o fechamento automatico de qualquer Closeable ao sair do bloco. Declare o BufferedReader na clausula try(...) -- ele fecha sozinho, mesmo se rolar uma exceção durante a leitura.',
       en: 'Try-with-resources ensures automatic closing of any Closeable when exiting the block. Declare the BufferedReader in the try(...) clause -- it will be closed automatically, even if an exception occurs during reading.',
     },
     code: `try (var reader = new BufferedReader(
@@ -137,7 +137,7 @@ String name = user
   },
   {
     id: 'java-010',
-    concept: { pt: 'Casamento de Padroes', en: 'Pattern Matching' },
+    concept: { pt: 'Casamento de Padrões', en: 'Pattern Matching' },
     difficulty: 'hard',
     prompt: {
       pt: 'Pattern matching com instanceof (Java 16+) checa o tipo e faz o cast numa expressao so. Verifique se "obj" e String, atribua a "s" na mesma linha e combine com && pra testar o tamanho -- sem cast separado.',
@@ -167,7 +167,7 @@ String name = user
     concept: { pt: 'If-Else', en: 'If-Else' },
     difficulty: 'easy',
     prompt: {
-      pt: 'If-else em Java permite escolher entre dois caminhos. Classifique score como "Pass" ou "Fail" e guarde numa variavel.',
+      pt: 'If-else em Java permite escolher entre dois caminhos. Classifique score como "Pass" ou "Fail" e guarde numa variável.',
       en: 'If-else in Java lets you choose between two paths. Classify score as "Pass" or "Fail" and store in a variable.',
     },
     code: `String result;
@@ -194,7 +194,7 @@ if (score >= 70) {
     concept: { pt: 'Guard Clause', en: 'Guard Clause' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Guard clause retorna cedo pra evitar aninhamento excessivo. Valide os parametros no inicio do metodo e lance excecao se forem invalidos.',
+      pt: 'Guard clause retorna cedo pra evitar aninhamento excessivo. Valide os parâmetros no inicio do método e lance exceção se forem invalidos.',
       en: 'Guard clauses return early to avoid excessive nesting. Validate parameters at the start of the method and throw if invalid.',
     },
     code: `public void process(String input) {
@@ -208,10 +208,10 @@ if (score >= 70) {
   // ── Variaveis ──────────────────────────────────────────────
   {
     id: 'java-015',
-    concept: { pt: 'Declaracao de Variavel', en: 'Variable Declaration' },
+    concept: { pt: 'Declaracao de Variável', en: 'Variable Declaration' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Java exige o tipo na declaracao, mas desde o Java 10 "var" infere o tipo local. Declare variaveis com tipo explicito e com var.',
+      pt: 'Java exige o tipo na declaracao, mas desde o Java 10 "var" infere o tipo local. Declare variáveis com tipo explicito e com var.',
       en: 'Java requires the type in declarations, but since Java 10 "var" infers the local type. Declare variables with explicit type and with var.',
     },
     code: `String name = "Alice";
@@ -233,7 +233,7 @@ public static final int MAX_RETRIES = 3;`,
   },
   {
     id: 'java-017',
-    concept: { pt: 'Tipos Basicos', en: 'Basic Types' },
+    concept: { pt: 'Tipos Básicos', en: 'Basic Types' },
     difficulty: 'easy',
     prompt: {
       pt: 'Java tem tipos primitivos (int, double, boolean) e wrappers (Integer, Double). Declare um de cada e use autoboxing pra converter.',
@@ -247,7 +247,7 @@ Integer boxed = count;`,
   },
   {
     id: 'java-018',
-    concept: { pt: 'Interpolacao de String', en: 'String Interpolation' },
+    concept: { pt: 'Interpolação de String', en: 'String Interpolation' },
     difficulty: 'easy',
     prompt: {
       pt: 'Java usa String.format ou concatenacao pra montar strings. Use String.format com %s e %d pra construir uma saudacao.',
@@ -263,7 +263,7 @@ String msg = String.format("Hello, %s! You are %d.", name, age);`,
     concept: { pt: 'Array e Lista', en: 'Array and List' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Java tem arrays nativos e ArrayList pra colecoes dinamicas. Crie um ArrayList, adicione elementos e acesse por indice.',
+      pt: 'Java tem arrays nativos e ArrayList pra colecoes dinâmicas. Crie um ArrayList, adicione elementos e acesse por indice.',
       en: 'Java has native arrays and ArrayList for dynamic collections. Create an ArrayList, add elements, and access by index.',
     },
     code: `List<String> fruits = new ArrayList<>();
@@ -288,10 +288,10 @@ String first = fruits.get(0);`,
   // ── Funcoes ────────────────────────────────────────────────
   {
     id: 'java-021',
-    concept: { pt: 'Metodo Simples', en: 'Simple Method' },
+    concept: { pt: 'Método Simples', en: 'Simple Method' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Metodo em Java define o tipo de retorno, nome e parametros. Crie um metodo estatico add que recebe dois inteiros e retorna a soma.',
+      pt: 'Método em Java define o tipo de retorno, nome e parâmetros. Crie um método estatico add que recebe dois inteiros e retorna a soma.',
       en: 'Methods in Java define return type, name, and parameters. Create a static method add that takes two ints and returns the sum.',
     },
     code: `public static int add(int a, int b) {
@@ -304,7 +304,7 @@ String first = fruits.get(0);`,
     concept: { pt: 'Callback com Interface Funcional', en: 'Callback with Functional Interface' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Em Java, callbacks sao passados como interfaces funcionais. Crie um metodo que aceita um Consumer<String> e o executa.',
+      pt: 'Em Java, callbacks sao passados como interfaces funcionais. Crie um método que aceita um Consumer<String> e o executa.',
       en: 'In Java, callbacks are passed as functional interfaces. Create a method that accepts a Consumer<String> and executes it.',
     },
     code: `public void greet(String name, Consumer<String> callback) {
@@ -318,7 +318,7 @@ String first = fruits.get(0);`,
     concept: { pt: 'Closure com Lambda', en: 'Closure with Lambda' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Lambdas em Java capturam variaveis efetivamente finais do escopo externo. Crie um Supplier que captura um prefixo e retorna uma string formatada.',
+      pt: 'Lambdas em Java capturam variáveis efetivamente finais do escopo externo. Crie um Supplier que captura um prefixo e retorna uma string formatada.',
       en: 'Java lambdas capture effectively final variables from the outer scope. Create a Supplier that captures a prefix and returns a formatted string.',
     },
     code: `String prefix = "Hello";
@@ -328,10 +328,10 @@ System.out.println(greeter.get());`,
   },
   {
     id: 'java-024',
-    concept: { pt: 'Parametros Default com Overload', en: 'Default Params via Overload' },
+    concept: { pt: 'Parâmetros Default com Overload', en: 'Default Params via Overload' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Java nao tem parametros default, mas usa overloading pra simular. Crie duas versoes de greet -- uma com nome e titulo, outra so com nome que chama a primeira.',
+      pt: 'Java nao tem parâmetros default, mas usa overloading pra simular. Crie duas versoes de greet -- uma com nome e titulo, outra so com nome que chama a primeira.',
       en: 'Java has no default parameters, but uses overloading to simulate them. Create two versions of greet -- one with name and title, another with just name that calls the first.',
     },
     code: `public String greet(String name, String title) {
@@ -401,10 +401,10 @@ for (String name : names) {
   // ── Objetos ────────────────────────────────────────────────
   {
     id: 'java-029',
-    concept: { pt: 'Metodos de Objeto', en: 'Object Methods' },
+    concept: { pt: 'Métodos de Objeto', en: 'Object Methods' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Metodos de instancia operam sobre o estado do objeto. Adicione getters e um metodo toString ao User.',
+      pt: 'Métodos de instancia operam sobre o estado do objeto. Adicione getters e um método toString ao User.',
       en: 'Instance methods operate on the object\'s state. Add getters and a toString method to User.',
     },
     code: `public String getName() { return name; }
@@ -421,7 +421,7 @@ public String toString() {
     concept: { pt: 'Objeto Aninhado', en: 'Nested Object' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Objetos aninhados em Java sao composicao -- uma classe contem outra como campo. Crie Company com um campo Address.',
+      pt: 'Objetos aninhados em Java sao composição -- uma classe contem outra como campo. Crie Company com um campo Address.',
       en: 'Nested objects in Java use composition -- one class contains another as a field. Create Company with an Address field.',
     },
     code: `public class Company {
@@ -453,10 +453,10 @@ public String toString() {
   },
   {
     id: 'java-032',
-    concept: { pt: 'Sobrescrita de Metodo', en: 'Method Override' },
+    concept: { pt: 'Sobrescrita de Método', en: 'Method Override' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Override em Java redefine o comportamento do metodo da classe pai. Sobrescreva toString em Employee pra incluir o cargo.',
+      pt: 'Override em Java redefine o comportamento do método da classe pai. Sobrescreva toString em Employee pra incluir o cargo.',
       en: 'Override in Java redefines the behavior of the parent class method. Override toString in Employee to include the role.',
     },
     code: `@Override
@@ -470,7 +470,7 @@ public String toString() {
     concept: { pt: 'Classe Abstrata', en: 'Abstract Class' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Classe abstrata em Java define metodos que as subclasses devem implementar. Crie Shape abstrata com area() e implemente Circle.',
+      pt: 'Classe abstrata em Java define métodos que as subclasses devem implementar. Crie Shape abstrata com area() e implemente Circle.',
       en: 'Abstract classes in Java define methods that subclasses must implement. Create abstract Shape with area() and implement Circle.',
     },
     code: `public abstract class Shape {
@@ -488,10 +488,10 @@ public class Circle extends Shape {
   // ── Erros ──────────────────────────────────────────────────
   {
     id: 'java-034',
-    concept: { pt: 'Excecao Customizada', en: 'Custom Exception' },
+    concept: { pt: 'Exceção Customizada', en: 'Custom Exception' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Excecoes customizadas em Java estendem Exception ou RuntimeException. Crie ValidationException com um campo field.',
+      pt: 'Exceções customizadas em Java estendem Exception ou RuntimeException. Crie ValidationException com um campo field.',
       en: 'Custom exceptions in Java extend Exception or RuntimeException. Create ValidationException with a field property.',
     },
     code: `public class ValidationException extends RuntimeException {
@@ -509,7 +509,7 @@ public class Circle extends Shape {
     concept: { pt: 'Finally', en: 'Finally' },
     difficulty: 'easy',
     prompt: {
-      pt: 'O bloco finally em Java sempre executa, mesmo com excecao. Use try-catch-finally pra garantir que o recurso e liberado.',
+      pt: 'O bloco finally em Java sempre executa, mesmo com exceção. Use try-catch-finally pra garantir que o recurso e liberado.',
       en: 'The finally block in Java always executes, even with an exception. Use try-catch-finally to ensure the resource is released.',
     },
     code: `Connection conn = null;
@@ -544,7 +544,7 @@ public record Failure<T>(String error) implements Result<T> {}`,
     concept: { pt: 'Constraint com Bounded', en: 'Bounded Type Constraint' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Bounded types em Java restringem genericos com extends. Crie um metodo que aceita apenas tipos que implementam Comparable e Serializable.',
+      pt: 'Bounded types em Java restringem genéricos com extends. Crie um método que aceita apenas tipos que implementam Comparable e Serializable.',
       en: 'Bounded types in Java constrain generics with extends. Create a method accepting only types that implement Comparable and Serializable.',
     },
     code: `public <T extends Comparable<T> & Serializable> T clamp(T val, T min, T max) {
@@ -559,7 +559,7 @@ public record Failure<T>(String error) implements Result<T> {}`,
     concept: { pt: 'Tipo Utilitario com Wildcard', en: 'Utility Type with Wildcard' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Wildcards em Java permitem flexibilidade em genericos. Use "? extends Number" pra criar um metodo que soma qualquer lista numerica.',
+      pt: 'Wildcards em Java permitem flexibilidade em genéricos. Use "? extends Number" pra criar um método que soma qualquer lista numerica.',
       en: 'Wildcards in Java allow flexibility in generics. Use "? extends Number" to create a method that sums any numeric list.',
     },
     code: `public double sum(List<? extends Number> numbers) {
@@ -577,7 +577,7 @@ public record Failure<T>(String error) implements Result<T> {}`,
     concept: { pt: 'Async com CompletableFuture', en: 'Async with CompletableFuture' },
     difficulty: 'hard',
     prompt: {
-      pt: 'CompletableFuture e o mecanismo async do Java. Encadeie operacoes assincronas com supplyAsync, thenApply e thenAccept.',
+      pt: 'CompletableFuture e o mecanismo async do Java. Encadeie operações assincronas com supplyAsync, thenApply e thenAccept.',
       en: 'CompletableFuture is Java\'s async mechanism. Chain async operations with supplyAsync, thenApply, and thenAccept.',
     },
     code: `CompletableFuture.supplyAsync(() -> fetchUser(id))
