@@ -22,9 +22,9 @@ export default function Footer({ onHelpClick, onThemeClick, currentThemeName, is
     <div className={`flex flex-col items-start gap-3 px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-3 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
       {/* Left: links with icons */}
       <div className="flex flex-wrap items-center gap-3 text-[11px] sm:gap-5 sm:text-xs" style={{ color: 'var(--sub)' }}>
-        <a href="mailto:contact@sharktype.dev" className={linkClass}>
-          <MailIcon size={14} /> contact
-        </a>
+        <Link href="/community" className={linkClass}>
+          <MailIcon size={14} /> {t('footerContact', locale)}
+        </Link>
         <a href="https://github.com/albavxs/SharkType" target="_blank" rel="noopener noreferrer" className={linkClass}>
           <CodeBranchIcon size={14} /> github
         </a>

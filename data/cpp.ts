@@ -3,10 +3,10 @@ import { Snippet } from '@/lib/types'
 export const cppSnippets: Snippet[] = [
   {
     id: 'cpp-001',
-    concept: { pt: 'Funcao Template', en: 'Template Function' },
+    concept: { pt: 'Função Template', en: 'Template Function' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Templates sao o jeito do C++ de escrever codigo generico pra qualquer tipo. Monte max<T> com template<typename T>: receba dois parametros do mesmo tipo e devolva o maior usando o operador > com ternario.',
+      pt: 'Templates sao o jeito do C++ de escrever codigo genérico pra qualquer tipo. Monte max<T> com template<typename T>: receba dois parâmetros do mesmo tipo e devolva o maior usando o operador > com ternario.',
       en: 'Templates let you write generic code that works with any type in C++. Write max<T> with template<typename T>: take two parameters of the same type and return the larger one using the > operator with a ternary.',
     },
     code: `template <typename T>
@@ -32,7 +32,7 @@ auto shared = std::make_shared<User>("Bob", 25);`,
     concept: { pt: 'Lambda', en: 'Lambda' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Lambdas em C++ capturam variaveis do escopo ao redor e servem como callbacks. Crie um comparador lambda com "const auto&" pra aceitar qualquer tipo e passe como terceiro argumento de std::sort pra ordenar usuarios por nome.',
+      pt: 'Lambdas em C++ capturam variáveis do escopo ao redor e servem como callbacks. Crie um comparador lambda com "const auto&" pra aceitar qualquer tipo e passe como terceiro argumento de std::sort pra ordenar usuarios por nome.',
       en: 'C++ lambdas capture the surrounding environment and can be passed as callbacks. Create a comparator lambda with "const auto&" to accept any type and use it as the third argument to std::sort to sort users by name.',
     },
     code: `auto compare = [](const auto& a, const auto& b) {
@@ -60,7 +60,7 @@ for (const auto& n : nums) {
     concept: { pt: 'Tipo Auto', en: 'Auto Type' },
     difficulty: 'easy',
     prompt: {
-      pt: '"auto" deixa o compilador inferir o tipo da variavel pra voce. Use pra pegar o iterador que .find() retorna, depois acesse com structured binding (auto& [k, v]) pra desestruturar o par sem precisar de .first e .second.',
+      pt: '"auto" deixa o compilador inferir o tipo da variável pra voce. Use pra pegar o iterador que .find() retorna, depois acesse com structured binding (auto& [k, v]) pra desestruturar o par sem precisar de .first e .second.',
       en: '"auto" infers the variable type at compile time. Use it for the iterator returned by .find(), then access the result with structured binding (auto& [k, v]) to destructure the pair without using .first and .second.',
     },
     code: `auto it = container.find(key);
@@ -72,10 +72,10 @@ if (it != container.end()) {
   },
   {
     id: 'cpp-006',
-    concept: { pt: 'Struct com Metodos', en: 'Struct with Methods' },
+    concept: { pt: 'Struct com Métodos', en: 'Struct with Methods' },
     difficulty: 'easy',
     prompt: {
-      pt: 'No C++ moderno, structs podem ter metodos igualzinho a classes. Defina Point com campos double x e y, e crie o metodo distance() marcado como "const" (nao altera o objeto) que calcula a norma com std::sqrt.',
+      pt: 'No C++ moderno, structs podem ter métodos igualzinho a classes. Defina Point com campos double x e y, e crie o método distance() marcado como "const" (nao altera o objeto) que calcula a norma com std::sqrt.',
       en: 'Modern C++ structs can have member methods just like classes. Define Point with double x and y fields, and add the distance() method marked as "const" (doesn\'t modify the object) that computes the norm with std::sqrt.',
     },
     code: `struct Point {
@@ -89,10 +89,10 @@ if (it != container.end()) {
   },
   {
     id: 'cpp-007',
-    concept: { pt: 'Espaco de Nomes', en: 'Namespace' },
+    concept: { pt: 'Espaço de Nomes', en: 'Namespace' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Namespaces servem pra organizar declaracoes e evitar conflito de nomes entre libs. Crie o namespace "math" com PI como constexpr double (resolvido em compile-time) e uma funcao area que calcula a area de um circulo.',
+      pt: 'Namespaces servem pra organizar declaracoes e evitar conflito de nomes entre libs. Crie o namespace "math" com PI como constexpr double (resolvido em compile-time) e uma função area que calcula a area de um circulo.',
       en: 'Namespaces group declarations to avoid name collisions between libraries. Create the "math" namespace containing PI as a constexpr double (evaluated at compile-time) and an area function that calculates a circle\'s area.',
     },
     code: `namespace math {
@@ -106,10 +106,10 @@ if (it != container.end()) {
   },
   {
     id: 'cpp-008',
-    concept: { pt: 'Operacoes com Vector', en: 'Vector Operations' },
+    concept: { pt: 'Operações com Vector', en: 'Vector Operations' },
     difficulty: 'medium',
     prompt: {
-      pt: 'std::vector e o array dinamico da STL. Adicione um elemento com push_back, ordene com std::sort e tire as duplicatas com o idioma erase-unique: primeiro std::unique (joga duplicatas pro final) e depois erase.',
+      pt: 'std::vector e o array dinâmico da STL. Adicione um elemento com push_back, ordene com std::sort e tire as duplicatas com o idioma erase-unique: primeiro std::unique (joga duplicatas pro final) e depois erase.',
       en: 'std::vector is the STL\'s dynamic array. Add an element with push_back, sort with std::sort and remove duplicates with the erase-unique idiom: first std::unique (moves duplicates to the end) then erase.',
     },
     code: `std::vector<int> v = {3, 1, 4, 1, 5};
@@ -210,7 +210,7 @@ if (score >= 70) {
     concept: { pt: 'If com Inicializador', en: 'If with Initializer' },
     difficulty: 'medium',
     prompt: {
-      pt: 'C++17 permite declaracao no if antes da condicao, limitando o escopo da variavel ao bloco. Use pra buscar num map e verificar se encontrou.',
+      pt: 'C++17 permite declaracao no if antes da condicao, limitando o escopo da variável ao bloco. Use pra buscar num map e verificar se encontrou.',
       en: 'C++17 allows a declaration in if before the condition, limiting the variable\'s scope to the block. Use it to search a map and check if found.',
     },
     code: `if (auto it = cache.find(key); it != cache.end()) {
@@ -223,10 +223,10 @@ if (score >= 70) {
   // ── Variaveis ──────────────────────────────────────────────
   {
     id: 'cpp-016',
-    concept: { pt: 'Declaracao de Variavel', en: 'Variable Declaration' },
+    concept: { pt: 'Declaracao de Variável', en: 'Variable Declaration' },
     difficulty: 'easy',
     prompt: {
-      pt: 'C++ oferece varios jeitos de declarar variaveis: tipo explicito, auto, e inicializacao uniforme com {}. Declare uma string, um int e use auto.',
+      pt: 'C++ oferece varios jeitos de declarar variáveis: tipo explicito, auto, e inicializacao uniforme com {}. Declare uma string, um int e use auto.',
       en: 'C++ offers several ways to declare variables: explicit type, auto, and uniform initialization with {}. Declare a string, an int, and use auto.',
     },
     code: `std::string name = "Alice";
@@ -236,10 +236,10 @@ auto score = 95.5;`,
   },
   {
     id: 'cpp-017',
-    concept: { pt: 'Tipos Basicos', en: 'Basic Types' },
+    concept: { pt: 'Tipos Básicos', en: 'Basic Types' },
     difficulty: 'easy',
     prompt: {
-      pt: 'C++ tem tipos primitivos e tipos da STL. Declare variaveis de varios tipos incluindo string, int, double e bool.',
+      pt: 'C++ tem tipos primitivos e tipos da STL. Declare variáveis de varios tipos incluindo string, int, double e bool.',
       en: 'C++ has primitive types and STL types. Declare variables of various types including string, int, double, and bool.',
     },
     code: `int count = 42;
@@ -250,7 +250,7 @@ std::string label = "item";`,
   },
   {
     id: 'cpp-018',
-    concept: { pt: 'Interpolacao com Format', en: 'String Formatting' },
+    concept: { pt: 'Interpolação com Format', en: 'String Formatting' },
     difficulty: 'medium',
     prompt: {
       pt: 'C++20 introduziu std::format similar ao Python. Use pra construir uma string formatada com placeholders {}.',
@@ -264,10 +264,10 @@ auto msg = std::format("Hello, {}! You are {}.", name, age);`,
   // ── Funcoes ────────────────────────────────────────────────
   {
     id: 'cpp-019',
-    concept: { pt: 'Funcao Simples', en: 'Simple Function' },
+    concept: { pt: 'Função Simples', en: 'Simple Function' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Funcoes em C++ declaram tipo de retorno, nome e parametros. Crie add que recebe dois inteiros e retorna a soma.',
+      pt: 'Funções em C++ declaram tipo de retorno, nome e parâmetros. Crie add que recebe dois inteiros e retorna a soma.',
       en: 'Functions in C++ declare return type, name, and parameters. Create add that takes two ints and returns the sum.',
     },
     code: `int add(int a, int b) {
@@ -280,7 +280,7 @@ auto msg = std::format("Hello, {}! You are {}.", name, age);`,
     concept: { pt: 'Callback com std::function', en: 'Callback with std::function' },
     difficulty: 'medium',
     prompt: {
-      pt: 'std::function permite passar callbacks tipados em C++. Crie uma funcao que aceita um callback e o executa com um valor.',
+      pt: 'std::function permite passar callbacks tipados em C++. Crie uma função que aceita um callback e o executa com um valor.',
       en: 'std::function allows passing typed callbacks in C++. Create a function that accepts a callback and executes it with a value.',
     },
     code: `void process(int value, std::function<void(int)> callback) {
@@ -297,7 +297,7 @@ process(5, [](int result) {
     concept: { pt: 'Closure', en: 'Closure' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Lambdas em C++ capturam variaveis do escopo externo com [&] ou [=]. Crie um contador com captura por referencia que incrementa a cada chamada.',
+      pt: 'Lambdas em C++ capturam variáveis do escopo externo com [&] ou [=]. Crie um contador com captura por referencia que incrementa a cada chamada.',
       en: 'C++ lambdas capture outer scope variables with [&] or [=]. Create a counter with reference capture that increments on each call.',
     },
     code: `int count = 0;
@@ -310,10 +310,10 @@ increment();`,
   },
   {
     id: 'cpp-022',
-    concept: { pt: 'Parametros Default', en: 'Default Parameters' },
+    concept: { pt: 'Parâmetros Default', en: 'Default Parameters' },
     difficulty: 'easy',
     prompt: {
-      pt: 'C++ suporta parametros default nativamente -- os ultimos parametros podem ter valores padrao. Crie greet com titulo default "Mr.".',
+      pt: 'C++ suporta parâmetros default nativamente -- os ultimos parâmetros podem ter valores padrão. Crie greet com titulo default "Mr.".',
       en: 'C++ supports native default parameters -- trailing parameters can have default values. Create greet with default title "Mr.".',
     },
     code: `std::string greet(const std::string& name,
@@ -355,7 +355,7 @@ while (std::getline(std::cin, line)) {
     concept: { pt: 'Filtrar com Algorithm', en: 'Filter with Algorithm' },
     difficulty: 'medium',
     prompt: {
-      pt: 'C++20 introduziu std::ranges pra operacoes funcionais em containers. Use ranges::copy_if pra filtrar elementos pares de um vector.',
+      pt: 'C++20 introduziu std::ranges pra operações funcionais em containers. Use ranges::copy_if pra filtrar elementos pares de um vector.',
       en: 'C++20 introduced std::ranges for functional operations on containers. Use ranges::copy_if to filter even elements from a vector.',
     },
     code: `std::vector<int> nums = {1, 2, 3, 4, 5, 6};
@@ -386,7 +386,7 @@ User alice{.name = "Alice", .age = 30};`,
     concept: { pt: 'Classe com Interface Virtual', en: 'Virtual Interface Class' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Interfaces em C++ sao classes com metodos virtuais puros (= 0). Defina Printable com print() e format() virtuais.',
+      pt: 'Interfaces em C++ sao classes com métodos virtuais puros (= 0). Defina Printable com print() e format() virtuais.',
       en: 'Interfaces in C++ are classes with pure virtual methods (= 0). Define Printable with virtual print() and format().',
     },
     code: `class Printable {
@@ -402,7 +402,7 @@ public:
     concept: { pt: 'Objeto Aninhado', en: 'Nested Object' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Composicao em C++ significa um objeto conter outro como membro. Crie Company com um Address embutido como campo.',
+      pt: 'Composição em C++ significa um objeto conter outro como membro. Crie Company com um Address embutido como campo.',
       en: 'Composition in C++ means an object contains another as a member. Create Company with an embedded Address field.',
     },
     code: `struct Address {
@@ -459,10 +459,10 @@ public:
   },
   {
     id: 'cpp-031',
-    concept: { pt: 'Sobrescrita de Metodo', en: 'Method Override' },
+    concept: { pt: 'Sobrescrita de Método', en: 'Method Override' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Override em C++ redefine um metodo virtual da classe base. Use a keyword "override" pra garantir que a assinatura bate.',
+      pt: 'Override em C++ redefine um método virtual da classe base. Use a keyword "override" pra garantir que a assinatura bate.',
       en: 'Override in C++ redefines a virtual method from the base class. Use the "override" keyword to ensure the signature matches.',
     },
     code: `class Animal {
@@ -482,7 +482,7 @@ public:
     concept: { pt: 'Classe Abstrata', en: 'Abstract Class' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Classes abstratas em C++ tem pelo menos um metodo virtual puro (= 0). Defina Shape com area() puro e implemente Circle.',
+      pt: 'Classes abstratas em C++ tem pelo menos um método virtual puro (= 0). Defina Shape com area() puro e implemente Circle.',
       en: 'Abstract classes in C++ have at least one pure virtual method (= 0). Define Shape with pure area() and implement Circle.',
     },
     code: `class Shape {
@@ -507,7 +507,7 @@ public:
     concept: { pt: 'Try-Catch', en: 'Try-Catch' },
     difficulty: 'easy',
     prompt: {
-      pt: 'Try-catch em C++ captura excecoes por tipo. Capture std::exception por referencia constante e acesse a mensagem com .what().',
+      pt: 'Try-catch em C++ captura exceções por tipo. Capture std::exception por referencia constante e acesse a mensagem com .what().',
       en: 'Try-catch in C++ catches exceptions by type. Catch std::exception by const reference and access the message with .what().',
     },
     code: `try {
@@ -519,10 +519,10 @@ public:
   },
   {
     id: 'cpp-034',
-    concept: { pt: 'Excecao Customizada', en: 'Custom Exception' },
+    concept: { pt: 'Exceção Customizada', en: 'Custom Exception' },
     difficulty: 'medium',
     prompt: {
-      pt: 'Excecoes customizadas em C++ herdam de std::exception e sobrescrevem what(). Crie ValidationError com campo e mensagem.',
+      pt: 'Exceções customizadas em C++ herdam de std::exception e sobrescrevem what(). Crie ValidationError com campo e mensagem.',
       en: 'Custom exceptions in C++ inherit from std::exception and override what(). Create ValidationError with field and message.',
     },
     code: `class ValidationError : public std::runtime_error {
@@ -539,7 +539,7 @@ public:
     concept: { pt: 'RAII como Finally', en: 'RAII as Finally' },
     difficulty: 'medium',
     prompt: {
-      pt: 'C++ nao tem finally, mas RAII garante cleanup no destrutor. Crie um guard que executa uma funcao ao sair do escopo.',
+      pt: 'C++ nao tem finally, mas RAII garante cleanup no destrutor. Crie um guard que executa uma função ao sair do escopo.',
       en: 'C++ has no finally, but RAII ensures cleanup in the destructor. Create a guard that runs a function when leaving scope.',
     },
     code: `class ScopeGuard {
@@ -573,7 +573,7 @@ Result divide(int a, int b) {
     concept: { pt: 'Constraint com Concepts', en: 'Constraint with Concepts' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Concepts (C++20) restringem templates com requisitos semanticos. Crie um concept Addable e use numa funcao template.',
+      pt: 'Concepts (C++20) restringem templates com requisitos semanticos. Crie um concept Addable e use numa função template.',
       en: 'Concepts (C++20) constrain templates with semantic requirements. Create an Addable concept and use it in a template function.',
     },
     code: `template <typename T>
@@ -592,7 +592,7 @@ T sum(T a, T b) {
     concept: { pt: 'Tipo Utilitario', en: 'Utility Type' },
     difficulty: 'hard',
     prompt: {
-      pt: 'Templates permitem criar tipos utilitarios reutilizaveis em C++. Crie um Pair generico com dois tipos diferentes.',
+      pt: 'Templates permitem criar tipos utilitarios reutilizaveis em C++. Crie um Pair genérico com dois tipos diferentes.',
       en: 'Templates allow creating reusable utility types in C++. Create a generic Pair with two different types.',
     },
     code: `template <typename A, typename B>
@@ -624,7 +624,7 @@ auto result = future.get();`,
     concept: { pt: 'Macro e Constexpr', en: 'Macro and Constexpr' },
     difficulty: 'hard',
     prompt: {
-      pt: 'C++ moderno prefere constexpr a macros pra computacao em compile-time. Crie uma funcao constexpr que calcula fatorial em tempo de compilacao.',
+      pt: 'C++ moderno prefere constexpr a macros pra computacao em compile-time. Crie uma função constexpr que calcula fatorial em tempo de compilacao.',
       en: 'Modern C++ prefers constexpr over macros for compile-time computation. Create a constexpr function that computes factorial at compile time.',
     },
     code: `constexpr int factorial(int n) {

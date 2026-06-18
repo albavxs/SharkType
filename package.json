@@ -8,10 +8,11 @@
     "node": ">=20"
   },
   "scripts": {
+    "check:pt-content": "node scripts/check-pt-content.mjs",
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "npm run check:pt-content && node scripts/run-eslint.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

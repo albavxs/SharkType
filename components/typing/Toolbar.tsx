@@ -1,13 +1,14 @@
 'use client'
 
 import { LanguageMeta, Difficulty } from '@/lib/types'
-import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon } from '@/components/icons'
+import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon, MailIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
 import LanguageDropdown from './LanguageDropdown'
 import DifficultySelector from './DifficultySelector'
 import { useAuth } from '@/hooks/useAuth'
+import CommunityTicker from './CommunityTicker'
 
 interface ToolbarProps {
   language: LanguageMeta
@@ -25,13 +26,14 @@ interface ToolbarProps {
   isTyping?: boolean
   showControls?: boolean
   showLanguage?: boolean
+  showCommunityBanner?: boolean
 }
 
 export default function Toolbar({
   language, difficulty, seconds, isTimerRunning,
   onLanguageChange, onDifficultyChange,
   onHomeClick, onHelpClick, level, streak, locale, onLocaleToggle,
-  isTyping = false, showControls = true, showLanguage = true,
+  isTyping = false, showControls = true, showLanguage = true, showCommunityBanner = true,
 }: ToolbarProps) {
   const hide = isTyping ? 'opacity-0 pointer-events-none' : 'opacity-100'
   const { profile, signOut } = useAuth()
@@ -41,7 +43,12 @@ export default function Toolbar({
   }
 
   return (
-    <div className="relative z-20 flex flex-col sm:flex-row sm:items-center px-3 sm:px-6 pt-3 pb-1 sm:py-2 gap-2 sm:gap-0">
+    <div className="relative z-20 px-3 pt-3 pb-1 sm:px-6 sm:py-2">
+      {showCommunityBanner && (
+        <CommunityTicker locale={locale} className={`mb-3 transition-all duration-300 ${hide}`} />
+      )}
+
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0">
       {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
       <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center sm:gap-4">
         <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
@@ -102,6 +109,9 @@ export default function Toolbar({
           <Link href="/feed" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
             <ChartIcon size={18} />
           </Link>
+          <Link href="/community" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navCommunity', locale)}>
+            <MailIcon size={18} />
+          </Link>
           {profile && (
             <Link href="/profile" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={locale === 'pt' ? 'Perfil' : 'Profile'}>
               <UserIcon size={18} />
@@ -124,6 +134,9 @@ export default function Toolbar({
           </Link>
           <Link href="/feed" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
             <ChartIcon size={18} />
+          </Link>
+          <Link href="/community" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navCommunity', locale)}>
+            <MailIcon size={18} />
           </Link>
           <button onClick={onHelpClick} className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
             <HelpIcon size={18} />
@@ -226,6 +239,7 @@ export default function Toolbar({
         <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
           <FlameIcon size={16} />{streak}d
         </span>
+      </div>
       </div>
     </div>
   )
