@@ -29,6 +29,7 @@ export async function GET() {
     const payload = await bootstrapProfileAndProgress(supabase, user)
     return NextResponse.json(payload)
   } catch (progressError) {
+    console.error('[progress] load failed:', progressError)
     return NextResponse.json(
       { error: progressError instanceof Error ? progressError.message : 'Could not load progress.' },
       { status: 500 }
@@ -57,6 +58,7 @@ export async function DELETE() {
     await resetRemoteProgress(supabase, user.id)
     return NextResponse.json({ ok: true })
   } catch (resetError) {
+    console.error('[progress] reset failed:', resetError)
     return NextResponse.json(
       { error: resetError instanceof Error ? resetError.message : 'Could not reset progress.' },
       { status: 500 }

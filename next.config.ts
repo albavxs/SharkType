@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+function getAllowedDevOrigins() {
+  const configuredOrigins = process.env.NEXT_ALLOWED_DEV_ORIGINS
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+
+  if (configuredOrigins && configuredOrigins.length > 0) {
+    return configuredOrigins
+  }
+
+  // Allow local LAN access in development without pinning a single device IP.
+  return ['192.168.15.*']
+}
+
 function buildContentSecurityPolicy() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
   let supabaseOrigin: string | null = null
@@ -74,7 +88,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
-  allowedDevOrigins: ['192.168.15.2'],
+  allowedDevOrigins: getAllowedDevOrigins(),
   async headers() {
     return [
       {
