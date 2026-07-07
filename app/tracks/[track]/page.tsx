@@ -17,7 +17,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
-import { SessionOutput, applySessionToProgress, getLevel } from '@/lib/gamification'
+import { SessionOutput, applySessionToProgress, getLevel, isRankedSession } from '@/lib/gamification'
 import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import TypingArea from '@/components/typing/TypingArea'
@@ -34,7 +34,7 @@ const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { 
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
 const AchievementToast = dynamic(() => import('@/components/gamification/AchievementToast'), { ssr: false })
 
-interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; errorSamples: number[] }
+interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; accuracySamples: number[]; errorSamples: number[] }
 
 function getTrackTimerDuration(difficulty: Difficulty | 'all', snippetCount: number): number {
   if (difficulty === 'easy') return 60 + snippetCount * 5
@@ -204,7 +204,7 @@ export default function TrackPracticePage() {
       const stats: SnippetResult = {
         wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy,
         errors: engine.state.errors, duration: dur,
-        wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples], errorSamples: [...engine.errorSamples],
+        wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples], accuracySamples: [...engine.accuracySamples], errorSamples: [...engine.errorSamples],
       }
 
       const input = selectedLang && snippet ? {
@@ -254,6 +254,7 @@ export default function TrackPracticePage() {
           duration: totalDur,
           wpmSamples: next.flatMap(r => r.wpmSamples),
           rawWpmSamples: next.flatMap(r => r.rawWpmSamples),
+          accuracySamples: next.flatMap(r => r.accuracySamples),
           errorSamples: next.flatMap(r => r.errorSamples),
         })
         setShowResult(true)
@@ -293,10 +294,11 @@ export default function TrackPracticePage() {
     return () => {
       active = false
     }
-  }, [accumulated, engine.accuracy, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.state.status, engine.wpm, engine.wpmSamples, lenient, progress, recordSession, resetTimer, selectedLang, seqIndex, snippet, trackId, trackSnippets.length])
+  }, [accumulated, engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.state.status, engine.wpm, engine.wpmSamples, lenient, progress, recordSession, resetTimer, selectedLang, seqIndex, snippet, trackId, trackSnippets.length])
 
   const prevErrors = useRef(0)
   const isTyping = engine.state.status === 'running'
+  const sessionMode = isRankedSession(selectedLang?.id ?? '', lenient) ? 'ranked' : 'precision'
 
   useEffect(() => {
     const themeName = getThemePref()
@@ -421,11 +423,11 @@ export default function TrackPracticePage() {
             <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
           ) : showResult && finalStats ? (
             <ResultScreen wpm={finalStats.wpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
-              duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} wpmSamples={finalStats.wpmSamples}
-              rawWpmSamples={finalStats.rawWpmSamples} errorSamples={finalStats.errorSamples} languageId={selectedLang?.id ?? ''}
+              duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} sessionMode={sessionMode} wpmSamples={finalStats.wpmSamples}
+              rawWpmSamples={finalStats.rawWpmSamples} accuracySamples={finalStats.accuracySamples} errorSamples={finalStats.errorSamples} languageId={selectedLang?.id ?? ''}
               xpEarned={trackXpEarned} rankedPointsEarned={trackRankedPointsEarned} newLevel={sessionResult?.newLevel ?? levelInfo.level} leveledUp={trackLeveledUp}
               levelPercent={sessionResult?.levelPercent ?? getLevel(progress.totalXP).percent} streak={progress.streak.current}
-              onNext={handleRestartTrack} locale={locale} />
+              onNext={handleRestartTrack} onRestart={handleRestartTrack} locale={locale} />
           ) : (
             <>
               {/* Prompt — hide when typing */}

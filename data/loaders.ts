@@ -1,5 +1,7 @@
 import type { Language, Snippet } from '@/lib/types'
 import { getLanguageMetaById } from './metadata'
+import { DEFAULT_LANGUAGE } from '@/lib/constants'
+import { cppSnippets } from './cpp'
 
 type SnippetLoader = () => Promise<Snippet[]>
 
@@ -50,7 +52,44 @@ const snippetLoaders: Record<string, SnippetLoader> = {
   'text-fr': async () => (await import('./text-fr')).frSnippets,
 }
 
+const bundledSnippetSets: Partial<Record<string, Snippet[]>> = {
+  [DEFAULT_LANGUAGE]: cppSnippets,
+}
+
+function isRetryableLoaderError(error: unknown): boolean {
+  const message = String(
+    error instanceof Error ? error.message : error
+  )
+
+  return (
+    message.includes('ChunkLoadError') ||
+    message.includes('Loading chunk') ||
+    message.includes('Failed to fetch dynamically imported module') ||
+    message.includes('Importing a module script failed')
+  )
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms))
+}
+
+export function getBundledLanguageById(id: string): Language | null {
+  const meta = getLanguageMetaById(id)
+  const snippets = bundledSnippetSets[id]
+
+  if (!meta || !snippets) {
+    return null
+  }
+
+  return { ...meta, snippets }
+}
+
 export async function loadLanguageById(id: string): Promise<Language | null> {
+  const bundled = getBundledLanguageById(id)
+  if (bundled) {
+    return bundled
+  }
+
   const meta = getLanguageMetaById(id)
   const loader = snippetLoaders[id]
 
@@ -58,6 +97,18 @@ export async function loadLanguageById(id: string): Promise<Language | null> {
     return null
   }
 
-  const snippets = await loader()
+  let snippets: Snippet[]
+
+  try {
+    snippets = await loader()
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'development' || !isRetryableLoaderError(error)) {
+      throw error
+    }
+
+    await delay(150)
+    snippets = await loader()
+  }
+
   return { ...meta, snippets }
 }

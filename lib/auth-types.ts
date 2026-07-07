@@ -9,6 +9,7 @@ export interface AuthProfile {
   isSuperUser: boolean
   localImportedAt: string | null
   onboardingCompleted: boolean
+  introTourVersionSeen: number | null
 }
 
 export interface LeaderboardEntry {

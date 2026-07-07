@@ -13,7 +13,14 @@ interface SnippetInfoProps {
   locale: Locale
 }
 
-export default function SnippetInfo({ snippet, languageLabel, languageColor, current, total, locale }: SnippetInfoProps) {
+export default function SnippetInfo({
+  snippet,
+  languageLabel,
+  languageColor,
+  current,
+  total,
+  locale,
+}: SnippetInfoProps) {
   const [showDetail, setShowDetail] = useState(true)
   const diffLabel = snippet.difficulty === 'easy' ? t('easy', locale) : snippet.difficulty === 'medium' ? t('medium', locale) : t('hard', locale)
 
