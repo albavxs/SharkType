@@ -70,7 +70,7 @@ export const languageManifest: LanguageManifestEntry[] = [
   { id: 'angular',    label: 'Angular',         color: '#dd0031', type: 'code', module: './angular' },
 
   // ── Text languages ──────────────────────────────────────────────────────
-  { id: 'text-typing', label: 'Digitacao', color: '#10b981', type: 'text', module: './text-typing', exportName: 'typingSnippets' },
+  { id: 'text-typing', label: 'Digitação', color: '#10b981', type: 'text', module: './text-typing', exportName: 'typingSnippets' },
   { id: 'text-ptbr',   label: 'Portugues', color: '#009739', type: 'text', module: './text-ptbr',   exportName: 'ptbrSnippets' },
   { id: 'text-en',     label: 'English',   color: '#3c3b6e', type: 'text', module: './text-en',     exportName: 'enSnippets' },
   { id: 'text-es',     label: 'Espanol',   color: '#c60b1e', type: 'text', module: './text-es',     exportName: 'esSnippets' },

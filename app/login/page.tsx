@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AuthShell from '@/components/auth/AuthShell'
 import { GithubIcon, MailIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
@@ -12,11 +12,18 @@ import { t } from '@/lib/i18n'
 export default function LoginPage() {
   const router = useRouter()
   const { locale } = useLocale()
-  const { signInWithGitHub, signInWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
+  const { user, isLoading, signInWithGitHub, signInWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (isLoading) return
+    if (user) {
+      router.replace('/')
+    }
+  }, [isLoading, router, user])
 
   async function handlePasswordLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -30,8 +37,6 @@ export default function LoginPage() {
       setError(result.error)
       return
     }
-
-    router.push('/')
   }
 
   async function handleGitHubLogin() {

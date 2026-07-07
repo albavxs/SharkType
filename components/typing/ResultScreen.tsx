@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import { Snippet } from '@/lib/types'
 import { calculateConsistency } from '@/lib/utils'
-import { calculateRankedPoints } from '@/lib/gamification'
-import { FlameIcon, ShareIcon, ArrowRightIcon, RefreshIcon } from '@/components/icons'
+import { calculateRankedBreakdown } from '@/lib/gamification'
+import { FlameIcon, ShareIcon, ArrowRightIcon, RefreshIcon, ChevronDownIcon } from '@/components/icons'
 import WPMGraph from '@/components/stats/WPMGraph'
 import ShareCardModal from './ShareCardModal'
 import { Locale, t } from '@/lib/i18n'
@@ -17,8 +17,10 @@ interface ResultScreenProps {
   snippet: Snippet
   languageLabel: string
   languageId: string
+  sessionMode: 'ranked' | 'precision'
   wpmSamples: number[]
   rawWpmSamples: number[]
+  accuracySamples: number[]
   errorSamples: number[]
   xpEarned: number
   rankedPointsEarned: number
@@ -27,6 +29,7 @@ interface ResultScreenProps {
   levelPercent: number
   streak: number
   onNext: () => void
+  onRestart: () => void
   locale?: Locale
 }
 
@@ -64,8 +67,10 @@ export default function ResultScreen({
   snippet,
   languageLabel,
   languageId,
+  sessionMode,
   wpmSamples,
   rawWpmSamples,
+  accuracySamples,
   errorSamples,
   xpEarned,
   rankedPointsEarned,
@@ -74,15 +79,19 @@ export default function ResultScreen({
   levelPercent,
   streak,
   onNext,
+  onRestart,
   locale = 'pt',
 }: ResultScreenProps) {
   const animatedWpm = useCountUp(wpm)
   const animatedXP = useCountUp(xpEarned)
   const animatedRankedPoints = useCountUp(Math.max(0, rankedPointsEarned))
+  const animatedAccuracy = useCountUp(accuracy)
   const consistency = calculateConsistency(wpmSamples)
   const [showShareModal, setShowShareModal] = useState(false)
   const [showGraph, setShowGraph] = useState(false)
+  const [showBreakdown, setShowBreakdown] = useState(false)
   const diff = t(snippet.difficulty === 'easy' ? 'easy' : snippet.difficulty === 'medium' ? 'medium' : 'hard', locale)
+  const isRanked = sessionMode === 'ranked'
   const shareRawWpm = rawWpmSamples.length > 0
     ? Math.round(rawWpmSamples.reduce((sum, sample) => sum + sample, 0) / rawWpmSamples.length)
     : wpm
@@ -94,14 +103,37 @@ export default function ResultScreen({
 
   const rankedPointSamples = wpmSamples.map((net, index) => {
     const raw = rawWpmSamples[index] ?? net
-    return calculateRankedPoints({
+    const acc = accuracySamples[index] ?? accuracy
+    return calculateRankedBreakdown({
       languageId,
       wpm: net,
       rawWpm: raw,
+      accuracy: acc,
       errors: errorSamples[index] ?? errors,
       difficulty: snippet.difficulty,
-    })
+    }).total
   })
+
+  const rankedBreakdown = calculateRankedBreakdown({
+    languageId,
+    wpm,
+    rawWpm: shareRawWpm,
+    accuracy,
+    errors,
+    difficulty: snippet.difficulty,
+  })
+
+  const graphSamples = isRanked
+    ? rankedPointSamples.length > 1 ? rankedPointSamples : [rankedBreakdown.total, rankedBreakdown.total]
+    : accuracySamples.length > 1 ? accuracySamples : [accuracy, accuracy]
+
+  const breakdownItems = [
+    { label: t('rankBreakdownSpeed', locale), value: rankedBreakdown.base + rankedBreakdown.speedBonus, positive: true },
+    { label: t('rankBreakdownDifficulty', locale), value: rankedBreakdown.difficultyBonus, positive: true },
+    { label: t('rankBreakdownAccuracy', locale), value: rankedBreakdown.accuracyBonus, positive: true },
+    { label: t('rankBreakdownControl', locale), value: rankedBreakdown.controlPenalty, positive: false },
+    { label: t('rankBreakdownErrors', locale), value: rankedBreakdown.errorPenalty, positive: false },
+  ]
 
   return (
     <div className="w-full mx-auto px-3 sm:px-6 animate-slide-up">
@@ -109,10 +141,10 @@ export default function ResultScreen({
         <div className="shrink-0 flex flex-col items-center sm:items-start justify-center">
           <div>
             <div className="text-xs mb-1 uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
-              {t('rankedPoints', locale)}
+              {isRanked ? t('rankedPoints', locale) : t('accuracy', locale)}
             </div>
             <div className="text-5xl sm:text-7xl font-bold tabular-nums leading-none" style={{ color: 'var(--main)' }}>
-              {animatedRankedPoints}
+              {isRanked ? animatedRankedPoints : `${animatedAccuracy}%`}
             </div>
           </div>
           <div className="mt-4 flex items-center gap-3 text-sm tabular-nums">
@@ -120,6 +152,13 @@ export default function ResultScreen({
             <span style={{ color: 'var(--sub)', opacity: 0.4 }}>•</span>
             <span style={{ color: 'var(--text)' }}>{accuracy}% ACC</span>
           </div>
+          <p className="mt-3 max-w-xs text-xs leading-6" style={{ color: 'var(--sub)' }}>
+            {isRanked
+              ? rankedBreakdown.gateFailed
+                ? t('rankedGateFailedHint', locale)
+                : t('rankedResultHint', locale)
+              : t('precisionResultHint', locale)}
+          </p>
         </div>
 
         <div className="flex-1 min-w-0">
@@ -132,11 +171,56 @@ export default function ResultScreen({
               }}
             />
             <div className={`transition-opacity duration-300 ${showGraph ? 'opacity-100' : 'opacity-0'}`}>
-              <WPMGraph primarySamples={rankedPointSamples} animate={showGraph} />
+              <WPMGraph primarySamples={graphSamples} animate={showGraph} />
             </div>
           </div>
         </div>
       </div>
+
+      {isRanked ? (
+        <div className="mb-6 rounded-2xl border px-4 py-4" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)' }}>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+              {t('rankBreakdownTitle', locale)}
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-sm font-semibold tabular-nums" style={{ color: 'var(--main)' }}>
+                {rankedBreakdown.total} {t('rankedPointsShort', locale)}
+              </div>
+              <button
+                type="button"
+                aria-expanded={showBreakdown}
+                onClick={() => setShowBreakdown((current) => !current)}
+                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium transition-opacity hover:opacity-90"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 58%, transparent)', color: 'var(--sub)' }}
+              >
+                <span>{showBreakdown ? t('rankBreakdownHide', locale) : t('rankBreakdownShow', locale)}</span>
+                <ChevronDownIcon size={14} className={`transition-transform ${showBreakdown ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+          </div>
+          {showBreakdown ? (
+            <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+              {breakdownItems.map((item) => (
+                <div key={item.label} className="flex items-center justify-between rounded-xl px-3 py-2" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 58%, transparent)' }}>
+                  <span style={{ color: 'var(--sub)' }}>{item.label}</span>
+                  <span className="tabular-nums" style={{ color: item.positive ? 'var(--main)' : 'var(--error)' }}>
+                    {item.positive ? '+' : '-'}
+                    {Math.round(item.value)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="mb-6 rounded-2xl border px-4 py-4 text-sm leading-7" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)', color: 'var(--sub)' }}>
+          <div className="font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--text)' }}>
+            {t('precisionTrainingTitle', locale)}
+          </div>
+          <p className="mt-2">{t('precisionTrainingResultBody', locale)}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4 text-center mb-6">
         {[
@@ -218,7 +302,7 @@ export default function ResultScreen({
           <ArrowRightIcon size={20} />
         </button>
         <button
-          onClick={onNext}
+          onClick={onRestart}
           className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
           style={{ color: 'var(--sub)' }}
           onMouseEnter={(event) => { event.currentTarget.style.color = 'var(--main)' }}
