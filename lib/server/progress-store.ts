@@ -5,6 +5,7 @@ import {
   calculateRankedPoints,
   calculateXpEarned,
   computeRankedAggregate,
+  computeAverageWPM,
   createDefaultProgress,
   deriveStreakFromActivityTimestamps,
   deriveProgressSummary,
@@ -26,6 +27,8 @@ import { recordFeedEvent } from './feed-store'
 type DBClient = SupabaseClient<Database>
 type TypingSessionRow = Database['public']['Tables']['typing_sessions']['Row']
 type ProfileRow = Database['public']['Tables']['profiles']['Row']
+type LeaderboardWithScoreRow = Database['public']['Views']['leaderboard_with_score']['Row']
+type GlobalLeaderboardRow = Database['public']['Views']['global_leaderboard']['Row']
 
 export interface ProfileProgressPayload {
   profile: AuthProfile
@@ -45,6 +48,7 @@ function mapProfileRow(row: Database['public']['Tables']['profiles']['Row']): Au
     isSuperUser: row.is_super_user,
     localImportedAt: row.local_imported_at,
     onboardingCompleted: row.onboarding_completed,
+    introTourVersionSeen: row.intro_tour_version_seen,
   }
 }
 
@@ -62,6 +66,42 @@ function mapSessionRow(row: Database['public']['Tables']['typing_sessions']['Row
     xpEarned: row.xp_earned,
     rankedEligible: row.ranked_eligible,
     rankedPoints: row.ranked_points,
+  }
+}
+
+function mapLeaderboardWithScoreRow(row: LeaderboardWithScoreRow, rank: number): LeaderboardEntry {
+  return {
+    rank,
+    userId: row.user_id,
+    username: row.username,
+    displayName: row.display_name,
+    avatarUrl: row.avatar_url,
+    totalXP: row.total_xp,
+    bestWPM: row.best_wpm,
+    avgWPM: row.avg_wpm,
+    currentStreak: row.current_streak,
+    totalSessions: row.total_sessions,
+    rankedSessions: row.ranked_sessions,
+    level: row.level,
+    score: row.score,
+  }
+}
+
+function mapGlobalLeaderboardRow(row: GlobalLeaderboardRow, rank: number): LeaderboardEntry {
+  return {
+    rank,
+    userId: row.user_id,
+    username: row.username,
+    displayName: row.display_name,
+    avatarUrl: row.avatar_url,
+    totalXP: row.total_xp,
+    bestWPM: row.best_wpm,
+    avgWPM: 0,
+    currentStreak: row.current_streak,
+    totalSessions: row.total_sessions,
+    rankedSessions: row.ranked_sessions,
+    level: getLevel(row.total_xp).level,
+    score: row.ranked_score,
   }
 }
 
@@ -154,6 +194,7 @@ function buildImportedSessionRows(userId: string, history: SessionRecord[]) {
         languageId: record.languageId,
         wpm: record.wpm,
         rawWpm: record.rawWpm ?? record.wpm,
+        accuracy: record.accuracy,
         errors: record.errors,
         difficulty,
       }),
@@ -198,6 +239,7 @@ function buildProgressFromImportedSnapshot(snapshot: ImportedProgressSnapshot): 
           languageId: record.languageId,
           wpm: record.wpm,
           rawWpm: record.rawWpm,
+          accuracy: record.accuracy,
           errors: record.errors,
           difficulty: record.difficulty,
         })
@@ -516,6 +558,17 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
 
   progress.level = getLevel(progress.totalXP).level
 
+  if (
+    progressResult.data &&
+    (
+      progressResult.data.total_xp !== progress.totalXP ||
+      (progressResult.data.ranked_score ?? 0) !== progress.rankedScore ||
+      (progressResult.data.ranked_sessions ?? 0) !== progress.rankedSessions
+    )
+  ) {
+    await persistProgressAggregate(supabase, userId, progress)
+  }
+
   return progress
 }
 
@@ -704,8 +757,7 @@ export async function resetRemoteProgress(supabase: DBClient, userId: string) {
 }
 
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
-  // Tenta usar a view ranked. Se nao existir, cai no fallback legado.
-  const withScore = await supabase
+  const leaderboardViewRes = await supabase
     .from('leaderboard_with_score')
     .select('*')
     .order('score', { ascending: false })
@@ -714,28 +766,15 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .order('total_sessions', { ascending: false })
     .limit(1000)
 
-  if (!withScore.error && withScore.data) {
-    return withScore.data
-      .filter(entry => (entry.score ?? 0) > 0 || (entry.ranked_sessions ?? 0) > 0)
-      .map((entry, index) => ({
-        rank: index + 1,
-        userId: entry.user_id,
-        username: entry.username,
-        displayName: entry.display_name,
-        avatarUrl: entry.avatar_url,
-        totalXP: entry.total_xp,
-        bestWPM: entry.best_wpm,
-        avgWPM: entry.avg_wpm ?? 0,
-        currentStreak: entry.current_streak,
-        totalSessions: entry.total_sessions,
-        rankedSessions: entry.ranked_sessions ?? 0,
-        level: entry.level ?? getLevel(entry.total_xp).level,
-        score: entry.score ?? 0,
-      }))
+  if (!leaderboardViewRes.error) {
+    return (leaderboardViewRes.data ?? []).map((row, index) => mapLeaderboardWithScoreRow(row, index + 1))
   }
 
-  // Fallback: view antiga
-  const { data, error } = await supabase
+  if (!isMissingTable(leaderboardViewRes.error)) {
+    throw leaderboardViewRes.error
+  }
+
+  const globalLeaderboardRes = await supabase
     .from('global_leaderboard')
     .select('*')
     .order('ranked_score', { ascending: false })
@@ -744,26 +783,77 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     .order('total_sessions', { ascending: false })
     .limit(1000)
 
-  if (error) throw error
+  if (!globalLeaderboardRes.error) {
+    return (globalLeaderboardRes.data ?? []).map((row, index) => mapGlobalLeaderboardRow(row, index + 1))
+  }
 
-  return (data ?? [])
-    .filter(entry => (entry.ranked_score ?? 0) > 0 || (entry.ranked_sessions ?? 0) > 0)
-    .map((entry, index) => {
-      const level = getLevel(entry.total_xp).level
-      return {
-        rank: index + 1,
-        userId: entry.user_id,
-        username: entry.username,
-        displayName: entry.display_name,
-        avatarUrl: entry.avatar_url,
-        totalXP: entry.total_xp,
-        bestWPM: entry.best_wpm,
-        avgWPM: entry.best_wpm,
-        currentStreak: entry.current_streak,
-        totalSessions: entry.total_sessions,
-        rankedSessions: entry.ranked_sessions ?? 0,
-        level,
-        score: entry.ranked_score ?? 0,
-      }
+  if (!isMissingTable(globalLeaderboardRes.error)) {
+    throw globalLeaderboardRes.error
+  }
+
+  const [profilesRes, progressRes, sessionsRes] = await Promise.all([
+    supabase.from('profiles').select('id, username, display_name, avatar_url'),
+    supabase.from('user_progress').select('user_id, total_xp, current_streak, total_sessions'),
+    supabase.from('typing_sessions').select('*').order('created_at', { ascending: false }),
+  ])
+
+  if (profilesRes.error) throw profilesRes.error
+  if (progressRes.error && !isMissingTable(progressRes.error)) throw progressRes.error
+  if (sessionsRes.error && !isMissingTable(sessionsRes.error)) throw sessionsRes.error
+
+  const profiles = profilesRes.data ?? []
+  const progressRows = progressRes.data ?? []
+  const sessions = sessionsRes.data ?? []
+  const progressMap = new Map(progressRows.map((row) => [row.user_id, row]))
+  const groupedSessions = new Map<string, TypingSessionRow[]>()
+
+  for (const session of sessions) {
+    const userSessions = groupedSessions.get(session.user_id)
+    if (userSessions) {
+      userSessions.push(session)
+    } else {
+      groupedSessions.set(session.user_id, [session])
+    }
+  }
+
+  const entries: LeaderboardEntry[] = []
+
+  for (const profile of profiles) {
+    const userId = profile.id
+    const userSessions = groupedSessions.get(userId) ?? []
+    const rankedAggregate = computeRankedAggregate(userSessions.map(mapSessionRow))
+    const progressRow = progressMap.get(userId)
+    const totalXP = progressRow?.total_xp ?? userSessions.reduce((sum, session) => sum + session.xp_earned, 0)
+    const bestWPM = userSessions.reduce((best, session) => Math.max(best, session.wpm), 0)
+    const avgWPM = computeAverageWPM(userSessions.map((session) => session.wpm))
+
+    entries.push({
+      rank: 0,
+      userId,
+      username: profile.username,
+      displayName: profile.display_name,
+      avatarUrl: profile.avatar_url,
+      totalXP,
+      bestWPM,
+      avgWPM,
+      currentStreak: progressRow?.current_streak ?? 0,
+      totalSessions: progressRow?.total_sessions ?? userSessions.length,
+      rankedSessions: rankedAggregate.rankedSessions,
+      level: getLevel(totalXP).level,
+      score: rankedAggregate.rankedScore,
     })
+  }
+
+  return entries
+    .sort((a, b) =>
+      b.score - a.score ||
+      b.bestWPM - a.bestWPM ||
+      b.currentStreak - a.currentStreak ||
+      b.totalSessions - a.totalSessions
+    )
+    .slice(0, 1000)
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1,
+    }))
 }

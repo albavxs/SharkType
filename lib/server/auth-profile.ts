@@ -33,6 +33,27 @@ function inferRequestedUsername(user: User): string {
   )
 }
 
+function isMissingColumn(error: unknown, columnName: string): boolean {
+  const candidate = error as { code?: string; message?: string } | null
+  const message = String(candidate?.message ?? '')
+  return (
+    (candidate?.code === 'PGRST204' && message.includes(`'${columnName}'`)) ||
+    (candidate?.code === '42703' && message.includes(columnName)) ||
+    message.toLowerCase().includes(`column "${columnName}" does not exist`) ||
+    message.toLowerCase().includes(`could not find the '${columnName}' column`)
+  )
+}
+
+function normalizeIntroTourVersionSeen(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
+function stripIntroTourVersionSeen<T extends Record<string, unknown>>(payload: T): T {
+  const nextPayload = { ...payload }
+  delete nextPayload.intro_tour_version_seen
+  return nextPayload
+}
+
 function mapProfile(row: Database['public']['Tables']['profiles']['Row']): AuthProfile {
   return {
     id: row.id,
@@ -45,6 +66,7 @@ function mapProfile(row: Database['public']['Tables']['profiles']['Row']): AuthP
     isSuperUser: row.is_super_user,
     localImportedAt: row.local_imported_at,
     onboardingCompleted: row.onboarding_completed,
+    introTourVersionSeen: normalizeIntroTourVersionSeen(row.intro_tour_version_seen),
   }
 }
 
@@ -65,6 +87,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
     provider: inferProvider(user),
     email_verified: Boolean(user.email_confirmed_at),
     onboarding_completed: inferProvider(user) === 'email' ? true : existing?.onboardingCompleted ?? false,
+    intro_tour_version_seen: existing?.introTourVersionSeen ?? 0,
   }
 
   if (existing) {
@@ -87,7 +110,19 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
       .select('*')
       .maybeSingle()
 
-    if (error) throw error
+    if (error) {
+      if (!isMissingColumn(error, 'intro_tour_version_seen')) throw error
+
+      const fallback = await supabase
+        .from('profiles')
+        .update(stripIntroTourVersionSeen(updatePayload))
+        .eq('id', user.id)
+        .select('*')
+        .maybeSingle()
+
+      if (fallback.error) throw fallback.error
+      return fallback.data ? mapProfile(fallback.data) : existing
+    }
     return data ? mapProfile(data) : existing
   }
 
@@ -109,6 +144,31 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
       .maybeSingle()
 
     if (!error && data) return mapProfile(data)
+
+    if (error && isMissingColumn(error, 'intro_tour_version_seen')) {
+      const fallback = await supabase
+        .from('profiles')
+        .insert(stripIntroTourVersionSeen({
+          id: user.id,
+          username,
+          ...basePayload,
+          display_name: inferDisplayName(user),
+          avatar_url: inferAvatarUrl(user),
+        }))
+        .select('*')
+        .maybeSingle()
+
+      if (!fallback.error && fallback.data) return mapProfile(fallback.data)
+
+      if (fallback.error) {
+        const fallbackMessage = fallback.error.message?.toLowerCase() ?? ''
+        if (!fallbackMessage.includes('duplicate') && !fallbackMessage.includes('unique')) {
+          throw fallback.error
+        }
+        lastError = fallback.error
+        continue
+      }
+    }
 
     const message = error?.message?.toLowerCase() ?? ''
     if (!message.includes('duplicate') && !message.includes('unique')) {
@@ -154,5 +214,33 @@ export async function updateProfileIdentity(
     .single()
 
   if (error) throw error
+  return mapProfile(data)
+}
+
+export async function updateIntroTourVersionSeen(
+  supabase: DBClient,
+  userId: string,
+  versionSeen: number
+): Promise<AuthProfile> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ intro_tour_version_seen: versionSeen })
+    .eq('id', userId)
+    .select('*')
+    .single()
+
+  if (error) {
+    if (!isMissingColumn(error, 'intro_tour_version_seen')) throw error
+
+    const currentProfile = await getOwnProfile(supabase, userId)
+    if (currentProfile) {
+      return {
+        ...currentProfile,
+        introTourVersionSeen: Math.max(currentProfile.introTourVersionSeen ?? 0, versionSeen),
+      }
+    }
+
+    throw error
+  }
   return mapProfile(data)
 }

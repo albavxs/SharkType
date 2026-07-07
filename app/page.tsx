@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { getLanguageMetaById } from '@/data/metadata'
-import { loadLanguageById } from '@/data/loaders'
+import { getBundledLanguageById, loadLanguageById } from '@/data/loaders'
 import { generateChallengeSequence, sanitizeSnippetForTyping } from '@/lib/utils'
 import { Language, LanguageMeta, Snippet, Difficulty } from '@/lib/types'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
@@ -14,13 +14,13 @@ import { useTimer } from '@/hooks/useTimer'
 import { useProgress } from '@/hooks/useProgress'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useIsMobile } from '@/hooks/useMediaQuery'
-import { SessionOutput, applySessionToProgress, getLevel } from '@/lib/gamification'
+import { SessionOutput, applySessionToProgress, getLevel, isRankedSession } from '@/lib/gamification'
 import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Toolbar from '@/components/typing/Toolbar'
-
+import AchievementToast from '@/components/gamification/AchievementToast'
 import TypingArea from '@/components/typing/TypingArea'
 import SnippetInfo from '@/components/typing/SnippetInfo'
 import ResultScreen from '@/components/typing/ResultScreen'
@@ -28,18 +28,19 @@ import Footer from '@/components/typing/Footer'
 import { RefreshIcon } from '@/components/icons'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
+import SceneWrapper from '@/components/three/SceneWrapper'
 
-const AchievementToast = dynamic(() => import('@/components/gamification/AchievementToast'), { ssr: false })
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
-const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
+
+const initialBundledLanguage = getBundledLanguageById(DEFAULT_LANGUAGE)
 
 export default function Home() {
   const initialLanguageMeta = getLanguageMetaById(DEFAULT_LANGUAGE)!
   const [selectedLanguageId, setSelectedLanguageId] = useState(DEFAULT_LANGUAGE)
-  const [language, setLanguage] = useState<Language | null>(null)
+  const [language, setLanguage] = useState<Language | null>(initialBundledLanguage)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
-  const [sequence, setSequence] = useState<Snippet[]>([])
+  const [sequence, setSequence] = useState<Snippet[]>(initialBundledLanguage?.snippets ?? [])
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
@@ -47,7 +48,9 @@ export default function Home() {
   const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [isLanguageLoading, setIsLanguageLoading] = useState(true)
+  const [isLanguageLoading, setIsLanguageLoading] = useState(!initialBundledLanguage)
+  const [languageLoadError, setLanguageLoadError] = useState<string | null>(null)
+  const [languageReloadKey, setLanguageReloadKey] = useState(0)
   const isMobile = useIsMobile()
   const capsLock = useCapsLock()
   const { progress, recordSession } = useProgress()
@@ -90,30 +93,60 @@ export default function Home() {
 
   useEffect(() => { if (engine.state.status === 'running' && !isTimerRunning) startTimer() }, [engine.state.status, isTimerRunning, startTimer])
 
-  const [finalStats, setFinalStats] = useState<{ wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; errorSamples: number[] } | null>(null)
+  const [finalStats, setFinalStats] = useState<{ wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; accuracySamples: number[]; errorSamples: number[] } | null>(null)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [isResultSyncing, setIsResultSyncing] = useState(false)
 
   useEffect(() => {
     let active = true
+    const bundledLanguage = getBundledLanguageById(selectedLanguageId)
 
-    void (async () => {
-      const loadedLanguage = await loadLanguageById(selectedLanguageId)
-      if (!active) return
-      if (!loadedLanguage) {
-        setIsLanguageLoading(false)
-        return
-      }
-      setLanguage(loadedLanguage)
-      setSequence(generateChallengeSequence(loadedLanguage.snippets))
+    if (bundledLanguage) {
+      setLanguage(bundledLanguage)
+      setSequence((current) => {
+        if (
+          selectedLanguageId === DEFAULT_LANGUAGE &&
+          languageReloadKey === 0 &&
+          current.length > 0
+        ) {
+          return current
+        }
+
+        return generateChallengeSequence(bundledLanguage.snippets)
+      })
       setSeqIndex(0)
       setIsLanguageLoading(false)
+      setLanguageLoadError(null)
+      return () => {
+        active = false
+      }
+    }
+
+    void (async () => {
+      try {
+        const loadedLanguage = await loadLanguageById(selectedLanguageId)
+        if (!active) return
+        if (!loadedLanguage) {
+          setLanguageLoadError(t('loadingSnippetError', locale))
+          setIsLanguageLoading(false)
+          return
+        }
+        setLanguage(loadedLanguage)
+        setSequence(generateChallengeSequence(loadedLanguage.snippets))
+        setSeqIndex(0)
+        setIsLanguageLoading(false)
+        setLanguageLoadError(null)
+      } catch {
+        if (!active) return
+        setLanguageLoadError(t('loadingSnippetError', locale))
+        setIsLanguageLoading(false)
+      }
     })()
 
     return () => {
       active = false
     }
-  }, [selectedLanguageId])
+  }, [locale, selectedLanguageId, languageReloadKey])
 
   useEffect(() => {
     if (!showResult || !snippet || !language || sessionResult) return
@@ -133,6 +166,7 @@ export default function Home() {
         duration: dur,
         wpmSamples: [...engine.wpmSamples],
         rawWpmSamples: [...engine.rawWpmSamples],
+        accuracySamples: [...engine.accuracySamples],
         errorSamples: [...engine.errorSamples],
       }
       const input = {
@@ -145,6 +179,7 @@ export default function Home() {
         duration: dur,
         difficulty: snippet.difficulty,
         lenient,
+        rankedMode: difficulty !== 'all',
       }
       const optimisticOutput = applySessionToProgress(progress, input).output
 
@@ -162,13 +197,14 @@ export default function Home() {
     return () => {
       active = false
     }
-  }, [engine.accuracy, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.wpm, engine.wpmSamples, language, lenient, progress, recordSession, sessionResult, showResult, snippet])
+  }, [engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.wpm, engine.wpmSamples, language, lenient, progress, recordSession, sessionResult, showResult, snippet])
 
   const handleRestart = useCallback(() => { resetEngine(); resetTimer(timerDuration); setShowResult(false); setSessionResult(null); setFinalStats(null); setIsResultSyncing(false) }, [resetEngine, resetTimer, timerDuration])
   const handleNext = useCallback(() => { setSeqIndex(i => (i + 1) % sequence.length); setShowResult(false); setSessionResult(null); setFinalStats(null); setIsResultSyncing(false); resetTimer(timerDuration) }, [sequence.length, resetTimer, timerDuration])
   function handlePrev() { setSeqIndex(i => i > 0 ? i - 1 : sequence.length - 1); setShowResult(false); setSessionResult(null); setFinalStats(null); setIsResultSyncing(false); resetTimer(timerDuration) }
   function handleLanguageChange(lang: LanguageMeta) {
     setIsLanguageLoading(true)
+    setLanguageLoadError(null)
     setSelectedLanguageId(lang.id)
     setSeqIndex(0)
     resetEngine()
@@ -210,7 +246,11 @@ export default function Home() {
 
   const displaySeconds = isCountdown ? timerSeconds : engine.state.startTime ? elapsedSeconds : 0
   const levelInfo = getLevel(progress.totalXP)
-  const isTextMode = (language?.id ?? selectedLanguageId).startsWith('text-')
+  const sessionMode = isRankedSession(
+    language?.id ?? selectedLanguageId,
+    lenient,
+    difficulty !== 'all'
+  ) ? 'ranked' : 'precision'
 
   return (
     <main className="flex-1 flex flex-col min-h-screen relative">
@@ -226,25 +266,40 @@ export default function Home() {
 
         {/* Main */}
         <div className="flex-1 flex flex-col items-center justify-center px-3 pb-3 sm:px-6 sm:pb-0 min-w-0">
-          {isLanguageLoading || !language || !snippet ? (
+          {languageLoadError ? (
+            <div className="w-full max-w-lg rounded-2xl border px-4 py-4 text-center" style={{ borderColor: 'color-mix(in srgb, var(--error) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--error) 10%, transparent)' }}>
+              <p className="text-sm" style={{ color: 'var(--error)' }}>
+                {languageLoadError}
+              </p>
+              <button
+                onClick={() => {
+                  setIsLanguageLoading(true)
+                  setLanguageLoadError(null)
+                  setLanguageReloadKey((value) => value + 1)
+                }}
+                className="mt-4 rounded-xl px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+                style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+              >
+                {t('retry', locale)}
+              </button>
+            </div>
+          ) : isLanguageLoading || !language || !snippet ? (
             <div className="text-sm" style={{ color: 'var(--sub)' }}>
               {t('loading', locale)}
             </div>
           ) : showResult && sessionResult && finalStats ? (
             <ResultScreen wpm={finalStats.wpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
-              duration={finalStats.duration} snippet={snippet} languageLabel={language.label} wpmSamples={finalStats.wpmSamples}
-              rawWpmSamples={finalStats.rawWpmSamples} errorSamples={finalStats.errorSamples} languageId={language.id}
+              duration={finalStats.duration} snippet={snippet} languageLabel={language.label} sessionMode={sessionMode} wpmSamples={finalStats.wpmSamples}
+              rawWpmSamples={finalStats.rawWpmSamples} accuracySamples={finalStats.accuracySamples} errorSamples={finalStats.errorSamples} languageId={language.id}
               xpEarned={sessionResult.xpEarned} rankedPointsEarned={sessionResult.rankedPointsEarned} newLevel={sessionResult.newLevel}
               leveledUp={sessionResult.leveledUp} levelPercent={sessionResult.levelPercent} streak={sessionResult.streak}
-              onNext={handleNext} locale={locale} />
+              onNext={handleNext} onRestart={handleRestart} locale={locale} />
           ) : (
             <>
-              {!isTextMode && (
-                <div className={`w-full max-w-3xl min-w-0 mb-4 sm:mb-6 transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
-                  <SnippetInfo snippet={snippet} languageLabel={language.label} languageColor={language.color}
-                    current={seqIndex + 1} total={sequence.length} locale={locale} />
-                </div>
-              )}
+              <div className={`w-full max-w-3xl min-w-0 mb-4 sm:mb-6 transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
+                <SnippetInfo snippet={snippet} languageLabel={language.label} languageColor={language.color}
+                  current={seqIndex + 1} total={sequence.length} locale={locale} />
+              </div>
 
               {/* Mobile: logo + reset above code while typing */}
               {engine.state.status === 'running' && isMobile && (

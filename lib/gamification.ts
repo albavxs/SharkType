@@ -321,6 +321,19 @@ export interface SessionInput {
   duration: number
   difficulty: Difficulty
   lenient?: boolean
+  rankedMode?: boolean
+}
+
+export interface RankedPointBreakdown {
+  rankedEligible: boolean
+  total: number
+  gateFailed: boolean
+  base: number
+  difficultyBonus: number
+  speedBonus: number
+  accuracyBonus: number
+  controlPenalty: number
+  errorPenalty: number
 }
 
 export interface SessionOutput {
@@ -369,7 +382,11 @@ export function applySessionToProgress(
   const isFirstTime = !langProgress.completedSnippetIds.includes(input.snippetId)
   const firstTimeBonus = isFirstTime ? 5 : 0
   const xpEarned = calculateXpEarned(input) + firstTimeBonus
-  const rankedEligible = isRankedEligibleLanguage(input.languageId) && !input.lenient
+  const rankedEligible = isRankedSession(
+    input.languageId,
+    input.lenient ?? false,
+    input.rankedMode ?? true
+  )
   const rankedPointsEarned = rankedEligible ? calculateRankedPoints(input) : 0
 
   // Update language progress
@@ -459,6 +476,14 @@ export function isRankedEligibleLanguage(languageId: string): boolean {
   return !languageId.startsWith('text-')
 }
 
+export function isRankedSession(
+  languageId: string,
+  lenient: boolean = false,
+  rankedMode: boolean = true
+): boolean {
+  return rankedMode && isRankedEligibleLanguage(languageId) && !lenient
+}
+
 export function calculateXpEarned(input: SessionInput): number {
   const baseXP = 10
   const wpmBonus = Math.floor(input.wpm / 10)
@@ -467,14 +492,64 @@ export function calculateXpEarned(input: SessionInput): number {
   return Math.floor((baseXP + wpmBonus + accBonus) * diffMult)
 }
 
-export function calculateRankedPoints(input: Pick<SessionInput, 'languageId' | 'wpm' | 'rawWpm' | 'errors' | 'difficulty'>): number {
-  if (!isRankedEligibleLanguage(input.languageId)) return 0
+export function calculateRankedBreakdown(
+  input: Pick<SessionInput, 'languageId' | 'wpm' | 'rawWpm' | 'accuracy' | 'errors' | 'difficulty'>
+): RankedPointBreakdown {
+  if (!isRankedEligibleLanguage(input.languageId)) {
+    return {
+      rankedEligible: false,
+      total: 0,
+      gateFailed: true,
+      base: 0,
+      difficultyBonus: 0,
+      speedBonus: 0,
+      accuracyBonus: 0,
+      controlPenalty: 0,
+      errorPenalty: 0,
+    }
+  }
+
+  if (input.accuracy < 90) {
+    return {
+      rankedEligible: true,
+      total: 0,
+      gateFailed: true,
+      base: Math.round(input.wpm),
+      difficultyBonus: input.difficulty === 'hard' ? 28 : input.difficulty === 'medium' ? 12 : 0,
+      speedBonus: Math.max(0, Math.floor((input.wpm - 70) / 5) * 4),
+      accuracyBonus: 0,
+      controlPenalty: Math.round(Math.max(0, input.rawWpm - input.wpm) * 10) / 10,
+      errorPenalty: input.errors * (input.difficulty === 'hard' ? 5 : input.difficulty === 'medium' ? 3 : 2),
+    }
+  }
 
   const difficultyBonus = input.difficulty === 'hard' ? 28 : input.difficulty === 'medium' ? 12 : 0
-  const errorPenaltyMultiplier = input.difficulty === 'hard' ? 4 : input.difficulty === 'medium' ? 2 : 1
-  const speedDelta = Math.max(0, input.rawWpm - input.wpm)
+  const speedBonus = Math.max(0, Math.floor((input.wpm - 70) / 5) * 4)
+  const accuracyBonus = input.accuracy >= 98 ? 12 : input.accuracy >= 95 ? 6 : 0
+  const controlPenalty = Math.round(Math.max(0, input.rawWpm - input.wpm) * 15) / 10
+  const errorPenalty = input.errors * (input.difficulty === 'hard' ? 5 : input.difficulty === 'medium' ? 3 : 2)
+  const total = Math.max(
+    0,
+    Math.round(input.wpm + difficultyBonus + speedBonus + accuracyBonus - controlPenalty - errorPenalty)
+  )
 
-  return Math.max(0, Math.round(difficultyBonus + input.wpm + speedDelta - (input.errors * errorPenaltyMultiplier)))
+  return {
+    rankedEligible: true,
+    total,
+    gateFailed: false,
+    base: Math.round(input.wpm),
+    difficultyBonus,
+    speedBonus,
+    accuracyBonus,
+    controlPenalty,
+    errorPenalty,
+  }
+}
+
+export function calculateRankedPoints(
+  input: Pick<SessionInput, 'languageId' | 'wpm' | 'rawWpm' | 'accuracy' | 'errors' | 'difficulty'>
+): number {
+  return calculateRankedBreakdown(input).total
 }
 
 export function computeRankedAggregate(history: SessionRecord[]): {
@@ -484,10 +559,11 @@ export function computeRankedAggregate(history: SessionRecord[]): {
   return history.reduce(
     (acc, session) => {
       const rankedEligible = session.rankedEligible ?? isRankedEligibleLanguage(session.languageId)
-      const rankedPoints = session.rankedPoints ?? calculateRankedPoints({
+      const rankedPoints = calculateRankedPoints({
         languageId: session.languageId,
         wpm: session.wpm,
         rawWpm: session.rawWpm ?? session.wpm,
+        accuracy: session.accuracy,
         errors: session.errors,
         difficulty: session.difficulty ?? 'easy',
       })

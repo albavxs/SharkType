@@ -77,7 +77,8 @@ export function isSessionInput(value: unknown): value is SessionInput {
     typeof value.accuracy === 'number' &&
     typeof value.errors === 'number' &&
     typeof value.duration === 'number' &&
-    typeof value.difficulty === 'string'
+    typeof value.difficulty === 'string' &&
+    (typeof value.rankedMode === 'undefined' || typeof value.rankedMode === 'boolean')
   )
 }
 

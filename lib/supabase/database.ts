@@ -15,6 +15,7 @@ export interface Database {
           is_super_user: boolean
           local_imported_at: string | null
           onboarding_completed: boolean
+          intro_tour_version_seen: number | null
           stats_reconciled_at: string | null
           social_seeded_at: string | null
           created_at: string
@@ -31,6 +32,7 @@ export interface Database {
           is_super_user?: boolean
           local_imported_at?: string | null
           onboarding_completed?: boolean
+          intro_tour_version_seen?: number | null
           stats_reconciled_at?: string | null
           social_seeded_at?: string | null
         }
@@ -44,6 +46,7 @@ export interface Database {
           is_super_user?: boolean
           local_imported_at?: string | null
           onboarding_completed?: boolean
+          intro_tour_version_seen?: number | null
           stats_reconciled_at?: string | null
           social_seeded_at?: string | null
         }

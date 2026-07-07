@@ -29,6 +29,7 @@ export async function GET() {
     })
     return NextResponse.json({ profile })
   } catch (profileError) {
+    console.error('[profile] load failed:', profileError)
     return NextResponse.json(
       { error: profileError instanceof Error ? profileError.message : 'Could not load profile.' },
       { status: 500 }
@@ -90,6 +91,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ profile })
   } catch (profileError) {
+    console.error('[profile] update failed:', profileError)
     const message = profileError instanceof Error ? profileError.message : 'Could not update profile.'
     const normalized = message.toLowerCase()
     const isDuplicate = normalized.includes('duplicate') || normalized.includes('unique')

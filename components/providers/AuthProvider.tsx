@@ -23,6 +23,7 @@ interface AuthContextValue {
   user: User | null
   session: Session | null
   profile: AuthProfile | null
+  profileError: string | null
   isLoading: boolean
   supabaseConfigured: boolean
   supabaseMissingVars: SupabaseEnvVarName[]
@@ -44,6 +45,7 @@ interface AuthContextValue {
     avatarUrl?: string | null
     bio?: string | null
   }) => Promise<AuthActionResult>
+  markIntroTourSeen: (versionSeen: number) => Promise<AuthActionResult>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
@@ -70,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<AuthProfile | null>(null)
+  const [profileError, setProfileError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(supabaseConfigured)
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null
@@ -82,6 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const response = await fetch('/api/me/profile', { cache: 'no-store' })
     if (response.status === 401) {
       setProfile(null)
+      setProfileError(null)
       return
     }
 
@@ -91,6 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const payload = (await response.json()) as { profile: AuthProfile }
     setProfile(payload.profile)
+    setProfileError(null)
   }, [supabaseConfigured])
 
   useEffect(() => {
@@ -112,8 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentSession?.user) {
         try {
           await refreshProfile()
-        } catch {
-          setProfile(null)
+        } catch (error) {
+          setProfileError(error instanceof Error ? error.message : 'Could not load profile.')
         }
       }
 
@@ -132,12 +137,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!nextSession?.user) {
         setProfile(null)
+        setProfileError(null)
         setIsLoading(false)
         return
       }
 
-      void refreshProfile().catch(() => {
-        setProfile(null)
+      void refreshProfile().catch((error) => {
+        setProfileError(error instanceof Error ? error.message : 'Could not load profile.')
       })
     })
 
@@ -174,12 +180,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      return { error: error?.message ?? null }
+      if (error) {
+        return { error: error.message }
+      }
+
+      if (!data.user || !data.session) {
+        return { error: 'Sign-in did not create an authenticated session.' }
+      }
+
+      return { error: null }
     } catch (error) {
       return { error: error instanceof Error ? error.message : 'Email sign-in failed.' }
     }
@@ -351,9 +365,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const payload = (await response.json()) as { profile: AuthProfile }
       setProfile(payload.profile)
+      setProfileError(null)
       return { error: null }
     } catch (error) {
       return { error: error instanceof Error ? error.message : 'Could not update profile.' }
+    }
+  }
+
+  async function markIntroTourSeen(versionSeen: number): Promise<AuthActionResult> {
+    if (!supabaseConfigured) {
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
+    }
+
+    const previousProfile = profile
+
+    if (previousProfile) {
+      setProfile({
+        ...previousProfile,
+        introTourVersionSeen: Math.max(previousProfile.introTourVersionSeen ?? 0, versionSeen),
+      })
+    }
+
+    try {
+      const response = await fetch('/api/me/profile/intro-tour', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ versionSeen }),
+      })
+
+      if (!response.ok) {
+        if (previousProfile) setProfile(previousProfile)
+        return { error: await parseJsonError(response) }
+      }
+
+      const payload = (await response.json()) as { profile: AuthProfile }
+      setProfile(payload.profile)
+      return { error: null }
+    } catch (error) {
+      if (previousProfile) setProfile(previousProfile)
+      return { error: error instanceof Error ? error.message : 'Could not save intro tour state.' }
     }
   }
 
@@ -363,12 +415,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient()
     await supabase.auth.signOut()
     setProfile(null)
+    setProfileError(null)
   }
 
   const value: AuthContextValue = {
     user,
     session,
     profile,
+    profileError,
     isLoading,
     supabaseConfigured,
     supabaseMissingVars,
@@ -380,6 +434,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     resendEmailCode,
     resetPassword,
     updateProfile,
+    markIntroTourSeen,
     signOut,
     refreshProfile,
   }
