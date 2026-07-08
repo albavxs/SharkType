@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import SceneWrapper from '@/components/three/SceneWrapper'
 import { useIsMobile } from '@/hooks/useMediaQuery'
+import BrandLogo from '@/components/brand/BrandLogo'
 
 interface AuthShellProps {
   title: string
@@ -22,10 +23,9 @@ export default function AuthShell({ title, subtitle, children, footer }: AuthShe
         <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center">
           <Link
             href="/"
-            className="mb-8 w-fit text-2xl font-bold font-[family-name:var(--font-geist-mono)] transition-opacity hover:opacity-80"
-            style={{ color: 'var(--text)' }}
+            className="mb-8 w-fit transition-opacity hover:opacity-80"
           >
-            Shark<span style={{ color: 'var(--main)' }}>Type</span>
+            <BrandLogo size={34} textSizeClassName="text-2xl" />
           </Link>
 
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">

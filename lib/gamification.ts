@@ -102,8 +102,8 @@ function buildSyntheticLegacyTimestamp(date: string): string {
 
 function migrateLegacyStreak(streak?: Partial<StreakState> | null): StreakState {
   const legacyCurrent = Math.max(0, streak?.current ?? 0)
-  const migratedCurrent = Math.max(0, legacyCurrent - 1)
   const lastPracticeDate = streak?.lastPracticeDate ?? ''
+  const migratedCurrent = lastPracticeDate ? legacyCurrent + 1 : 0
   const syntheticActivityAt = buildSyntheticLegacyTimestamp(lastPracticeDate)
 
   return {
@@ -193,6 +193,10 @@ function getNowIso(): string {
   return new Date().toISOString()
 }
 
+function buildStreakEventKey(activityAt: string): string {
+  return `streak:${getIsoDate(activityAt)}`
+}
+
 function expireStreakIfNeeded(streakInput: StreakState, nowIso: string): StreakState {
   const streak = normalizeStreak(streakInput)
   const lastActivityMs = parseTimestamp(streak.lastActivityAt)
@@ -249,13 +253,13 @@ export function deriveStreakFromActivityTimestamps(timestamps: string[]): Streak
   }
 
   const lastActivityAt = chain[chain.length - 1] ?? ''
-  const current = Math.max(0, chain.length - 1)
+  const current = chain.length
 
   return {
     current,
     lastPracticeDate: lastActivityAt ? getIsoDate(lastActivityAt) : '',
     lastActivityAt,
-    lastStreakAt: current > 0 ? chain[chain.length - 2] ?? '' : '',
+    lastStreakAt: current > 0 ? lastActivityAt : '',
   }
 }
 
@@ -267,47 +271,85 @@ export function reconcileStreakOnLogin(
   const lastActivityMs = parseTimestamp(streak.lastActivityAt)
   const nowMs = parseTimestamp(nowIso)
 
-  if (lastActivityMs === null || nowMs === null) {
+  if (!streak.lastActivityAt || lastActivityMs === null || nowMs === null) {
     return { streak, notification: null }
   }
 
-  const alreadyClaimedLatestActivity = streak.lastStreakAt === streak.lastActivityAt
-  const elapsedSinceActivity = nowMs - lastActivityMs
+  const withinWindow = nowMs - lastActivityMs < EXPIRY_WINDOW_MS
+  const normalizedCurrent = withinWindow ? (streak.current > 0 ? streak.current : 1) : 0
+  const normalizedLastPracticeDate = withinWindow
+    ? (streak.lastPracticeDate || getIsoDate(streak.lastActivityAt))
+    : streak.lastPracticeDate
+  const normalizedLastStreakAt = withinWindow ? streak.lastActivityAt : ''
 
   if (
-    alreadyClaimedLatestActivity ||
-    elapsedSinceActivity < DAY_IN_MS ||
-    elapsedSinceActivity >= EXPIRY_WINDOW_MS
+    normalizedCurrent === streak.current &&
+    normalizedLastPracticeDate === streak.lastPracticeDate &&
+    streak.lastStreakAt === normalizedLastStreakAt
   ) {
     return { streak, notification: null }
   }
 
-  const nextCurrent = streak.current + 1
-  const nextStreak: StreakState = {
-    ...streak,
-    current: nextCurrent,
-    lastStreakAt: streak.lastActivityAt,
-  }
-
   return {
-    streak: nextStreak,
-    notification: {
-      current: nextCurrent,
-      eventKey: `streak:${streak.lastActivityAt}`,
+    streak: {
+      ...streak,
+      current: normalizedCurrent,
+      lastPracticeDate: normalizedLastPracticeDate,
+      lastStreakAt: normalizedLastStreakAt,
     },
+    notification: null,
   }
 }
 
 export function applyPracticeActivity(
   streakInput: StreakState,
   activityAt: string = getNowIso()
-): StreakState {
+): { streak: StreakState; incremented: boolean; eventKey: string | null } {
   const streak = expireStreakIfNeeded(streakInput, activityAt)
+  const activityDate = getIsoDate(activityAt)
+  const lastActivityAt = streak.lastActivityAt
+
+  if (!lastActivityAt) {
+    return {
+      streak: {
+        current: 1,
+        lastPracticeDate: activityDate,
+        lastActivityAt: activityAt,
+        lastStreakAt: activityAt,
+      },
+      incremented: true,
+      eventKey: buildStreakEventKey(activityAt),
+    }
+  }
+
+  if (getIsoDate(lastActivityAt) === activityDate) {
+    return {
+      streak: {
+        ...streak,
+        lastPracticeDate: activityDate,
+        lastActivityAt: activityAt,
+      },
+      incremented: false,
+      eventKey: null,
+    }
+  }
+
+  const lastActivityMs = parseTimestamp(lastActivityAt)
+  const activityMs = parseTimestamp(activityAt)
+  const isConsecutiveDay =
+    lastActivityMs !== null &&
+    activityMs !== null &&
+    activityMs - lastActivityMs < EXPIRY_WINDOW_MS
 
   return {
-    ...streak,
-    lastActivityAt: activityAt,
-    lastPracticeDate: getIsoDate(activityAt),
+    streak: {
+      current: isConsecutiveDay ? Math.max(1, streak.current) + 1 : 1,
+      lastPracticeDate: activityDate,
+      lastActivityAt: activityAt,
+      lastStreakAt: activityAt,
+    },
+    incremented: true,
+    eventKey: buildStreakEventKey(activityAt),
   }
 }
 
@@ -408,7 +450,8 @@ export function applySessionToProgress(
     progress.rankedSessions += 1
   }
 
-  progress.streak = applyPracticeActivity(progress.streak, sessionAt)
+  const streakUpdate = applyPracticeActivity(progress.streak, sessionAt)
+  progress.streak = streakUpdate.streak
 
   // Add history
   progress.history.unshift({
@@ -437,12 +480,12 @@ export function applySessionToProgress(
       newLevel: newLevelInfo.level,
       levelPercent: newLevelInfo.percent,
       streak: progress.streak.current,
-      streakEventKey: null,
+      streakEventKey: streakUpdate.eventKey,
       rankedPointsEarned,
       rankedEligible,
       rankedScore: progress.rankedScore,
       rankedTier: getRankFromScore(progress.rankedScore),
-      streakIncremented: false,
+      streakIncremented: streakUpdate.incremented,
     },
   }
 }

@@ -27,8 +27,6 @@ import { recordFeedEvent } from './feed-store'
 type DBClient = SupabaseClient<Database>
 type TypingSessionRow = Database['public']['Tables']['typing_sessions']['Row']
 type ProfileRow = Database['public']['Tables']['profiles']['Row']
-type LeaderboardWithScoreRow = Database['public']['Views']['leaderboard_with_score']['Row']
-type GlobalLeaderboardRow = Database['public']['Views']['global_leaderboard']['Row']
 
 export interface ProfileProgressPayload {
   profile: AuthProfile
@@ -69,40 +67,13 @@ function mapSessionRow(row: Database['public']['Tables']['typing_sessions']['Row
   }
 }
 
-function mapLeaderboardWithScoreRow(row: LeaderboardWithScoreRow, rank: number): LeaderboardEntry {
-  return {
-    rank,
-    userId: row.user_id,
-    username: row.username,
-    displayName: row.display_name,
-    avatarUrl: row.avatar_url,
-    totalXP: row.total_xp,
-    bestWPM: row.best_wpm,
-    avgWPM: row.avg_wpm,
-    currentStreak: row.current_streak,
-    totalSessions: row.total_sessions,
-    rankedSessions: row.ranked_sessions,
-    level: row.level,
-    score: row.score,
-  }
-}
-
-function mapGlobalLeaderboardRow(row: GlobalLeaderboardRow, rank: number): LeaderboardEntry {
-  return {
-    rank,
-    userId: row.user_id,
-    username: row.username,
-    displayName: row.display_name,
-    avatarUrl: row.avatar_url,
-    totalXP: row.total_xp,
-    bestWPM: row.best_wpm,
-    avgWPM: 0,
-    currentStreak: row.current_streak,
-    totalSessions: row.total_sessions,
-    rankedSessions: row.ranked_sessions,
-    level: getLevel(row.total_xp).level,
-    score: row.ranked_score,
-  }
+function streakStatesEqual(a: UserProgress['streak'], b: UserProgress['streak']): boolean {
+  return (
+    a.current === b.current &&
+    a.lastPracticeDate === b.lastPracticeDate &&
+    a.lastActivityAt === b.lastActivityAt &&
+    a.lastStreakAt === b.lastStreakAt
+  )
 }
 
 function buildInsertedSession(input: SessionInput, output: SessionOutput, createdAt: string) {
@@ -552,9 +523,17 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
     progress.rankedSessions = rankedAggregate.rankedSessions
   }
 
-  if (!progressResult.data || !progress.streak.lastActivityAt) {
+  const derivedStreak = sessionRows.length > 0
+    ? deriveStreakFromActivityTimestamps(sessionRows.map((row) => row.created_at))
+    : progress.streak
+
+  if (sessionRows.length > 0) {
+    progress.streak = derivedStreak
+  } else if (!progressResult.data || !progress.streak.lastActivityAt) {
     progress.streak = deriveStreakFromActivityTimestamps(sessionRows.map((row) => row.created_at))
   }
+
+  progress.streak = reconcileStreakOnLogin(progress.streak).streak
 
   progress.level = getLevel(progress.totalXP).level
 
@@ -563,7 +542,16 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
     (
       progressResult.data.total_xp !== progress.totalXP ||
       (progressResult.data.ranked_score ?? 0) !== progress.rankedScore ||
-      (progressResult.data.ranked_sessions ?? 0) !== progress.rankedSessions
+      (progressResult.data.ranked_sessions ?? 0) !== progress.rankedSessions ||
+      !streakStatesEqual(
+        {
+          current: progressResult.data.current_streak,
+          lastPracticeDate: progressResult.data.last_practice_date ?? '',
+          lastActivityAt: progressResult.data.last_activity_at ?? '',
+          lastStreakAt: progressResult.data.last_streak_at ?? '',
+        },
+        progress.streak
+      )
     )
   ) {
     await persistProgressAggregate(supabase, userId, progress)
@@ -757,43 +745,9 @@ export async function resetRemoteProgress(supabase: DBClient, userId: string) {
 }
 
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
-  const leaderboardViewRes = await supabase
-    .from('leaderboard_with_score')
-    .select('*')
-    .order('score', { ascending: false })
-    .order('best_wpm', { ascending: false })
-    .order('current_streak', { ascending: false })
-    .order('total_sessions', { ascending: false })
-    .limit(1000)
-
-  if (!leaderboardViewRes.error) {
-    return (leaderboardViewRes.data ?? []).map((row, index) => mapLeaderboardWithScoreRow(row, index + 1))
-  }
-
-  if (!isMissingTable(leaderboardViewRes.error)) {
-    throw leaderboardViewRes.error
-  }
-
-  const globalLeaderboardRes = await supabase
-    .from('global_leaderboard')
-    .select('*')
-    .order('ranked_score', { ascending: false })
-    .order('best_wpm', { ascending: false })
-    .order('current_streak', { ascending: false })
-    .order('total_sessions', { ascending: false })
-    .limit(1000)
-
-  if (!globalLeaderboardRes.error) {
-    return (globalLeaderboardRes.data ?? []).map((row, index) => mapGlobalLeaderboardRow(row, index + 1))
-  }
-
-  if (!isMissingTable(globalLeaderboardRes.error)) {
-    throw globalLeaderboardRes.error
-  }
-
   const [profilesRes, progressRes, sessionsRes] = await Promise.all([
     supabase.from('profiles').select('id, username, display_name, avatar_url'),
-    supabase.from('user_progress').select('user_id, total_xp, current_streak, total_sessions'),
+    supabase.from('user_progress').select('user_id, total_xp, total_sessions, current_streak, last_practice_date, last_activity_at, last_streak_at'),
     supabase.from('typing_sessions').select('*').order('created_at', { ascending: false }),
   ])
 
@@ -823,9 +777,19 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     const userSessions = groupedSessions.get(userId) ?? []
     const rankedAggregate = computeRankedAggregate(userSessions.map(mapSessionRow))
     const progressRow = progressMap.get(userId)
-    const totalXP = progressRow?.total_xp ?? userSessions.reduce((sum, session) => sum + session.xp_earned, 0)
+    const totalXP = userSessions.length > 0
+      ? userSessions.reduce((sum, session) => sum + session.xp_earned, 0)
+      : progressRow?.total_xp ?? 0
     const bestWPM = userSessions.reduce((best, session) => Math.max(best, session.wpm), 0)
     const avgWPM = computeAverageWPM(userSessions.map((session) => session.wpm))
+    const derivedStreak = userSessions.length > 0
+      ? deriveStreakFromActivityTimestamps(userSessions.map((session) => session.created_at))
+      : reconcileStreakOnLogin({
+          current: progressRow?.current_streak ?? 0,
+          lastPracticeDate: progressRow?.last_practice_date ?? '',
+          lastActivityAt: progressRow?.last_activity_at ?? '',
+          lastStreakAt: progressRow?.last_streak_at ?? '',
+        }).streak
 
     entries.push({
       rank: 0,
@@ -836,8 +800,8 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
       totalXP,
       bestWPM,
       avgWPM,
-      currentStreak: progressRow?.current_streak ?? 0,
-      totalSessions: progressRow?.total_sessions ?? userSessions.length,
+      currentStreak: reconcileStreakOnLogin(derivedStreak).streak.current,
+      totalSessions: userSessions.length > 0 ? userSessions.length : progressRow?.total_sessions ?? 0,
       rankedSessions: rankedAggregate.rankedSessions,
       level: getLevel(totalXP).level,
       score: rankedAggregate.rankedScore,

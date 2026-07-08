@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/lib/supabase/database'
-import { getLevel } from '@/lib/gamification'
+import { getLevel, reconcileStreakOnLogin } from '@/lib/gamification'
 import { getRankFromScore, type RankState } from '@/lib/ranks'
-import { ensureUserSocialBackfill } from './progress-store'
+import { ensureUserSocialBackfill, getUserProgressSnapshot } from './progress-store'
 
 type DBClient = SupabaseClient<any>
 
@@ -72,18 +72,8 @@ export async function getPublicProfile(
     console.error('[getPublicProfile] social backfill failed (non-fatal):', err)
   })
 
-  const [progressRes, languagesRes, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
-    supabase
-      .from('user_progress')
-      .select('total_xp, current_streak, total_sessions, best_wpm, best_accuracy, ranked_score, ranked_sessions')
-      .eq('user_id', userId)
-      .maybeSingle(),
-    supabase
-      .from('user_language_progress')
-      .select('language_id, total_sessions, best_wpm, best_accuracy')
-      .eq('user_id', userId)
-      .order('total_sessions', { ascending: false })
-      .limit(5),
+  const [snapshot, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
+    getUserProgressSnapshot(supabase as unknown as SupabaseClient<Database>, userId),
     safeSelect<{ achievement_id: string }>(supabase, 'user_achievements', q =>
       q.select('achievement_id').eq('user_id', userId),
     ),
@@ -104,15 +94,24 @@ export async function getPublicProfile(
       : Promise.resolve({ data: [], error: null }),
   ])
 
-  if (progressRes.error) throw progressRes.error
-  if (languagesRes.error) throw languagesRes.error
-
-  const totalXP = progressRes.data?.total_xp ?? 0
+  const totalXP = snapshot.totalXP
   const level = getLevel(totalXP).level
-  const score = progressRes.data?.ranked_score ?? 0
-  const rankedSessions = progressRes.data?.ranked_sessions ?? 0
-  const totalSessions = progressRes.data?.total_sessions ?? 0
+  const score = snapshot.rankedScore
+  const rankedSessions = snapshot.rankedSessions
+  const totalSessions = snapshot.history.length
   const rank = getRankFromScore(score)
+  const bestWPM = Object.values(snapshot.languages).reduce((best, entry) => Math.max(best, entry.bestWPM), 0)
+  const bestAccuracy = Object.values(snapshot.languages).reduce((best, entry) => Math.max(best, entry.bestAccuracy), 0)
+  const topLanguages = Object.entries(snapshot.languages)
+    .map(([languageId, entry]) => ({
+      languageId,
+      totalSessions: entry.totalSessions,
+      bestWPM: entry.bestWPM,
+      bestAccuracy: entry.bestAccuracy,
+    }))
+    .sort((a, b) => b.totalSessions - a.totalSessions || b.bestWPM - a.bestWPM)
+    .slice(0, 5)
+  const currentStreak = reconcileStreakOnLogin(snapshot.streak).streak.current
 
   return {
     id: profile.id,
@@ -125,17 +124,12 @@ export async function getPublicProfile(
     level,
     score,
     rank,
-    currentStreak: progressRes.data?.current_streak ?? 0,
+    currentStreak,
     totalSessions,
     rankedSessions,
-    bestWPM: progressRes.data?.best_wpm ?? 0,
-    bestAccuracy: progressRes.data?.best_accuracy ?? 0,
-    topLanguages: (languagesRes.data ?? []).map(row => ({
-      languageId: row.language_id,
-      totalSessions: row.total_sessions,
-      bestWPM: row.best_wpm,
-      bestAccuracy: row.best_accuracy,
-    })),
+    bestWPM,
+    bestAccuracy,
+    topLanguages,
     achievementIds: (achievementsRes.data ?? []).map(r => r.achievement_id),
     followerCount: (followersRes.data ?? []).length,
     followingCount: (followingRes.data ?? []).length,

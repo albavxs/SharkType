@@ -29,6 +29,7 @@ import { RefreshIcon } from '@/components/icons'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
 import SceneWrapper from '@/components/three/SceneWrapper'
+import BrandLogo from '@/components/brand/BrandLogo'
 
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
@@ -305,9 +306,9 @@ export default function Home() {
               {engine.state.status === 'running' && isMobile && (
                 <div className="mb-4 flex flex-wrap items-center justify-center gap-3 animate-fade-in">
                   <button onClick={handleRestart}
-                    className="text-base font-bold font-[family-name:var(--font-geist-mono)] active:scale-95 transition-all duration-150"
-                    style={{ color: 'var(--text)' }}>
-                    Shark<span style={{ color: 'var(--main)' }}>Type</span>
+                    className="active:scale-95 transition-all duration-150"
+                  >
+                    <BrandLogo size={24} textSizeClassName="text-base" />
                   </button>
                   <button onClick={handleRestart}
                     className="p-1.5 rounded-full active:scale-90 transition-all duration-150"

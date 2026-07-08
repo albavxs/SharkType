@@ -5,6 +5,7 @@ import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogO
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
+import BrandLogo from '@/components/brand/BrandLogo'
 import LanguageDropdown from './LanguageDropdown'
 import DifficultySelector from './DifficultySelector'
 import { useAuth } from '@/hooks/useAuth'
@@ -53,7 +54,7 @@ export default function Toolbar({
       <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center sm:gap-4">
         <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
           <button onClick={onHomeClick} className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
-            Shark<span style={{ color: 'var(--main)' }}>Type</span>
+            <BrandLogo size={30} textSizeClassName="text-lg sm:text-2xl" />
           </button>
 
           {/* Right side on mobile (locale + level + streak) */}
