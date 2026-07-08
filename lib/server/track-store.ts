@@ -11,17 +11,23 @@ function toLanguageMeta(language: Language): LanguageMeta {
   }
 }
 
+function getTrackLanguageSource(track: Track): Language[] {
+  return track.textLanguages ? textLanguages : languages
+}
+
 export function getTrackLanguages(track: Track): LanguageMeta[] {
+  const sourceLanguages = getTrackLanguageSource(track)
+
   if (track.textLanguages) {
     const source = track.snippetIds.length > 0
-      ? textLanguages.filter((language) => language.id === 'text-typing')
-      : textLanguages.filter((language) => language.id !== 'text-typing')
+      ? sourceLanguages.filter((language) => language.id === 'text-typing')
+      : sourceLanguages.filter((language) => language.id !== 'text-typing')
 
     return source.map(toLanguageMeta)
   }
 
   if (track.slots && track.slots.length > 0) {
-    return languages
+    return sourceLanguages
       .filter((language) =>
         language.snippets.some((snippet) => snippet.slot && track.slots!.includes(snippet.slot))
       )
@@ -32,7 +38,7 @@ export function getTrackLanguages(track: Track): LanguageMeta[] {
   const result: LanguageMeta[] = []
 
   for (const snippetId of track.snippetIds) {
-    for (const language of languages) {
+    for (const language of sourceLanguages) {
       if (seen.has(language.id)) continue
       if (!language.snippets.some((snippet) => snippet.id === snippetId)) continue
       seen.add(language.id)
@@ -77,6 +83,7 @@ export function getTrackPracticePayload(trackId: string, requestedLanguageId?: s
   const track = getTrackById(trackId)
   if (!track) return null
 
+  const sourceLanguages = getTrackLanguageSource(track)
   const availableLanguages = getTrackLanguages(track)
   const selectedLanguageMeta =
     (requestedLanguageId
@@ -91,7 +98,7 @@ export function getTrackPracticePayload(trackId: string, requestedLanguageId?: s
     }
   }
 
-  const language = languages.find((entry) => entry.id === selectedLanguageMeta.id)
+  const language = sourceLanguages.find((entry) => entry.id === selectedLanguageMeta.id)
   if (!language) {
     const fallbackMeta = getLanguageMetaById(selectedLanguageMeta.id) ?? selectedLanguageMeta
     return {

@@ -3,11 +3,10 @@
 import dynamic from 'next/dynamic'
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { languages, textLanguages } from '@/data'
-import { getTrackById, type Track } from '@/data/tracks'
+import { getTrackById } from '@/data/tracks'
 import { getLanguageMetaById } from '@/data/metadata'
 import { sanitizeSnippetForTyping } from '@/lib/utils'
-import { Snippet, Language, LanguageMeta, Difficulty } from '@/lib/types'
+import { Snippet, LanguageMeta, Difficulty } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
 import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
 import { useFontScale } from '@/hooks/useFontScale'
@@ -35,38 +34,19 @@ const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
 const AchievementToast = dynamic(() => import('@/components/gamification/AchievementToast'), { ssr: false })
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; accuracySamples: number[]; errorSamples: number[] }
+type SnippetFinalizationReason = 'completed' | 'timeout'
+
+interface PendingSnippetFinalization {
+  runId: number
+  seqIndex: number
+  reason: SnippetFinalizationReason
+}
 
 function getTrackTimerDuration(difficulty: Difficulty | 'all', snippetCount: number): number {
   if (difficulty === 'easy') return 60 + snippetCount * 5
   if (difficulty === 'medium') return 45 + snippetCount * 4
   if (difficulty === 'hard') return 30 + snippetCount * 3
   return 0
-}
-
-function getAvailableTrackLanguages(track: Track | null | undefined): Language[] {
-  if (!track) return []
-  if (track.textLanguages) {
-    if (track.snippetIds.length > 0) return textLanguages.filter(l => l.id === 'text-typing')
-    return textLanguages.filter(l => l.id !== 'text-typing')
-  }
-
-  if (track.slots && track.slots.length > 0) {
-    return languages.filter(lang =>
-      lang.snippets.some(s => s.slot && track.slots!.includes(s.slot))
-    )
-  }
-
-  const seen = new Set<string>()
-  const result: Language[] = []
-  for (const sid of track.snippetIds) {
-    for (const lang of languages) {
-      if (!seen.has(lang.id) && lang.snippets.find(s => s.id === sid)) {
-        seen.add(lang.id)
-        result.push(lang)
-      }
-    }
-  }
-  return result
 }
 
 export default function TrackPracticePage() {
@@ -95,6 +75,7 @@ export default function TrackPracticePage() {
   const [finalStats, setFinalStats] = useState<SnippetResult | null>(null)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [isResultSyncing, setIsResultSyncing] = useState(false)
+  const [pendingSnippetFinalization, setPendingSnippetFinalization] = useState<PendingSnippetFinalization | null>(null)
   const { progress, recordSession } = useProgress()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -109,18 +90,48 @@ export default function TrackPracticePage() {
   const timerDuration = useMemo(() => getTrackTimerDuration(difficulty, snippetCount), [difficulty, snippetCount])
   const isCountdown = difficulty !== 'all'
 
-  // Pending advance flag — set by handleFinish or handleTimerEnd, consumed by useEffect
-  const pendingAdvanceRef = useRef(false)
+  const trackRunIdRef = useRef(0)
+  const finalizedSnippetKeyRef = useRef<string | null>(null)
+  const sessionSaveQueueRef = useRef<Promise<void>>(Promise.resolve())
+  const pendingSaveCountRef = useRef(0)
+  const optimisticProgressRef = useRef(progress)
   const timerDurationRef = useRef(timerDuration)
 
   useEffect(() => {
     timerDurationRef.current = timerDuration
   }, [timerDuration])
 
+  useEffect(() => {
+    if (pendingSaveCountRef.current === 0 && accumulated.length === 0 && !showResult) {
+      optimisticProgressRef.current = progress
+    }
+  }, [accumulated.length, progress, showResult])
+
+  const resetTrackRunState = useCallback(() => {
+    trackRunIdRef.current += 1
+    finalizedSnippetKeyRef.current = null
+    setPendingSnippetFinalization(null)
+  }, [])
+
+  const requestSnippetFinalization = useCallback((reason: SnippetFinalizationReason) => {
+    const snippetId = snippet?.id
+    if (!snippetId) return
+
+    const snippetKey = `${trackRunIdRef.current}:${seqIndex}:${snippetId}`
+    if (finalizedSnippetKeyRef.current === snippetKey) return
+
+    finalizedSnippetKeyRef.current = snippetKey
+    setPendingSnippetFinalization({
+      runId: trackRunIdRef.current,
+      seqIndex,
+      reason,
+    })
+  }, [seqIndex, snippet?.id])
+
   const handleTimerEnd = useCallback(() => {
     playComplete()
-    pendingAdvanceRef.current = true
-  }, [])
+    requestSnippetFinalization('timeout')
+  }, [requestSnippetFinalization])
 
   const timer = useTimer(timerDuration, isCountdown, handleTimerEnd)
   const {
@@ -134,8 +145,8 @@ export default function TrackPracticePage() {
   const handleFinish = useCallback(() => {
     playComplete()
     stopTimer()
-    pendingAdvanceRef.current = true
-  }, [stopTimer])
+    requestSnippetFinalization('completed')
+  }, [requestSnippetFinalization, stopTimer])
 
   useEffect(() => {
     if (!track) {
@@ -191,110 +202,126 @@ export default function TrackPracticePage() {
     }
   }, [engine.state.status, isCountdown, isTimerRunning, startTimer])
 
-  // Process snippet completion after engine finishes
   useEffect(() => {
-    if (!pendingAdvanceRef.current) return
-    if (engine.state.status !== 'finished') return
-    pendingAdvanceRef.current = false
-
-    let active = true
-
-    void (async () => {
-      const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-      const stats: SnippetResult = {
-        wpm: engine.wpm, rawWpm: engine.rawWpm, accuracy: engine.accuracy,
-        errors: engine.state.errors, duration: dur,
-        wpmSamples: [...engine.wpmSamples], rawWpmSamples: [...engine.rawWpmSamples], accuracySamples: [...engine.accuracySamples], errorSamples: [...engine.errorSamples],
-      }
-
-      const input = selectedLang && snippet ? {
-        languageId: selectedLang.id,
-        snippetId: snippet.id,
-        wpm: stats.wpm,
-        rawWpm: stats.rawWpm,
-        accuracy: stats.accuracy,
-        errors: stats.errors,
-        duration: dur,
-        difficulty: snippet.difficulty,
-        lenient,
-      } : null
-
-      const next = [...accumulated, stats]
-      if (!active) return
-
-      setAccumulated(next)
-
-      if (seqIndex >= trackSnippets.length - 1) {
-        let optimisticOutput: SessionOutput | null = null
-        let optimisticXpEarned = 0
-        let optimisticRankedPointsEarned = 0
-
-        if (input) {
-          optimisticOutput = applySessionToProgress(progress, input).output
-          optimisticXpEarned = optimisticOutput.xpEarned
-          optimisticRankedPointsEarned = optimisticOutput.rankedPointsEarned
-          const optimisticLeveledUp = optimisticOutput.leveledUp
-          setSessionResult(optimisticOutput)
-          setTrackXpEarned((current) => current + optimisticXpEarned)
-          setTrackRankedPointsEarned((current) => current + optimisticRankedPointsEarned)
-          setTrackLeveledUp((current) => current || optimisticLeveledUp)
-          setIsResultSyncing(true)
-        }
-
-        const avgWpm = Math.round(next.reduce((s, r) => s + r.wpm, 0) / next.length)
-        const avgRawWpm = Math.round(next.reduce((s, r) => s + r.rawWpm, 0) / next.length)
-        const avgAcc = Math.round(next.reduce((s, r) => s + r.accuracy, 0) / next.length)
-        const totalErrors = next.reduce((s, r) => s + r.errors, 0)
-        const totalDur = next.reduce((s, r) => s + r.duration, 0)
-        setFinalStats({
-          wpm: avgWpm,
-          rawWpm: avgRawWpm,
-          accuracy: avgAcc,
-          errors: totalErrors,
-          duration: totalDur,
-          wpmSamples: next.flatMap(r => r.wpmSamples),
-          rawWpmSamples: next.flatMap(r => r.rawWpmSamples),
-          accuracySamples: next.flatMap(r => r.accuracySamples),
-          errorSamples: next.flatMap(r => r.errorSamples),
-        })
-        setShowResult(true)
-
-        if (input) {
-          void (async () => {
-            const output = await recordSession(input)
-            if (!active) return
-            setSessionResult(output)
-            setTrackXpEarned((current) => current - optimisticXpEarned + output.xpEarned)
-            setTrackRankedPointsEarned((current) => current - optimisticRankedPointsEarned + output.rankedPointsEarned)
-            setTrackLeveledUp((current) => current || output.leveledUp)
-            setIsResultSyncing(false)
-          })()
-        }
-
-        // Marcar trilha como concluída no backend
-        void fetch('/api/me/progress/track-complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ trackId }),
-        }).catch(err => console.error('Failed to record track completion:', err))
-      } else {
-        if (input) {
-          const output = await recordSession(input)
-          if (!active) return
-          setSessionResult(output)
-          setTrackXpEarned((current) => current + output.xpEarned)
-          setTrackRankedPointsEarned((current) => current + output.rankedPointsEarned)
-          setTrackLeveledUp((current) => current || output.leveledUp)
-        }
-        setSeqIndex(i => i + 1)
-        resetTimer(timerDurationRef.current)
-      }
-    })()
-
-    return () => {
-      active = false
+    if (!pendingSnippetFinalization) return
+    if (pendingSnippetFinalization.runId !== trackRunIdRef.current) {
+      setPendingSnippetFinalization(null)
+      return
     }
-  }, [accumulated, engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.state.status, engine.wpm, engine.wpmSamples, lenient, progress, recordSession, resetTimer, selectedLang, seqIndex, snippet, trackId, trackSnippets.length])
+
+    if (pendingSnippetFinalization.reason === 'completed' && engine.state.status !== 'finished') {
+      return
+    }
+
+    const finalizedSnippet = trackSnippets[pendingSnippetFinalization.seqIndex] ?? null
+    if (!selectedLang || !finalizedSnippet) {
+      setPendingSnippetFinalization(null)
+      return
+    }
+
+    setPendingSnippetFinalization(null)
+
+    const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
+    const stats: SnippetResult = {
+      wpm: engine.wpm,
+      rawWpm: engine.rawWpm,
+      accuracy: engine.accuracy,
+      errors: engine.state.errors,
+      duration: dur,
+      wpmSamples: [...engine.wpmSamples],
+      rawWpmSamples: [...engine.rawWpmSamples],
+      accuracySamples: [...engine.accuracySamples],
+      errorSamples: [...engine.errorSamples],
+    }
+
+    const input = {
+      languageId: selectedLang.id,
+      snippetId: finalizedSnippet.id,
+      wpm: stats.wpm,
+      rawWpm: stats.rawWpm,
+      accuracy: stats.accuracy,
+      errors: stats.errors,
+      duration: dur,
+      difficulty: finalizedSnippet.difficulty,
+      lenient,
+    }
+
+    const optimisticResult = applySessionToProgress(optimisticProgressRef.current, input)
+    optimisticProgressRef.current = optimisticResult.progress
+
+    setTrackXpEarned((current) => current + optimisticResult.output.xpEarned)
+    setTrackRankedPointsEarned((current) => current + optimisticResult.output.rankedPointsEarned)
+    setTrackLeveledUp((current) => current || optimisticResult.output.leveledUp)
+
+    const runId = pendingSnippetFinalization.runId
+    const isLastSnippet = pendingSnippetFinalization.seqIndex >= trackSnippets.length - 1
+
+    pendingSaveCountRef.current += 1
+    sessionSaveQueueRef.current = sessionSaveQueueRef.current
+      .catch(() => undefined)
+      .then(async () => {
+        const output = await recordSession(input)
+        if (runId !== trackRunIdRef.current) return
+
+        if (isLastSnippet) {
+          setSessionResult(output)
+          setTrackLeveledUp((current) => current || output.leveledUp)
+          setIsResultSyncing(false)
+          return
+        }
+
+        setSessionResult(output)
+      })
+      .catch((error) => {
+        console.error('Failed to persist track session:', error)
+        if (runId === trackRunIdRef.current && isLastSnippet) {
+          setIsResultSyncing(false)
+        }
+      })
+      .finally(() => {
+        pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1)
+      })
+
+    const nextResults = [...accumulated, stats]
+    setAccumulated(nextResults)
+
+    if (isLastSnippet) {
+      const avgWpm = Math.round(nextResults.reduce((sum, result) => sum + result.wpm, 0) / nextResults.length)
+      const avgRawWpm = Math.round(nextResults.reduce((sum, result) => sum + result.rawWpm, 0) / nextResults.length)
+      const avgAcc = Math.round(nextResults.reduce((sum, result) => sum + result.accuracy, 0) / nextResults.length)
+      const totalErrors = nextResults.reduce((sum, result) => sum + result.errors, 0)
+      const totalDur = nextResults.reduce((sum, result) => sum + result.duration, 0)
+
+      setFinalStats({
+        wpm: avgWpm,
+        rawWpm: avgRawWpm,
+        accuracy: avgAcc,
+        errors: totalErrors,
+        duration: totalDur,
+        wpmSamples: nextResults.flatMap((result) => result.wpmSamples),
+        rawWpmSamples: nextResults.flatMap((result) => result.rawWpmSamples),
+        accuracySamples: nextResults.flatMap((result) => result.accuracySamples),
+        errorSamples: nextResults.flatMap((result) => result.errorSamples),
+      })
+      setSessionResult(optimisticResult.output)
+      setIsResultSyncing(true)
+      setShowResult(true)
+
+      // Marcar trilha como concluída no backend
+      void fetch('/api/me/progress/track-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trackId }),
+      }).catch(err => console.error('Failed to record track completion:', err))
+      return
+    }
+
+    setSessionResult(null)
+    setElapsedSeconds(0)
+    resetEngine()
+    setSeqIndex(pendingSnippetFinalization.seqIndex + 1)
+    resetTimer(timerDurationRef.current)
+  }, [accumulated, engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.state.status, engine.wpm, engine.wpmSamples, lenient, recordSession, resetEngine, resetTimer, selectedLang, pendingSnippetFinalization, trackId, trackSnippets])
 
   const prevErrors = useRef(0)
   const isTyping = engine.state.status === 'running'
@@ -323,6 +350,7 @@ export default function TrackPracticePage() {
   }, [engine.state.startTime, isCountdown, showResult])
 
   const handleRestartTrack = useCallback(() => {
+    resetTrackRunState()
     setSeqIndex(0)
     setShowResult(false)
     setSessionResult(null)
@@ -334,13 +362,44 @@ export default function TrackPracticePage() {
     setIsResultSyncing(false)
     resetEngine()
     resetTimer(timerDuration)
-  }, [resetEngine, resetTimer, timerDuration])
+    setElapsedSeconds(0)
+  }, [resetEngine, resetTimer, resetTrackRunState, timerDuration])
 
-  const handleRestart = useCallback(() => { resetEngine(); resetTimer(timerDuration) }, [resetEngine, resetTimer, timerDuration])
-  const handleNext = useCallback(() => { if (seqIndex < trackSnippets.length - 1) { setSeqIndex(i => i + 1); setIsResultSyncing(false); resetEngine(); resetTimer(timerDuration) } }, [resetEngine, resetTimer, seqIndex, timerDuration, trackSnippets.length])
-  const handlePrev = useCallback(() => { if (seqIndex > 0) { setSeqIndex(i => i - 1); setIsResultSyncing(false); resetEngine(); resetTimer(timerDuration) } }, [resetEngine, resetTimer, seqIndex, timerDuration])
+  const handleRestart = useCallback(() => {
+    resetTrackRunState()
+    setSessionResult(null)
+    setIsResultSyncing(false)
+    setElapsedSeconds(0)
+    resetEngine()
+    resetTimer(timerDuration)
+  }, [resetEngine, resetTimer, resetTrackRunState, timerDuration])
+
+  const handleNext = useCallback(() => {
+    if (seqIndex < trackSnippets.length - 1) {
+      resetTrackRunState()
+      setSeqIndex(i => i + 1)
+      setSessionResult(null)
+      setIsResultSyncing(false)
+      setElapsedSeconds(0)
+      resetEngine()
+      resetTimer(timerDuration)
+    }
+  }, [resetEngine, resetTimer, resetTrackRunState, seqIndex, timerDuration, trackSnippets.length])
+
+  const handlePrev = useCallback(() => {
+    if (seqIndex > 0) {
+      resetTrackRunState()
+      setSeqIndex(i => i - 1)
+      setSessionResult(null)
+      setIsResultSyncing(false)
+      setElapsedSeconds(0)
+      resetEngine()
+      resetTimer(timerDuration)
+    }
+  }, [resetEngine, resetTimer, resetTrackRunState, seqIndex, timerDuration])
 
   function handleLangChange(lang: LanguageMeta) {
+    resetTrackRunState()
     setIsTrackDataLoading(true)
     setSeqIndex(0)
     setSelectedLang(lang)
@@ -353,11 +412,13 @@ export default function TrackPracticePage() {
     setTrackRankedPointsEarned(0)
     setTrackLeveledUp(false)
     setIsResultSyncing(false)
+    setElapsedSeconds(0)
     resetEngine()
     resetTimer(timerDuration)
   }
 
   function handleDifficultyChange(d: Difficulty | 'all') {
+    resetTrackRunState()
     setDifficulty(d)
     setSeqIndex(0)
     setShowResult(false)
@@ -368,6 +429,7 @@ export default function TrackPracticePage() {
     setTrackRankedPointsEarned(0)
     setTrackLeveledUp(false)
     setIsResultSyncing(false)
+    setElapsedSeconds(0)
     resetEngine()
     const newDur = getTrackTimerDuration(d, snippetCount)
     resetTimer(newDur)
@@ -426,7 +488,7 @@ export default function TrackPracticePage() {
               duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} sessionMode={sessionMode} wpmSamples={finalStats.wpmSamples}
               rawWpmSamples={finalStats.rawWpmSamples} accuracySamples={finalStats.accuracySamples} errorSamples={finalStats.errorSamples} languageId={selectedLang?.id ?? ''}
               xpEarned={trackXpEarned} rankedPointsEarned={trackRankedPointsEarned} newLevel={sessionResult?.newLevel ?? levelInfo.level} leveledUp={trackLeveledUp}
-              levelPercent={sessionResult?.levelPercent ?? getLevel(progress.totalXP).percent} streak={progress.streak.current}
+              levelPercent={sessionResult?.levelPercent ?? getLevel(progress.totalXP).percent} streak={sessionResult?.streak ?? progress.streak.current}
               onNext={handleRestartTrack} onRestart={handleRestartTrack} locale={locale} />
           ) : (
             <>
