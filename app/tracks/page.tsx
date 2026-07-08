@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { tracks, Track } from '@/data/tracks'
 import { codeLanguageMetas, getLanguageMetaById, textLanguageMetas } from '@/data/metadata'
@@ -41,6 +41,7 @@ export default function TracksPage() {
   const isMobile = useIsMobile()
   const { progress } = useProgress()
   const levelInfo = getLevel(progress.totalXP)
+  const completedTrackIds = useMemo(() => new Set(progress.completedTrackIds ?? []), [progress.completedTrackIds])
 
   const dummyLang = getLanguageMetaById(DEFAULT_LANGUAGE) ?? codeLanguageMetas[0]
 
@@ -83,12 +84,33 @@ export default function TracksPage() {
     return completed
   }
 
+  function getTrackProgressSummary(track: Track) {
+    const snippetTotal = track.snippetIds.length
+    const snippetCompleted = snippetTotal > 0 ? getTrackProgress(track.snippetIds) : 0
+    const isCompleted = completedTrackIds.has(track.id)
+
+    if (snippetTotal > 0) {
+      return {
+        completed: snippetCompleted,
+        total: snippetTotal,
+        isCompleted,
+      }
+    }
+
+    return {
+      completed: isCompleted ? 1 : 0,
+      total: 1,
+      isCompleted,
+    }
+  }
+
   function getSectionStats(sectionTracks: Track[]) {
     let total = 0
     let completed = 0
     for (const track of sectionTracks) {
-      total += track.snippetIds.length
-      completed += getTrackProgress(track.snippetIds)
+      const summary = getTrackProgressSummary(track)
+      total += summary.total
+      completed += summary.completed
     }
     const pct = total > 0 ? Math.round((completed / total) * 100) : 0
     return { total, completed, pct }
@@ -97,6 +119,8 @@ export default function TracksPage() {
   const codeStats = getSectionStats(codeTracks)
 
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
+    const progressSummary = getTrackProgressSummary(track)
+
     return (
       <button 
         onClick={() => {
@@ -108,7 +132,17 @@ export default function TracksPage() {
         }}
         className="block w-full min-w-0 rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer sm:p-5"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
-        <div className="text-base font-semibold mb-2" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
+        <div className="mb-2 flex items-start justify-between gap-3">
+          <div className="text-base font-semibold" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
+          {progressSummary.isCompleted ? (
+            <span
+              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+            >
+              {t('completed', locale)}
+            </span>
+          ) : null}
+        </div>
         <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description[locale]}</div>
         <div className="flex flex-wrap gap-1">
           {badges.map(lang => (
@@ -117,6 +151,13 @@ export default function TracksPage() {
               {lang.label}
             </span>
           ))}
+        </div>
+        <div className="mt-3 text-[11px] font-medium" style={{ color: progressSummary.isCompleted ? 'var(--main)' : 'var(--sub)' }}>
+          {progressSummary.total > 1
+            ? `${progressSummary.completed}/${progressSummary.total} ${t('completed', locale)}`
+            : progressSummary.isCompleted
+              ? t('completed', locale)
+              : `0/${progressSummary.total} ${t('completed', locale)}`}
         </div>
       </button>
     )

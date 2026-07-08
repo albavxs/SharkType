@@ -43,6 +43,17 @@ function getImportFlagKey(userId: string) {
   return `sharktype-imported-progress:${userId}`
 }
 
+function getSessionStreakNotification(output: SessionOutput): StreakNotification | null {
+  if (!output.streakIncremented || !output.streakEventKey) {
+    return null
+  }
+
+  return {
+    current: output.streak,
+    eventKey: output.streakEventKey,
+  }
+}
+
 async function parseJsonError(response: Response): Promise<string> {
   try {
     const payload = (await response.json()) as { error?: string }
@@ -192,7 +203,7 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
       const output = saveGuestSession(input)
       setProgress(loadProgress())
       setSource('guest')
-      setStreakNotification(null)
+      setStreakNotification(getSessionStreakNotification(output))
       return output
     }
 
@@ -216,13 +227,13 @@ export function PlayerProgressProvider({ children }: { children: React.ReactNode
 
       setProgress(payload.progress)
       setSource('supabase')
-      setStreakNotification(null)
+      setStreakNotification(getSessionStreakNotification(payload.output))
       return payload.output
     } catch {
       const output = saveGuestSession(input)
       setProgress(loadProgress())
       setSource('guest')
-      setStreakNotification(null)
+      setStreakNotification(getSessionStreakNotification(output))
       return output
     } finally {
       setIsSyncing(false)

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { AppProviders } from '@/components/providers/AppProviders'
 import { ThemeBootstrap } from '@/components/providers/ThemeBootstrap'
+import sharkLogo from '@/icons/Shark.png'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -20,10 +21,10 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/icon.png', sizes: '32x32', type: 'image/png' },
+      { url: sharkLogo.src, sizes: '1024x1024', type: 'image/png' },
     ],
     apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: sharkLogo.src, sizes: '1024x1024', type: 'image/png' },
     ],
   },
   appleWebApp: {
