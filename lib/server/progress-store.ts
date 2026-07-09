@@ -744,7 +744,93 @@ export async function resetRemoteProgress(supabase: DBClient, userId: string) {
   }
 }
 
+type LeaderboardWithScoreRow = Database['public']['Views']['leaderboard_with_score']['Row']
+type GlobalLeaderboardRow = Database['public']['Views']['global_leaderboard']['Row']
+
+function sortAndRankLeaderboard(entries: LeaderboardEntry[]): LeaderboardEntry[] {
+  return entries
+    .sort((a, b) =>
+      b.score - a.score ||
+      b.bestWPM - a.bestWPM ||
+      b.currentStreak - a.currentStreak ||
+      b.totalSessions - a.totalSessions
+    )
+    .slice(0, 1000)
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1,
+    }))
+}
+
+function mapLeaderboardWithScoreRow(row: LeaderboardWithScoreRow): LeaderboardEntry {
+  return {
+    rank: 0,
+    userId: row.user_id,
+    username: row.username,
+    displayName: row.display_name,
+    avatarUrl: row.avatar_url,
+    totalXP: row.total_xp,
+    bestWPM: row.best_wpm,
+    avgWPM: row.avg_wpm,
+    currentStreak: row.current_streak,
+    totalSessions: row.total_sessions,
+    rankedSessions: row.ranked_sessions,
+    level: row.level,
+    score: row.score,
+  }
+}
+
+function mapGlobalLeaderboardRow(row: GlobalLeaderboardRow): LeaderboardEntry {
+  return {
+    rank: 0,
+    userId: row.user_id,
+    username: row.username,
+    displayName: row.display_name,
+    avatarUrl: row.avatar_url,
+    totalXP: row.total_xp,
+    bestWPM: row.best_wpm,
+    avgWPM: 0,
+    currentStreak: row.current_streak,
+    totalSessions: row.total_sessions,
+    rankedSessions: row.ranked_sessions,
+    level: getLevel(row.total_xp).level,
+    score: row.ranked_score,
+  }
+}
+
 export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEntry[]> {
+  const leaderboardViewRes = await supabase
+    .from('leaderboard_with_score')
+    .select('user_id, username, display_name, avatar_url, total_xp, best_wpm, avg_wpm, current_streak, total_sessions, level, score, ranked_sessions')
+    .order('score', { ascending: false })
+    .order('best_wpm', { ascending: false })
+    .order('current_streak', { ascending: false })
+    .order('total_sessions', { ascending: false })
+    .limit(1000)
+
+  if (!leaderboardViewRes.error && leaderboardViewRes.data) {
+    return sortAndRankLeaderboard(leaderboardViewRes.data.map(mapLeaderboardWithScoreRow))
+  }
+
+  if (leaderboardViewRes.error && !isMissingTable(leaderboardViewRes.error)) {
+    const globalLeaderboardRes = await supabase
+      .from('global_leaderboard')
+      .select('user_id, username, display_name, avatar_url, total_xp, best_wpm, current_streak, total_sessions, ranked_score, ranked_sessions')
+      .order('ranked_score', { ascending: false })
+      .order('best_wpm', { ascending: false })
+      .order('current_streak', { ascending: false })
+      .order('total_sessions', { ascending: false })
+      .limit(1000)
+
+    if (!globalLeaderboardRes.error && globalLeaderboardRes.data) {
+      return sortAndRankLeaderboard(globalLeaderboardRes.data.map(mapGlobalLeaderboardRow))
+    }
+
+    if (globalLeaderboardRes.error && !isMissingTable(globalLeaderboardRes.error)) {
+      throw globalLeaderboardRes.error
+    }
+  }
+
   const [profilesRes, progressRes, sessionsRes] = await Promise.all([
     supabase.from('profiles').select('id, username, display_name, avatar_url'),
     supabase.from('user_progress').select('user_id, total_xp, total_sessions, current_streak, last_practice_date, last_activity_at, last_streak_at'),
@@ -808,16 +894,5 @@ export async function listLeaderboard(supabase: DBClient): Promise<LeaderboardEn
     })
   }
 
-  return entries
-    .sort((a, b) =>
-      b.score - a.score ||
-      b.bestWPM - a.bestWPM ||
-      b.currentStreak - a.currentStreak ||
-      b.totalSessions - a.totalSessions
-    )
-    .slice(0, 1000)
-    .map((entry, index) => ({
-      ...entry,
-      rank: index + 1,
-    }))
+  return sortAndRankLeaderboard(entries)
 }
