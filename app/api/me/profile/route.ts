@@ -80,7 +80,10 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const bio = typeof body.bio === 'string' ? body.bio.trim() : null
+    const MAX_BIO_LENGTH = 256
+    const bio = typeof body.bio === 'string'
+      ? body.bio.trim().slice(0, MAX_BIO_LENGTH)
+      : null
     const profile = await updateProfileIdentity(supabase, user.id, {
       username,
       displayName: body.displayName ?? null,

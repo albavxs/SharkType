@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { listFeedEvents } from '@/lib/server/feed-store'
@@ -13,7 +12,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const scope = url.searchParams.get('scope') === 'following' ? 'following' : 'global'
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (scope === 'following' && !user) {
@@ -22,7 +21,12 @@ export async function GET(request: Request) {
 
   try {
     const events = await listFeedEvents(supabase, scope, user?.id ?? null, 50)
-    return NextResponse.json({ events, scope })
+    // Feed global pode ser cacheado por 60s (conteudo agregado, mudanca tolerada).
+    // Feed following e per-user (cookies), nao pode entrar no shared cache.
+    const headers: HeadersInit = scope === 'global'
+      ? { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30' }
+      : { 'Cache-Control': 'private, no-store' }
+    return NextResponse.json({ events, scope }, { headers })
   } catch (err) {
     return NextResponse.json({ events: [], scope, error: "Could not load feed." }, { status: 500 })
   }

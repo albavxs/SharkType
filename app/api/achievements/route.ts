@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 
@@ -13,7 +12,7 @@ export async function GET() {
     return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from('achievements')
     .select('*')
@@ -37,5 +36,12 @@ export async function GET() {
     description: { pt: row.description_pt, en: row.description_en },
   }))
 
-  return NextResponse.json({ achievements })
+  return NextResponse.json(
+    { achievements },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=600',
+      },
+    }
+  )
 }
