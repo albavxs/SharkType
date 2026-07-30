@@ -23,7 +23,7 @@ export default function AuthShell({ title, subtitle, children, footer }: AuthShe
         <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center">
           <Link
             href="/"
-            className="mb-8 w-fit transition-opacity hover:opacity-80"
+            className="mb-8 inline-block w-fit cursor-pointer transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
           >
             <BrandLogo size={34} textSizeClassName="text-2xl" />
           </Link>
