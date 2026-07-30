@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import AuthShell from '@/components/auth/AuthShell'
-import { GithubIcon, LockIcon, MailIcon, UserIcon } from '@/components/icons'
+import { GithubIcon, GoogleIcon, LockIcon, MailIcon, UserIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
@@ -12,7 +12,7 @@ import { t } from '@/lib/i18n'
 export default function SignupPage() {
   const router = useRouter()
   const { locale } = useLocale()
-  const { signInWithGitHub, signUpWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
+  const { signInWithGoogle, signInWithGitHub, signUpWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
   const [form, setForm] = useState({
     username: '',
     email: '',
@@ -24,6 +24,15 @@ export default function SignupPage() {
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  async function handleGoogle() {
+    setIsSubmitting(true)
+    setError(null)
+    const result = await signInWithGoogle()
+    setIsSubmitting(false)
+
+    if (result.error) setError(result.error)
   }
 
   async function handleGitHub() {
@@ -74,6 +83,17 @@ export default function SignupPage() {
       }
     >
       <div className="space-y-4">
+        <button
+          type="button"
+          onClick={handleGoogle}
+          disabled={isSubmitting || !supabaseConfigured}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'var(--bg)', color: 'var(--text)' }}
+        >
+          <GoogleIcon size={16} />
+          {t('authContinueGoogle', locale)}
+        </button>
+
         <button
           type="button"
           onClick={handleGitHub}
