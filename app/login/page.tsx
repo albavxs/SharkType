@@ -16,11 +16,15 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [oauthErrorId, setOauthErrorId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('oauth_error') === '1') {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('oauth_error') === '1') {
       setError(t('authOAuthError', locale))
+      const errorId = params.get('error_id')
+      setOauthErrorId(errorId ? errorId.slice(0, 8) : null)
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [locale])
@@ -36,6 +40,7 @@ export default function LoginPage() {
     event.preventDefault()
     setIsSubmitting(true)
     setError(null)
+    setOauthErrorId(null)
 
     const result = await signInWithPassword(email, password)
     setIsSubmitting(false)
@@ -48,6 +53,7 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setError(null)
+    setOauthErrorId(null)
     setIsSubmitting(true)
     const result = await signInWithGoogle()
     setIsSubmitting(false)
@@ -59,6 +65,7 @@ export default function LoginPage() {
 
   async function handleGitHubLogin() {
     setError(null)
+    setOauthErrorId(null)
     setIsSubmitting(true)
     const result = await signInWithGitHub()
     setIsSubmitting(false)
@@ -155,9 +162,10 @@ export default function LoginPage() {
           </label>
 
           {error ? (
-            <p className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 14%, transparent)', color: 'var(--error)' }}>
-              {error}
-            </p>
+            <div role="alert" className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 14%, transparent)', color: 'var(--error)' }}>
+              <p>{error}</p>
+              {oauthErrorId ? <p className="mt-1 text-xs opacity-80">Ref: {oauthErrorId}</p> : null}
+            </div>
           ) : null}
 
           {!supabaseConfigured ? (
