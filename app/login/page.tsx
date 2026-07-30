@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AuthShell from '@/components/auth/AuthShell'
-import { GithubIcon, MailIcon } from '@/components/icons'
+import { GithubIcon, GoogleIcon, MailIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
@@ -12,11 +12,18 @@ import { t } from '@/lib/i18n'
 export default function LoginPage() {
   const router = useRouter()
   const { locale } = useLocale()
-  const { user, isLoading, signInWithGitHub, signInWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
+  const { user, isLoading, signInWithGoogle, signInWithGitHub, signInWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('oauth_error') === '1') {
+      setError(t('authOAuthError', locale))
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [locale])
 
   useEffect(() => {
     if (isLoading) return
@@ -36,6 +43,17 @@ export default function LoginPage() {
     if (result.error) {
       setError(result.error)
       return
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setError(null)
+    setIsSubmitting(true)
+    const result = await signInWithGoogle()
+    setIsSubmitting(false)
+
+    if (result.error) {
+      setError(result.error)
     }
   }
 
@@ -68,6 +86,17 @@ export default function LoginPage() {
       }
     >
       <div className="space-y-4">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={isSubmitting || !supabaseConfigured}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'var(--bg)', color: 'var(--text)' }}
+        >
+          <GoogleIcon size={16} />
+          {t('authContinueGoogle', locale)}
+        </button>
+
         <button
           type="button"
           onClick={handleGitHubLogin}

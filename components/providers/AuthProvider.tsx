@@ -28,6 +28,7 @@ interface AuthContextValue {
   supabaseConfigured: boolean
   supabaseMissingVars: SupabaseEnvVarName[]
   pendingVerificationEmail: string | null
+  signInWithGoogle: () => Promise<AuthActionResult>
   signInWithGitHub: () => Promise<AuthActionResult>
   signInWithPassword: (email: string, password: string) => Promise<AuthActionResult>
   signUpWithPassword: (input: {
@@ -170,6 +171,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: error?.message ?? null }
     } catch (error) {
       return { error: error instanceof Error ? error.message : 'GitHub sign-in failed.' }
+    }
+  }
+
+  async function signInWithGoogle(): Promise<AuthActionResult> {
+    if (!supabaseConfigured) {
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
+    }
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: getAuthCallbackUrl('/'),
+        },
+      })
+
+      return { error: error?.message ?? null }
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'Google sign-in failed.' }
     }
   }
 
@@ -427,6 +448,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabaseConfigured,
     supabaseMissingVars,
     pendingVerificationEmail,
+    signInWithGoogle,
     signInWithGitHub,
     signInWithPassword,
     signUpWithPassword,
