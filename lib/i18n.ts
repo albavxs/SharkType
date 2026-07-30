@@ -268,7 +268,7 @@ const dict: Record<string, Record<Locale, string>> = {
 
   // ── Auth pages ──────────────────────────────────────────────────────────
   authLoginTitle: { pt: 'Entrar na sua conta', en: 'Sign in to your account' },
-  authLoginSubtitle: { pt: 'Use GitHub ou email para sincronizar seu progresso, streak e ranking global.', en: 'Use GitHub or email to sync your progress, streak, and global leaderboard.' },
+  authLoginSubtitle: { pt: 'Use Google, GitHub ou email para sincronizar seu progresso, streak e ranking global.', en: 'Use Google, GitHub, or email to sync your progress, streak, and global leaderboard.' },
   authSignupTitle: { pt: 'Criar conta SharkType', en: 'Create your SharkType account' },
   authSignupSubtitle: { pt: 'Cadastre um username público para salvar XP, histórico e competir com todos os jogadores.', en: 'Pick a public username to save XP, history, and compete with every player.' },
   authVerifyTitle: { pt: 'Confirmar seu email', en: 'Verify your email' },
@@ -277,6 +277,8 @@ const dict: Record<string, Record<Locale, string>> = {
   authHaveAccount: { pt: 'Já tem conta? Entrar', en: 'Already have an account? Sign in' },
   authContinueGuest: { pt: 'Continuar como guest', en: 'Continue as guest' },
   authContinueGithub: { pt: 'Continuar com GitHub', en: 'Continue with GitHub' },
+  authContinueGoogle: { pt: 'Continuar com Google', en: 'Continue with Google' },
+  authOAuthError: { pt: 'Não foi possível concluir o login com o provedor selecionado.', en: 'The selected sign-in provider could not complete the login.' },
   authOr: { pt: 'ou', en: 'or' },
   authEmail: { pt: 'Email', en: 'Email' },
   authPassword: { pt: 'Senha', en: 'Password' },

@@ -567,6 +567,66 @@ export const tracks: Track[] = [
     textLanguages: true,
   },
   {
+    id: 'posicao-inicial',
+    name: { pt: 'Posição Inicial', en: 'Starting Position' },
+    description: {
+      pt: 'Postura, teclas-guia, linha base e primeiros movimentos das duas mãos',
+      en: 'Posture, guide keys, home row, and first movements for both hands',
+    },
+    snippetIds: [
+      'typing-021', 'typing-022', 'typing-023', 'typing-024', 'typing-025',
+      'typing-026', 'typing-027', 'typing-028', 'typing-029', 'typing-030',
+      'typing-031', 'typing-032', 'typing-033', 'typing-034', 'typing-035',
+      'typing-036', 'typing-037', 'typing-038', 'typing-039', 'typing-040',
+    ],
+    textLanguages: true,
+  },
+  {
+    id: 'dedos-e-alcance',
+    name: { pt: 'Dedos e Alcance', en: 'Fingers and Reach' },
+    description: {
+      pt: 'Treine o alcance de cada dedo e coordene as duas mãos no teclado',
+      en: 'Practice each finger reach and coordinate both hands on the keyboard',
+    },
+    snippetIds: [
+      'typing-041', 'typing-042', 'typing-043', 'typing-044', 'typing-045',
+      'typing-046', 'typing-047', 'typing-048', 'typing-049', 'typing-050',
+      'typing-051', 'typing-052', 'typing-053', 'typing-054', 'typing-055',
+      'typing-056', 'typing-057', 'typing-058', 'typing-059', 'typing-060',
+    ],
+    textLanguages: true,
+  },
+  {
+    id: 'linhas-do-teclado',
+    name: { pt: 'Linhas do Teclado', en: 'Keyboard Rows' },
+    description: {
+      pt: 'Aprenda a alcançar a linha superior, a linha inferior e voltar à base',
+      en: 'Learn to reach the top and bottom rows and return to home position',
+    },
+    snippetIds: [
+      'typing-061', 'typing-062', 'typing-063', 'typing-064', 'typing-065',
+      'typing-066', 'typing-067', 'typing-068', 'typing-069', 'typing-070',
+      'typing-071', 'typing-072', 'typing-073', 'typing-074', 'typing-075',
+      'typing-076', 'typing-077', 'typing-078', 'typing-079', 'typing-080',
+    ],
+    textLanguages: true,
+  },
+  {
+    id: 'primeiras-palavras',
+    name: { pt: 'Primeiras Palavras', en: 'First Words' },
+    description: {
+      pt: 'Consolide as posições com sílabas, palavras e frases curtas',
+      en: 'Consolidate key positions with syllables, words, and short sentences',
+    },
+    snippetIds: [
+      'typing-081', 'typing-082', 'typing-083', 'typing-084', 'typing-085',
+      'typing-086', 'typing-087', 'typing-088', 'typing-089', 'typing-090',
+      'typing-091', 'typing-092', 'typing-093', 'typing-094', 'typing-095',
+      'typing-096', 'typing-097', 'typing-098', 'typing-099', 'typing-100',
+    ],
+    textLanguages: true,
+  },
+  {
     id: 'idioma-iniciante',
     name: { pt: 'Iniciante', en: 'Beginner' },
     description: {
