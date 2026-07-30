@@ -71,11 +71,11 @@ export default function SignupPage() {
       subtitle={t('authSignupSubtitle', locale)}
       footer={
         <div className="space-y-3 text-center">
-          <Link href="/login" className="text-sm transition-opacity hover:opacity-80" style={{ color: 'var(--main)' }}>
+          <Link href="/login" className="inline-block cursor-pointer text-sm transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" style={{ color: 'var(--main)' }}>
             {t('authHaveAccount', locale)}
           </Link>
           <div>
-            <Link href="/" className="text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--sub)' }}>
+            <Link href="/" className="inline-block cursor-pointer text-xs transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" style={{ color: 'var(--sub)' }}>
               {t('authContinueGuest', locale)}
             </Link>
           </div>
@@ -87,7 +87,7 @@ export default function SignupPage() {
           type="button"
           onClick={handleGoogle}
           disabled={isSubmitting || !supabaseConfigured}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-150 hover:scale-[1.01] hover:brightness-125 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'var(--bg)', color: 'var(--text)' }}
         >
           <GoogleIcon size={16} />
@@ -98,7 +98,7 @@ export default function SignupPage() {
           type="button"
           onClick={handleGitHub}
           disabled={isSubmitting || !supabaseConfigured}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-150 hover:scale-[1.01] hover:brightness-110 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ backgroundColor: 'var(--text)', color: 'var(--bg)' }}
         >
           <GithubIcon size={16} />
@@ -189,7 +189,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={isSubmitting || !supabaseConfigured}
-            className="w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-150 hover:scale-[1.01] hover:brightness-110 active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50"
             style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
           >
             {isSubmitting ? t('authWorking', locale) : t('authCreateAccount', locale)}
