@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createDefaultProgress } from '@/lib/gamification'
 import { getSupabaseEnv } from '@/lib/supabase/env'
+import { ensureProfileForUser } from '@/lib/server/auth-profile'
 import { bootstrapProfileAndProgress, resetRemoteProgress } from '@/lib/server/progress-store'
+import { getSafeErrorDetails, logStructuredError } from '@/lib/server/safe-logging'
 
 export async function GET() {
   const env = getSupabaseEnv()
@@ -29,11 +31,20 @@ export async function GET() {
     const payload = await bootstrapProfileAndProgress(supabase, user)
     return NextResponse.json(payload)
   } catch (progressError) {
-    console.error('[progress] load failed:', progressError)
-    return NextResponse.json(
-      { error: progressError instanceof Error ? progressError.message : 'Could not load progress.' },
-      { status: 500 }
-    )
+    logStructuredError('progress.load_degraded', getSafeErrorDetails(progressError))
+
+    try {
+      const profile = await ensureProfileForUser(supabase, user)
+      return NextResponse.json({
+        profile,
+        progress: createDefaultProgress(),
+        streakNotification: null,
+        degraded: true,
+      })
+    } catch (profileError) {
+      logStructuredError('progress.profile_fallback_failed', getSafeErrorDetails(profileError))
+      return NextResponse.json({ error: 'Could not load authenticated progress.' }, { status: 500 })
+    }
   }
 }
 
