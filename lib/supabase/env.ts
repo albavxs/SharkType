@@ -102,7 +102,10 @@ export function isSupabaseConfigured(): boolean {
 export function getBaseUrl(): string {
   if (typeof window !== 'undefined') return window.location.origin
 
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL
+  // Nunca use o domínio de produção para callbacks gerados no servidor local.
+  if (process.env.NODE_ENV !== 'production') return 'http://localhost:3000'
+
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim()
   if (explicit) return explicit
 
   const vercelUrl = process.env.VERCEL_URL
@@ -112,7 +115,17 @@ export function getBaseUrl(): string {
 }
 
 export function getAuthCallbackUrl(next: string = '/'): string {
-  const url = new URL('/auth/callback', getBaseUrl())
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : getBaseUrl()
+  const url = new URL('/auth/callback', baseUrl)
   url.searchParams.set('next', next.startsWith('/') ? next : '/')
   return url.toString()
+}
+
+export function getSupabaseAuthCookieName(url: string = getSupabaseEnv().url): string {
+  try {
+    const projectRef = new URL(url).hostname.split('.')[0]
+    return `sb-${projectRef}-auth-token`
+  } catch {
+    return 'supabase.auth.token'
+  }
 }

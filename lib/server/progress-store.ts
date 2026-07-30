@@ -23,6 +23,7 @@ import type { ImportedProgressSnapshot, ImportedSessionRecord } from '@/lib/serv
 import { ensureProfileForUser, getOwnProfile } from './auth-profile'
 import { collectProgressUnlocks, reconcileHistoricalUnlocks } from './achievements'
 import { recordFeedEvent } from './feed-store'
+import { getSafeErrorDetails, logStructuredError } from './safe-logging'
 
 type DBClient = SupabaseClient<Database>
 type TypingSessionRow = Database['public']['Tables']['typing_sessions']['Row']
@@ -578,9 +579,13 @@ export async function bootstrapProfileAndProgress(
   user: Parameters<typeof ensureProfileForUser>[1]
 ): Promise<ProfileProgressPayload> {
   const profile = await ensureProfileForUser(supabase, user)
-  await ensureUserSocialBackfill(supabase, user.id)
+  ensureUserSocialBackfill(supabase, user.id).catch((error) => {
+    logStructuredError('progress.social_backfill_failed', getSafeErrorDetails(error))
+  })
   const snapshot = await getUserProgressSnapshot(supabase, user.id)
-  await reconcileHistoricalUnlocks(supabase, user.id, snapshot)
+  reconcileHistoricalUnlocks(supabase, user.id, snapshot).catch((error) => {
+    logStructuredError('progress.historical_achievements_failed', getSafeErrorDetails(error))
+  })
   const { progress, streakNotification } = await reconcileSnapshotStreak(supabase, user.id, snapshot)
   return { profile, progress, streakNotification }
 }

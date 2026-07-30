@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { UserProgress } from '@/lib/gamification'
 import type { Database } from '@/lib/supabase/database'
 import { recordFeedEvent } from './feed-store'
+import { getSafeErrorDetails, logStructuredError } from './safe-logging'
 
 type DBClient = SupabaseClient<Database>
 
@@ -109,9 +110,17 @@ async function persistUnlocks(
     achievement_id: achievement.id,
   }))
 
-  await supabase
+  const { error } = await supabase
     .from('user_achievements')
     .upsert(rows, { onConflict: 'user_id,achievement_id', ignoreDuplicates: true })
+
+  if (error) {
+    logStructuredError('achievements.user_achievements_upsert_failed', {
+      ...getSafeErrorDetails(error),
+      row_count: rows.length,
+      record_feed: recordFeed,
+    })
+  }
 
   if (recordFeed) {
     await Promise.all(
