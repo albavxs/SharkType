@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AuthShell from '@/components/auth/AuthShell'
-import { GithubIcon, GoogleIcon, MailIcon } from '@/components/icons'
+import { EyeIcon, EyeOffIcon, GithubIcon, GoogleIcon, MailIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
@@ -15,6 +15,7 @@ export default function LoginPage() {
   const { user, isLoading, signInWithGoogle, signInWithGitHub, signInWithPassword, supabaseConfigured, supabaseMissingVars } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [oauthErrorId, setOauthErrorId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -145,20 +146,32 @@ export default function LoginPage() {
             <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
               {t('authPassword', locale)}
             </span>
-            <input
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              type="password"
-              required
-              autoComplete="current-password"
-              placeholder="••••••••"
-              className="w-full rounded-2xl border px-3 py-3 text-sm outline-none"
-              style={{
-                borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
-                backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
-                color: 'var(--text)',
-              }}
-            />
+            <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{
+              borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
+            }}>
+              <input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                type={showPassword ? 'text' : 'password'}
+                required
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                style={{ color: 'var(--text)' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-pressed={showPassword}
+                aria-label={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
+                title={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
+                className="shrink-0 rounded-lg p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{ color: 'var(--sub)' }}
+              >
+                {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+              </button>
+            </div>
           </label>
 
           {error ? (

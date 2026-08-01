@@ -10,23 +10,30 @@ import {
   FlameIcon,
   HelpIcon,
   HomeIcon,
+  KeyboardIcon,
   ShieldIcon,
   TrophyIcon,
   XIcon,
 } from '@/components/icons'
 import { Locale, t } from '@/lib/i18n'
+import VirtualKeyboard from '@/components/typing/VirtualKeyboard'
+
+export type IntroTourMode = 'full' | 'keyboard-only'
 
 interface IntroTourModalProps {
   locale: Locale
   onClose: () => void
+  mode?: IntroTourMode
 }
 
-export default function IntroTourModal({ locale, onClose }: IntroTourModalProps) {
+export default function IntroTourModal({ locale, onClose, mode = 'full' }: IntroTourModalProps) {
   const [step, setStep] = useState(0)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
-  const slides = useMemo(() => ([
+  const slides = useMemo(() => {
+    const allSlides = [
     {
+      id: 'welcome',
       icon: HomeIcon,
       title: t('introTourWelcomeTitle', locale),
       body: t('introTourWelcomeBody', locale),
@@ -37,6 +44,7 @@ export default function IntroTourModal({ locale, onClose }: IntroTourModalProps)
       ],
     },
     {
+      id: 'ranking',
       icon: TrophyIcon,
       title: t('introTourRankingTitle', locale),
       body: t('introTourRankingBody', locale),
@@ -47,6 +55,7 @@ export default function IntroTourModal({ locale, onClose }: IntroTourModalProps)
       ],
     },
     {
+      id: 'progress',
       icon: FlameIcon,
       title: t('introTourProgressTitle', locale),
       body: t('introTourProgressBody', locale),
@@ -57,6 +66,7 @@ export default function IntroTourModal({ locale, onClose }: IntroTourModalProps)
       ],
     },
     {
+      id: 'accessibility',
       icon: ShieldIcon,
       title: t('introTourAccessibilityTitle', locale),
       body: t('introTourAccessibilityBody', locale),
@@ -67,6 +77,19 @@ export default function IntroTourModal({ locale, onClose }: IntroTourModalProps)
       ],
     },
     {
+      id: 'keyboard-guide',
+      icon: KeyboardIcon,
+      title: t('introTourKeyboardTitle', locale),
+      body: t('introTourKeyboardBody', locale),
+      highlights: [
+        t('introTourKeyboardPointActivate', locale),
+        t('introTourKeyboardPointExpected', locale),
+        t('introTourKeyboardPointPressed', locale),
+        t('introTourKeyboardPointScope', locale),
+      ],
+    },
+    {
+      id: 'community',
       icon: BookIcon,
       title: t('introTourCommunityTitle', locale),
       body: t('introTourCommunityBody', locale),
@@ -76,7 +99,10 @@ export default function IntroTourModal({ locale, onClose }: IntroTourModalProps)
         t('introTourCommunityPointHelp', locale),
       ],
     },
-  ]), [locale])
+    ]
+
+    return mode === 'keyboard-only' ? allSlides.filter((slide) => slide.id === 'keyboard-guide') : allSlides
+  }, [locale, mode])
 
   const current = slides[step]
   const CurrentIcon = current.icon
@@ -214,6 +240,19 @@ export default function IntroTourModal({ locale, onClose }: IntroTourModalProps)
                 </div>
               ))}
             </div>
+
+            {current.id === 'keyboard-guide' ? (
+              <div className="mt-5">
+                <VirtualKeyboard
+                  expectedKey="f"
+                  pressedKey="f"
+                  pressedCorrect={true}
+                  pressToken={1}
+                  locale={locale}
+                  preview
+                />
+              </div>
+            ) : null}
           </section>
 
           <aside className="flex flex-col justify-between rounded-[1.75rem] border p-5 sm:p-6" style={{ borderColor: 'color-mix(in srgb, var(--sub) 16%, transparent)', background: 'linear-gradient(180deg, color-mix(in srgb, var(--main) 10%, transparent), color-mix(in srgb, var(--sub-alt) 76%, transparent))' }}>

@@ -1,8 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/supabase/database'
 import { getLevel, reconcileStreakOnLogin } from '@/lib/gamification'
 import { getRankFromScore, type RankState } from '@/lib/ranks'
-import { ensureUserSocialBackfill, getUserProgressSnapshot } from './progress-store'
+import { getUserProgressSnapshot } from './progress-store'
 
 type DBClient = SupabaseClient<any>
 
@@ -49,7 +48,7 @@ export interface PublicProfile {
 }
 
 /**
- * Busca perfil publico por username (case-insensitive).
+ * Busca perfil publico por username.
  * Retorna null se nao existir.
  * `viewerId` opcional — se passado, popula `isFollowedByMe`.
  */
@@ -58,22 +57,21 @@ export async function getPublicProfile(
   username: string,
   viewerId?: string | null,
 ): Promise<PublicProfile | null> {
+  const normalizedUsername = username.toLowerCase()
   const { data: profile, error: profileErr } = await supabase
     .from('profiles')
     .select('*')
-    .ilike('username', username)
+    .eq('username', normalizedUsername)
     .maybeSingle()
 
   if (profileErr) throw profileErr
   if (!profile) return null
 
   const userId = profile.id
-  ensureUserSocialBackfill(supabase, userId).catch((err) => {
-    console.error('[getPublicProfile] social backfill failed (non-fatal):', err)
-  })
-
   const [snapshot, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
-    getUserProgressSnapshot(supabase as unknown as SupabaseClient<Database>, userId),
+    // A public profile request must never initialize or reconcile the owner's
+    // progress. Those operations write user-owned tables and are subject to RLS.
+    getUserProgressSnapshot(supabase, userId, { persistAggregates: false }),
     safeSelect<{ achievement_id: string }>(supabase, 'user_achievements', q =>
       q.select('achievement_id').eq('user_id', userId),
     ),

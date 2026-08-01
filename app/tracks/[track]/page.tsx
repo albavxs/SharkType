@@ -27,6 +27,7 @@ import Footer from '@/components/typing/Footer'
 import TrackBreadcrumb from '@/components/typing/TrackBreadcrumb'
 import LanguageTabs from '@/components/typing/LanguageTabs'
 import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
+import VirtualKeyboard from '@/components/typing/VirtualKeyboard'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
@@ -55,6 +56,7 @@ export default function TrackPracticePage() {
   const trackId = params.track as string
   const track = getTrackById(trackId)
   const fallbackLanguage = getLanguageMetaById('cpp')!
+  const supportsVirtualKeyboard = track?.textLanguages === true
 
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
@@ -76,6 +78,8 @@ export default function TrackPracticePage() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [isResultSyncing, setIsResultSyncing] = useState(false)
   const [pendingSnippetFinalization, setPendingSnippetFinalization] = useState<PendingSnippetFinalization | null>(null)
+  const [showVirtualKeyboard, setShowVirtualKeyboard] = useState(false)
+  const [lastPressedKey, setLastPressedKey] = useState<{ key: string; correct: boolean; token: number } | null>(null)
   const { progress, recordSession } = useProgress()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -96,6 +100,8 @@ export default function TrackPracticePage() {
   const pendingSaveCountRef = useRef(0)
   const optimisticProgressRef = useRef(progress)
   const timerDurationRef = useRef(timerDuration)
+  const pressTokenRef = useRef(0)
+  const pressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     timerDurationRef.current = timerDuration
@@ -195,6 +201,38 @@ export default function TrackPracticePage() {
   const engine = useTypingEngine(displayCode, handleFinish, { lenient })
   const { reset: resetEngine, handleKey: handleEngineKey } = engine
 
+  const clearPressedKey = useCallback(() => {
+    if (pressTimeoutRef.current) {
+      clearTimeout(pressTimeoutRef.current)
+      pressTimeoutRef.current = null
+    }
+    setLastPressedKey(null)
+  }, [])
+
+  const handleKeyActivity = useCallback((key: string) => {
+    const expected = displayCode[engine.state.currentIndex]
+    const isCorrect = lenient || key === 'Backspace'
+      ? true
+      : key === 'Tab'
+        ? displayCode.slice(engine.state.currentIndex, engine.state.currentIndex + 2) === '  '
+        : key === 'Enter'
+          ? expected === '\n'
+          : expected === key
+
+    const token = pressTokenRef.current + 1
+    pressTokenRef.current = token
+    setLastPressedKey({ key, correct: isCorrect, token })
+    if (pressTimeoutRef.current) clearTimeout(pressTimeoutRef.current)
+    pressTimeoutRef.current = setTimeout(() => {
+      setLastPressedKey(null)
+      pressTimeoutRef.current = null
+    }, 220)
+  }, [displayCode, engine.state.currentIndex, lenient])
+
+  useEffect(() => () => {
+    if (pressTimeoutRef.current) clearTimeout(pressTimeoutRef.current)
+  }, [])
+
   // Start timer when typing starts
   useEffect(() => {
     if (engine.state.status === 'running' && isCountdown && !isTimerRunning) {
@@ -284,6 +322,7 @@ export default function TrackPracticePage() {
 
     const nextResults = [...accumulated, stats]
     setAccumulated(nextResults)
+    clearPressedKey()
 
     if (isLastSnippet) {
       const avgWpm = Math.round(nextResults.reduce((sum, result) => sum + result.wpm, 0) / nextResults.length)
@@ -321,7 +360,7 @@ export default function TrackPracticePage() {
     resetEngine()
     setSeqIndex(pendingSnippetFinalization.seqIndex + 1)
     resetTimer(timerDurationRef.current)
-  }, [accumulated, engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.state.status, engine.wpm, engine.wpmSamples, lenient, recordSession, resetEngine, resetTimer, selectedLang, pendingSnippetFinalization, trackId, trackSnippets])
+  }, [accumulated, clearPressedKey, engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.state.status, engine.wpm, engine.wpmSamples, lenient, recordSession, resetEngine, resetTimer, selectedLang, pendingSnippetFinalization, trackId, trackSnippets])
 
   const prevErrors = useRef(0)
   const isTyping = engine.state.status === 'running'
@@ -350,6 +389,7 @@ export default function TrackPracticePage() {
   }, [engine.state.startTime, isCountdown, showResult])
 
   const handleRestartTrack = useCallback(() => {
+    clearPressedKey()
     resetTrackRunState()
     setSeqIndex(0)
     setShowResult(false)
@@ -363,19 +403,21 @@ export default function TrackPracticePage() {
     resetEngine()
     resetTimer(timerDuration)
     setElapsedSeconds(0)
-  }, [resetEngine, resetTimer, resetTrackRunState, timerDuration])
+  }, [clearPressedKey, resetEngine, resetTimer, resetTrackRunState, timerDuration])
 
   const handleRestart = useCallback(() => {
+    clearPressedKey()
     resetTrackRunState()
     setSessionResult(null)
     setIsResultSyncing(false)
     setElapsedSeconds(0)
     resetEngine()
     resetTimer(timerDuration)
-  }, [resetEngine, resetTimer, resetTrackRunState, timerDuration])
+  }, [clearPressedKey, resetEngine, resetTimer, resetTrackRunState, timerDuration])
 
   const handleNext = useCallback(() => {
     if (seqIndex < trackSnippets.length - 1) {
+      clearPressedKey()
       resetTrackRunState()
       setSeqIndex(i => i + 1)
       setSessionResult(null)
@@ -384,10 +426,11 @@ export default function TrackPracticePage() {
       resetEngine()
       resetTimer(timerDuration)
     }
-  }, [resetEngine, resetTimer, resetTrackRunState, seqIndex, timerDuration, trackSnippets.length])
+  }, [clearPressedKey, resetEngine, resetTimer, resetTrackRunState, seqIndex, timerDuration, trackSnippets.length])
 
   const handlePrev = useCallback(() => {
     if (seqIndex > 0) {
+      clearPressedKey()
       resetTrackRunState()
       setSeqIndex(i => i - 1)
       setSessionResult(null)
@@ -396,9 +439,10 @@ export default function TrackPracticePage() {
       resetEngine()
       resetTimer(timerDuration)
     }
-  }, [resetEngine, resetTimer, resetTrackRunState, seqIndex, timerDuration])
+  }, [clearPressedKey, resetEngine, resetTimer, resetTrackRunState, seqIndex, timerDuration])
 
   function handleLangChange(lang: LanguageMeta) {
+    clearPressedKey()
     resetTrackRunState()
     setIsTrackDataLoading(true)
     setSeqIndex(0)
@@ -418,6 +462,7 @@ export default function TrackPracticePage() {
   }
 
   function handleDifficultyChange(d: Difficulty | 'all') {
+    clearPressedKey()
     resetTrackRunState()
     setDifficulty(d)
     setSeqIndex(0)
@@ -469,6 +514,9 @@ export default function TrackPracticePage() {
           showProgress={!!snippet}
           locale={locale}
           isTyping={isTyping}
+          showKeyboardToggle={supportsVirtualKeyboard}
+          keyboardEnabled={showVirtualKeyboard}
+          onKeyboardToggle={supportsVirtualKeyboard ? () => setShowVirtualKeyboard((visible) => !visible) : undefined}
         />
 
         <LanguageTabs
@@ -500,7 +548,19 @@ export default function TrackPracticePage() {
               <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
 
               <TypingArea key={`${selectedLang?.id ?? 'unknown'}:${snippet.id}`} code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
-                onKey={wrappedHandleKey} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
+                onKey={wrappedHandleKey} onKeyActivity={supportsVirtualKeyboard ? handleKeyActivity : undefined} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
+
+              {supportsVirtualKeyboard && showVirtualKeyboard && isTyping ? (
+                <div className="mt-4 w-full max-w-3xl">
+                  <VirtualKeyboard
+                    expectedKey={engine.state.currentIndex < displayCode.length ? displayCode[engine.state.currentIndex] : null}
+                    pressedKey={lastPressedKey?.key ?? null}
+                    pressedCorrect={lastPressedKey?.correct ?? null}
+                    pressToken={lastPressedKey?.token ?? 0}
+                    locale={locale}
+                  />
+                </div>
+              ) : null}
 
               {/* Caps Lock warning — mobile: below text */}
               <CapsLockWarning visible={capsLock && !showResult && !!isMobile} isMobile={true} locale={locale} />

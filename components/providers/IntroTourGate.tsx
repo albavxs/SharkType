@@ -3,35 +3,44 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
-import { shouldShowIntroTour, INTRO_TOUR_VERSION } from '@/lib/intro-tour'
-import IntroTourModal from '@/components/typing/IntroTourModal'
+import { shouldShowIntroTour, shouldShowKeyboardGuide, KEYBOARD_GUIDE_VERSION } from '@/lib/intro-tour'
+import IntroTourModal, { type IntroTourMode } from '@/components/typing/IntroTourModal'
 
-const SUPPRESSED_SESSION_KEY = `sharktype-intro-tour-suppressed:v${INTRO_TOUR_VERSION}`
+function getSuppressedSessionKey(mode: IntroTourMode) {
+  return `sharktype-intro-tour-suppressed:${mode}:v${KEYBOARD_GUIDE_VERSION}`
+}
 
-function getSessionSuppressed(): boolean {
+function getSessionSuppressed(mode: IntroTourMode): boolean {
   if (typeof window === 'undefined') return false
 
   try {
-    return window.sessionStorage.getItem(SUPPRESSED_SESSION_KEY) === '1'
+    return window.sessionStorage.getItem(getSuppressedSessionKey(mode)) === '1'
   } catch {
     return false
   }
 }
 
-function setSessionSuppressed() {
+function setSessionSuppressed(mode: IntroTourMode) {
   if (typeof window === 'undefined') return
 
   try {
-    window.sessionStorage.setItem(SUPPRESSED_SESSION_KEY, '1')
+    window.sessionStorage.setItem(getSuppressedSessionKey(mode), '1')
   } catch {
     // ignore
   }
+}
+
+function getTourMode(versionSeen: number | null | undefined): IntroTourMode | null {
+  if (shouldShowIntroTour(versionSeen)) return 'full'
+  if (shouldShowKeyboardGuide(versionSeen)) return 'keyboard-only'
+  return null
 }
 
 export default function IntroTourGate() {
   const { user, profile, isLoading, markIntroTourSeen } = useAuth()
   const { locale } = useLocale()
   const [isOpen, setIsOpen] = useState(false)
+  const [tourMode, setTourMode] = useState<IntroTourMode>('full')
   const markAttemptedRef = useRef(false)
 
   useEffect(() => {
@@ -40,9 +49,12 @@ export default function IntroTourGate() {
 
   useEffect(() => {
     if (isLoading || !user || !profile) return
-    if (!shouldShowIntroTour(profile.introTourVersionSeen)) return
-    if (getSessionSuppressed()) return
-    setIsOpen(true)
+    const mode = getTourMode(profile.introTourVersionSeen)
+    if (!mode || getSessionSuppressed(mode)) return
+    queueMicrotask(() => {
+      setTourMode(mode)
+      setIsOpen(true)
+    })
   }, [isLoading, profile, user])
 
   useEffect(() => {
@@ -50,18 +62,19 @@ export default function IntroTourGate() {
 
     markAttemptedRef.current = true
 
-    void markIntroTourSeen(INTRO_TOUR_VERSION).then((result) => {
+    void markIntroTourSeen(KEYBOARD_GUIDE_VERSION).then((result) => {
       if (result.error) {
-        setSessionSuppressed()
+        setSessionSuppressed(tourMode)
       }
     })
-  }, [isOpen, markIntroTourSeen])
+  }, [isOpen, markIntroTourSeen, tourMode])
 
   if (!isOpen) return null
 
   return (
     <IntroTourModal
       locale={locale}
+      mode={tourMode}
       onClose={() => {
         setIsOpen(false)
       }}

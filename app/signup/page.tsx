@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import AuthShell from '@/components/auth/AuthShell'
-import { GithubIcon, GoogleIcon, LockIcon, MailIcon, UserIcon } from '@/components/icons'
+import { EyeIcon, EyeOffIcon, GithubIcon, GoogleIcon, LockIcon, MailIcon, UserIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
@@ -21,6 +21,7 @@ export default function SignupPage() {
   })
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [visiblePasswords, setVisiblePasswords] = useState({ password: false, confirmPassword: false })
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }))
@@ -146,24 +147,46 @@ export default function SignupPage() {
               autoComplete: 'new-password',
             },
           ].map((field) => (
-            <label key={field.key} className="block space-y-1.5">
-              <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
-                {field.label}
-              </span>
-              <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)' }}>
-                {field.icon}
-                <input
-                  value={form[field.key as keyof typeof form]}
-                  onChange={(event) => updateField(field.key as keyof typeof form, event.target.value)}
-                  type={field.type}
-                  required
-                  autoComplete={field.autoComplete}
-                  placeholder={field.placeholder}
-                  className="w-full bg-transparent text-sm outline-none"
-                  style={{ color: 'var(--text)' }}
-                />
-              </div>
-            </label>
+            (() => {
+              const isPasswordField = field.key === 'password' || field.key === 'confirmPassword'
+              const passwordField = isPasswordField ? field.key as 'password' | 'confirmPassword' : null
+              const isVisible = passwordField ? visiblePasswords[passwordField] : false
+              const visibilityLabel = isVisible ? t('authHidePassword', locale) : t('authShowPassword', locale)
+
+              return (
+                <label key={field.key} className="block space-y-1.5">
+                  <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+                    {field.label}
+                  </span>
+                  <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{ borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)' }}>
+                    {field.icon}
+                    <input
+                      value={form[field.key as keyof typeof form]}
+                      onChange={(event) => updateField(field.key as keyof typeof form, event.target.value)}
+                      type={isVisible ? 'text' : field.type}
+                      required
+                      autoComplete={field.autoComplete}
+                      placeholder={field.placeholder}
+                      className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                      style={{ color: 'var(--text)' }}
+                    />
+                    {passwordField ? (
+                      <button
+                        type="button"
+                        onClick={() => setVisiblePasswords((current) => ({ ...current, [passwordField]: !current[passwordField] }))}
+                        aria-pressed={isVisible}
+                        aria-label={visibilityLabel}
+                        title={visibilityLabel}
+                        className="shrink-0 rounded-lg p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
+                        style={{ color: 'var(--sub)' }}
+                      >
+                        {isVisible ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+                      </button>
+                    ) : null}
+                  </div>
+                </label>
+              )
+            })()
           ))}
 
           <p className="text-xs leading-6" style={{ color: 'var(--sub)' }}>
