@@ -476,7 +476,11 @@ export async function ensureUserSocialBackfill(supabase: DBClient, userId: strin
   }
 }
 
-export async function getUserProgressSnapshot(supabase: DBClient, userId: string): Promise<UserProgress> {
+export async function getUserProgressSnapshot(
+  supabase: DBClient,
+  userId: string,
+  options: { persistAggregates?: boolean } = {},
+): Promise<UserProgress> {
   const progress = createDefaultProgress()
 
   const [progressResult, languagesResult, sessionsResult] = await Promise.all([
@@ -539,6 +543,7 @@ export async function getUserProgressSnapshot(supabase: DBClient, userId: string
   progress.level = getLevel(progress.totalXP).level
 
   if (
+    options.persistAggregates !== false &&
     progressResult.data &&
     (
       progressResult.data.total_xp !== progress.totalXP ||

@@ -1,6 +1,8 @@
 import { Language, Snippet } from '@/lib/types'
 import { validateLanguages } from '@/lib/schemas'
-import { languageManifest, type LanguageManifestEntry } from './manifest'
+import { validateTypingCatalog } from '@/lib/typing-content'
+import { languageManifest } from './manifest'
+import { tracks } from './tracks'
 
 // ── Imports estaticos (Next/webpack exige top-level imports) ─────────────
 // Ordem: code languages, depois cybersec (multi-export), depois frameworks, depois text.
@@ -130,6 +132,17 @@ function buildLanguagesByType(type: 'code' | 'text'): Language[] {
 
 export const codeLanguages: Language[] = validateLanguages(buildLanguagesByType('code'), 'codeLanguages')
 export const textLanguages: Language[] = validateLanguages(buildLanguagesByType('text'), 'textLanguages')
+
+const typingLanguage = textLanguages.find((language) => language.id === 'text-typing')
+if (!typingLanguage) {
+  throw new Error('[typing-content] Linguagem text-typing não encontrada')
+}
+
+const typingAudit = validateTypingCatalog(typingLanguage.snippets, tracks)
+if (process.env.TYPING_CONTENT_AUDIT === '1') {
+  console.info(JSON.stringify({ event: 'typing.content_audit', items: typingAudit }))
+}
+
 export const languages: Language[] = [...codeLanguages, ...textLanguages]
 
 export function getLanguageById(id: string): Language | undefined {

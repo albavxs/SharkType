@@ -48,6 +48,7 @@ body {
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
 @keyframes communityTickerMarquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+@keyframes virtual-key-press { 0% { transform: translateY(0) scale(1); } 45% { transform: translateY(1px) scale(0.96); } 100% { transform: translateY(0) scale(1); } }
 
 .animate-fade-in { animation: fadeIn 200ms ease-out; }
 .animate-slide-up { animation: slideUp 300ms ease-out; }
