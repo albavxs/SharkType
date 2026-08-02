@@ -234,6 +234,35 @@ export const LockIcon = ({ size = 16, className = '' }: IconProps) => (
   </svg>
 )
 
+export const KeyboardIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className} aria-hidden="true">
+    <rect x="1.5" y="3" width="13" height="10" rx="1.5" />
+    <path d="M4 6h.01M6.5 6h.01M9 6h.01M11.5 6h.01M4 8.5h.01M6.5 8.5h.01M9 8.5h.01M11.5 8.5h.01M5 11h6" />
+  </svg>
+)
+
+export const EyeIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M1.5 8s2.25-4 6.5-4 6.5 4 6.5 4-2.25 4-6.5 4-6.5-4-6.5-4Z" />
+    <circle cx="8" cy="8" r="1.75" />
+  </svg>
+)
+
+export const EyeOffIcon = ({ size = 16, className = '' }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none"
+    stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+    strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M2 2l12 12" />
+    <path d="M6.7 4.25A7.6 7.6 0 0 1 8 4c4.25 0 6.5 4 6.5 4a10.3 10.3 0 0 1-2.1 2.45" />
+    <path d="M4.15 5.35C2.45 6.45 1.5 8 1.5 8s2.25 4 6.5 4c.72 0 1.36-.12 1.93-.3" />
+    <path d="M6.25 6.25a2.5 2.5 0 0 0 3.5 3.5" />
+  </svg>
+)
+
 export const CapsLockIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="currentColor"
     className={className}>
