@@ -11,7 +11,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ use
   }
 
   const { username } = await params
-  if (!username || username.length < 3 || username.length > 20) {
+  const normalizedUsername = username.toLowerCase()
+  if (!normalizedUsername || normalizedUsername.length < 3 || normalizedUsername.length > 20) {
     return NextResponse.json({ error: 'Invalid username.' }, { status: 400 })
   }
 
@@ -19,13 +20,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ use
   const { data: { user } } = await supabase.auth.getUser()
 
   try {
-    const profile = await getPublicProfile(supabase, username, user?.id ?? null)
+    const profile = await getPublicProfile(supabase, normalizedUsername, user?.id ?? null)
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found.' }, { status: 404 })
     }
     return NextResponse.json({ profile })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Could not load profile.'
-    return NextResponse.json({ error: message }, { status: 500 })
+    const candidate = err as { code?: string; message?: string } | null
+    console.error('[profile-route] public profile lookup failed:', {
+      username: normalizedUsername,
+      code: candidate?.code ?? 'unknown',
+      message: candidate?.message ?? String(err),
+    })
+    return NextResponse.json({ error: 'Could not load profile.' }, { status: 500 })
   }
 }

@@ -2,6 +2,7 @@
 
 import { XIcon } from '@/components/icons'
 import { t, Locale } from '@/lib/i18n'
+import VirtualKeyboard from '@/components/typing/VirtualKeyboard'
 
 interface HelpModalProps {
   onClose: () => void
@@ -56,6 +57,26 @@ export default function HelpModal({ onClose, locale }: HelpModalProps) {
             <p style={{ color: 'var(--sub)' }}>
               {t('helpTracksDesc', locale)}
             </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-2" style={{ color: 'var(--main)' }}>{t('helpKeyboardGuideTitle', locale)}</h3>
+            <p style={{ color: 'var(--sub)' }}>
+              {t('helpKeyboardGuideDesc', locale)}
+            </p>
+            <p className="mt-2" style={{ color: 'var(--sub)' }}>
+              {t('helpKeyboardGuideLayout', locale)}
+            </p>
+            <div className="mt-4">
+              <VirtualKeyboard
+                expectedKey="f"
+                pressedKey="f"
+                pressedCorrect={true}
+                pressToken={1}
+                locale={locale}
+                preview
+              />
+            </div>
           </div>
 
           {/* XP */}

@@ -10,6 +10,7 @@ interface TypingAreaProps {
   charStatuses: CharStatus[]
   currentIndex: number
   onKey: (key: string) => void
+  onKeyActivity?: (key: string) => void
   disabled?: boolean
   languageId: string
   isTyping: boolean
@@ -53,10 +54,11 @@ function buildStringMap(code: string): boolean[] {
   return map
 }
 
-export default function TypingArea({ code, charStatuses, currentIndex, onKey, disabled, languageId, isTyping, locale = 'en' }: TypingAreaProps) {
+export default function TypingArea({ code, charStatuses, currentIndex, onKey, onKeyActivity, disabled, languageId, isTyping, locale = 'en' }: TypingAreaProps) {
   const isTextMode = languageId.startsWith('text-')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const textContentRef = useRef<HTMLDivElement>(null)
   const isComposingRef = useRef(false)
   const keywordMap = useMemo(() => buildKeywordMap(code, languageId), [code, languageId])
   const stringMap = useMemo(() => buildStringMap(code), [code])
@@ -119,6 +121,21 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     return () => window.removeEventListener('resize', updateCursorPos)
   }, [updateCursorPos])
 
+  // Font scaling and late font loading can change character rectangles without
+  // changing the viewport size. Observe the rendered content as well so the
+  // caret remains aligned after those layout changes.
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return
+
+    const observer = new ResizeObserver(() => updateCursorPos())
+    const container = containerRef.current
+    const textContent = textContentRef.current
+    if (container) observer.observe(container)
+    if (textContent) observer.observe(textContent)
+
+    return () => observer.disconnect()
+  }, [isTextMode, updateCursorPos])
+
   // Detect if code overflows container
   useLayoutEffect(() => {
     const container = containerRef.current
@@ -137,18 +154,18 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     if (disabled) return
     if (e.key === 'Dead') return
     if ((e.nativeEvent as KeyboardEvent).isComposing) return
-    if (e.key === 'Tab') { e.preventDefault(); onKey('Tab'); return }
-    if (e.key === 'Enter') { e.preventDefault(); onKey('Enter'); return }
-    if (e.key === 'Backspace') { e.preventDefault(); onKey('Backspace'); return }
+    if (e.key === 'Tab') { e.preventDefault(); dispatchKey('Tab'); return }
+    if (e.key === 'Enter') { e.preventDefault(); dispatchKey('Enter'); return }
+    if (e.key === 'Backspace') { e.preventDefault(); dispatchKey('Backspace'); return }
     if (e.key === 'F' && e.shiftKey && !isTextMode) { e.preventDefault(); setExpandedView(v => !v); return }
-    if (e.key.length === 1) { e.preventDefault(); onKey(e.key) }
+    if (e.key.length === 1) { e.preventDefault(); dispatchKey(e.key) }
   }
 
   function handleInput(e: React.FormEvent<HTMLTextAreaElement>) {
     if (isComposingRef.current) return
     const textarea = e.target as HTMLTextAreaElement
     if (textarea.value.length > 0) {
-      for (const char of textarea.value) onKey(char)
+      for (const char of textarea.value) dispatchKey(char)
       textarea.value = ''
     }
   }
@@ -157,7 +174,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
     isComposingRef.current = false
     const composed = e.data
     if (composed) {
-      for (const char of composed) onKey(char)
+      for (const char of composed) dispatchKey(char)
       ;(e.target as HTMLTextAreaElement).value = ''
     }
   }
@@ -177,6 +194,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
   }
 
   const isIdle = currentIndex === 0 && !isTyping
+
+  function dispatchKey(key: string) {
+    onKeyActivity?.(key)
+    onKey(key)
+  }
 
   return (
     <div className={`w-full mx-auto min-w-0 cursor-text overflow-hidden ${isTextMode ? 'max-w-5xl' : 'max-w-6xl'}`} onClick={() => textareaRef.current?.focus()}>
@@ -231,9 +253,13 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, di
         )}
 
         {isTextMode ? (
-          <div className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.2] sm:leading-[1.4] md:leading-[1.5] w-full mx-auto text-center" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', fontVariantLigatures: 'none', fontSize: `calc(2rem * var(--code-font-scale, 1))` }}>
+          <div
+            ref={textContentRef}
+            className="font-[family-name:var(--font-geist-sans)] text-lg sm:text-2xl md:text-[2rem] leading-[1.2] sm:leading-[1.4] md:leading-[1.5] w-full mx-auto text-center whitespace-pre-wrap"
+            style={{ overflowWrap: 'anywhere', wordBreak: 'normal', fontVariantLigatures: 'none', fontSize: `calc(2rem * var(--code-font-scale, 1))` }}
+          >
             {code.split('').map((char, i) => (
-              <span key={i} data-idx={i} className="relative" style={getCharStyle(charStatuses[i], i)}>
+              <span key={i} data-idx={i} className="relative whitespace-pre" style={getCharStyle(charStatuses[i], i)}>
                 {char}
               </span>
             ))}

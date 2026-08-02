@@ -58,9 +58,15 @@ function buildTrackSnippets(track: Track, language: Language): Snippet[] {
 
   if (track.textLanguages) {
     if (track.snippetIds.length > 0) {
-      return track.snippetIds
-        .map((snippetId) => language.snippets.find((snippet) => snippet.id === snippetId))
-        .filter((snippet): snippet is Snippet => Boolean(snippet))
+      const snippets = track.snippetIds.map((snippetId) => {
+        const snippet = language.snippets.find((entry) => entry.id === snippetId)
+        if (!snippet) {
+          throw new Error(`Track "${track.id}" references missing snippet "${snippetId}" for language "${language.id}"`)
+        }
+        return snippet
+      })
+
+      return snippets
     }
 
     return track.difficultyFilter

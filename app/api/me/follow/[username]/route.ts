@@ -15,10 +15,11 @@ async function authedAndTarget(username: string) {
   if (authErr || !user) {
     return { error: NextResponse.json({ error: 'Unauthorized.' }, { status: 401 }) }
   }
+  const normalizedUsername = username.toLowerCase()
   const { data: target, error: tErr } = await supabase
     .from('profiles')
     .select('id, username')
-    .ilike('username', username)
+    .eq('username', normalizedUsername)
     .maybeSingle()
   if (tErr) return { error: NextResponse.json({ error: 'Profile not found.' }, { status: 500 }) }
   if (!target) return { error: NextResponse.json({ error: 'Profile not found.' }, { status: 404 }) }
