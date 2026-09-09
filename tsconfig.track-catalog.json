@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": [
+    "next-env.d.ts",
+    "data/**/*.ts",
+    "lib/types.ts",
+    "lib/server/access-control.ts",
+    "lib/server/premium-content.ts",
+    "lib/server/track-store.ts",
+    "app/api/tracks/catalog/route.ts",
+    "app/api/tracks/[track]/practice/route.ts"
+  ],
+  "exclude": ["node_modules"]
+}
