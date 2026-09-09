@@ -1,7 +1,9 @@
 export const PUBLIC_SNIPPET_LIMIT = 6
 
 export const totalSnippetCounts: Record<string, number> = {
+  "c": 26,
   "cpp": 53,
+  "csharp": 39,
   "javascript": 46,
   "typescript": 55,
   "python": 51,

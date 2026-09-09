@@ -80,9 +80,18 @@ export default function TracksPage() {
   }
 
   function getTrackProgressSummary(track: Track) {
+    const isCompleted = completedTrackIds.has(track.id)
+
+    if (track.slots && track.slots.length > 0) {
+      return {
+        completed: isCompleted ? track.slots.length : 0,
+        total: track.slots.length,
+        isCompleted,
+      }
+    }
+
     const snippetTotal = track.snippetIds.length
     const snippetCompleted = snippetTotal > 0 ? getTrackProgress(track.snippetIds) : 0
-    const isCompleted = completedTrackIds.has(track.id)
 
     if (snippetTotal > 0) {
       return {
