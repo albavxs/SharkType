@@ -5,7 +5,7 @@ type PremiumContentModule = {
   premiumSnippetRegistry?: Record<string, Snippet[]>
 }
 
-const DEFAULT_PREMIUM_MODULE = '@sharktype/premium-content'
+const DEFAULT_PREMIUM_MODULE = '@albavxs/sharktype-premium'
 
 async function importPremiumModule(): Promise<PremiumContentModule | null> {
   const specifier = process.env.SHARKTYPE_PREMIUM_CONTENT_MODULE ?? DEFAULT_PREMIUM_MODULE
@@ -16,9 +16,8 @@ async function importPremiumModule(): Promise<PremiumContentModule | null> {
     ) => Promise<PremiumContentModule>
     return await dynamicImport(specifier)
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.info('[premium-content] private package unavailable:', error instanceof Error ? error.message : error)
-    }
+    const message = error instanceof Error ? error.message : String(error)
+    console.error('[premium-content] private package unavailable:', message)
     return null
   }
 }
