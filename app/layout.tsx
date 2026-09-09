@@ -4,6 +4,7 @@ import './globals.css'
 import { AppProviders } from '@/components/providers/AppProviders'
 import { ThemeBootstrap } from '@/components/providers/ThemeBootstrap'
 import sharkLogo from '@/icons/Shark.png'
+import { buildSeoMetadata, siteUrl } from '@/lib/seo'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,8 +17,20 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'SharkType',
-  description: 'Practice typing code syntax across programming languages',
+  metadataBase: new URL(siteUrl),
+  ...buildSeoMetadata({
+    title: 'SharkType | Code typing practice and treino de digitacao',
+    description: 'Practice typing with programming snippets, English typing drills, and focused tracks for developers learning speed, accuracy, and code syntax.',
+    path: '/',
+    keywords: [
+      'typing practice',
+      'code typing practice',
+      'programming typing',
+      'treino de digitacao',
+      'digitacao para programacao',
+      'site para treinar digitacao',
+    ],
+  }),
   manifest: '/manifest.json',
   icons: {
     icon: [

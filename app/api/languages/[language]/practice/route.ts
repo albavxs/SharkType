@@ -1,25 +1,23 @@
 import { NextResponse } from 'next/server'
-import { getTrackPracticePayload } from '@/lib/server/track-store'
-import { getSafeErrorDetails, logStructuredError } from '@/lib/server/safe-logging'
+import { getLanguagePracticePayload } from '@/lib/server/track-store'
 import { anonymousAccess, getUserAccess } from '@/lib/server/access-control'
+import { getSafeErrorDetails, logStructuredError } from '@/lib/server/safe-logging'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv } from '@/lib/supabase/env'
 
 interface RouteContext {
   params: Promise<{
-    track: string
+    language: string
   }>
 }
 
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(_request: Request, context: RouteContext) {
   const requestId = crypto.randomUUID()
   const startedAt = performance.now()
   const responseHeaders = { 'x-request-id': requestId }
 
   try {
-    const { track } = await context.params
-    const { searchParams } = new URL(request.url)
-    const languageId = searchParams.get('languageId')
+    const { language } = await context.params
     const env = getSupabaseEnv()
     let access = anonymousAccess
 
@@ -29,17 +27,16 @@ export async function GET(request: Request, context: RouteContext) {
       access = await getUserAccess(supabase, user)
     }
 
-    const payload = await getTrackPracticePayload(track, languageId, access)
-
+    const payload = await getLanguagePracticePayload(language, access)
     if (!payload) {
-      return NextResponse.json({ error: 'Track not found.' }, { status: 404, headers: responseHeaders })
+      return NextResponse.json({ error: 'Language not found.' }, { status: 404, headers: responseHeaders })
     }
 
     return NextResponse.json(payload, { headers: responseHeaders })
   } catch (error) {
-    logStructuredError('tracks.practice_error', {
+    logStructuredError('languages.practice_error', {
       request_id: requestId,
-      route: '/api/tracks/[track]/practice',
+      route: '/api/languages/[language]/practice',
       status: 500,
       duration_ms: Math.round(performance.now() - startedAt),
       environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'unknown',

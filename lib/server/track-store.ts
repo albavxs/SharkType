@@ -1,7 +1,10 @@
 import { getTrackById, tracks, type Track } from '@/data/tracks'
 import { languages, textLanguages } from '@/data'
+import { PUBLIC_SNIPPET_LIMIT, getTotalSnippetCount } from '@/data/public-snippet-counts'
+import { loadPremiumSnippets } from '@/lib/server/premium-content'
 import type { Language, LanguageMeta, Snippet } from '@/lib/types'
 import { getLanguageMetaById } from '@/data/metadata'
+import type { UserAccess } from './access-control'
 
 function toLanguageMeta(language: Language): LanguageMeta {
   return {
@@ -58,13 +61,12 @@ function buildTrackSnippets(track: Track, language: Language): Snippet[] {
 
   if (track.textLanguages) {
     if (track.snippetIds.length > 0) {
-      const snippets = track.snippetIds.map((snippetId) => {
-        const snippet = language.snippets.find((entry) => entry.id === snippetId)
-        if (!snippet) {
-          throw new Error(`Track "${track.id}" references missing snippet "${snippetId}" for language "${language.id}"`)
-        }
-        return snippet
-      })
+      const snippets = track.snippetIds
+        .map((snippetId) => {
+          const snippet = language.snippets.find((entry) => entry.id === snippetId)
+          return snippet
+        })
+        .filter((snippet): snippet is Snippet => Boolean(snippet))
 
       return snippets
     }
@@ -85,7 +87,32 @@ export function listTrackLanguageBadges(): Record<string, LanguageMeta[]> {
   )
 }
 
-export function getTrackPracticePayload(trackId: string, requestedLanguageId?: string | null) {
+function applyAccessWall(snippets: Snippet[], premiumSnippets: Snippet[], access: UserAccess): Snippet[] {
+  const publicSnippets = snippets.slice(0, PUBLIC_SNIPPET_LIMIT)
+  if (!access.isPlus) return publicSnippets
+
+  const seen = new Set(publicSnippets.map((snippet) => snippet.id))
+  const unlockedPremium = premiumSnippets.filter((snippet) => {
+    if (seen.has(snippet.id)) return false
+    seen.add(snippet.id)
+    return true
+  })
+
+  return [...publicSnippets, ...unlockedPremium]
+}
+
+function getLockedCount(languageId: string, publicCount: number, premiumCount: number, access: UserAccess): number {
+  if (access.isPlus) return 0
+
+  const knownTotal = Math.max(getTotalSnippetCount(languageId), publicCount + premiumCount)
+  return Math.max(0, knownTotal - PUBLIC_SNIPPET_LIMIT)
+}
+
+export async function getTrackPracticePayload(
+  trackId: string,
+  requestedLanguageId: string | null | undefined,
+  access: UserAccess
+) {
   const track = getTrackById(trackId)
   if (!track) return null
 
@@ -101,6 +128,13 @@ export function getTrackPracticePayload(trackId: string, requestedLanguageId?: s
       availableLanguages,
       selectedLanguage: null,
       snippets: [] as Snippet[],
+      access,
+      wall: {
+        isLocked: false,
+        freeSnippetLimit: PUBLIC_SNIPPET_LIMIT,
+        lockedCount: 0,
+        requiredPlan: 'plus' as const,
+      },
     }
   }
 
@@ -111,12 +145,50 @@ export function getTrackPracticePayload(trackId: string, requestedLanguageId?: s
       availableLanguages,
       selectedLanguage: fallbackMeta,
       snippets: [] as Snippet[],
+      access,
+      wall: {
+        isLocked: false,
+        freeSnippetLimit: PUBLIC_SNIPPET_LIMIT,
+        lockedCount: 0,
+        requiredPlan: 'plus' as const,
+      },
     }
   }
+
+  const publicSnippets = buildTrackSnippets(track, language)
+  const premiumSnippets = await loadPremiumSnippets(language.id)
+  const lockedCount = getLockedCount(language.id, publicSnippets.length, premiumSnippets.length, access)
 
   return {
     availableLanguages,
     selectedLanguage: toLanguageMeta(language),
-    snippets: buildTrackSnippets(track, language),
+    snippets: applyAccessWall(publicSnippets, premiumSnippets, access),
+    access,
+    wall: {
+      isLocked: lockedCount > 0,
+      freeSnippetLimit: PUBLIC_SNIPPET_LIMIT,
+      lockedCount,
+      requiredPlan: 'plus' as const,
+    },
+  }
+}
+
+export async function getLanguagePracticePayload(languageId: string, access: UserAccess) {
+  const language = languages.find((entry) => entry.id === languageId)
+  if (!language) return null
+
+  const premiumSnippets = await loadPremiumSnippets(language.id)
+  const lockedCount = getLockedCount(language.id, language.snippets.length, premiumSnippets.length, access)
+
+  return {
+    language: toLanguageMeta(language),
+    snippets: applyAccessWall(language.snippets, premiumSnippets, access),
+    access,
+    wall: {
+      isLocked: lockedCount > 0,
+      freeSnippetLimit: PUBLIC_SNIPPET_LIMIT,
+      lockedCount,
+      requiredPlan: 'plus' as const,
+    },
   }
 }

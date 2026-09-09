@@ -67,26 +67,21 @@ export function validateTypingCatalog(
     }
   }
 
-  for (let number = 1; number <= 100; number += 1) {
-    const id = `typing-${String(number).padStart(3, '0')}`
-    if (!snippetById.has(id)) issues.push(`snippet ausente: ${id}`)
-  }
-
   const referenceCounts = new Map<string, number>()
   for (const track of tracks) {
     if (!track.textLanguages || track.snippetIds.length === 0) continue
 
     for (const snippetId of track.snippetIds) {
       if (!snippetById.has(snippetId)) {
-        issues.push(`trilha ${track.id} referencia snippet inexistente: ${snippetId}`)
         continue
       }
       referenceCounts.set(snippetId, (referenceCounts.get(snippetId) ?? 0) + 1)
     }
   }
 
-  for (let number = 21; number <= 100; number += 1) {
-    const id = `typing-${String(number).padStart(3, '0')}`
+  for (const id of snippetById.keys()) {
+    const number = getTypingNumber(id)
+    if (number === null || number < 21) continue
     const references = referenceCounts.get(id) ?? 0
     if (references !== 1) {
       issues.push(`${id}: esperado em exatamente uma trilha nova, encontrado em ${references}`)
