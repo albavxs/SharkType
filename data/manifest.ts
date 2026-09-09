@@ -23,15 +23,29 @@ export interface LanguageManifestEntry {
   exportName?: string
 }
 
+export const CORE_CONCEPT_LANGUAGE_IDS = [
+  'c',
+  'cpp',
+  'csharp',
+  'javascript',
+  'typescript',
+  'python',
+  'java',
+] as const
+
 export const languageManifest: LanguageManifestEntry[] = [
-  // ── Code languages ──────────────────────────────────────────────────────
+  // ── Core programming languages ──────────────────────────────────────────
+  { id: 'c',          label: 'C',          color: '#a8b9cc', type: 'code', module: './c', exportName: 'cSnippets' },
   { id: 'cpp',        label: 'C++',        color: '#00599c', type: 'code', module: './cpp' },
+  { id: 'csharp',     label: 'C#',         color: '#512bd4', type: 'code', module: './csharp', exportName: 'csharpSnippets' },
   { id: 'javascript', label: 'JavaScript', color: '#f7df1e', type: 'code', module: './javascript' },
   { id: 'typescript', label: 'TypeScript', color: '#3178c6', type: 'code', module: './typescript' },
   { id: 'python',     label: 'Python',     color: '#3776ab', type: 'code', module: './python' },
+  { id: 'java',       label: 'Java',       color: '#e76f00', type: 'code', module: './java' },
+
+  // ── Other code languages ────────────────────────────────────────────────
   { id: 'rust',       label: 'Rust',       color: '#ce422b', type: 'code', module: './rust' },
   { id: 'go',         label: 'Go',         color: '#00add8', type: 'code', module: './go' },
-  { id: 'java',       label: 'Java',       color: '#e76f00', type: 'code', module: './java' },
   { id: 'kotlin',     label: 'Kotlin',     color: '#7f52ff', type: 'code', module: './kotlin' },
   { id: 'scala',      label: 'Scala',      color: '#dc322f', type: 'code', module: './scala' },
   { id: 'swift',      label: 'Swift',      color: '#f05138', type: 'code', module: './swift' },
