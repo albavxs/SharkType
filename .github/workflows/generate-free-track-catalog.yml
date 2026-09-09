@@ -9,6 +9,13 @@ on:
       - 'data/manifest.ts'
       - 'data/c.ts'
       - 'data/csharp.ts'
+      - 'data/index.ts'
+      - 'data/public-snippet-counts.ts'
+      - 'data/generated/free-track-snippets.ts'
+      - 'lib/server/track-store.ts'
+      - 'app/tracks/page.tsx'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/generate-free-track-catalog.yml'
   workflow_dispatch:
 
@@ -37,6 +44,9 @@ jobs:
 
       - name: Validate generated diff
         run: git diff --check
+
+      - name: Typecheck track runtime
+        run: npx tsc --noEmit --pretty false
 
       - name: Commit generated catalog
         run: |
