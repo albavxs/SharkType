@@ -10,6 +10,7 @@
   "scripts": {
     "check:pt-content": "node scripts/check-pt-content.mjs",
     "dev": "next dev --webpack",
+    "prebuild": "node scripts/install-premium-package.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "npm run check:pt-content && node scripts/run-eslint.mjs"
