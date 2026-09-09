@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getTrackPracticePayload } from '@/lib/server/track-store'
 import { getSafeErrorDetails, logStructuredError } from '@/lib/server/safe-logging'
+import { anonymousAccess, getUserAccess } from '@/lib/server/access-control'
+import { createClient } from '@/lib/supabase/server'
+import { getSupabaseEnv } from '@/lib/supabase/env'
 
 interface RouteContext {
   params: Promise<{
@@ -17,7 +20,16 @@ export async function GET(request: Request, context: RouteContext) {
     const { track } = await context.params
     const { searchParams } = new URL(request.url)
     const languageId = searchParams.get('languageId')
-    const payload = getTrackPracticePayload(track, languageId)
+    const env = getSupabaseEnv()
+    let access = anonymousAccess
+
+    if (env.configured) {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      access = await getUserAccess(supabase, user)
+    }
+
+    const payload = await getTrackPracticePayload(track, languageId, access)
 
     if (!payload) {
       return NextResponse.json({ error: 'Track not found.' }, { status: 404, headers: responseHeaders })

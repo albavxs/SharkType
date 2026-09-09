@@ -29,6 +29,7 @@ import LanguageTabs from '@/components/typing/LanguageTabs'
 import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
 import VirtualKeyboard from '@/components/typing/VirtualKeyboard'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
+import { LockIcon } from '@/components/icons'
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
@@ -36,6 +37,12 @@ const AchievementToast = dynamic(() => import('@/components/gamification/Achieve
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; accuracySamples: number[]; errorSamples: number[] }
 type SnippetFinalizationReason = 'completed' | 'timeout'
+interface PracticeWall {
+  isLocked: boolean
+  freeSnippetLimit: number
+  lockedCount: number
+  requiredPlan: 'plus'
+}
 
 interface PendingSnippetFinalization {
   runId: number
@@ -68,6 +75,7 @@ export default function TrackPracticePage() {
   const [requestedLanguageId, setRequestedLanguageId] = useState<string | null>(null)
   const [availableLanguages, setAvailableLanguages] = useState<LanguageMeta[]>([])
   const [trackSnippets, setTrackSnippets] = useState<Snippet[]>([])
+  const [practiceWall, setPracticeWall] = useState<PracticeWall | null>(null)
   const [isTrackDataLoading, setIsTrackDataLoading] = useState(true)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [accumulated, setAccumulated] = useState<SnippetResult[]>([])
@@ -168,6 +176,7 @@ export default function TrackPracticePage() {
         availableLanguages?: LanguageMeta[]
         selectedLanguage?: LanguageMeta | null
         snippets?: Snippet[]
+        wall?: PracticeWall
       }
 
       if (!active) return
@@ -176,6 +185,7 @@ export default function TrackPracticePage() {
         setAvailableLanguages([])
         setSelectedLang(null)
         setTrackSnippets([])
+        setPracticeWall(null)
         setIsTrackDataLoading(false)
         return
       }
@@ -183,6 +193,7 @@ export default function TrackPracticePage() {
       setAvailableLanguages(payload.availableLanguages ?? [])
       setSelectedLang(payload.selectedLanguage ?? null)
       setTrackSnippets(payload.snippets ?? [])
+      setPracticeWall(payload.wall ?? null)
       setIsTrackDataLoading(false)
     })()
 
@@ -525,6 +536,24 @@ export default function TrackPracticePage() {
           onSelect={handleLangChange}
           isTyping={isTyping}
         />
+
+        {practiceWall?.isLocked && !isTyping ? (
+          <div className="mx-auto mt-2 flex w-[calc(100%-1.5rem)] max-w-3xl items-center justify-between gap-3 rounded-xl px-3 py-2 text-xs sm:w-full"
+            style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--main) 24%, transparent)' }}>
+            <div className="flex min-w-0 items-center gap-2">
+              <LockIcon size={14} className="shrink-0" />
+              <span className="truncate">
+                {locale === 'pt'
+                  ? `Plus libera mais ${practiceWall.lockedCount} snippets desta trilha.`
+                  : `Plus unlocks ${practiceWall.lockedCount} more snippets in this track.`}
+              </span>
+            </div>
+            <a href="/plus" className="shrink-0 rounded-lg px-2 py-1 font-semibold"
+              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>
+              Plus
+            </a>
+          </div>
+        ) : null}
 
         <div className="flex-1 flex flex-col items-center justify-center px-3 pb-3 sm:px-6 sm:pb-0 min-h-0 min-w-0">
           {isTrackDataLoading ? (
