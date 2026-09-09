@@ -16,8 +16,6 @@ export interface UserAccess {
 
 type DBClient = SupabaseClient<Database>
 
-const SHARKCODER_USERNAME = 'sharkcoder'
-
 export const anonymousAccess: UserAccess = {
   plan: 'free',
   role: 'user',
@@ -25,15 +23,6 @@ export const anonymousAccess: UserAccess = {
   isAuthenticated: false,
   isPlus: false,
   isSuperAdmin: false,
-}
-
-function isActiveStatus(status: unknown): boolean {
-  return status === 'active' || status === 'manual_grant' || status === 'past_due' || status === 'overdue'
-}
-
-function hasFutureExpiry(expiresAt: unknown): boolean {
-  if (typeof expiresAt !== 'string' || expiresAt.trim().length === 0) return true
-  return new Date(expiresAt).getTime() > Date.now()
 }
 
 export async function getUserAccess(supabase: DBClient, user: User | null): Promise<UserAccess> {
@@ -48,7 +37,9 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
 
   if (profileError) throw profileError
 
-  const isSuperAdmin = Boolean(profile?.is_super_user) || profile?.username === SHARKCODER_USERNAME
+  // P0 containment: privileged access is derived only from the authenticated
+  // profile flag. A username is display identity and must never grant admin.
+  const isSuperAdmin = Boolean(profile?.is_super_user)
   if (isSuperAdmin) {
     return {
       plan: 'plus',
@@ -62,29 +53,15 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
 
   if (profile) sources.push('profile')
 
-  const { data: entitlements, error: entitlementError } = await supabase
-    .from('user_entitlements')
-    .select('plan_id, status, source, expires_at')
-    .eq('user_id', user.id)
-    .eq('plan_id', 'plus')
-
-  if (entitlementError) throw entitlementError
-
-  const hasPlus = (entitlements ?? []).some((entitlement) =>
-    isActiveStatus(entitlement.status) && hasFutureExpiry(entitlement.expires_at)
-  )
-
-  for (const entitlement of entitlements ?? []) {
-    if (entitlement.source === 'manual_grant') sources.push('manual_grant')
-    if (entitlement.source === 'asaas') sources.push('subscription')
-  }
-
+  // Paid/manual entitlements are intentionally disabled while the entitlement
+  // schema is rolled back and audited. Normal authenticated users fail closed
+  // to the free plan instead of failing open or throwing PGRST205.
   return {
-    plan: hasPlus ? 'plus' : 'free',
+    plan: 'free',
     role: 'user',
-    sources: sources.length > 0 ? Array.from(new Set(sources)) : ['profile'],
+    sources: sources.length > 0 ? sources : ['profile'],
     isAuthenticated: true,
-    isPlus: hasPlus,
+    isPlus: false,
     isSuperAdmin: false,
   }
 }

@@ -1,5 +1,15 @@
 const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/
 
+const RESERVED_USERNAMES = new Set([
+  'sharkcoder',
+  'admin',
+  'administrator',
+  'root',
+  'system',
+  'support',
+  'moderator',
+])
+
 export function sanitizeUsername(input: string): string {
   const normalized = input
     .normalize('NFD')
@@ -17,6 +27,10 @@ export function sanitizeUsername(input: string): string {
 
 export function isValidUsername(input: string): boolean {
   return USERNAME_REGEX.test(input)
+}
+
+export function isReservedUsername(input: string): boolean {
+  return RESERVED_USERNAMES.has(sanitizeUsername(input))
 }
 
 export function buildUsernameCandidate(base: string, suffix: number): string {

@@ -1,7 +1,7 @@
 import type { User, SupabaseClient } from '@supabase/supabase-js'
 import type { AuthProfile } from '@/lib/auth-types'
 import type { Database } from '@/lib/supabase/database'
-import { buildUsernameCandidate, sanitizeUsername } from '@/lib/usernames'
+import { buildUsernameCandidate, isReservedUsername, sanitizeUsername } from '@/lib/usernames'
 
 type DBClient = SupabaseClient<any>
 
@@ -126,11 +126,17 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
     return data ? mapProfile(data) : existing
   }
 
-  const desired = inferRequestedUsername(user)
+  const requested = inferRequestedUsername(user)
+  // Reserved handles (including sharkcoder) must never be auto-allocated to a
+  // newly authenticated account. The existing real super-user profile keeps
+  // its reserved handle because the path above returns before allocation.
+  const desired = isReservedUsername(requested) ? `${requested}_user`.slice(0, 20) : requested
   let lastError: Error | null = null
 
   for (let attempt = 0; attempt < 25; attempt++) {
     const username = buildUsernameCandidate(desired, attempt)
+    if (isReservedUsername(username)) continue
+
     const { data, error } = await supabase
       .from('profiles')
       .insert({
