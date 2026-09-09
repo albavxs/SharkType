@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { tracks, Track } from '@/data/tracks'
-import { codeLanguageMetas, getLanguageMetaById, textLanguageMetas } from '@/data/metadata'
+import { codeLanguageMetas, getLanguageMetaById } from '@/data/metadata'
 import { getLevel } from '@/lib/gamification'
 import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
@@ -25,7 +25,7 @@ const focusedTracks = tracks.filter(t => t.section === 'focused')
 const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
 const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
-const idiomBadges = textLanguageMetas.filter((language) => language.id !== 'text-typing')
+const MAX_TRACK_BADGES = 5
 
 export default function TracksPage() {
   const router = useRouter()
@@ -116,6 +116,9 @@ export default function TracksPage() {
 
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     const progressSummary = getTrackProgressSummary(track)
+    const shouldShowBadges = badges.length > 1
+    const visibleBadges = shouldShowBadges ? badges.slice(0, MAX_TRACK_BADGES) : []
+    const hiddenBadgeCount = shouldShowBadges ? Math.max(0, badges.length - visibleBadges.length) : 0
 
     return (
       <button
@@ -134,14 +137,24 @@ export default function TracksPage() {
           ) : null}
         </div>
         <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description[locale]}</div>
-        <div className="flex flex-wrap gap-1">
-          {badges.map(lang => (
-            <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
-              style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
-              {lang.label}
-            </span>
-          ))}
-        </div>
+        {visibleBadges.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {visibleBadges.map(lang => (
+              <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+                style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
+                {lang.label}
+              </span>
+            ))}
+            {hiddenBadgeCount > 0 ? (
+              <span
+                className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--sub) 12%, transparent)', color: 'var(--sub)' }}
+              >
+                +{hiddenBadgeCount}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <div className="mt-3 text-[11px] font-medium" style={{ color: progressSummary.isCompleted ? 'var(--main)' : 'var(--sub)' }}>
           {progressSummary.total > 1
             ? `${progressSummary.completed}/${progressSummary.total} ${t('completed', locale)}`
@@ -182,7 +195,7 @@ export default function TracksPage() {
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('idiomsDesc', locale)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {idiomTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={track.snippetIds.length > 0 ? [] : idiomBadges} />
+                  <TrackCard key={track.id} track={track} badges={[]} />
                 ))}
               </div>
             </div>
@@ -192,7 +205,7 @@ export default function TracksPage() {
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('codeTracksDesc', locale)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {conceptTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
+                  <TrackCard key={track.id} track={track} badges={[]} />
                 ))}
               </div>
             </div>

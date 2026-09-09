@@ -1,10 +1,12 @@
 import { getTrackById, tracks, type Track } from '@/data/tracks'
-import { languages, textLanguages } from '@/data'
+import { codeLanguages, languages, textLanguages } from '@/data'
 import { PUBLIC_SNIPPET_LIMIT, getTotalSnippetCount } from '@/data/public-snippet-counts'
 import { loadPremiumSnippets } from '@/lib/server/premium-content'
 import type { Language, LanguageMeta, Snippet } from '@/lib/types'
 import { getLanguageMetaById } from '@/data/metadata'
 import type { UserAccess } from './access-control'
+
+const fullLanguageSnippetCache = new Map<string, Promise<Snippet[]>>()
 
 function toLanguageMeta(language: Language): LanguageMeta {
   return {
@@ -15,47 +17,7 @@ function toLanguageMeta(language: Language): LanguageMeta {
 }
 
 function getTrackLanguageSource(track: Track): Language[] {
-  return track.textLanguages ? textLanguages : languages
-}
-
-function snippetIdPrefix(id: string): string {
-  return id.replace(/\d+$/, '')
-}
-
-function languageOwnsSnippetId(language: Language, snippetId: string): boolean {
-  const prefixes = new Set(language.snippets.map((snippet) => snippetIdPrefix(snippet.id)))
-  return Array.from(prefixes).some((prefix) => prefix.length > 0 && snippetId.startsWith(prefix))
-}
-
-export function getTrackLanguages(track: Track): LanguageMeta[] {
-  const sourceLanguages = getTrackLanguageSource(track)
-
-  if (track.textLanguages) {
-    const source = track.snippetIds.length > 0
-      ? sourceLanguages.filter((language) =>
-          track.snippetIds.some((snippetId) => languageOwnsSnippetId(language, snippetId))
-        )
-      : sourceLanguages.filter((language) => language.id !== 'text-typing')
-
-    return source.map(toLanguageMeta)
-  }
-
-  // Concept tracks are defined by semantic slots. Premium snippets may be
-  // server-only, so the public six snippets are not a reliable capability
-  // index. Keep languages navigable and let the server resolve the slot set.
-  if (track.slots && track.slots.length > 0) {
-    return sourceLanguages.map(toLanguageMeta)
-  }
-
-  return sourceLanguages
-    .filter((language) =>
-      track.snippetIds.some(
-        (snippetId) =>
-          language.snippets.some((snippet) => snippet.id === snippetId) ||
-          languageOwnsSnippetId(language, snippetId)
-      )
-    )
-    .map(toLanguageMeta)
+  return track.textLanguages ? textLanguages : codeLanguages
 }
 
 function buildTrackSnippets(track: Track, snippets: Snippet[]): Snippet[] {
@@ -95,23 +57,44 @@ function mergeSnippets(publicSnippets: Snippet[], premiumSnippets: Snippet[]): S
   return merged
 }
 
-function getExpectedTrackCount(track: Track, language: Language, actualCount: number): number {
-  if (track.slots && track.slots.length > 0) {
-    return Math.max(actualCount, track.slots.length)
-  }
+function getFullLanguageSnippets(language: Language): Promise<Snippet[]> {
+  const cached = fullLanguageSnippetCache.get(language.id)
+  if (cached) return cached
 
-  if (track.snippetIds.length > 0) {
-    const matchingIds = track.snippetIds.filter((snippetId) => languageOwnsSnippetId(language, snippetId))
-    return Math.max(actualCount, matchingIds.length)
-  }
+  const pending = loadPremiumSnippets(language.id)
+    .then((premiumSnippets) => mergeSnippets(language.snippets, premiumSnippets))
+    .catch((error) => {
+      fullLanguageSnippetCache.delete(language.id)
+      throw error
+    })
 
-  return actualCount
+  fullLanguageSnippetCache.set(language.id, pending)
+  return pending
 }
 
-export function listTrackLanguageBadges(): Record<string, LanguageMeta[]> {
-  return Object.fromEntries(
-    tracks.map((track) => [track.id, getTrackLanguages(track)])
+export async function getTrackLanguages(track: Track): Promise<LanguageMeta[]> {
+  const sourceLanguages = getTrackLanguageSource(track)
+  const candidateLanguages = track.textLanguages && track.snippetIds.length === 0
+    ? sourceLanguages.filter((language) => language.id !== 'text-typing')
+    : sourceLanguages
+
+  const supported = await Promise.all(
+    candidateLanguages.map(async (language) => {
+      const allLanguageSnippets = await getFullLanguageSnippets(language)
+      const trackSnippets = buildTrackSnippets(track, allLanguageSnippets)
+      return trackSnippets.length > 0 ? toLanguageMeta(language) : null
+    })
   )
+
+  return supported.filter((language): language is LanguageMeta => Boolean(language))
+}
+
+export async function listTrackLanguageBadges(): Promise<Record<string, LanguageMeta[]>> {
+  const entries = await Promise.all(
+    tracks.map(async (track) => [track.id, await getTrackLanguages(track)] as const)
+  )
+
+  return Object.fromEntries(entries)
 }
 
 function applyAccessWall(snippets: Snippet[], access: UserAccess): Snippet[] {
@@ -133,7 +116,7 @@ export async function getTrackPracticePayload(
   if (!track) return null
 
   const sourceLanguages = getTrackLanguageSource(track)
-  const availableLanguages = getTrackLanguages(track)
+  const availableLanguages = await getTrackLanguages(track)
   const selectedLanguageMeta =
     (requestedLanguageId
       ? availableLanguages.find((language) => language.id === requestedLanguageId)
@@ -171,14 +154,12 @@ export async function getTrackPracticePayload(
     }
   }
 
-  // Build the track from the complete server-side language set first, then
-  // apply the wall to that track. This prevents a global six-snippet language
-  // slice from accidentally reducing other tracks to zero/one public item.
-  const premiumSnippets = await loadPremiumSnippets(language.id)
-  const allLanguageSnippets = mergeSnippets(language.snippets, premiumSnippets)
+  // Build from the complete server-side language catalog first. The free wall
+  // is per track, so a snippet that is globally #7 can still be one of the
+  // first six exercises of a specific concept track.
+  const allLanguageSnippets = await getFullLanguageSnippets(language)
   const fullTrackSnippets = buildTrackSnippets(track, allLanguageSnippets)
-  const expectedTotal = getExpectedTrackCount(track, language, fullTrackSnippets.length)
-  const lockedCount = getLockedCount(expectedTotal, access)
+  const lockedCount = getLockedCount(fullTrackSnippets.length, access)
 
   return {
     availableLanguages,
@@ -198,8 +179,7 @@ export async function getLanguagePracticePayload(languageId: string, access: Use
   const language = languages.find((entry) => entry.id === languageId)
   if (!language) return null
 
-  const premiumSnippets = await loadPremiumSnippets(language.id)
-  const allSnippets = mergeSnippets(language.snippets, premiumSnippets)
+  const allSnippets = await getFullLanguageSnippets(language)
   const expectedTotal = Math.max(getTotalSnippetCount(language.id), allSnippets.length)
   const lockedCount = getLockedCount(expectedTotal, access)
 
