@@ -16,6 +16,7 @@ on:
       - 'app/tracks/page.tsx'
       - 'package.json'
       - 'package-lock.json'
+      - 'tsconfig.track-catalog.json'
       - '.github/workflows/generate-free-track-catalog.yml'
   workflow_dispatch:
 
@@ -46,7 +47,7 @@ jobs:
         run: git diff --check
 
       - name: Typecheck track runtime
-        run: npx tsc --noEmit --pretty false
+        run: npx tsc -p tsconfig.track-catalog.json --pretty false
 
       - name: Commit generated catalog
         run: |
