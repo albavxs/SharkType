@@ -6,7 +6,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { getTrackById } from '@/data/tracks'
 import { getLanguageMetaById } from '@/data/metadata'
 import { sanitizeSnippetForTyping } from '@/lib/utils'
-import { Snippet, LanguageMeta, Difficulty } from '@/lib/types'
+import { Snippet, LanguageMeta, Difficulty, PracticeWall } from '@/lib/types'
 import { useTypingEngine } from '@/hooks/useTypingEngine'
 import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
 import { useFontScale } from '@/hooks/useFontScale'
@@ -29,7 +29,7 @@ import LanguageTabs from '@/components/typing/LanguageTabs'
 import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
 import VirtualKeyboard from '@/components/typing/VirtualKeyboard'
 import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
-import { LockIcon } from '@/components/icons'
+import PracticePlusWall from '@/components/typing/PracticePlusWall'
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
@@ -37,13 +37,6 @@ const AchievementToast = dynamic(() => import('@/components/gamification/Achieve
 
 interface SnippetResult { wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; accuracySamples: number[]; errorSamples: number[] }
 type SnippetFinalizationReason = 'completed' | 'timeout'
-interface PracticeWall {
-  isLocked: boolean
-  freeSnippetLimit: number
-  lockedCount: number
-  requiredPlan: 'plus'
-}
-
 interface PendingSnippetFinalization {
   runId: number
   seqIndex: number
@@ -84,7 +77,6 @@ export default function TrackPracticePage() {
   const [trackLeveledUp, setTrackLeveledUp] = useState(false)
   const [finalStats, setFinalStats] = useState<SnippetResult | null>(null)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
-  const [isResultSyncing, setIsResultSyncing] = useState(false)
   const [pendingSnippetFinalization, setPendingSnippetFinalization] = useState<PendingSnippetFinalization | null>(null)
   const [showVirtualKeyboard, setShowVirtualKeyboard] = useState(false)
   const [lastPressedKey, setLastPressedKey] = useState<{ key: string; correct: boolean; token: number } | null>(null)
@@ -181,6 +173,11 @@ export default function TrackPracticePage() {
 
       if (!active) return
 
+      if (response.status === 401) {
+        router.replace('/login')
+        return
+      }
+
       if (!response.ok) {
         setAvailableLanguages([])
         setSelectedLang(null)
@@ -200,7 +197,7 @@ export default function TrackPracticePage() {
     return () => {
       active = false
     }
-  }, [track, trackId, requestedLanguageId])
+  }, [router, track, trackId, requestedLanguageId])
 
   const displayCode = useMemo(() => {
     const raw = snippet?.code ?? ''
@@ -222,13 +219,16 @@ export default function TrackPracticePage() {
 
   const handleKeyActivity = useCallback((key: string) => {
     const expected = displayCode[engine.state.currentIndex]
-    const isCorrect = lenient || key === 'Backspace'
-      ? true
-      : key === 'Tab'
-        ? displayCode.slice(engine.state.currentIndex, engine.state.currentIndex + 2) === '  '
-        : key === 'Enter'
-          ? expected === '\n'
-          : expected === key
+    const previousStatus = engine.state.charStatuses[engine.state.currentIndex - 1]
+    let isCorrect = lenient || expected === key
+
+    if (key === 'Backspace') {
+      isCorrect = previousStatus === 'correct'
+    } else if (key === 'Tab') {
+      isCorrect = lenient || displayCode.slice(engine.state.currentIndex, engine.state.currentIndex + 2) === '  '
+    } else if (key === 'Enter') {
+      isCorrect = lenient || expected === '\n'
+    }
 
     const token = pressTokenRef.current + 1
     pressTokenRef.current = token
@@ -238,7 +238,7 @@ export default function TrackPracticePage() {
       setLastPressedKey(null)
       pressTimeoutRef.current = null
     }, 220)
-  }, [displayCode, engine.state.currentIndex, lenient])
+  }, [displayCode, engine.state.charStatuses, engine.state.currentIndex, lenient])
 
   useEffect(() => () => {
     if (pressTimeoutRef.current) clearTimeout(pressTimeoutRef.current)
@@ -254,7 +254,7 @@ export default function TrackPracticePage() {
   useEffect(() => {
     if (!pendingSnippetFinalization) return
     if (pendingSnippetFinalization.runId !== trackRunIdRef.current) {
-      setPendingSnippetFinalization(null)
+      queueMicrotask(() => setPendingSnippetFinalization(null))
       return
     }
 
@@ -264,11 +264,11 @@ export default function TrackPracticePage() {
 
     const finalizedSnippet = trackSnippets[pendingSnippetFinalization.seqIndex] ?? null
     if (!selectedLang || !finalizedSnippet) {
-      setPendingSnippetFinalization(null)
+      queueMicrotask(() => setPendingSnippetFinalization(null))
       return
     }
 
-    setPendingSnippetFinalization(null)
+    queueMicrotask(() => setPendingSnippetFinalization(null))
 
     const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
     const stats: SnippetResult = {
@@ -315,7 +315,6 @@ export default function TrackPracticePage() {
         if (isLastSnippet) {
           setSessionResult(output)
           setTrackLeveledUp((current) => current || output.leveledUp)
-          setIsResultSyncing(false)
           return
         }
 
@@ -323,9 +322,6 @@ export default function TrackPracticePage() {
       })
       .catch((error) => {
         console.error('Failed to persist track session:', error)
-        if (runId === trackRunIdRef.current && isLastSnippet) {
-          setIsResultSyncing(false)
-        }
       })
       .finally(() => {
         pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1)
@@ -354,7 +350,6 @@ export default function TrackPracticePage() {
         errorSamples: nextResults.flatMap((result) => result.errorSamples),
       })
       setSessionResult(optimisticResult.output)
-      setIsResultSyncing(true)
       setShowResult(true)
 
       // Marcar trilha como concluída no backend
@@ -410,7 +405,6 @@ export default function TrackPracticePage() {
     setTrackXpEarned(0)
     setTrackRankedPointsEarned(0)
     setTrackLeveledUp(false)
-    setIsResultSyncing(false)
     resetEngine()
     resetTimer(timerDuration)
     setElapsedSeconds(0)
@@ -420,7 +414,6 @@ export default function TrackPracticePage() {
     clearPressedKey()
     resetTrackRunState()
     setSessionResult(null)
-    setIsResultSyncing(false)
     setElapsedSeconds(0)
     resetEngine()
     resetTimer(timerDuration)
@@ -432,7 +425,6 @@ export default function TrackPracticePage() {
       resetTrackRunState()
       setSeqIndex(i => i + 1)
       setSessionResult(null)
-      setIsResultSyncing(false)
       setElapsedSeconds(0)
       resetEngine()
       resetTimer(timerDuration)
@@ -445,7 +437,6 @@ export default function TrackPracticePage() {
       resetTrackRunState()
       setSeqIndex(i => i - 1)
       setSessionResult(null)
-      setIsResultSyncing(false)
       setElapsedSeconds(0)
       resetEngine()
       resetTimer(timerDuration)
@@ -466,7 +457,6 @@ export default function TrackPracticePage() {
     setTrackXpEarned(0)
     setTrackRankedPointsEarned(0)
     setTrackLeveledUp(false)
-    setIsResultSyncing(false)
     setElapsedSeconds(0)
     resetEngine()
     resetTimer(timerDuration)
@@ -484,7 +474,6 @@ export default function TrackPracticePage() {
     setTrackXpEarned(0)
     setTrackRankedPointsEarned(0)
     setTrackLeveledUp(false)
-    setIsResultSyncing(false)
     setElapsedSeconds(0)
     resetEngine()
     const newDur = getTrackTimerDuration(d, snippetCount)
@@ -537,23 +526,7 @@ export default function TrackPracticePage() {
           isTyping={isTyping}
         />
 
-        {practiceWall?.isLocked && !isTyping ? (
-          <div className="mx-auto mt-2 flex w-[calc(100%-1.5rem)] max-w-3xl items-center justify-between gap-3 rounded-xl px-3 py-2 text-xs sm:w-full"
-            style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--main) 24%, transparent)' }}>
-            <div className="flex min-w-0 items-center gap-2">
-              <LockIcon size={14} className="shrink-0" />
-              <span className="truncate">
-                {locale === 'pt'
-                  ? `Plus libera mais ${practiceWall.lockedCount} snippets desta trilha.`
-                  : `Plus unlocks ${practiceWall.lockedCount} more snippets in this track.`}
-              </span>
-            </div>
-            <a href="/plus" className="shrink-0 rounded-lg px-2 py-1 font-semibold"
-              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>
-              Plus
-            </a>
-          </div>
-        ) : null}
+        {!isTyping ? <PracticePlusWall wall={practiceWall} locale={locale} scope="track" /> : null}
 
         <div className="flex-1 flex flex-col items-center justify-center px-3 pb-3 sm:px-6 sm:pb-0 min-h-0 min-w-0">
           {isTrackDataLoading ? (
@@ -579,7 +552,7 @@ export default function TrackPracticePage() {
               <TypingArea key={`${selectedLang?.id ?? 'unknown'}:${snippet.id}`} code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
                 onKey={wrappedHandleKey} onKeyActivity={supportsVirtualKeyboard ? handleKeyActivity : undefined} disabled={showResult} languageId={selectedLang?.id ?? ''} isTyping={isTyping} locale={locale} />
 
-              {supportsVirtualKeyboard && showVirtualKeyboard && isTyping ? (
+              {supportsVirtualKeyboard && showVirtualKeyboard && !showResult ? (
                 <div className="mt-4 w-full max-w-3xl">
                   <VirtualKeyboard
                     expectedKey={engine.state.currentIndex < displayCode.length ? displayCode[engine.state.currentIndex] : null}

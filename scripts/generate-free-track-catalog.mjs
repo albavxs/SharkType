@@ -7,6 +7,7 @@ import * as ts from 'typescript'
 
 const SOURCE_COMMIT = process.env.SHARKTYPE_SOURCE_COMMIT ?? 'cdb34f8242e22417ee2484a062546c797c2650d5'
 const PUBLIC_LIMIT = 6
+const DEFAULT_ACCESS_POLICY = 'plus_after_limit'
 const outputPath = path.resolve('data/generated/free-track-snippets.ts')
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), 'sharktype-free-tracks-'))
 let moduleCounter = 0
@@ -114,7 +115,10 @@ try {
       const trackSnippets = buildTrackSnippets(track, snippets)
       if (trackSnippets.length === 0) continue
 
-      freeByLanguage[entry.id] = trackSnippets.slice(0, PUBLIC_LIMIT)
+      const accessPolicy = track.accessPolicy ?? DEFAULT_ACCESS_POLICY
+      freeByLanguage[entry.id] = accessPolicy === 'free'
+        ? trackSnippets
+        : trackSnippets.slice(0, PUBLIC_LIMIT)
       totalsByLanguage[entry.id] = trackSnippets.length
     }
 
@@ -123,8 +127,10 @@ try {
   }
 
   for (const [trackId, languages] of Object.entries(freeRegistry)) {
+    const track = tracks.find((entry) => entry.id === trackId)
+    const accessPolicy = track?.accessPolicy ?? DEFAULT_ACCESS_POLICY
     for (const [languageId, snippets] of Object.entries(languages)) {
-      if (snippets.length > PUBLIC_LIMIT) {
+      if (accessPolicy !== 'free' && snippets.length > PUBLIC_LIMIT) {
         throw new Error(`${trackId}/${languageId} exposes ${snippets.length} free snippets`)
       }
 

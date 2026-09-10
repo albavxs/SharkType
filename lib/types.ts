@@ -23,6 +23,14 @@ export interface LanguageMeta {
 
 export interface Language extends LanguageMeta {
   snippets: Snippet[]
+  wall?: PracticeWall
+}
+
+export interface PracticeWall {
+  isLocked: boolean
+  freeSnippetLimit: number
+  lockedCount: number
+  requiredPlan: 'plus'
 }
 
 export interface TypingResult {
