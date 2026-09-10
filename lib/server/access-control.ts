@@ -37,8 +37,6 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
 
   if (profileError) throw profileError
 
-  // P0 containment: privileged access is derived only from the authenticated
-  // profile flag. A username is display identity and must never grant admin.
   const isSuperAdmin = Boolean(profile?.is_super_user)
   if (isSuperAdmin) {
     return {
@@ -53,9 +51,41 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
 
   if (profile) sources.push('profile')
 
-  // Paid/manual entitlements are intentionally disabled while the entitlement
-  // schema is rolled back and audited. Normal authenticated users fail closed
-  // to the free plan instead of failing open or throwing PGRST205.
+  const { data: entitlement, error: entitlementError } = await supabase
+    .from('user_entitlements')
+    .select('status, source, expires_at')
+    .eq('user_id', user.id)
+    .eq('plan_id', 'plus')
+    .in('status', ['active', 'manual_grant'])
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (entitlementError) {
+    // During deploy/migration ordering, fail closed instead of breaking auth or granting access.
+    if (entitlementError.code === '42P01' || entitlementError.code === 'PGRST205') {
+      console.warn('[access-control] entitlement schema unavailable; defaulting to free access.')
+    } else {
+      throw entitlementError
+    }
+  }
+
+  const entitlementNotExpired = entitlement
+    ? !entitlement.expires_at || new Date(entitlement.expires_at).getTime() > Date.now()
+    : false
+
+  if (entitlement && entitlementNotExpired) {
+    const source: AccessSource = entitlement.source === 'manual_grant' ? 'manual_grant' : 'subscription'
+    return {
+      plan: 'plus',
+      role: 'user',
+      sources: [...sources, source],
+      isAuthenticated: true,
+      isPlus: true,
+      isSuperAdmin: false,
+    }
+  }
+
   return {
     plan: 'free',
     role: 'user',

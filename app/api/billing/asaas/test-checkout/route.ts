@@ -3,7 +3,9 @@ import { randomUUID } from 'node:crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserAccess } from '@/lib/server/access-control'
-import { createAsaasRecurringCheckout, getAsaasConfig, getPlusPrice } from '@/lib/server/asaas'
+import { createAsaasRecurringCheckout, getAsaasConfig } from '@/lib/server/asaas'
+
+const SANDBOX_TEST_AMOUNT = 1
 
 function getCallbackBaseUrl(request: Request): string {
   const configured = process.env.APP_URL?.trim()
@@ -23,44 +25,40 @@ export async function POST(request: Request) {
   }
 
   try {
-    const config = getAsaasConfig()
-    if (config.sandbox) {
-      return NextResponse.json(
-        { error: 'Commercial Plus checkout is disabled while ASAAS_ENV=sandbox.' },
-        { status: 409 },
-      )
-    }
-
     const access = await getUserAccess(supabase, user)
-    if (access.isPlus) {
-      return NextResponse.json({ error: 'Plus access is already active.' }, { status: 409 })
+    if (!access.isSuperAdmin) {
+      return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
     }
 
-    const amount = getPlusPrice()
+    const config = getAsaasConfig()
+    if (!config.sandbox) {
+      return NextResponse.json({ error: 'Sandbox test checkout is disabled in production.' }, { status: 409 })
+    }
+
     const checkoutId = randomUUID()
-    const externalReference = `sharktype:plus:${checkoutId}`
+    const externalReference = `sharktype:sandbox-test:${checkoutId}`
     const admin = createAdminClient() as any
 
     const { error: insertError } = await admin.from('billing_checkouts').insert({
       id: checkoutId,
       user_id: user.id,
       provider: 'asaas',
-      purpose: 'plus_subscription',
+      purpose: 'sandbox_test',
       external_reference: externalReference,
       status: 'creating',
-      amount,
+      amount: SANDBOX_TEST_AMOUNT,
       currency: 'BRL',
-      sandbox: false,
+      sandbox: true,
     })
     if (insertError) throw insertError
 
     try {
       const checkout = await createAsaasRecurringCheckout({
         externalReference,
-        amount,
+        amount: SANDBOX_TEST_AMOUNT,
         callbackBaseUrl: getCallbackBaseUrl(request),
-        itemName: 'SharkType Plus',
-        itemDescription: 'Monthly SharkType Plus subscription',
+        itemName: 'SharkType Asaas Sandbox Test',
+        itemDescription: 'Sandbox-only recurring billing validation. Does not grant Plus.',
       })
 
       const { error: updateError } = await admin
@@ -73,15 +71,20 @@ export async function POST(request: Request) {
         .eq('id', checkoutId)
       if (updateError) throw updateError
 
-      return NextResponse.json({ checkoutUrl: checkout.checkoutUrl })
+      return NextResponse.json({
+        checkoutUrl: checkout.checkoutUrl,
+        sandbox: true,
+        amount: SANDBOX_TEST_AMOUNT,
+        grantsPlus: false,
+      })
     } catch (checkoutError) {
       await admin.from('billing_checkouts').update({ status: 'failed' }).eq('id', checkoutId)
       throw checkoutError
     }
   } catch (checkoutError) {
-    console.error('[billing] plus checkout failed:', checkoutError instanceof Error ? checkoutError.message : checkoutError)
+    console.error('[billing] sandbox checkout failed:', checkoutError instanceof Error ? checkoutError.message : checkoutError)
     return NextResponse.json(
-      { error: checkoutError instanceof Error ? checkoutError.message : 'Could not start checkout.' },
+      { error: checkoutError instanceof Error ? checkoutError.message : 'Could not start sandbox checkout.' },
       { status: 500 },
     )
   }
