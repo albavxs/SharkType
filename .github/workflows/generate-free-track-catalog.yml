@@ -13,10 +13,20 @@ on:
       - 'data/public-snippet-counts.ts'
       - 'data/generated/free-track-snippets.ts'
       - 'lib/server/track-store.ts'
+      - 'lib/server/access-control.ts'
+      - 'lib/server/asaas.ts'
+      - 'lib/supabase/admin.ts'
+      - 'lib/supabase/server.ts'
+      - 'lib/supabase/database.ts'
       - 'app/tracks/page.tsx'
+      - 'app/plus/page.tsx'
+      - 'app/api/me/access/route.ts'
+      - 'app/api/billing/**'
+      - 'supabase/migrations/**'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.track-catalog.json'
+      - 'tsconfig.billing.json'
       - '.github/workflows/generate-free-track-catalog.yml'
   workflow_dispatch:
 
@@ -48,6 +58,9 @@ jobs:
 
       - name: Typecheck track runtime
         run: npx tsc -p tsconfig.track-catalog.json --pretty false
+
+      - name: Typecheck billing runtime
+        run: npx tsc -p tsconfig.billing.json --pretty false
 
       - name: Commit generated catalog
         run: |

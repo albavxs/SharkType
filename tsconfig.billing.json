@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": [
+    "next-env.d.ts",
+    "lib/server/asaas.ts",
+    "lib/server/access-control.ts",
+    "lib/supabase/admin.ts",
+    "lib/supabase/server.ts",
+    "lib/supabase/env.ts",
+    "lib/supabase/database.ts",
+    "app/api/me/access/route.ts",
+    "app/api/billing/plus/checkout/route.ts",
+    "app/api/billing/asaas/test-checkout/route.ts",
+    "app/api/billing/asaas/webhook/route.ts"
+  ],
+  "exclude": ["node_modules"]
+}

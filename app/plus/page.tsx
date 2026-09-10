@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import BrandLogo from '@/components/brand/BrandLogo'
+import type { UserAccess } from '@/lib/server/access-control'
 
 export default function PlusPage() {
   const router = useRouter()
@@ -13,8 +14,33 @@ export default function PlusPage() {
   const { locale } = useLocale()
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+  const [access, setAccess] = useState<UserAccess | null>(null)
 
-  async function startCheckout() {
+  useEffect(() => {
+    if (!user) {
+      setAccess(null)
+      return
+    }
+
+    let active = true
+    void fetch('/api/me/access', { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Could not load access state.')
+        return response.json() as Promise<{ access: UserAccess }>
+      })
+      .then((payload) => {
+        if (active) setAccess(payload.access)
+      })
+      .catch(() => {
+        if (active) setAccess(null)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [user])
+
+  async function openCheckout(endpoint: string) {
     if (!user) {
       router.push('/login')
       return
@@ -24,13 +50,11 @@ export default function PlusPage() {
     setError(null)
 
     try {
-      const response = await fetch('/api/billing/plus/checkout', { method: 'POST' })
+      const response = await fetch(endpoint, { method: 'POST' })
       const payload = (await response.json()) as { checkoutUrl?: string; error?: string }
       if (!response.ok || !payload.checkoutUrl) {
         throw new Error(payload.error ?? 'Could not start checkout.')
       }
-      // Checkout is hosted by Asaas, outside the Next.js router.
-      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign(payload.checkoutUrl)
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : 'Could not start checkout.')
@@ -38,7 +62,8 @@ export default function PlusPage() {
     }
   }
 
-  const isPlus = profile?.isSuperUser || profile?.username === 'sharkcoder'
+  const isPlus = access?.isPlus ?? false
+  const isSuperAdmin = profile?.isSuperUser === true
 
   return (
     <main className="min-h-screen px-4 py-8" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
@@ -75,7 +100,7 @@ export default function PlusPage() {
             </p>
           ) : (
             <button
-              onClick={startCheckout}
+              onClick={() => void openCheckout('/api/billing/plus/checkout')}
               disabled={pending}
               className="rounded-lg px-5 py-3 text-sm font-semibold disabled:opacity-50"
               style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
@@ -83,6 +108,27 @@ export default function PlusPage() {
               {pending ? t('authWorking', locale) : locale === 'pt' ? 'Assinar Plus' : 'Subscribe to Plus'}
             </button>
           )}
+
+          {isSuperAdmin ? (
+            <div className="mt-6 rounded-lg p-4" style={{ backgroundColor: 'var(--bg)' }}>
+              <p className="mb-2 text-xs font-semibold uppercase" style={{ color: 'var(--sub)' }}>
+                Asaas sandbox
+              </p>
+              <p className="mb-3 text-xs leading-5" style={{ color: 'var(--sub)' }}>
+                {locale === 'pt'
+                  ? 'Cria uma assinatura recorrente de teste de R$ 1,00 no Sandbox. Esse fluxo nunca concede Plus.'
+                  : 'Creates a R$1.00 recurring Sandbox subscription. This flow never grants Plus.'}
+              </p>
+              <button
+                onClick={() => void openCheckout('/api/billing/asaas/test-checkout')}
+                disabled={pending}
+                className="rounded-lg px-4 py-2 text-xs font-semibold disabled:opacity-50"
+                style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
+              >
+                {locale === 'pt' ? 'Testar transação Asaas — R$ 1,00' : 'Test Asaas transaction — R$1.00'}
+              </button>
+            </div>
+          ) : null}
 
           {error ? <p className="mt-4 text-sm" style={{ color: 'var(--error)' }}>{error}</p> : null}
         </section>
