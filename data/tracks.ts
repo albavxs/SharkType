@@ -1,12 +1,14 @@
 import { Difficulty, I18nString } from '@/lib/types'
 
 export type TrackSection = 'concept' | 'focused' | 'cyberdevops'
+export type TrackAccessPolicy = 'free' | 'plus_after_limit'
 
 export interface Track {
   id: string
   name: I18nString
   description: I18nString
   snippetIds: string[]
+  accessPolicy?: TrackAccessPolicy
   slots?: string[]
   textLanguages?: true
   difficultyFilter?: Difficulty
@@ -564,6 +566,7 @@ export const tracks: Track[] = [
       'typing-018', 'typing-019', 'typing-020',
       'typing-006', 'typing-007', 'typing-008', 'typing-009', 'typing-010',
     ],
+    accessPolicy: 'free',
     textLanguages: true,
   },
   {
@@ -579,6 +582,7 @@ export const tracks: Track[] = [
       'typing-031', 'typing-032', 'typing-033', 'typing-034', 'typing-035',
       'typing-036', 'typing-037', 'typing-038', 'typing-039', 'typing-040',
     ],
+    accessPolicy: 'free',
     textLanguages: true,
   },
   {
@@ -594,6 +598,7 @@ export const tracks: Track[] = [
       'typing-051', 'typing-052', 'typing-053', 'typing-054', 'typing-055',
       'typing-056', 'typing-057', 'typing-058', 'typing-059', 'typing-060',
     ],
+    accessPolicy: 'free',
     textLanguages: true,
   },
   {
@@ -609,6 +614,7 @@ export const tracks: Track[] = [
       'typing-071', 'typing-072', 'typing-073', 'typing-074', 'typing-075',
       'typing-076', 'typing-077', 'typing-078', 'typing-079', 'typing-080',
     ],
+    accessPolicy: 'free',
     textLanguages: true,
   },
   {
@@ -624,6 +630,7 @@ export const tracks: Track[] = [
       'typing-091', 'typing-092', 'typing-093', 'typing-094', 'typing-095',
       'typing-096', 'typing-097', 'typing-098', 'typing-099', 'typing-100',
     ],
+    accessPolicy: 'free',
     textLanguages: true,
   },
   {
@@ -634,6 +641,7 @@ export const tracks: Track[] = [
       en: 'Short phrases and basic vocabulary to get you typing fast',
     },
     snippetIds: [],
+    accessPolicy: 'free',
     textLanguages: true,
     difficultyFilter: 'easy',
   },
@@ -645,6 +653,7 @@ export const tracks: Track[] = [
       en: 'Paragraphs on science, tech, and culture to build your speed',
     },
     snippetIds: [],
+    accessPolicy: 'free',
     textLanguages: true,
     difficultyFilter: 'medium',
   },
@@ -656,6 +665,7 @@ export const tracks: Track[] = [
       en: 'Dense philosophy, history, and literature texts for high precision',
     },
     snippetIds: [],
+    accessPolicy: 'free',
     textLanguages: true,
     difficultyFilter: 'hard',
   },

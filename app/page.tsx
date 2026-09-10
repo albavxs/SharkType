@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { getLanguageMetaById } from '@/data/metadata'
-import { getBundledLanguageById, loadLanguageById } from '@/data/loaders'
+import { loadLanguageById } from '@/data/loaders'
 import { generateChallengeSequence, sanitizeSnippetForTyping } from '@/lib/utils'
 import { Language, LanguageMeta, Snippet, Difficulty } from '@/lib/types'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
@@ -34,14 +34,12 @@ import BrandLogo from '@/components/brand/BrandLogo'
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
 
-const initialBundledLanguage = getBundledLanguageById(DEFAULT_LANGUAGE)
-
 export default function Home() {
   const initialLanguageMeta = getLanguageMetaById(DEFAULT_LANGUAGE)!
   const [selectedLanguageId, setSelectedLanguageId] = useState(DEFAULT_LANGUAGE)
-  const [language, setLanguage] = useState<Language | null>(initialBundledLanguage)
+  const [language, setLanguage] = useState<Language | null>(null)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
-  const [sequence, setSequence] = useState<Snippet[]>(initialBundledLanguage?.snippets ?? [])
+  const [sequence, setSequence] = useState<Snippet[]>([])
   const [seqIndex, setSeqIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
@@ -49,7 +47,7 @@ export default function Home() {
   const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [isLanguageLoading, setIsLanguageLoading] = useState(!initialBundledLanguage)
+  const [isLanguageLoading, setIsLanguageLoading] = useState(true)
   const [languageLoadError, setLanguageLoadError] = useState<string | null>(null)
   const [languageReloadKey, setLanguageReloadKey] = useState(0)
   const isMobile = useIsMobile()
@@ -100,28 +98,6 @@ export default function Home() {
 
   useEffect(() => {
     let active = true
-    const bundledLanguage = getBundledLanguageById(selectedLanguageId)
-
-    if (bundledLanguage) {
-      setLanguage(bundledLanguage)
-      setSequence((current) => {
-        if (
-          selectedLanguageId === DEFAULT_LANGUAGE &&
-          languageReloadKey === 0 &&
-          current.length > 0
-        ) {
-          return current
-        }
-
-        return generateChallengeSequence(bundledLanguage.snippets)
-      })
-      setSeqIndex(0)
-      setIsLanguageLoading(false)
-      setLanguageLoadError(null)
-      return () => {
-        active = false
-      }
-    }
 
     void (async () => {
       try {

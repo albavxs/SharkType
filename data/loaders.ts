@@ -1,4 +1,4 @@
-import type { Language, Snippet } from '@/lib/types'
+import type { Language, PracticeWall, Snippet } from '@/lib/types'
 import { getLanguageMetaById } from './metadata'
 
 interface PracticePayload {
@@ -8,6 +8,7 @@ interface PracticePayload {
     color: string
   }
   snippets?: Snippet[]
+  wall?: PracticeWall
 }
 
 export function getBundledLanguageById(id: string): Language | null {
@@ -26,5 +27,6 @@ export async function loadLanguageById(id: string): Promise<Language | null> {
   return {
     ...(payload.language ?? meta),
     snippets: payload.snippets ?? [],
+    wall: payload.wall,
   }
 }

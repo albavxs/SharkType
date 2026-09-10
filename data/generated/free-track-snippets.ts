@@ -13022,6 +13022,132 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "sal fala sala flask all fall ask lads flash"
+      },
+      {
+        "id": "typing-015",
+        "concept": {
+          "pt": "Alcance dos Indicadores",
+          "en": "Index Reach"
+        },
+        "difficulty": "easy",
+        "code": "frf juj ftf jyj fgf jhj fvf jmj fbf jnj"
+      },
+      {
+        "id": "typing-016",
+        "concept": {
+          "pt": "Mão Esquerda",
+          "en": "Left Hand"
+        },
+        "difficulty": "easy",
+        "code": "as df fd sa asd fds asdf fdsa sad das fast"
+      },
+      {
+        "id": "typing-017",
+        "concept": {
+          "pt": "Mão Direita",
+          "en": "Right Hand"
+        },
+        "difficulty": "easy",
+        "code": "jk l; ;l kj jkl ;lk jkl; ;lkj jkl jkl; kl"
+      },
+      {
+        "id": "typing-003",
+        "concept": {
+          "pt": "Linha Superior",
+          "en": "Top Row"
+        },
+        "difficulty": "easy",
+        "code": "qwert yuiop qwert yuiop type your top row keys"
+      },
+      {
+        "id": "typing-004",
+        "concept": {
+          "pt": "Linha Inferior",
+          "en": "Bottom Row"
+        },
+        "difficulty": "easy",
+        "code": "zxcv bnm, zxcv bnm, vibe zone mix box cave"
+      },
+      {
+        "id": "typing-005",
+        "concept": {
+          "pt": "Vogais",
+          "en": "Vowels"
+        },
+        "difficulty": "easy",
+        "code": "a e i o u ai au eu io oa ui eia oui aio"
+      },
+      {
+        "id": "typing-018",
+        "concept": {
+          "pt": "Combinações Comuns PT",
+          "en": "Common PT Combos"
+        },
+        "difficulty": "easy",
+        "code": "as os de no em um ao se do na eu da que por"
+      },
+      {
+        "id": "typing-019",
+        "concept": {
+          "pt": "Linhas Alternadas",
+          "en": "Alternating Rows"
+        },
+        "difficulty": "easy",
+        "code": "far joy ask lip wet you red lot zip mud hen"
+      },
+      {
+        "id": "typing-020",
+        "concept": {
+          "pt": "Alfabeto Completo",
+          "en": "Full Alphabet"
+        },
+        "difficulty": "easy",
+        "code": "abcdefghijklmnopqrstuvwxyz zyxwvutsrqponmlkjihgfedcba"
+      },
+      {
+        "id": "typing-006",
+        "concept": {
+          "pt": "Bigramas Comuns",
+          "en": "Common Bigrams"
+        },
+        "difficulty": "medium",
+        "code": "th he in er an re on en at nd st es te"
+      },
+      {
+        "id": "typing-007",
+        "concept": {
+          "pt": "Palavras Curtas",
+          "en": "Short Words"
+        },
+        "difficulty": "medium",
+        "code": "the and for you are with have this from they"
+      },
+      {
+        "id": "typing-008",
+        "concept": {
+          "pt": "Números",
+          "en": "Numbers"
+        },
+        "difficulty": "medium",
+        "code": "1234 5678 90 1234567890 42 100 2024 3.14"
+      },
+      {
+        "id": "typing-009",
+        "concept": {
+          "pt": "Pontuação",
+          "en": "Punctuation"
+        },
+        "difficulty": "hard",
+        "code": "Hello, world! How are you? Fine, thanks. Yes: no."
+      },
+      {
+        "id": "typing-010",
+        "concept": {
+          "pt": "Pangrama",
+          "en": "Pangram"
+        },
+        "difficulty": "hard",
+        "code": "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs."
       }
     ]
   },
@@ -13080,6 +13206,132 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "f f f j  f f f j  f f f j"
+      },
+      {
+        "id": "typing-027",
+        "concept": {
+          "pt": "Tecla Guia J",
+          "en": "J Guide Key"
+        },
+        "difficulty": "easy",
+        "code": "j j j f  j j j f  j j j f"
+      },
+      {
+        "id": "typing-028",
+        "concept": {
+          "pt": "Alternância F e J",
+          "en": "F and J Alternation"
+        },
+        "difficulty": "easy",
+        "code": "ff jj fj jf  ff jj fj jf"
+      },
+      {
+        "id": "typing-029",
+        "concept": {
+          "pt": "Guias com Outras Teclas",
+          "en": "Guides with Other Keys"
+        },
+        "difficulty": "easy",
+        "code": "f a j l  f s j k  f d j l  f a j"
+      },
+      {
+        "id": "typing-030",
+        "concept": {
+          "pt": "Encontrando a Base",
+          "en": "Finding Home Row"
+        },
+        "difficulty": "easy",
+        "code": "f j  a l  f j  s l  f j  d k  f j"
+      },
+      {
+        "id": "typing-031",
+        "concept": {
+          "pt": "Sequência Esquerda",
+          "en": "Left Sequence"
+        },
+        "difficulty": "easy",
+        "code": "asdf asdf fdsa fdsa"
+      },
+      {
+        "id": "typing-032",
+        "concept": {
+          "pt": "Sequência Direita",
+          "en": "Right Sequence"
+        },
+        "difficulty": "easy",
+        "code": "jkl jkl lkj lkj"
+      },
+      {
+        "id": "typing-033",
+        "concept": {
+          "pt": "Subindo na Mão Esquerda",
+          "en": "Left Hand Forward"
+        },
+        "difficulty": "easy",
+        "code": "a s d f  as df  sad fds  asdf"
+      },
+      {
+        "id": "typing-034",
+        "concept": {
+          "pt": "Subindo na Mão Direita",
+          "en": "Right Hand Forward"
+        },
+        "difficulty": "easy",
+        "code": "j k l  jk lk  jkl lkj  jkl"
+      },
+      {
+        "id": "typing-035",
+        "concept": {
+          "pt": "Duas Mãos na Base",
+          "en": "Both Hands at Home"
+        },
+        "difficulty": "easy",
+        "code": "asdf jkl  fdsa lkj  asdf jkl"
+      },
+      {
+        "id": "typing-036",
+        "concept": {
+          "pt": "Palavras da Base I",
+          "en": "Home Row Words I"
+        },
+        "difficulty": "easy",
+        "code": "sad lad fall ask"
+      },
+      {
+        "id": "typing-037",
+        "concept": {
+          "pt": "Palavras da Base II",
+          "en": "Home Row Words II"
+        },
+        "difficulty": "easy",
+        "code": "all salad flask adds"
+      },
+      {
+        "id": "typing-038",
+        "concept": {
+          "pt": "Palavras com Alternância",
+          "en": "Alternating Words"
+        },
+        "difficulty": "easy",
+        "code": "sad ask lad fall salad"
+      },
+      {
+        "id": "typing-039",
+        "concept": {
+          "pt": "Ritmo da Linha Base",
+          "en": "Home Row Rhythm"
+        },
+        "difficulty": "easy",
+        "code": "as df jk l  as df jk l  asdf jkl"
+      },
+      {
+        "id": "typing-040",
+        "concept": {
+          "pt": "Revisão da Posição Inicial",
+          "en": "Starting Position Review"
+        },
+        "difficulty": "easy",
+        "code": "asdf jkl sad lad ask fall salad flask"
       }
     ]
   },
@@ -13138,6 +13390,132 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "dcd ded dxd dsd"
+      },
+      {
+        "id": "typing-047",
+        "concept": {
+          "pt": "Alcance do Médio Direito",
+          "en": "Right Middle Reach"
+        },
+        "difficulty": "easy",
+        "code": "kik kok kmk klk"
+      },
+      {
+        "id": "typing-048",
+        "concept": {
+          "pt": "Médios e Linha Base",
+          "en": "Middle Fingers and Home Row"
+        },
+        "difficulty": "easy",
+        "code": "d e d  d c d  k i k  k m k"
+      },
+      {
+        "id": "typing-049",
+        "concept": {
+          "pt": "Médios Alternados",
+          "en": "Alternating Middle Fingers"
+        },
+        "difficulty": "easy",
+        "code": "de ki  dc km  ds kl  de ki"
+      },
+      {
+        "id": "typing-050",
+        "concept": {
+          "pt": "Revisão dos Médios",
+          "en": "Middle Finger Review"
+        },
+        "difficulty": "easy",
+        "code": "d e c  k i m  de dc  ki km"
+      },
+      {
+        "id": "typing-051",
+        "concept": {
+          "pt": "Alcance do Anelar Esquerdo",
+          "en": "Left Ring Reach"
+        },
+        "difficulty": "easy",
+        "code": "sws sxs szs sas"
+      },
+      {
+        "id": "typing-052",
+        "concept": {
+          "pt": "Alcance do Anelar Direito",
+          "en": "Right Ring Reach"
+        },
+        "difficulty": "easy",
+        "code": "lol lol lpl lkl"
+      },
+      {
+        "id": "typing-053",
+        "concept": {
+          "pt": "Anelares e Linha Base",
+          "en": "Ring Fingers and Home Row"
+        },
+        "difficulty": "easy",
+        "code": "s w s  s x s  l o l  l p l"
+      },
+      {
+        "id": "typing-054",
+        "concept": {
+          "pt": "Anelares Alternados",
+          "en": "Alternating Ring Fingers"
+        },
+        "difficulty": "easy",
+        "code": "sw lo  sx lp  sz ll  ss lo"
+      },
+      {
+        "id": "typing-055",
+        "concept": {
+          "pt": "Revisão dos Anelares",
+          "en": "Ring Finger Review"
+        },
+        "difficulty": "easy",
+        "code": "s w x  l o p  sw sx  lo lp"
+      },
+      {
+        "id": "typing-056",
+        "concept": {
+          "pt": "Alcance do Mínimo Esquerdo",
+          "en": "Left Pinky Reach"
+        },
+        "difficulty": "easy",
+        "code": "aqa aza awa asa"
+      },
+      {
+        "id": "typing-057",
+        "concept": {
+          "pt": "Alcance do Mínimo Direito",
+          "en": "Right Pinky Reach"
+        },
+        "difficulty": "easy",
+        "code": "p p o p  p l p  p k p"
+      },
+      {
+        "id": "typing-058",
+        "concept": {
+          "pt": "Mínimos e Linha Base",
+          "en": "Pinkies and Home Row"
+        },
+        "difficulty": "easy",
+        "code": "a q a  a z a  p p p  p o p"
+      },
+      {
+        "id": "typing-059",
+        "concept": {
+          "pt": "Mínimos Alternados",
+          "en": "Alternating Pinkies"
+        },
+        "difficulty": "easy",
+        "code": "aq po  az po  aw pl  aa pp"
+      },
+      {
+        "id": "typing-060",
+        "concept": {
+          "pt": "Revisão dos Dedos",
+          "en": "Finger Reach Review"
+        },
+        "difficulty": "easy",
+        "code": "a q s w d e f r  j u k i l o p"
       }
     ]
   },
@@ -13196,6 +13574,132 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "z z x x c c v v b b"
+      },
+      {
+        "id": "typing-067",
+        "concept": {
+          "pt": "Linha Inferior Direita",
+          "en": "Right Bottom Row"
+        },
+        "difficulty": "easy",
+        "code": "n n m m n n m m"
+      },
+      {
+        "id": "typing-068",
+        "concept": {
+          "pt": "Percorrendo a Linha Inferior",
+          "en": "Across the Bottom Row"
+        },
+        "difficulty": "easy",
+        "code": "zxcvb  bvcxz  nm  mn"
+      },
+      {
+        "id": "typing-069",
+        "concept": {
+          "pt": "Blocos da Linha Inferior",
+          "en": "Bottom Row Blocks"
+        },
+        "difficulty": "easy",
+        "code": "zxc  cvb  bnm  mnb  zxcv"
+      },
+      {
+        "id": "typing-070",
+        "concept": {
+          "pt": "Revisão da Linha Inferior",
+          "en": "Bottom Row Review"
+        },
+        "difficulty": "easy",
+        "code": "zxcv bnm  vcbx  mn  zxcv bnm"
+      },
+      {
+        "id": "typing-071",
+        "concept": {
+          "pt": "Base para a Linha Superior",
+          "en": "Home to Top Row"
+        },
+        "difficulty": "easy",
+        "code": "a q  s w  d e  f r  a q s w d e f r"
+      },
+      {
+        "id": "typing-072",
+        "concept": {
+          "pt": "Base Direita para Cima",
+          "en": "Right Home to Top"
+        },
+        "difficulty": "easy",
+        "code": "j u  k i  l o  p o  j u k i l o p"
+      },
+      {
+        "id": "typing-073",
+        "concept": {
+          "pt": "Subidas Alternadas",
+          "en": "Alternating Upward Reach"
+        },
+        "difficulty": "easy",
+        "code": "a q j u  s w k i  d e l o  f r p"
+      },
+      {
+        "id": "typing-074",
+        "concept": {
+          "pt": "Mistura Base e Superior",
+          "en": "Home and Top Mix"
+        },
+        "difficulty": "easy",
+        "code": "q a w s e d r f  y j u k i l o p"
+      },
+      {
+        "id": "typing-075",
+        "concept": {
+          "pt": "Revisão da Subida",
+          "en": "Upward Reach Review"
+        },
+        "difficulty": "easy",
+        "code": "qwe asd  rty fgh  yui jkl  op"
+      },
+      {
+        "id": "typing-076",
+        "concept": {
+          "pt": "Base para a Linha Inferior",
+          "en": "Home to Bottom Row"
+        },
+        "difficulty": "easy",
+        "code": "a z  s x  d c  f v  a z s x d c f v"
+      },
+      {
+        "id": "typing-077",
+        "concept": {
+          "pt": "Base Direita para Baixo",
+          "en": "Right Home to Bottom"
+        },
+        "difficulty": "easy",
+        "code": "j n  k m  l p  j n k m l p"
+      },
+      {
+        "id": "typing-078",
+        "concept": {
+          "pt": "Descidas Alternadas",
+          "en": "Alternating Downward Reach"
+        },
+        "difficulty": "easy",
+        "code": "a z j n  s x k m  d c l  f v"
+      },
+      {
+        "id": "typing-079",
+        "concept": {
+          "pt": "Mistura Base e Inferior",
+          "en": "Home and Bottom Mix"
+        },
+        "difficulty": "easy",
+        "code": "z a x s c d v f  n j m k l p"
+      },
+      {
+        "id": "typing-080",
+        "concept": {
+          "pt": "Revisão das Três Linhas",
+          "en": "Three Row Review"
+        },
+        "difficulty": "easy",
+        "code": "q a z  w s x  e d c  r f v  y j n  u k m"
       }
     ]
   },
@@ -13254,6 +13758,132 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "fa fe fi fo fu  af ef if of uf"
+      },
+      {
+        "id": "typing-087",
+        "concept": {
+          "pt": "Sílabas com J",
+          "en": "Syllables with J"
+        },
+        "difficulty": "easy",
+        "code": "ja je ji jo ju  aj ej ij oj uj"
+      },
+      {
+        "id": "typing-088",
+        "concept": {
+          "pt": "Sílabas Misturadas",
+          "en": "Mixed Syllables"
+        },
+        "difficulty": "easy",
+        "code": "ma sa pa la  fa da ja  me se pe le"
+      },
+      {
+        "id": "typing-089",
+        "concept": {
+          "pt": "Ritmo de Sílabas",
+          "en": "Syllable Rhythm"
+        },
+        "difficulty": "easy",
+        "code": "ma me mi  sa se si  pa pe pi  ta te ti"
+      },
+      {
+        "id": "typing-090",
+        "concept": {
+          "pt": "Revisão de Sílabas",
+          "en": "Syllable Review"
+        },
+        "difficulty": "easy",
+        "code": "ba da fa ja  be de fe je  bi di fi ji"
+      },
+      {
+        "id": "typing-091",
+        "concept": {
+          "pt": "Palavras Curtas I",
+          "en": "Short Words I"
+        },
+        "difficulty": "easy",
+        "code": "casa sala fada dado"
+      },
+      {
+        "id": "typing-092",
+        "concept": {
+          "pt": "Palavras Curtas II",
+          "en": "Short Words II"
+        },
+        "difficulty": "easy",
+        "code": "mesa mala mapa pata"
+      },
+      {
+        "id": "typing-093",
+        "concept": {
+          "pt": "Palavras com Alcance",
+          "en": "Words with Reach"
+        },
+        "difficulty": "easy",
+        "code": "gato bola jogo dedo"
+      },
+      {
+        "id": "typing-094",
+        "concept": {
+          "pt": "Palavras com Mãos Alternadas",
+          "en": "Alternating Hand Words"
+        },
+        "difficulty": "easy",
+        "code": "casa lado sala mapa"
+      },
+      {
+        "id": "typing-095",
+        "concept": {
+          "pt": "Palavras do Teclado",
+          "en": "Keyboard Words"
+        },
+        "difficulty": "easy",
+        "code": "tecla dedo linha base"
+      },
+      {
+        "id": "typing-096",
+        "concept": {
+          "pt": "Frases Curtas I",
+          "en": "Short Sentences I"
+        },
+        "difficulty": "easy",
+        "code": "a casa e azul"
+      },
+      {
+        "id": "typing-097",
+        "concept": {
+          "pt": "Frases Curtas II",
+          "en": "Short Sentences II"
+        },
+        "difficulty": "easy",
+        "code": "o gato pula"
+      },
+      {
+        "id": "typing-098",
+        "concept": {
+          "pt": "Frases com Alcance",
+          "en": "Sentences with Reach"
+        },
+        "difficulty": "easy",
+        "code": "a fada fala baixo"
+      },
+      {
+        "id": "typing-099",
+        "concept": {
+          "pt": "Frase com Todas as Linhas",
+          "en": "Sentence Across All Rows"
+        },
+        "difficulty": "easy",
+        "code": "julia joga bola"
+      },
+      {
+        "id": "typing-100",
+        "concept": {
+          "pt": "Desafio Final de Posições",
+          "en": "Final Position Challenge"
+        },
+        "difficulty": "easy",
+        "code": "pratique cada linha do teclado"
       }
     ]
   },
@@ -13312,6 +13942,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "Água mole em pedra dura, tanto bate até que fura."
+      },
+      {
+        "id": "ptbr-007",
+        "concept": {
+          "pt": "Descrição",
+          "en": "Description"
+        },
+        "difficulty": "easy",
+        "code": "O gato preto dorme em cima da mesa perto da janela aberta."
+      },
+      {
+        "id": "ptbr-008",
+        "concept": {
+          "pt": "Cotidiano",
+          "en": "Daily life"
+        },
+        "difficulty": "easy",
+        "code": "Hoje eu acordei cedo, tomei café e fui caminhar no parque."
+      },
+      {
+        "id": "ptbr-009",
+        "concept": {
+          "pt": "Natureza",
+          "en": "Nature"
+        },
+        "difficulty": "easy",
+        "code": "As flores do jardim estão lindas nesta primavera chuvosa."
+      },
+      {
+        "id": "ptbr-010",
+        "concept": {
+          "pt": "Ditado",
+          "en": "Saying"
+        },
+        "difficulty": "easy",
+        "code": "De grão em grão, a galinha enche o papo. Devagar se vai ao longe."
       }
     ],
     "text-en": [
@@ -13368,6 +14034,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "The old bookstore on the corner has a wonderful collection of rare novels."
+      },
+      {
+        "id": "en-007",
+        "concept": {
+          "pt": "Cotidiano",
+          "en": "Daily life"
+        },
+        "difficulty": "easy",
+        "code": "I woke up early this morning, made some coffee and went for a walk in the park."
+      },
+      {
+        "id": "en-008",
+        "concept": {
+          "pt": "Natureza",
+          "en": "Nature"
+        },
+        "difficulty": "easy",
+        "code": "The mountains were covered with fresh snow and the sky was perfectly clear."
+      },
+      {
+        "id": "en-009",
+        "concept": {
+          "pt": "Ditado",
+          "en": "Saying"
+        },
+        "difficulty": "easy",
+        "code": "Actions speak louder than words. Every moment is a fresh beginning."
+      },
+      {
+        "id": "en-010",
+        "concept": {
+          "pt": "Direções",
+          "en": "Directions"
+        },
+        "difficulty": "easy",
+        "code": "Turn left at the traffic light, go straight for two blocks, and the museum is on your right."
       }
     ],
     "text-es": [
@@ -13424,6 +14126,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "El perro marron corre por el parque mientras los ninos juegan en los columpios."
+      },
+      {
+        "id": "es-007",
+        "concept": {
+          "pt": "Cotidiano",
+          "en": "Daily life"
+        },
+        "difficulty": "easy",
+        "code": "Esta manana fui al mercado, compre frutas frescas y prepare un jugo de naranja."
+      },
+      {
+        "id": "es-008",
+        "concept": {
+          "pt": "Natureza",
+          "en": "Nature"
+        },
+        "difficulty": "easy",
+        "code": "Las montanas estaban cubiertas de nieve y el cielo estaba completamente despejado."
+      },
+      {
+        "id": "es-009",
+        "concept": {
+          "pt": "Ditado",
+          "en": "Saying"
+        },
+        "difficulty": "easy",
+        "code": "Mas vale pajaro en mano que cien volando. La paciencia es la madre de la ciencia."
+      },
+      {
+        "id": "es-010",
+        "concept": {
+          "pt": "Direções",
+          "en": "Directions"
+        },
+        "difficulty": "easy",
+        "code": "Gira a la izquierda en el semaforo, sigue recto dos calles y la biblioteca esta a tu derecha."
       }
     ],
     "text-fr": [
@@ -13480,6 +14218,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "easy",
         "code": "Les enfants jouent dans le jardin pendant que le soleil brille au-dessus des arbres."
+      },
+      {
+        "id": "fr-007",
+        "concept": {
+          "pt": "Cotidiano",
+          "en": "Daily life"
+        },
+        "difficulty": "easy",
+        "code": "Ce matin, je suis alle au marche, jai achete du pain frais et des fruits de saison."
+      },
+      {
+        "id": "fr-008",
+        "concept": {
+          "pt": "Natureza",
+          "en": "Nature"
+        },
+        "difficulty": "easy",
+        "code": "Les montagnes etaient couvertes de neige fraiche et le ciel etait parfaitement clair."
+      },
+      {
+        "id": "fr-009",
+        "concept": {
+          "pt": "Ditado",
+          "en": "Saying"
+        },
+        "difficulty": "easy",
+        "code": "Petit a petit, loiseau fait son nid. La patience est une vertu precieuse."
+      },
+      {
+        "id": "fr-010",
+        "concept": {
+          "pt": "Direções",
+          "en": "Directions"
+        },
+        "difficulty": "easy",
+        "code": "Tournez a gauche au feu rouge, continuez tout droit et le musee sera sur votre droite."
       }
     ]
   },
@@ -13538,6 +14312,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "medium",
         "code": "O aquecimento global é um dos maiores desafios do século vinte e um. A redução de emissões de carbono e o uso de energias renováveis são essenciais para combater a crise climática."
+      },
+      {
+        "id": "ptbr-017",
+        "concept": {
+          "pt": "Saúde",
+          "en": "Health"
+        },
+        "difficulty": "medium",
+        "code": "Manter uma alimentação equilibrada e praticar exercícios físicos regularmente são hábitos fundamentais para uma vida saudável e para a prevenção de doenças crônicas."
+      },
+      {
+        "id": "ptbr-018",
+        "concept": {
+          "pt": "Cultura",
+          "en": "Culture"
+        },
+        "difficulty": "medium",
+        "code": "O carnaval brasileiro é uma das maiores festas populares do mundo. Milhões de pessoas celebram com música, dança e fantasias coloridas nas ruas e nos sambódromos."
+      },
+      {
+        "id": "ptbr-019",
+        "concept": {
+          "pt": "Economia",
+          "en": "Economics"
+        },
+        "difficulty": "medium",
+        "code": "O mercado financeiro funciona como um termômetro da economia. Investidores acompanham indicadores como inflação, taxa de juros e produto interno bruto para tomar decisões."
+      },
+      {
+        "id": "ptbr-020",
+        "concept": {
+          "pt": "Astronomia",
+          "en": "Astronomy"
+        },
+        "difficulty": "medium",
+        "code": "O sistema solar possui oito planetas que orbitam o Sol. A Terra é o terceiro planeta e o único conhecido por abrigar vida, graças à sua atmosfera e água líquida."
       }
     ],
     "text-en": [
@@ -13594,6 +14404,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "medium",
         "code": "Renewable energy sources like solar, wind, and hydroelectric power are becoming increasingly important as the world seeks alternatives to fossil fuels to combat climate change and reduce pollution."
+      },
+      {
+        "id": "en-017",
+        "concept": {
+          "pt": "Saúde",
+          "en": "Health"
+        },
+        "difficulty": "medium",
+        "code": "Regular physical exercise not only strengthens muscles and bones but also improves mental health by reducing stress, anxiety, and symptoms of depression. Even thirty minutes of daily walking can make a difference."
+      },
+      {
+        "id": "en-018",
+        "concept": {
+          "pt": "Cultura",
+          "en": "Culture"
+        },
+        "difficulty": "medium",
+        "code": "Music is a universal language that transcends borders and connects people across cultures. From classical symphonies to modern electronic beats, music reflects the emotions and stories of humanity."
+      },
+      {
+        "id": "en-019",
+        "concept": {
+          "pt": "Economia",
+          "en": "Economics"
+        },
+        "difficulty": "medium",
+        "code": "Supply and demand are the fundamental forces that drive market economies. When demand exceeds supply, prices rise; when supply exceeds demand, prices fall. This balance shapes global trade patterns."
+      },
+      {
+        "id": "en-020",
+        "concept": {
+          "pt": "Espaço",
+          "en": "Space"
+        },
+        "difficulty": "medium",
+        "code": "Mars is often called the Red Planet due to the iron oxide on its surface. Scientists continue to explore whether microbial life ever existed there and whether humans could one day establish a colony."
       }
     ],
     "text-es": [
@@ -13650,6 +14496,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "medium",
         "code": "El cambio climatico es uno de los desafios mas urgentes de nuestra epoca. La transicion hacia energias renovables y la reduccion de emisiones de carbono son pasos fundamentales para proteger el planeta."
+      },
+      {
+        "id": "es-017",
+        "concept": {
+          "pt": "Saúde",
+          "en": "Health"
+        },
+        "difficulty": "medium",
+        "code": "Una dieta equilibrada combinada con ejercicio regular es la base de una vida saludable. Los expertos recomiendan al menos treinta minutos de actividad fisica moderada cada dia para mantener el bienestar."
+      },
+      {
+        "id": "es-018",
+        "concept": {
+          "pt": "Cultura",
+          "en": "Culture"
+        },
+        "difficulty": "medium",
+        "code": "La musica flamenca es una expresion artistica profundamente arraigada en la cultura espanola. Combina canto, guitarra y baile en una experiencia emocional que refleja siglos de tradicion e historia."
+      },
+      {
+        "id": "es-019",
+        "concept": {
+          "pt": "Economia",
+          "en": "Economics"
+        },
+        "difficulty": "medium",
+        "code": "La globalizacion ha transformado las relaciones comerciales entre los paises. El libre comercio permite que productos y servicios crucen fronteras, pero tambien plantea desafios en terminos de desigualdad."
+      },
+      {
+        "id": "es-020",
+        "concept": {
+          "pt": "Astronomia",
+          "en": "Astronomy"
+        },
+        "difficulty": "medium",
+        "code": "Marte es conocido como el Planeta Rojo debido al oxido de hierro en su superficie. Los cientificos investigan si alguna vez existio vida microbiana en este fascinante mundo vecino."
       }
     ],
     "text-fr": [
@@ -13706,6 +14588,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "medium",
         "code": "Le changement climatique est lun des defis les plus urgents de notre epoque. La transition vers les energies renouvelables et la reduction des emissions de carbone sont des etapes essentielles pour proteger la planete."
+      },
+      {
+        "id": "fr-017",
+        "concept": {
+          "pt": "Saúde",
+          "en": "Health"
+        },
+        "difficulty": "medium",
+        "code": "Une alimentation equilibree associee a une activite physique reguliere constitue la base dune vie saine. Les experts recommandent au moins trente minutes dexercice modere chaque jour pour maintenir le bien-etre."
+      },
+      {
+        "id": "fr-018",
+        "concept": {
+          "pt": "Cultura",
+          "en": "Culture"
+        },
+        "difficulty": "medium",
+        "code": "Le cinema francais est celebre pour son approche artistique et intellectuelle du septieme art. Des realisateurs comme Truffaut et Godard ont revolutionne la narration cinematographique avec la Nouvelle Vague."
+      },
+      {
+        "id": "fr-019",
+        "concept": {
+          "pt": "Economia",
+          "en": "Economics"
+        },
+        "difficulty": "medium",
+        "code": "La mondialisation a transforme les relations commerciales entre les nations. Le libre-echange permet aux produits et services de traverser les frontieres, mais souleve aussi des questions sur linegalite economique."
+      },
+      {
+        "id": "fr-020",
+        "concept": {
+          "pt": "Astronomia",
+          "en": "Astronomy"
+        },
+        "difficulty": "medium",
+        "code": "Mars est souvent appelee la Planete Rouge en raison de loxyde de fer present a sa surface. Les scientifiques continuent detudier si une forme de vie microbienne a jamais existe sur ce monde fascinant."
       }
     ]
   },
@@ -13764,6 +14682,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "hard",
         "code": "O DNA é a molécula que carrega a informação genética de todos os seres vivos. A descoberta de sua estrutura em dupla hélice por Watson e Crick em 1953 revolucionou a biologia e abriu caminho para a engenharia genética e a medicina personalizada."
+      },
+      {
+        "id": "ptbr-027",
+        "concept": {
+          "pt": "Física",
+          "en": "Physics"
+        },
+        "difficulty": "hard",
+        "code": "A teoria da relatividade de Einstein mudou nossa compreensão do espaço e do tempo. A equação E igual a mc ao quadrado mostra que massa e energia são equivalentes, um conceito que fundamentou o desenvolvimento da energia nuclear e da física de partículas."
+      },
+      {
+        "id": "ptbr-028",
+        "concept": {
+          "pt": "Psicologia",
+          "en": "Psychology"
+        },
+        "difficulty": "hard",
+        "code": "Sigmund Freud revolucionou a psicologia ao propor que grande parte do comportamento humano é motivada por desejos inconscientes. Sua teoria sobre o id, ego e superego oferece um modelo para compreender conflitos internos e mecanismos de defesa psicológica."
+      },
+      {
+        "id": "ptbr-029",
+        "concept": {
+          "pt": "Política",
+          "en": "Politics"
+        },
+        "difficulty": "hard",
+        "code": "A democracia é um sistema de governo no qual o poder emana do povo. Desde a Grécia antiga até os estados modernos, diferentes formas de participação popular foram desenvolvidas para garantir representatividade e limitar o poder absoluto dos governantes."
+      },
+      {
+        "id": "ptbr-030",
+        "concept": {
+          "pt": "Ecologia",
+          "en": "Ecology"
+        },
+        "difficulty": "hard",
+        "code": "A biodiversidade da Amazônia é fundamental para o equilíbrio climático do planeta. A floresta abriga milhões de espécies de plantas e animais, muitas ainda desconhecidas pela ciência, e desempenha um papel crucial na regulação do ciclo da água e na absorção de carbono."
       }
     ],
     "text-en": [
@@ -13820,6 +14774,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "hard",
         "code": "The theory of evolution by natural selection, proposed by Charles Darwin, explains how species change over time through the differential survival and reproduction of individuals with advantageous traits. This mechanism has shaped the diversity of life on Earth over billions of years."
+      },
+      {
+        "id": "en-027",
+        "concept": {
+          "pt": "Física",
+          "en": "Physics"
+        },
+        "difficulty": "hard",
+        "code": "Quantum mechanics describes the behavior of matter and energy at the smallest scales, where particles can exist in multiple states simultaneously. This counterintuitive framework has led to technologies like transistors, lasers, and magnetic resonance imaging."
+      },
+      {
+        "id": "en-028",
+        "concept": {
+          "pt": "Arte",
+          "en": "Art"
+        },
+        "difficulty": "hard",
+        "code": "The Renaissance was a period of extraordinary cultural and intellectual achievement that began in Italy during the fourteenth century. Artists like Leonardo da Vinci and Michelangelo pushed the boundaries of painting, sculpture, and architecture, creating masterpieces that continue to inspire."
+      },
+      {
+        "id": "en-029",
+        "concept": {
+          "pt": "Linguística",
+          "en": "Linguistics"
+        },
+        "difficulty": "hard",
+        "code": "Language is not merely a tool for communication but a window into how humans think and perceive the world. The Sapir-Whorf hypothesis suggests that the structure of a language influences its speakers worldview, shaping their concepts of time, space, and causality."
+      },
+      {
+        "id": "en-030",
+        "concept": {
+          "pt": "Ética",
+          "en": "Ethics"
+        },
+        "difficulty": "hard",
+        "code": "The trolley problem is a classic thought experiment in ethics that forces us to confront difficult moral choices. Should one actively divert harm to save more lives, or is inaction morally preferable? This dilemma reveals deep tensions between utilitarian and deontological moral frameworks."
       }
     ],
     "text-es": [
@@ -13876,6 +14866,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "hard",
         "code": "La teoria de la evolucion por seleccion natural, propuesta por Charles Darwin, explica como las especies cambian a lo largo del tiempo mediante la supervivencia diferencial de individuos con rasgos ventajosos. Este mecanismo ha moldeado la diversidad biologica del planeta durante millones de anos."
+      },
+      {
+        "id": "es-027",
+        "concept": {
+          "pt": "Física",
+          "en": "Physics"
+        },
+        "difficulty": "hard",
+        "code": "La mecanica cuantica describe el comportamiento de la materia y la energia a escalas subatomicas, donde las particulas pueden existir en multiples estados simultaneamente. Esta teoria, aunque contraintuitiva, ha dado lugar a tecnologias como los transistores y los laseres."
+      },
+      {
+        "id": "es-028",
+        "concept": {
+          "pt": "Arte",
+          "en": "Art"
+        },
+        "difficulty": "hard",
+        "code": "El Renacimiento fue un periodo de extraordinario florecimiento cultural que comenzo en Italia durante el siglo catorce. Artistas como Leonardo da Vinci y Miguel Angel redefinieron los limites de la pintura, la escultura y la arquitectura, creando obras que siguen inspirando al mundo."
+      },
+      {
+        "id": "es-029",
+        "concept": {
+          "pt": "Linguística",
+          "en": "Linguistics"
+        },
+        "difficulty": "hard",
+        "code": "El lenguaje no es simplemente una herramienta de comunicacion sino una ventana a la forma en que los seres humanos piensan y perciben el mundo. La hipotesis de Sapir-Whorf sugiere que la estructura de un idioma influye en la vision del mundo de sus hablantes."
+      },
+      {
+        "id": "es-030",
+        "concept": {
+          "pt": "Ética",
+          "en": "Ethics"
+        },
+        "difficulty": "hard",
+        "code": "El dilema del tranvia es un experimento mental clasico en etica que nos obliga a confrontar decisiones morales dificiles. Debe uno desviar activamente el dano para salvar mas vidas, o es la inaccion moralmente preferible? Este dilema revela tensiones profundas entre marcos morales."
       }
     ],
     "text-fr": [
@@ -13932,6 +14958,42 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "difficulty": "hard",
         "code": "La theorie de levolution par selection naturelle, proposee par Charles Darwin, explique comment les especes changent au fil du temps grace a la survie differentielle des individus possedant des traits avantageux. Ce mecanisme a faconne la diversite biologique de la planete."
+      },
+      {
+        "id": "fr-027",
+        "concept": {
+          "pt": "Física",
+          "en": "Physics"
+        },
+        "difficulty": "hard",
+        "code": "La mecanique quantique decrit le comportement de la matiere et de lenergie aux echelles les plus petites, ou les particules peuvent exister dans plusieurs etats simultanement. Ce cadre theorique, bien que contre-intuitif, a donne naissance aux transistors et aux lasers."
+      },
+      {
+        "id": "fr-028",
+        "concept": {
+          "pt": "Arte",
+          "en": "Art"
+        },
+        "difficulty": "hard",
+        "code": "La Renaissance fut une periode dextraordinaire epanouissement culturel et intellectuel qui debuta en Italie au quatorzieme siecle. Des artistes comme Leonard de Vinci et Michel-Ange repousserent les limites de la peinture, de la sculpture et de larchitecture."
+      },
+      {
+        "id": "fr-029",
+        "concept": {
+          "pt": "Linguística",
+          "en": "Linguistics"
+        },
+        "difficulty": "hard",
+        "code": "Le langage nest pas simplement un outil de communication mais une fenetre sur la facon dont les humains pensent et percoivent le monde. Lhypothese de Sapir-Whorf suggere que la structure dune langue influence la vision du monde de ses locuteurs."
+      },
+      {
+        "id": "fr-030",
+        "concept": {
+          "pt": "Ética",
+          "en": "Ethics"
+        },
+        "difficulty": "hard",
+        "code": "Le dilemme du tramway est une experience de pensee classique en ethique qui nous oblige a confronter des choix moraux difficiles. Doit-on detourner activement le danger pour sauver plus de vies, ou linaction est-elle moralement preferable? Ce dilemme revele des tensions profondes entre cadres moraux."
       }
     ]
   }
