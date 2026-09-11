@@ -13,6 +13,14 @@ import type { UserAccess } from './access-control'
 
 const fullLanguageSnippetCache = new Map<string, Promise<Snippet[]>>()
 
+export interface TrackAccessSummary {
+  plusEligible: boolean
+  hasPremiumNow: boolean
+  freeCount: number
+  totalCount: number
+  premiumCount: number
+}
+
 function toLanguageMeta(language: Language): LanguageMeta {
   return {
     id: language.id,
@@ -113,6 +121,43 @@ export async function listTrackLanguageBadges(): Promise<Record<string, Language
   )
 
   return Object.fromEntries(entries)
+}
+
+export function listTrackAccessSummary(): Record<string, TrackAccessSummary> {
+  return Object.fromEntries(
+    tracks.map((track) => {
+      const freeByLanguage = freeTrackSnippetRegistry[track.id] ?? {}
+      const totalByLanguage = trackSnippetTotalRegistry[track.id] ?? {}
+      const languageIds = new Set([
+        ...Object.keys(freeByLanguage),
+        ...Object.keys(totalByLanguage),
+      ])
+
+      let freeCount = 0
+      let totalCount = 0
+
+      for (const languageId of languageIds) {
+        const free = freeByLanguage[languageId]?.length ?? 0
+        const total = totalByLanguage[languageId] ?? free
+        freeCount += free
+        totalCount += total
+      }
+
+      const premiumCount = Math.max(0, totalCount - freeCount)
+      const plusEligible = !track.textLanguages && (track.accessPolicy ?? 'plus_after_limit') !== 'free'
+
+      return [
+        track.id,
+        {
+          plusEligible,
+          hasPremiumNow: plusEligible && premiumCount > 0,
+          freeCount,
+          totalCount,
+          premiumCount,
+        },
+      ] as const
+    }),
+  )
 }
 
 function buildPracticeWall(
