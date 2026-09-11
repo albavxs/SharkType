@@ -3,6 +3,63 @@ const ASAAS_PRODUCTION_API = 'https://api.asaas.com/v3'
 const ASAAS_CHECKOUT_URL = 'https://asaas.com/checkoutSession/show?id='
 
 export type AsaasEnvironment = 'sandbox' | 'production'
+export type AsaasSubscriptionCycle = 'MONTHLY' | 'QUARTERLY' | 'SEMIANNUALLY' | 'YEARLY'
+export type PlusPlanKey = 'monthly' | 'quarterly' | 'semiannual' | 'annual'
+
+interface PlusPlanDefinition {
+  key: PlusPlanKey
+  cycle: AsaasSubscriptionCycle
+  months: number
+  envName: string
+  fallbackEnvName?: string
+  itemName: string
+  itemDescription: string
+}
+
+export interface PublicPlusPlan {
+  key: PlusPlanKey
+  cycle: AsaasSubscriptionCycle
+  months: number
+  price: number | null
+  monthlyEquivalent: number | null
+  configured: boolean
+}
+
+const PLUS_PLAN_DEFINITIONS: Record<PlusPlanKey, PlusPlanDefinition> = {
+  monthly: {
+    key: 'monthly',
+    cycle: 'MONTHLY',
+    months: 1,
+    envName: 'ASAAS_PLUS_PRICE_MONTHLY',
+    fallbackEnvName: 'ASAAS_PLUS_PRICE',
+    itemName: 'SharkType Plus — Monthly',
+    itemDescription: 'Monthly SharkType Plus subscription',
+  },
+  quarterly: {
+    key: 'quarterly',
+    cycle: 'QUARTERLY',
+    months: 3,
+    envName: 'ASAAS_PLUS_PRICE_QUARTERLY',
+    itemName: 'SharkType Plus — Quarterly',
+    itemDescription: 'Quarterly SharkType Plus subscription',
+  },
+  semiannual: {
+    key: 'semiannual',
+    cycle: 'SEMIANNUALLY',
+    months: 6,
+    envName: 'ASAAS_PLUS_PRICE_SEMIANNUAL',
+    itemName: 'SharkType Plus — Semiannual',
+    itemDescription: 'Semiannual SharkType Plus subscription',
+  },
+  annual: {
+    key: 'annual',
+    cycle: 'YEARLY',
+    months: 12,
+    envName: 'ASAAS_PLUS_PRICE_ANNUAL',
+    itemName: 'SharkType Plus — Annual',
+    itemDescription: 'Annual SharkType Plus subscription',
+  },
+}
 
 export interface CreateRecurringCheckoutInput {
   externalReference: string
@@ -10,6 +67,7 @@ export interface CreateRecurringCheckoutInput {
   callbackBaseUrl: string
   itemName: string
   itemDescription: string
+  cycle?: AsaasSubscriptionCycle
 }
 
 function getEnvironment(): AsaasEnvironment {
@@ -32,10 +90,67 @@ export function getAsaasConfig() {
   }
 }
 
-function addOneMonth(date: Date): string {
+function parsePositiveAmount(raw: string | undefined): number | null {
+  const value = raw ? Number(raw.trim().replace(',', '.')) : Number.NaN
+  if (!Number.isFinite(value) || value <= 0) return null
+  return Math.round(value * 100) / 100
+}
+
+function getConfiguredPlanPrice(definition: PlusPlanDefinition): number | null {
+  const primary = parsePositiveAmount(process.env[definition.envName])
+  if (primary != null) return primary
+  if (!definition.fallbackEnvName) return null
+  return parsePositiveAmount(process.env[definition.fallbackEnvName])
+}
+
+export function isPlusPlanKey(value: unknown): value is PlusPlanKey {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(PLUS_PLAN_DEFINITIONS, value)
+}
+
+export function listPublicPlusPlans(): PublicPlusPlan[] {
+  return (Object.keys(PLUS_PLAN_DEFINITIONS) as PlusPlanKey[]).map((key) => {
+    const definition = PLUS_PLAN_DEFINITIONS[key]
+    const price = getConfiguredPlanPrice(definition)
+    return {
+      key,
+      cycle: definition.cycle,
+      months: definition.months,
+      price,
+      monthlyEquivalent: price == null ? null : Math.round((price / definition.months) * 100) / 100,
+      configured: price != null,
+    }
+  })
+}
+
+export function getPlusPlan(key: PlusPlanKey) {
+  const definition = PLUS_PLAN_DEFINITIONS[key]
+  const amount = getConfiguredPlanPrice(definition)
+  if (amount == null) {
+    throw new Error(`Plus plan ${key} is not configured with a valid positive amount.`)
+  }
+  return { ...definition, amount }
+}
+
+export function isCommercialCheckoutEnabled(): boolean {
+  return process.env.ASAAS_ENV?.trim().toLowerCase() === 'production'
+    && Boolean(process.env.ASAAS_API_KEY?.trim())
+}
+
+function addMonthsClamped(date: Date, months: number): string {
+  const day = date.getUTCDate()
   const next = new Date(date)
-  next.setUTCMonth(next.getUTCMonth() + 1)
+  next.setUTCDate(1)
+  next.setUTCMonth(next.getUTCMonth() + months)
+  const lastDay = new Date(Date.UTC(next.getUTCFullYear(), next.getUTCMonth() + 1, 0)).getUTCDate()
+  next.setUTCDate(Math.min(day, lastDay))
   return next.toISOString().slice(0, 10)
+}
+
+function cycleMonths(cycle: AsaasSubscriptionCycle): number {
+  if (cycle === 'QUARTERLY') return 3
+  if (cycle === 'SEMIANNUALLY') return 6
+  if (cycle === 'YEARLY') return 12
+  return 1
 }
 
 async function parseAsaasError(response: Response): Promise<string> {
@@ -55,6 +170,7 @@ async function parseAsaasError(response: Response): Promise<string> {
 export async function createAsaasRecurringCheckout(input: CreateRecurringCheckoutInput) {
   const config = getAsaasConfig()
   const callbackBaseUrl = input.callbackBaseUrl.replace(/\/$/, '')
+  const cycle = input.cycle ?? 'MONTHLY'
 
   const response = await fetch(`${config.baseUrl}/checkouts`, {
     method: 'POST',
@@ -82,8 +198,8 @@ export async function createAsaasRecurringCheckout(input: CreateRecurringCheckou
         },
       ],
       subscription: {
-        cycle: 'MONTHLY',
-        nextDueDate: addOneMonth(new Date()),
+        cycle,
+        nextDueDate: addMonthsClamped(new Date(), cycleMonths(cycle)),
       },
     }),
     cache: 'no-store',
@@ -103,13 +219,9 @@ export async function createAsaasRecurringCheckout(input: CreateRecurringCheckou
   }
 }
 
+// Backwards-compatible monthly helper while the multi-cycle offer is rolled out.
 export function getPlusPrice(): number {
-  const raw = process.env.ASAAS_PLUS_PRICE?.trim()
-  const value = raw ? Number(raw.replace(',', '.')) : Number.NaN
-  if (!Number.isFinite(value) || value <= 0) {
-    throw new Error('ASAAS_PLUS_PRICE is not configured with a valid positive amount.')
-  }
-  return Math.round(value * 100) / 100
+  return getPlusPlan('monthly').amount
 }
 
 export function getWebhookToken(): string {

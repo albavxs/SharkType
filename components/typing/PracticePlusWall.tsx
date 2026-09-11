@@ -12,30 +12,37 @@ interface PracticePlusWallProps {
 export default function PracticePlusWall({ wall, locale, scope }: PracticePlusWallProps) {
   if (!wall?.isLocked || wall.lockedCount <= 0) return null
 
-  const message = locale === 'pt'
-    ? `Voce esta nos snippets gratuitos. O Plus libera mais ${wall.lockedCount} exercicios ${scope === 'track' ? 'desta trilha' : 'desta tecnologia'}.`
-    : `You are practicing the free snippets. Plus unlocks ${wall.lockedCount} more exercises in this ${scope}.`
+  const title = locale === 'pt'
+    ? `+${wall.lockedCount} exercícios disponíveis com SharkType Plus`
+    : `+${wall.lockedCount} exercises available with SharkType Plus`
+  const description = locale === 'pt'
+    ? `Desbloqueie o restante ${scope === 'track' ? 'desta trilha' : 'desta tecnologia'} e continue evoluindo.`
+    : `Unlock the rest of this ${scope === 'track' ? 'track' : 'technology'} and keep progressing.`
+  const action = locale === 'pt' ? 'Conhecer Plus' : 'Explore Plus'
 
   return (
-    <div
-      className="mx-auto mt-2 flex w-[calc(100%-1.5rem)] max-w-3xl items-center justify-between gap-3 rounded-xl px-3 py-2 text-xs sm:w-full"
+    <Link
+      href="/plus"
+      aria-label={`${title}. ${action}`}
+      className="group mx-auto mt-2 flex w-[calc(100%-1.5rem)] max-w-3xl items-center justify-between gap-4 rounded-xl px-4 py-3 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:w-full"
       style={{
         backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
         color: 'var(--text)',
-        border: '1px solid color-mix(in srgb, var(--main) 24%, transparent)',
+        border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
       }}
     >
-      <div className="flex min-w-0 items-center gap-2">
-        <LockIcon size={14} className="shrink-0" />
-        <span>{message}</span>
-      </div>
-      <Link
-        href="/plus"
-        className="shrink-0 rounded-lg px-2 py-1 font-semibold"
-        style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-      >
-        Plus
-      </Link>
-    </div>
+      <span className="flex min-w-0 items-start gap-3">
+        <span className="mt-0.5 shrink-0" style={{ color: 'var(--main)' }}>
+          <LockIcon size={15} />
+        </span>
+        <span className="min-w-0">
+          <span className="block font-semibold">{title}</span>
+          <span className="mt-0.5 block leading-5" style={{ color: 'var(--sub)' }}>{description}</span>
+        </span>
+      </span>
+      <span className="shrink-0 font-semibold transition-transform duration-200 group-hover:translate-x-0.5" style={{ color: 'var(--main)' }}>
+        {action} →
+      </span>
+    </Link>
   )
 }

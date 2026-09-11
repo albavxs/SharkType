@@ -13,9 +13,14 @@
     "lib/supabase/env.ts",
     "lib/supabase/database.ts",
     "app/api/me/access/route.ts",
+    "app/api/billing/plus/offer/route.ts",
     "app/api/billing/plus/checkout/route.ts",
     "app/api/billing/asaas/test-checkout/route.ts",
-    "app/api/billing/asaas/webhook/route.ts"
+    "app/api/billing/asaas/webhook/route.ts",
+    "app/plus/page.tsx",
+    "components/typing/PracticePlusWall.tsx",
+    "components/typing/Toolbar.tsx",
+    "components/typing/IntroTourModal.tsx"
   ],
   "exclude": ["node_modules"]
 }

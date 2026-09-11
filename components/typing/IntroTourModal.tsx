@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeftIcon,
@@ -32,73 +33,92 @@ export default function IntroTourModal({ locale, onClose, mode = 'full' }: Intro
 
   const slides = useMemo(() => {
     const allSlides = [
-    {
-      id: 'welcome',
-      icon: HomeIcon,
-      title: t('introTourWelcomeTitle', locale),
-      body: t('introTourWelcomeBody', locale),
-      highlights: [
-        t('introTourWelcomePointPractice', locale),
-        t('introTourWelcomePointTracks', locale),
-        t('introTourWelcomePointProfile', locale),
-      ],
-    },
-    {
-      id: 'ranking',
-      icon: TrophyIcon,
-      title: t('introTourRankingTitle', locale),
-      body: t('introTourRankingBody', locale),
-      highlights: [
-        t('introTourRankingPointEligible', locale),
-        t('introTourRankingPointPrecision', locale),
-        t('introTourRankingPointDifficulty', locale),
-      ],
-    },
-    {
-      id: 'progress',
-      icon: FlameIcon,
-      title: t('introTourProgressTitle', locale),
-      body: t('introTourProgressBody', locale),
-      highlights: [
-        t('introTourProgressPointXP', locale),
-        t('introTourProgressPointStreak', locale),
-        t('introTourProgressPointSync', locale),
-      ],
-    },
-    {
-      id: 'accessibility',
-      icon: ShieldIcon,
-      title: t('introTourAccessibilityTitle', locale),
-      body: t('introTourAccessibilityBody', locale),
-      highlights: [
-        t('introTourAccessibilityPointShortcuts', locale),
-        t('introTourAccessibilityPointKeyboard', locale),
-        t('introTourAccessibilityPointThemes', locale),
-      ],
-    },
-    {
-      id: 'keyboard-guide',
-      icon: KeyboardIcon,
-      title: t('introTourKeyboardTitle', locale),
-      body: t('introTourKeyboardBody', locale),
-      highlights: [
-        t('introTourKeyboardPointActivate', locale),
-        t('introTourKeyboardPointExpected', locale),
-        t('introTourKeyboardPointPressed', locale),
-        t('introTourKeyboardPointScope', locale),
-      ],
-    },
-    {
-      id: 'community',
-      icon: BookIcon,
-      title: t('introTourCommunityTitle', locale),
-      body: t('introTourCommunityBody', locale),
-      highlights: [
-        t('introTourCommunityPointFeed', locale),
-        t('introTourCommunityPointLeaderboard', locale),
-        t('introTourCommunityPointHelp', locale),
-      ],
-    },
+      {
+        id: 'welcome',
+        icon: HomeIcon,
+        title: t('introTourWelcomeTitle', locale),
+        body: t('introTourWelcomeBody', locale),
+        highlights: [
+          t('introTourWelcomePointPractice', locale),
+          t('introTourWelcomePointTracks', locale),
+          t('introTourWelcomePointProfile', locale),
+        ],
+      },
+      {
+        id: 'ranking',
+        icon: TrophyIcon,
+        title: t('introTourRankingTitle', locale),
+        body: t('introTourRankingBody', locale),
+        highlights: [
+          t('introTourRankingPointEligible', locale),
+          t('introTourRankingPointPrecision', locale),
+          t('introTourRankingPointDifficulty', locale),
+        ],
+      },
+      {
+        id: 'progress',
+        icon: FlameIcon,
+        title: t('introTourProgressTitle', locale),
+        body: t('introTourProgressBody', locale),
+        highlights: [
+          t('introTourProgressPointXP', locale),
+          t('introTourProgressPointStreak', locale),
+          t('introTourProgressPointSync', locale),
+        ],
+      },
+      {
+        id: 'plus',
+        icon: BookIcon,
+        title: locale === 'pt' ? 'Treine mais com SharkType Plus' : 'Train more with SharkType Plus',
+        body: locale === 'pt'
+          ? 'Os 6 primeiros exercícios de cada tecnologia são gratuitos. Quando quiser aprofundar, o Plus libera o restante do conteúdo técnico.'
+          : 'The first 6 exercises of each technology are free. When you want to go deeper, Plus unlocks the rest of the technical content.',
+        highlights: locale === 'pt'
+          ? [
+              'Todos os exercícios técnicos das tecnologias disponíveis.',
+              'Acesso às novas trilhas premium adicionadas ao SharkType.',
+              'Opções mensal, trimestral, semestral e anual.',
+            ]
+          : [
+              'All technical exercises across available technologies.',
+              'Access to new premium tracks added to SharkType.',
+              'Monthly, quarterly, semiannual, and annual options.',
+            ],
+      },
+      {
+        id: 'accessibility',
+        icon: ShieldIcon,
+        title: t('introTourAccessibilityTitle', locale),
+        body: t('introTourAccessibilityBody', locale),
+        highlights: [
+          t('introTourAccessibilityPointShortcuts', locale),
+          t('introTourAccessibilityPointKeyboard', locale),
+          t('introTourAccessibilityPointThemes', locale),
+        ],
+      },
+      {
+        id: 'keyboard-guide',
+        icon: KeyboardIcon,
+        title: t('introTourKeyboardTitle', locale),
+        body: t('introTourKeyboardBody', locale),
+        highlights: [
+          t('introTourKeyboardPointActivate', locale),
+          t('introTourKeyboardPointExpected', locale),
+          t('introTourKeyboardPointPressed', locale),
+          t('introTourKeyboardPointScope', locale),
+        ],
+      },
+      {
+        id: 'community',
+        icon: BookIcon,
+        title: t('introTourCommunityTitle', locale),
+        body: t('introTourCommunityBody', locale),
+        highlights: [
+          t('introTourCommunityPointFeed', locale),
+          t('introTourCommunityPointLeaderboard', locale),
+          t('introTourCommunityPointHelp', locale),
+        ],
+      },
     ]
 
     return mode === 'keyboard-only' ? allSlides.filter((slide) => slide.id === 'keyboard-guide') : allSlides
@@ -240,6 +260,17 @@ export default function IntroTourModal({ locale, onClose, mode = 'full' }: Intro
                 </div>
               ))}
             </div>
+
+            {current.id === 'plus' ? (
+              <Link
+                href="/plus"
+                className="mt-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all hover:scale-[1.02]"
+                style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+              >
+                {locale === 'pt' ? 'Conhecer SharkType Plus' : 'Explore SharkType Plus'}
+                <ArrowRightIcon size={14} />
+              </Link>
+            ) : null}
 
             {current.id === 'keyboard-guide' ? (
               <div className="mt-5">

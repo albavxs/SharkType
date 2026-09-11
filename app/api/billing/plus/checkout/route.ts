@@ -3,12 +3,24 @@ import { randomUUID } from 'node:crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserAccess } from '@/lib/server/access-control'
-import { createAsaasRecurringCheckout, getAsaasConfig, getPlusPrice } from '@/lib/server/asaas'
+import {
+  createAsaasRecurringCheckout,
+  getAsaasConfig,
+  getPlusPlan,
+  isPlusPlanKey,
+  type PlusPlanKey,
+} from '@/lib/server/asaas'
 
 function getCallbackBaseUrl(request: Request): string {
   const configured = process.env.APP_URL?.trim()
   if (configured) return configured
   return new URL(request.url).origin
+}
+
+async function readRequestedPlan(request: Request): Promise<PlusPlanKey | null> {
+  const body = await request.json().catch(() => ({})) as { plan?: unknown }
+  if (body.plan == null) return 'monthly'
+  return isPlusPlanKey(body.plan) ? body.plan : null
 }
 
 export async function POST(request: Request) {
@@ -20,6 +32,11 @@ export async function POST(request: Request) {
 
   if (error || !user) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
+  }
+
+  const requestedPlan = await readRequestedPlan(request)
+  if (!requestedPlan) {
+    return NextResponse.json({ error: 'Invalid Plus plan.' }, { status: 400 })
   }
 
   try {
@@ -36,9 +53,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Plus access is already active.' }, { status: 409 })
     }
 
-    const amount = getPlusPrice()
+    const plan = getPlusPlan(requestedPlan)
     const checkoutId = randomUUID()
-    const externalReference = `sharktype:plus:${checkoutId}`
+    const externalReference = `sharktype:plus:${plan.key}:${checkoutId}`
     const admin = createAdminClient() as any
 
     const { error: insertError } = await admin.from('billing_checkouts').insert({
@@ -48,7 +65,7 @@ export async function POST(request: Request) {
       purpose: 'plus_subscription',
       external_reference: externalReference,
       status: 'creating',
-      amount,
+      amount: plan.amount,
       currency: 'BRL',
       sandbox: false,
     })
@@ -57,10 +74,11 @@ export async function POST(request: Request) {
     try {
       const checkout = await createAsaasRecurringCheckout({
         externalReference,
-        amount,
+        amount: plan.amount,
         callbackBaseUrl: getCallbackBaseUrl(request),
-        itemName: 'SharkType Plus',
-        itemDescription: 'Monthly SharkType Plus subscription',
+        itemName: plan.itemName,
+        itemDescription: plan.itemDescription,
+        cycle: plan.cycle,
       })
 
       const { error: updateError } = await admin
@@ -73,7 +91,12 @@ export async function POST(request: Request) {
         .eq('id', checkoutId)
       if (updateError) throw updateError
 
-      return NextResponse.json({ checkoutUrl: checkout.checkoutUrl })
+      return NextResponse.json({
+        checkoutUrl: checkout.checkoutUrl,
+        plan: plan.key,
+        cycle: plan.cycle,
+        amount: plan.amount,
+      })
     } catch (checkoutError) {
       await admin.from('billing_checkouts').update({ status: 'failed' }).eq('id', checkoutId)
       throw checkoutError
