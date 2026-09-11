@@ -22,6 +22,8 @@ type BillingStatus = {
   checkouts: Array<Record<string, unknown>>
   subscriptions: Array<Record<string, unknown>>
   events: Array<Record<string, unknown>>
+  error?: string
+  code?: string
 }
 
 export default function BillingAdminPage() {
@@ -34,8 +36,15 @@ export default function BillingAdminPage() {
 
   async function loadStatus() {
     const response = await fetch('/api/admin/billing', { cache: 'no-store' })
-    const payload = await response.json() as BillingStatus & { error?: string }
-    if (!response.ok) throw new Error(payload.error ?? 'Could not load billing status.')
+    const payload = await response.json() as BillingStatus
+    if (!response.ok) {
+      if (payload.code === 'ADMIN_SERVICE_UNAVAILABLE') {
+        throw new Error(locale === 'pt'
+          ? 'Backend administrativo indisponível. Configure SUPABASE_SERVICE_ROLE_KEY no ambiente da Vercel e faça um novo deploy.'
+          : 'Admin backend unavailable. Configure SUPABASE_SERVICE_ROLE_KEY in the Vercel environment and redeploy.')
+      }
+      throw new Error(payload.error ?? 'Could not load billing status.')
+    }
     setStatus(payload)
   }
 
@@ -46,7 +55,7 @@ export default function BillingAdminPage() {
       return
     }
     void loadStatus().catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Could not load billing status.'))
-  }, [isLoading, profile?.isSuperUser, router])
+  }, [isLoading, profile?.isSuperUser, router, locale])
 
   async function startSandboxCheckout() {
     setPending(true)
@@ -68,15 +77,24 @@ export default function BillingAdminPage() {
 
   const bool = (value: boolean) => value ? '✓' : '✕'
   const asText = (value: unknown) => value == null ? '—' : String(value)
+  const panelStyle = {
+    backgroundColor: 'color-mix(in srgb, var(--sub-alt) 86%, transparent)',
+    border: '1px solid color-mix(in srgb, var(--sub) 16%, transparent)',
+  }
 
   return (
-    <main className="min-h-screen px-4 py-8 sm:px-6" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
+    <main className="min-h-screen px-4 py-8 sm:px-6" style={{ color: 'var(--text)' }}>
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button onClick={() => router.push('/admin/plus')} className="text-sm" style={{ color: 'var(--sub)' }}>{t('back', locale)}</button>
-          <button onClick={() => void loadStatus()} className="rounded-lg px-3 py-2 text-xs font-semibold" style={{ border: '1px solid var(--sub)' }}>
-            {locale === 'pt' ? 'Atualizar status' : 'Refresh status'}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => router.push('/admin/premium')} className="rounded-lg px-3 py-2 text-xs font-semibold" style={{ border: '1px solid var(--sub)' }}>
+              {locale === 'pt' ? 'Diagnóstico Premium' : 'Premium diagnostics'}
+            </button>
+            <button onClick={() => void loadStatus()} className="rounded-lg px-3 py-2 text-xs font-semibold" style={{ border: '1px solid var(--sub)' }}>
+              {locale === 'pt' ? 'Atualizar status' : 'Refresh status'}
+            </button>
+          </div>
         </div>
 
         <div>
@@ -86,12 +104,12 @@ export default function BillingAdminPage() {
           </p>
         </div>
 
-        {error ? <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--error)' }}>{error}</div> : null}
+        {error ? <div className="rounded-xl p-4 text-sm shadow-xl" style={{ ...panelStyle, color: 'var(--error)' }}>{error}</div> : null}
 
         {status ? (
           <>
             <section className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--sub-alt)' }}>
+              <div className="rounded-xl p-4 shadow-xl" style={panelStyle}>
                 <h2 className="font-semibold">Asaas</h2>
                 <div className="mt-3 space-y-1 text-sm" style={{ color: 'var(--sub)' }}>
                   <div>Environment: <strong style={{ color: 'var(--text)' }}>{status.config.environment ?? 'unconfigured'}</strong></div>
@@ -109,7 +127,7 @@ export default function BillingAdminPage() {
                 </button>
               </div>
 
-              <div className="rounded-xl p-4" style={{ backgroundColor: 'var(--sub-alt)' }}>
+              <div className="rounded-xl p-4 shadow-xl" style={panelStyle}>
                 <h2 className="font-semibold">Premium package</h2>
                 <div className="mt-3 space-y-1 text-sm" style={{ color: 'var(--sub)' }}>
                   <div>Available: {bool(status.premiumHealth.available)}</div>
@@ -120,7 +138,7 @@ export default function BillingAdminPage() {
               </div>
             </section>
 
-            <section className="rounded-xl p-4" style={{ backgroundColor: 'var(--sub-alt)' }}>
+            <section className="rounded-xl p-4 shadow-xl" style={panelStyle}>
               <h2 className="font-semibold">Últimos checkouts</h2>
               <div className="mt-3 overflow-x-auto text-xs">
                 {status.checkouts.length === 0 ? <p style={{ color: 'var(--sub)' }}>Nenhum checkout.</p> : status.checkouts.map((row, index) => (
@@ -131,7 +149,7 @@ export default function BillingAdminPage() {
               </div>
             </section>
 
-            <section className="rounded-xl p-4" style={{ backgroundColor: 'var(--sub-alt)' }}>
+            <section className="rounded-xl p-4 shadow-xl" style={panelStyle}>
               <h2 className="font-semibold">Últimos webhooks</h2>
               <div className="mt-3 overflow-x-auto text-xs">
                 {status.events.length === 0 ? <p style={{ color: 'var(--sub)' }}>Nenhum webhook.</p> : status.events.map((row, index) => (
