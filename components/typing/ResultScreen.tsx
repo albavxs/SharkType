@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Snippet } from '@/lib/types'
 import { calculateConsistency } from '@/lib/utils'
 import { calculateRankedBreakdown } from '@/lib/gamification'
@@ -82,6 +83,8 @@ export default function ResultScreen({
   onRestart,
   locale = 'pt',
 }: ResultScreenProps) {
+  const pathname = usePathname()
+  const router = useRouter()
   const animatedWpm = useCountUp(wpm)
   const animatedXP = useCountUp(xpEarned)
   const animatedRankedPoints = useCountUp(Math.max(0, rankedPointsEarned))
@@ -90,6 +93,8 @@ export default function ResultScreen({
   const [showShareModal, setShowShareModal] = useState(false)
   const [showGraph, setShowGraph] = useState(false)
   const [showBreakdown, setShowBreakdown] = useState(false)
+  const [showPlusUpsell, setShowPlusUpsell] = useState(false)
+  const [plusChallengeCount, setPlusChallengeCount] = useState<number | null>(null)
   const diff = t(snippet.difficulty === 'easy' ? 'easy' : snippet.difficulty === 'medium' ? 'medium' : 'hard', locale)
   const isRanked = sessionMode === 'ranked'
   const shareRawWpm = rawWpmSamples.length > 0
@@ -100,6 +105,52 @@ export default function ResultScreen({
     const timeoutId = window.setTimeout(() => setShowGraph(true), 140)
     return () => window.clearTimeout(timeoutId)
   }, [])
+
+  useEffect(() => {
+    const match = pathname.match(/^\/tracks\/([^/?#]+)/)
+    if (!match) {
+      setShowPlusUpsell(false)
+      return
+    }
+
+    let active = true
+    const trackId = decodeURIComponent(match[1])
+
+    void (async () => {
+      try {
+        const [accessResponse, catalogResponse] = await Promise.all([
+          fetch('/api/me/access', { cache: 'no-store' }),
+          fetch('/api/tracks/catalog', { cache: 'no-store' }),
+        ])
+
+        if (!active) return
+        if (!accessResponse.ok || !catalogResponse.ok) {
+          setShowPlusUpsell(false)
+          return
+        }
+
+        const accessPayload = await accessResponse.json() as { access?: { isPlus?: boolean } }
+        const catalogPayload = await catalogResponse.json() as {
+          trackAccessSummary?: Record<string, {
+            plusEligible: boolean
+            hasPremiumNow: boolean
+            premiumCount: number
+          }>
+        }
+        const summary = catalogPayload.trackAccessSummary?.[trackId]
+        const isPlusUser = accessPayload.access?.isPlus === true
+
+        setPlusChallengeCount(summary?.premiumCount ?? null)
+        setShowPlusUpsell(!isPlusUser && summary?.plusEligible === true)
+      } catch {
+        if (active) setShowPlusUpsell(false)
+      }
+    })()
+
+    return () => {
+      active = false
+    }
+  }, [pathname])
 
   const rankedPointSamples = wpmSamples.map((net, index) => {
     const raw = rawWpmSamples[index] ?? net
@@ -191,7 +242,7 @@ export default function ResultScreen({
                 type="button"
                 aria-expanded={showBreakdown}
                 onClick={() => setShowBreakdown((current) => !current)}
-                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium transition-opacity hover:opacity-90"
+                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium transition-all duration-150 hover:scale-[1.02] active:scale-95"
                 style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 58%, transparent)', color: 'var(--sub)' }}
               >
                 <span>{showBreakdown ? t('rankBreakdownHide', locale) : t('rankBreakdownShow', locale)}</span>
@@ -266,6 +317,44 @@ export default function ResultScreen({
         <span className="mx-2" style={{ color: 'var(--sub)', opacity: 0.3 }}>/</span>
         <span style={{ color: 'var(--sub)' }}>{diff}</span>
       </div>
+
+      {showPlusUpsell ? (
+        <section
+          className="mx-auto mb-6 max-w-3xl rounded-2xl border p-4 sm:p-5"
+          style={{
+            borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)',
+            background: 'linear-gradient(135deg, color-mix(in srgb, var(--main) 9%, transparent), color-mix(in srgb, var(--sub-alt) 76%, transparent))',
+          }}
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--main)' }}>
+                SharkType Plus Mastery
+              </div>
+              <h3 className="mt-1 text-base font-semibold" style={{ color: 'var(--text)' }}>
+                {locale === 'pt' ? 'Terminou a trilha base? Continue no Mastery.' : 'Finished the base track? Continue in Mastery.'}
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>
+                {locale === 'pt'
+                  ? plusChallengeCount && plusChallengeCount > 0
+                    ? `Desbloqueie ${plusChallengeCount} desafios Plus, estrelas, níveis de domínio e recompensas exclusivas.`
+                    : 'Desbloqueie trilhas Mastery, estrelas, níveis de domínio e recompensas exclusivas conforme novos desafios forem lançados.'
+                  : plusChallengeCount && plusChallengeCount > 0
+                    ? `Unlock ${plusChallengeCount} Plus challenges, stars, mastery levels, and exclusive rewards.`
+                    : 'Unlock Mastery tracks, stars, mastery levels, and exclusive rewards as new challenges are released.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push('/plus')}
+              className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-150 hover:scale-[1.03] active:scale-95"
+              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+            >
+              {locale === 'pt' ? 'Conhecer o Plus' : 'Explore Plus'}
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <div className="flex items-center justify-center gap-4">
         <button
