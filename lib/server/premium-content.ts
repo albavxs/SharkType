@@ -27,16 +27,30 @@ function getPremiumModuleSpecifier(): string {
   return process.env.SHARKTYPE_PREMIUM_CONTENT_MODULE?.trim() || DEFAULT_PREMIUM_MODULE
 }
 
+async function importConfiguredPremiumModule(specifier: string): Promise<PremiumContentModule> {
+  if (specifier === DEFAULT_PREMIUM_MODULE) {
+    // Keep the package specifier visible to Next/Turbopack so the private package
+    // is bundled/traced into the server runtime instead of only being present
+    // during the prebuild verification step.
+    // @ts-ignore The package is installed by scripts/install-premium-package.mjs before next build.
+    return import('@albavxs/sharktype-premium') as Promise<PremiumContentModule>
+  }
+
+  // A custom module override is intended for local/debug use. Keep it dynamic so
+  // the production bundle always has a statically traceable default package.
+  const dynamicImport = new Function('specifier', 'return import(specifier)') as (
+    specifier: string
+  ) => Promise<PremiumContentModule>
+  return dynamicImport(specifier)
+}
+
 async function importPremiumModule(): Promise<PremiumContentModule | null> {
   if (premiumModulePromise) return premiumModulePromise
 
   const specifier = getPremiumModuleSpecifier()
   premiumModulePromise = (async () => {
     try {
-      const dynamicImport = new Function('specifier', 'return import(specifier)') as (
-        specifier: string
-      ) => Promise<PremiumContentModule>
-      const module = await dynamicImport(specifier)
+      const module = await importConfiguredPremiumModule(specifier)
       premiumModuleError = null
       return module
     } catch (error) {
