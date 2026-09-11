@@ -1,7 +1,34 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { parseEnv } from 'node:util'
+
+function loadLocalPremiumToken() {
+  if (process.env.GITHUB_PACKAGES_TOKEN?.trim()) return
+
+  for (const filename of ['.env.local', '.env']) {
+    const envPath = path.join(process.cwd(), filename)
+    if (!existsSync(envPath)) continue
+
+    try {
+      const parsed = parseEnv(readFileSync(envPath, 'utf8'))
+      const localToken = parsed.GITHUB_PACKAGES_TOKEN?.trim()
+      if (localToken) {
+        process.env.GITHUB_PACKAGES_TOKEN = localToken
+        console.info(`[premium-content] loaded GITHUB_PACKAGES_TOKEN from ${filename}`)
+        return
+      }
+    } catch (error) {
+      console.warn(
+        `[premium-content] could not read ${filename}:`,
+        error instanceof Error ? error.message : error,
+      )
+    }
+  }
+}
+
+loadLocalPremiumToken()
 
 const token = process.env.GITHUB_PACKAGES_TOKEN?.trim()
 const packageName = '@albavxs/sharktype-premium@0.1.0'
