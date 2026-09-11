@@ -28,8 +28,10 @@ export interface Language extends LanguageMeta {
 
 export interface PracticeWall {
   isLocked: boolean
+  hasPlusContent: boolean
   freeSnippetLimit: number
   lockedCount: number
+  premiumCount: number
   requiredPlan: 'plus'
 }
 

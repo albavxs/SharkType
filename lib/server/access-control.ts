@@ -15,7 +15,6 @@ export interface UserAccess {
 }
 
 type DBClient = SupabaseClient<Database>
-const SHARKCODER_USERNAME = 'sharkcoder'
 
 export const anonymousAccess: UserAccess = {
   plan: 'free',
@@ -38,7 +37,7 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
 
   if (profileError) throw profileError
 
-  const isSuperAdmin = Boolean(profile?.is_super_user) || profile?.username === SHARKCODER_USERNAME
+  const isSuperAdmin = Boolean(profile?.is_super_user)
   if (isSuperAdmin) {
     return {
       plan: 'plus',

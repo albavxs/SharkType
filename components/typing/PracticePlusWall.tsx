@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LockIcon } from '@/components/icons'
+import { CheckIcon, LockIcon } from '@/components/icons'
 import { getTrackById } from '@/data/tracks'
 import type { Locale } from '@/lib/i18n'
 import type { PracticeWall } from '@/lib/types'
@@ -17,14 +17,54 @@ interface PracticePlusWallProps {
 export default function PracticePlusWall({ wall, locale, scope, subjectName }: PracticePlusWallProps) {
   const pathname = usePathname()
 
-  if (!wall?.isLocked || wall.lockedCount <= 0) return null
+  if (!wall?.hasPlusContent || wall.premiumCount <= 0) return null
 
   const trackId = scope === 'track' && pathname.startsWith('/tracks/')
     ? decodeURIComponent(pathname.split('/')[2] ?? '')
     : null
   const track = trackId ? getTrackById(trackId) : null
   const resolvedSubject = subjectName?.trim() || track?.name[locale] || null
-  const quantity = `+ ${wall.lockedCount}`
+  const quantity = `+ ${wall.premiumCount}`
+
+  if (!wall.isLocked) {
+    const unlockedTitle = locale === 'pt'
+      ? resolvedSubject
+        ? `${resolvedSubject} completo com SharkType Plus`
+        : 'Conteúdo completo desbloqueado com SharkType Plus'
+      : resolvedSubject
+        ? `${resolvedSubject} fully unlocked with SharkType Plus`
+        : 'Complete content unlocked with SharkType Plus'
+
+    const unlockedDescription = locale === 'pt'
+      ? `${quantity} exercícios premium já estão liberados para você.`
+      : `${quantity} premium exercises are already unlocked for you.`
+
+    return (
+      <div
+        className="mx-auto mt-2 grid w-[calc(100%-1.5rem)] max-w-3xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 rounded-xl px-4 py-3 text-xs sm:w-full"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--main) 8%, transparent)',
+          color: 'var(--text)',
+          border: '1px solid color-mix(in srgb, var(--main) 22%, transparent)',
+        }}
+      >
+        <span
+          className="flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-lg"
+          style={{
+            color: 'var(--main)',
+            backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)',
+          }}
+          aria-hidden="true"
+        >
+          <CheckIcon size={15} />
+        </span>
+        <span className="min-w-0 self-center">
+          <span className="block font-semibold leading-5">{unlockedTitle}</span>
+          <span className="block leading-5" style={{ color: 'var(--sub)' }}>{unlockedDescription}</span>
+        </span>
+      </div>
+    )
+  }
 
   const title = locale === 'pt'
     ? resolvedSubject
