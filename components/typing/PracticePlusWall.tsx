@@ -21,6 +21,8 @@ const premiumTrackCount = tracks.filter(
 export default function PracticePlusWall({ wall, locale, scope, subjectName }: PracticePlusWallProps) {
   const pathname = usePathname()
 
+  if (!wall) return null
+
   const trackId = scope === 'track' && pathname.startsWith('/tracks/')
     ? decodeURIComponent(pathname.split('/')[2] ?? '')
     : null
@@ -31,22 +33,22 @@ export default function PracticePlusWall({ wall, locale, scope, subjectName }: P
     if (premiumTrackCount <= 0) return null
 
     const title = locale === 'pt'
-      ? wall?.hasPlusAccess
-        ? `${premiumTrackCount} trilhas premium incluídas no seu SharkType Plus`
-        : `+ ${premiumTrackCount} trilhas premium disponíveis com SharkType Plus`
-      : wall?.hasPlusAccess
-        ? `${premiumTrackCount} premium tracks included with your SharkType Plus`
-        : `+ ${premiumTrackCount} premium tracks available with SharkType Plus`
+      ? wall.hasPlusAccess
+        ? 'Conteúdo Plus desbloqueado'
+        : 'Mais conteúdo com SharkType Plus'
+      : wall.hasPlusAccess
+        ? 'Plus content unlocked'
+        : 'More content with SharkType Plus'
 
     const description = locale === 'pt'
-      ? wall?.hasPlusAccess
-        ? 'Seu acesso inclui o catálogo premium atual e as novas trilhas adicionadas ao SharkType.'
-        : 'Desbloqueie o catálogo premium e tenha acesso às novas trilhas adicionadas ao SharkType.'
-      : wall?.hasPlusAccess
-        ? 'Your access includes the current premium catalog and new tracks added to SharkType.'
-        : 'Unlock the premium catalog and get access to new tracks added to SharkType.'
+      ? wall.hasPlusAccess
+        ? `Seu acesso inclui ${premiumTrackCount} trilhas premium, além das novas trilhas adicionadas ao SharkType.`
+        : `Desbloqueie ${premiumTrackCount} trilhas premium e tenha acesso às novas trilhas adicionadas ao SharkType.`
+      : wall.hasPlusAccess
+        ? `Your access includes ${premiumTrackCount} premium tracks, plus new tracks added to SharkType.`
+        : `Unlock ${premiumTrackCount} premium tracks and get access to new tracks added to SharkType.`
 
-    if (wall?.hasPlusAccess) {
+    if (wall.hasPlusAccess) {
       return (
         <div
           className="mx-auto mt-2 grid w-[calc(100%-1.5rem)] max-w-3xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 rounded-xl px-4 py-3 text-xs sm:w-full"
@@ -104,7 +106,7 @@ export default function PracticePlusWall({ wall, locale, scope, subjectName }: P
     )
   }
 
-  if (!wall?.hasPlusContent) return null
+  if (!wall.hasPlusContent) return null
 
   const quantity = `+ ${wall.premiumCount}`
 
