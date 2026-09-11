@@ -1,5 +1,9 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { LockIcon } from '@/components/icons'
+import { getTrackById } from '@/data/tracks'
 import type { Locale } from '@/lib/i18n'
 import type { PracticeWall } from '@/lib/types'
 
@@ -7,40 +11,74 @@ interface PracticePlusWallProps {
   wall: PracticeWall | null | undefined
   locale: Locale
   scope: 'language' | 'track'
+  subjectName?: string | null
 }
 
-export default function PracticePlusWall({ wall, locale, scope }: PracticePlusWallProps) {
+export default function PracticePlusWall({ wall, locale, scope, subjectName }: PracticePlusWallProps) {
+  const pathname = usePathname()
+
   if (!wall?.isLocked || wall.lockedCount <= 0) return null
 
+  const trackId = scope === 'track' && pathname.startsWith('/tracks/')
+    ? decodeURIComponent(pathname.split('/')[2] ?? '')
+    : null
+  const track = trackId ? getTrackById(trackId) : null
+  const resolvedSubject = subjectName?.trim() || track?.name[locale] || null
+  const quantity = `+ ${wall.lockedCount}`
+
   const title = locale === 'pt'
-    ? `+${wall.lockedCount} exercícios disponíveis com SharkType Plus`
-    : `+${wall.lockedCount} exercises available with SharkType Plus`
+    ? resolvedSubject
+      ? `${quantity} exercícios de ${resolvedSubject} disponíveis com SharkType Plus`
+      : `${quantity} exercícios disponíveis com SharkType Plus`
+    : resolvedSubject
+      ? `${quantity} ${resolvedSubject} exercises available with SharkType Plus`
+      : `${quantity} exercises available with SharkType Plus`
+
   const description = locale === 'pt'
-    ? `Desbloqueie o restante ${scope === 'track' ? 'desta trilha' : 'desta tecnologia'} e continue evoluindo.`
-    : `Unlock the rest of this ${scope === 'track' ? 'track' : 'technology'} and keep progressing.`
+    ? resolvedSubject
+      ? scope === 'track'
+        ? `Continue a trilha ${resolvedSubject} com o conteúdo completo.`
+        : `Desbloqueie o restante de ${resolvedSubject} e continue evoluindo.`
+      : `Desbloqueie o restante ${scope === 'track' ? 'desta trilha' : 'desta tecnologia'} e continue evoluindo.`
+    : resolvedSubject
+      ? scope === 'track'
+        ? `Continue the ${resolvedSubject} track with the complete content.`
+        : `Unlock the rest of ${resolvedSubject} and keep progressing.`
+      : `Unlock the rest of this ${scope === 'track' ? 'track' : 'technology'} and keep progressing.`
+
   const action = locale === 'pt' ? 'Conhecer Plus' : 'Explore Plus'
 
   return (
     <Link
       href="/plus"
       aria-label={`${title}. ${action}`}
-      className="group mx-auto mt-2 flex w-[calc(100%-1.5rem)] max-w-3xl items-center justify-between gap-4 rounded-xl px-4 py-3 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:w-full"
+      className="group mx-auto mt-2 grid w-[calc(100%-1.5rem)] max-w-3xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 rounded-xl px-4 py-3 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:w-full sm:grid-cols-[auto_minmax(0,1fr)_auto]"
       style={{
         backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
         color: 'var(--text)',
         border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
       }}
     >
-      <span className="flex min-w-0 items-start gap-3">
-        <span className="mt-0.5 shrink-0" style={{ color: 'var(--main)' }}>
-          <LockIcon size={15} />
-        </span>
-        <span className="min-w-0">
-          <span className="block font-semibold">{title}</span>
-          <span className="mt-0.5 block leading-5" style={{ color: 'var(--sub)' }}>{description}</span>
-        </span>
+      <span
+        className="row-span-1 flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-lg sm:row-auto"
+        style={{
+          color: 'var(--main)',
+          backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)',
+        }}
+        aria-hidden="true"
+      >
+        <LockIcon size={15} />
       </span>
-      <span className="shrink-0 font-semibold transition-transform duration-200 group-hover:translate-x-0.5" style={{ color: 'var(--main)' }}>
+
+      <span className="min-w-0 self-center">
+        <span className="block font-semibold leading-5">{title}</span>
+        <span className="block leading-5" style={{ color: 'var(--sub)' }}>{description}</span>
+      </span>
+
+      <span
+        className="col-start-2 shrink-0 self-center whitespace-nowrap font-semibold transition-transform duration-200 group-hover:translate-x-0.5 sm:col-start-auto"
+        style={{ color: 'var(--main)' }}
+      >
         {action} →
       </span>
     </Link>
