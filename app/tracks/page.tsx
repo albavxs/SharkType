@@ -12,6 +12,7 @@ import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
+import MasteryRail from '@/components/plus/MasteryRail'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { LanguageMeta, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
@@ -36,6 +37,12 @@ type TrackAccessSummary = {
   premiumCount: number
 }
 
+type UserAccessPayload = {
+  access?: {
+    isPlus?: boolean
+  }
+}
+
 export default function TracksPage() {
   const router = useRouter()
   const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
@@ -44,6 +51,7 @@ export default function TracksPage() {
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
   const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
   const [trackAccessMap, setTrackAccessMap] = useState<Map<string, TrackAccessSummary>>(new Map())
+  const [isPlus, setIsPlus] = useState(false)
   const { user } = useAuth()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -86,6 +94,29 @@ export default function TracksPage() {
       active = false
     }
   }, [])
+
+  useEffect(() => {
+    if (!user) {
+      setIsPlus(false)
+      return
+    }
+
+    let active = true
+    void (async () => {
+      try {
+        const response = await fetch('/api/me/access', { cache: 'no-store' })
+        const payload = (await response.json()) as UserAccessPayload
+        if (!active) return
+        setIsPlus(response.ok && payload.access?.isPlus === true)
+      } catch {
+        if (active) setIsPlus(false)
+      }
+    })()
+
+    return () => {
+      active = false
+    }
+  }, [user])
 
   function getTrackProgress(snippetIds: string[]): number {
     let completed = 0
@@ -140,6 +171,14 @@ export default function TracksPage() {
 
   const codeStats = getSectionStats(codeTracks)
 
+  function openTrack(trackId: string) {
+    if (!user) {
+      setShowGuestOverlay(true)
+      return
+    }
+    router.push(`/tracks/${trackId}`)
+  }
+
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     const progressSummary = getTrackProgressSummary(track)
     const accessSummary = trackAccessMap.get(track.id)
@@ -147,13 +186,7 @@ export default function TracksPage() {
 
     return (
       <button
-        onClick={() => {
-          if (!user) {
-            setShowGuestOverlay(true)
-            return
-          }
-          router.push(`/tracks/${track.id}`)
-        }}
+        onClick={() => openTrack(track.id)}
         className="block w-full min-w-0 rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer sm:p-5"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
         <div className="mb-2 flex items-start justify-between gap-3">
@@ -255,6 +288,14 @@ export default function TracksPage() {
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
               </div>
+              <MasteryRail
+                tracks={conceptTracks}
+                accessMap={trackAccessMap}
+                locale={locale}
+                isPlus={isPlus}
+                onOpenTrack={openTrack}
+                onOpenPlus={() => router.push('/plus')}
+              />
             </div>
 
             <div className="mb-10">
@@ -265,6 +306,14 @@ export default function TracksPage() {
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
               </div>
+              <MasteryRail
+                tracks={focusedTracks}
+                accessMap={trackAccessMap}
+                locale={locale}
+                isPlus={isPlus}
+                onOpenTrack={openTrack}
+                onOpenPlus={() => router.push('/plus')}
+              />
             </div>
 
             <div className="mb-10">
@@ -275,6 +324,14 @@ export default function TracksPage() {
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
               </div>
+              <MasteryRail
+                tracks={cyberdevopsTracks}
+                accessMap={trackAccessMap}
+                locale={locale}
+                isPlus={isPlus}
+                onOpenTrack={openTrack}
+                onOpenPlus={() => router.push('/plus')}
+              />
               {codeStats.total > 0 && (
                 <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
                   {codeStats.completed}/{codeStats.total} {t('completed', locale)} · {codeStats.pct}%
@@ -314,14 +371,14 @@ export default function TracksPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowGuestOverlay(false)}
-                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold"
+                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
                 style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
               >
                 {t('cancel', locale)}
               </button>
               <button
                 onClick={() => router.push('/login')}
-                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold"
+                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
                 style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
               >
                 {t('tracksGuestButton', locale)}
