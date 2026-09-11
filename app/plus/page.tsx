@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckIcon } from '@/components/icons'
@@ -8,6 +9,8 @@ import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import type { UserAccess } from '@/lib/server/access-control'
+
+const PlusPlanScene = dynamic(() => import('@/components/three/plus/PlusPlanScene'), { ssr: false })
 
 type PlanKey = 'monthly' | 'quarterly' | 'semiannual' | 'annual'
 
@@ -212,72 +215,82 @@ export default function PlusPage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border p-6 sm:p-8" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'var(--sub-alt)' }}>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--main)' }}>
-                {locale === 'pt' ? 'Escolha seu ciclo' : 'Choose your billing cycle'}
-              </p>
-              <h2 className="mt-2 text-2xl font-bold">{locale === 'pt' ? 'Um Plus, quatro opções.' : 'One Plus, four options.'}</h2>
+        <section
+          className="relative isolate overflow-hidden rounded-[2rem] border p-6 sm:p-8"
+          style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'var(--sub-alt)' }}
+        >
+          <PlusPlanScene selectedPlan={selectedPlan} />
+          <div className="relative z-10">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--main)' }}>
+                  {locale === 'pt' ? 'Escolha seu ciclo' : 'Choose your billing cycle'}
+                </p>
+                <h2 className="mt-2 text-2xl font-bold">{locale === 'pt' ? 'Um Plus, quatro opções.' : 'One Plus, four options.'}</h2>
+              </div>
+              {!offer?.checkoutEnabled ? (
+                <span className="text-xs" style={{ color: 'var(--sub)' }}>
+                  {locale === 'pt' ? 'Checkout comercial ainda em homologação.' : 'Commercial checkout is still in validation.'}
+                </span>
+              ) : null}
             </div>
-            {!offer?.checkoutEnabled ? (
-              <span className="text-xs" style={{ color: 'var(--sub)' }}>
-                {locale === 'pt' ? 'Checkout comercial ainda em homologação.' : 'Commercial checkout is still in validation.'}
-              </span>
-            ) : null}
-          </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {plans.map((plan) => {
-              const selected = plan.key === selectedPlan
-              return (
-                <button
-                  key={plan.key}
-                  type="button"
-                  onClick={() => setSelectedPlan(plan.key)}
-                  className="rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5"
-                  style={{
-                    borderColor: selected ? 'var(--main)' : 'color-mix(in srgb, var(--sub) 18%, transparent)',
-                    backgroundColor: selected ? 'color-mix(in srgb, var(--main) 10%, transparent)' : 'var(--bg)',
-                  }}
-                >
-                  <span className="text-sm font-semibold">{planLabel(plan.key)}</span>
-                  <span className="mt-3 block text-xl font-bold" style={{ color: plan.configured ? 'var(--text)' : 'var(--sub)' }}>
-                    {plan.price != null ? formatPrice(plan.price) : locale === 'pt' ? 'Preço em definição' : 'Price coming soon'}
-                  </span>
-                  {plan.monthlyEquivalent != null && plan.months > 1 ? (
-                    <span className="mt-1 block text-xs" style={{ color: 'var(--sub)' }}>
-                      {locale === 'pt' ? `${formatPrice(plan.monthlyEquivalent)}/mês equivalente` : `${formatPrice(plan.monthlyEquivalent)}/month equivalent`}
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {plans.map((plan) => {
+                const selected = plan.key === selectedPlan
+                return (
+                  <button
+                    key={plan.key}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => setSelectedPlan(plan.key)}
+                    className="relative overflow-hidden rounded-2xl border p-4 text-left backdrop-blur-sm transition-all hover:-translate-y-0.5"
+                    style={{
+                      borderColor: selected ? 'var(--main)' : 'color-mix(in srgb, var(--sub) 18%, transparent)',
+                      backgroundColor: selected
+                        ? 'color-mix(in srgb, var(--main) 16%, var(--bg) 78%)'
+                        : 'color-mix(in srgb, var(--bg) 88%, transparent)',
+                      boxShadow: selected ? '0 0 34px color-mix(in srgb, var(--main) 18%, transparent)' : undefined,
+                    }}
+                  >
+                    <span className="text-sm font-semibold">{planLabel(plan.key)}</span>
+                    <span className="mt-3 block text-xl font-bold" style={{ color: plan.configured ? 'var(--text)' : 'var(--sub)' }}>
+                      {plan.price != null ? formatPrice(plan.price) : locale === 'pt' ? 'Preço em definição' : 'Price coming soon'}
                     </span>
-                  ) : null}
-                </button>
-              )
-            })}
-          </div>
-
-          {isPlus ? (
-            <div className="mt-6 rounded-xl px-4 py-3 text-sm font-medium" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
-              {locale === 'pt' ? 'Seu acesso SharkType Plus está ativo.' : 'Your SharkType Plus access is active.'}
+                    {plan.monthlyEquivalent != null && plan.months > 1 ? (
+                      <span className="mt-1 block text-xs" style={{ color: 'var(--sub)' }}>
+                        {locale === 'pt' ? `${formatPrice(plan.monthlyEquivalent)}/mês equivalente` : `${formatPrice(plan.monthlyEquivalent)}/month equivalent`}
+                      </span>
+                    ) : null}
+                  </button>
+                )
+              })}
             </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => void openCommercialCheckout(selectedPlan)}
-              disabled={Boolean(pendingPlan) || !offer?.checkoutEnabled || !currentPlan?.configured}
-              className="mt-6 w-full rounded-xl px-5 py-3.5 text-sm font-semibold transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
-              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-            >
-              {pendingPlan === selectedPlan
-                ? t('authWorking', locale)
-                : !offer?.checkoutEnabled
-                  ? locale === 'pt' ? 'Assinaturas em breve' : 'Subscriptions coming soon'
-                  : !currentPlan?.configured
-                    ? locale === 'pt' ? 'Preço em definição' : 'Price coming soon'
-                    : locale === 'pt' ? `Assinar plano ${planLabel(selectedPlan).toLowerCase()}` : `Subscribe ${planLabel(selectedPlan).toLowerCase()}`}
-            </button>
-          )}
 
-          {error ? <p className="mt-4 text-sm" style={{ color: 'var(--error)' }}>{error}</p> : null}
+            {isPlus ? (
+              <div className="mt-6 rounded-xl px-4 py-3 text-sm font-medium backdrop-blur-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, var(--bg) 70%)', color: 'var(--main)' }}>
+                {locale === 'pt' ? 'Seu acesso SharkType Plus está ativo.' : 'Your SharkType Plus access is active.'}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void openCommercialCheckout(selectedPlan)}
+                disabled={Boolean(pendingPlan) || !offer?.checkoutEnabled || !currentPlan?.configured}
+                className="mt-6 w-full rounded-xl px-5 py-3.5 text-sm font-semibold transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
+                style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+              >
+                {pendingPlan === selectedPlan
+                  ? t('authWorking', locale)
+                  : !offer?.checkoutEnabled
+                    ? locale === 'pt' ? 'Assinaturas em breve' : 'Subscriptions coming soon'
+                    : !currentPlan?.configured
+                      ? locale === 'pt' ? 'Preço em definição' : 'Price coming soon'
+                      : locale === 'pt' ? `Assinar plano ${planLabel(selectedPlan).toLowerCase()}` : `Subscribe ${planLabel(selectedPlan).toLowerCase()}`}
+              </button>
+            )}
+
+            {error ? <p className="mt-4 text-sm" style={{ color: 'var(--error)' }}>{error}</p> : null}
+          </div>
         </section>
 
         {isSuperAdmin ? (
