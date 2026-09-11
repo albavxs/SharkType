@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { tracks, Track } from '@/data/tracks'
-import { codeLanguageMetas, getLanguageMetaById, textLanguageMetas } from '@/data/metadata'
+import { codeLanguageMetas, getLanguageMetaById } from '@/data/metadata'
 import { getLevel } from '@/lib/gamification'
 import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
 import { useLocale } from '@/hooks/useLocale'
@@ -27,7 +27,10 @@ const focusedTracks = tracks.filter(t => t.section === 'focused')
 const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
 const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
-const idiomBadges = textLanguageMetas.filter((language) => language.id !== 'text-typing')
+
+function isPlusGatedTrack(track: Track): boolean {
+  return !track.textLanguages && track.accessPolicy !== 'free'
+}
 
 export default function TracksPage() {
   const router = useRouter()
@@ -85,9 +88,18 @@ export default function TracksPage() {
   }
 
   function getTrackProgressSummary(track: Track) {
+    const isCompleted = completedTrackIds.has(track.id)
+
+    if (track.slots && track.slots.length > 0) {
+      return {
+        completed: isCompleted ? track.slots.length : 0,
+        total: track.slots.length,
+        isCompleted,
+      }
+    }
+
     const snippetTotal = track.snippetIds.length
     const snippetCompleted = snippetTotal > 0 ? getTrackProgress(track.snippetIds) : 0
-    const isCompleted = completedTrackIds.has(track.id)
 
     if (snippetTotal > 0) {
       return {
@@ -120,9 +132,10 @@ export default function TracksPage() {
 
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     const progressSummary = getTrackProgressSummary(track)
+    const plusGated = isPlusGatedTrack(track)
 
     return (
-      <button 
+      <button
         onClick={() => {
           if (!user) {
             setShowGuestOverlay(true)
@@ -141,17 +154,41 @@ export default function TracksPage() {
             >
               {t('completed', locale)}
             </span>
-          ) : null}
+          ) : plusGated ? (
+            <span
+              className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
+                borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)',
+                color: 'var(--main)',
+              }}
+            >
+              {t('trackAccessFreePlus', locale)}
+            </span>
+          ) : (
+            <span
+              className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--sub) 8%, transparent)',
+                borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)',
+                color: 'var(--sub)',
+              }}
+            >
+              {t('trackAccessFree', locale)}
+            </span>
+          )}
         </div>
         <div className="text-xs leading-relaxed mb-3" style={{ color: 'var(--sub)' }}>{track.description[locale]}</div>
-        <div className="flex flex-wrap gap-1">
-          {badges.map(lang => (
-            <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
-              style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
-              {lang.label}
-            </span>
-          ))}
-        </div>
+        {badges.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
+            {badges.map(lang => (
+              <span key={lang.id} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
+                style={{ backgroundColor: lang.color + '22', color: lang.color, border: `1px solid ${lang.color}44` }}>
+                {lang.label}
+              </span>
+            ))}
+          </div>
+        ) : null}
         <div className="mt-3 text-[11px] font-medium" style={{ color: progressSummary.isCompleted ? 'var(--main)' : 'var(--sub)' }}>
           {progressSummary.total > 1
             ? `${progressSummary.completed}/${progressSummary.total} ${t('completed', locale)}`
@@ -173,6 +210,7 @@ export default function TracksPage() {
           seconds={0} isTimerRunning={false}
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
+          showLanguage={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
           level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
@@ -187,18 +225,16 @@ export default function TracksPage() {
               {t('tracksSubtitle', locale)}
             </p>
 
-            {/* Idiomas section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('sectionIdioms', locale)}</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('idiomsDesc', locale)}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
                 {idiomTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={track.snippetIds.length > 0 ? [] : idiomBadges} />
+                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 ))}
               </div>
             </div>
 
-            {/* Conceitos section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('codeSection', locale)}</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('codeTracksDesc', locale)}</p>
@@ -209,7 +245,6 @@ export default function TracksPage() {
               </div>
             </div>
 
-            {/* Foco por Área section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('focusedSection', locale)}</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('focusedTracksDesc', locale)}</p>
@@ -220,7 +255,6 @@ export default function TracksPage() {
               </div>
             </div>
 
-            {/* Cybersecurity & DevOps section */}
             <div className="mb-10">
               <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('cyberdevopsSection', locale)}</h2>
               <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('cyberdevopsTracksDesc', locale)}</p>
@@ -248,34 +282,38 @@ export default function TracksPage() {
       )}
 
       {showGuestOverlay && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/40">
-          <div className="max-h-[calc(100vh-2rem)] w-full max-w-sm overflow-y-auto rounded-3xl p-6 shadow-2xl animate-in fade-in zoom-in duration-300 sm:p-8" style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}>
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6 rounded-full p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
-                <LockIcon size={32} />
-              </div>
-              <h2 className="mb-2 text-xl font-bold" style={{ color: 'var(--text)' }}>
-                {t('tracksGuestTitle', locale)}
-              </h2>
-              <p className="mb-8 text-sm leading-relaxed" style={{ color: 'var(--sub)' }}>
-                {t('tracksGuestDesc', locale)}
-              </p>
-              <div className="flex w-full flex-col gap-3">
-                <button
-                  onClick={() => router.push('/login')}
-                  className="w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-all hover:brightness-110"
-                  style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-                >
-                  {t('tracksGuestButton', locale)}
-                </button>
-                <button
-                  onClick={() => setShowGuestOverlay(false)}
-                  className="w-full rounded-2xl px-4 py-3 text-sm font-medium transition-all hover:opacity-80"
-                  style={{ color: 'var(--sub)' }}
-                >
-                  {t('back', locale)}
-                </button>
-              </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+          <div
+            className="w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl sm:p-8"
+            style={{ backgroundColor: 'var(--bg)', border: '1px solid color-mix(in srgb, var(--sub) 24%, transparent)' }}
+          >
+            <div
+              className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full"
+              style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}
+            >
+              <LockIcon size={32} />
+            </div>
+            <h2 className="mb-2 text-xl font-bold" style={{ color: 'var(--text)' }}>
+              {t('tracksGuestTitle', locale)}
+            </h2>
+            <p className="mb-6 text-sm leading-relaxed" style={{ color: 'var(--sub)' }}>
+              {t('tracksGuestDesc', locale)}
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowGuestOverlay(false)}
+                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold"
+                style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
+              >
+                {t('cancel', locale)}
+              </button>
+              <button
+                onClick={() => router.push('/login')}
+                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold"
+                style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+              >
+                {t('tracksGuestButton', locale)}
+              </button>
             </div>
           </div>
         </div>

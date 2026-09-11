@@ -89,6 +89,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
   allowedDevOrigins: getAllowedDevOrigins(),
+  outputFileTracingIncludes: {
+    '/*': ['./node_modules/@albavxs/sharktype-premium/**/*'],
+  },
   async headers() {
     return [
       {

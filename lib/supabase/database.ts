@@ -250,6 +250,98 @@ export interface Database {
         Update: never
         Relationships: []
       }
+      user_entitlements: {
+        Row: {
+          id: string
+          user_id: string
+          plan_id: 'plus'
+          status: 'active' | 'manual_grant' | 'past_due' | 'overdue' | 'cancelled' | 'expired'
+          source: 'asaas' | 'manual_grant' | 'system'
+          provider: string | null
+          provider_customer_id: string | null
+          provider_subscription_id: string | null
+          granted_by: string | null
+          reason: string | null
+          starts_at: string
+          expires_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plan_id?: 'plus'
+          status: 'active' | 'manual_grant' | 'past_due' | 'overdue' | 'cancelled' | 'expired'
+          source: 'asaas' | 'manual_grant' | 'system'
+          provider?: string | null
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
+          granted_by?: string | null
+          reason?: string | null
+          starts_at?: string
+          expires_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          plan_id?: 'plus'
+          status?: 'active' | 'manual_grant' | 'past_due' | 'overdue' | 'cancelled' | 'expired'
+          source?: 'asaas' | 'manual_grant' | 'system'
+          provider?: string | null
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
+          granted_by?: string | null
+          reason?: string | null
+          starts_at?: string
+          expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      entitlement_audit_events: {
+        Row: {
+          id: number
+          actor_user_id: string | null
+          target_user_id: string
+          action: string
+          plan_id: string
+          source: string
+          reason: string | null
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          actor_user_id?: string | null
+          target_user_id: string
+          action: string
+          plan_id?: string
+          source: string
+          reason?: string | null
+          metadata?: Json
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
+      billing_events: {
+        Row: {
+          id: number
+          provider: string
+          provider_event_id: string
+          event_type: string
+          payload: Json
+          processed_at: string
+        }
+        Insert: {
+          provider: string
+          provider_event_id: string
+          event_type: string
+          payload: Json
+          processed_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
     }
     Views: {
       global_leaderboard: {

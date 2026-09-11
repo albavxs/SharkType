@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { ensureProfileForUser, updateProfileIdentity } from '@/lib/server/auth-profile'
 import { ensureUserSocialBackfill } from '@/lib/server/progress-store'
-import { isValidUsername, sanitizeUsername } from '@/lib/usernames'
+import { isReservedUsername, isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 export async function GET() {
   const env = getSupabaseEnv()
@@ -60,14 +60,14 @@ export async function PATCH(request: Request) {
     avatarUrl?: string | null
     bio?: string | null
   }
-  if (body.avatarUrl != null && body.avatarUrl !== "") {
+  if (body.avatarUrl != null && body.avatarUrl !== '') {
     try {
       const u = new URL(body.avatarUrl)
-      if (!["http:", "https:"].includes(u.protocol)) {
-        return NextResponse.json({ error: "Invalid avatar URL." }, { status: 400 })
+      if (!['http:', 'https:'].includes(u.protocol)) {
+        return NextResponse.json({ error: 'Invalid avatar URL.' }, { status: 400 })
       }
     } catch {
-      return NextResponse.json({ error: "Invalid avatar URL." }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid avatar URL.' }, { status: 400 })
     }
   }
   const username = sanitizeUsername(body.username ?? '')
@@ -80,6 +80,17 @@ export async function PATCH(request: Request) {
   }
 
   try {
+    const currentProfile = await ensureProfileForUser(supabase, user)
+
+    // sharkcoder remains the real super-user account, but reserved names cannot
+    // be claimed by another account or swapped onto a different profile.
+    if (
+      isReservedUsername(username) &&
+      (!currentProfile.isSuperUser || currentProfile.username !== username)
+    ) {
+      return NextResponse.json({ error: 'This username is reserved.' }, { status: 409 })
+    }
+
     const bio = typeof body.bio === 'string' ? body.bio.trim() : null
     const profile = await updateProfileIdentity(supabase, user.id, {
       username,
