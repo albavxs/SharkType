@@ -99,11 +99,17 @@ function applyLanguageAccessWall(snippets: Snippet[], access: UserAccess): Snipp
   return snippets.slice(0, PUBLIC_SNIPPET_LIMIT)
 }
 
-function buildPracticeWall(freeSnippetLimit: number, premiumCount: number, access: UserAccess) {
+function buildPracticeWall(
+  freeSnippetLimit: number,
+  premiumCount: number,
+  access: UserAccess,
+  hasPlusContent = premiumCount > 0,
+) {
   const lockedCount = access.isPlus ? 0 : premiumCount
   return {
     isLocked: lockedCount > 0,
-    hasPlusContent: premiumCount > 0,
+    hasPlusContent,
+    hasPlusAccess: access.isPlus,
     freeSnippetLimit,
     lockedCount,
     premiumCount,
@@ -125,6 +131,7 @@ export async function getTrackPracticePayload(
     (requestedLanguageId
       ? availableLanguages.find((language) => language.id === requestedLanguageId)
       : null) ?? availableLanguages[0] ?? null
+  const trackHasPlusContent = (track.accessPolicy ?? 'plus_after_limit') !== 'free'
 
   if (!selectedLanguageMeta) {
     return {
@@ -132,7 +139,7 @@ export async function getTrackPracticePayload(
       selectedLanguage: null,
       snippets: [] as Snippet[],
       access,
-      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access),
+      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, trackHasPlusContent),
     }
   }
 
@@ -144,7 +151,7 @@ export async function getTrackPracticePayload(
       selectedLanguage: fallbackMeta,
       snippets: [] as Snippet[],
       access,
-      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access),
+      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, trackHasPlusContent),
     }
   }
 
@@ -178,7 +185,7 @@ export async function getTrackPracticePayload(
     selectedLanguage: toLanguageMeta(language),
     snippets,
     access,
-    wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, premiumCount, access),
+    wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, premiumCount, access, trackHasPlusContent),
   }
 }
 
