@@ -42,6 +42,11 @@ interface PendingSnippetFinalization {
   seqIndex: number
   reason: SnippetFinalizationReason
 }
+interface TrackLoadError {
+  message: string
+  code: string | null
+  requestId: string | null
+}
 
 function getTrackTimerDuration(difficulty: Difficulty | 'all', snippetCount: number): number {
   if (difficulty === 'easy') return 60 + snippetCount * 5
@@ -70,6 +75,8 @@ export default function TrackPracticePage() {
   const [trackSnippets, setTrackSnippets] = useState<Snippet[]>([])
   const [practiceWall, setPracticeWall] = useState<PracticeWall | null>(null)
   const [isTrackDataLoading, setIsTrackDataLoading] = useState(true)
+  const [trackLoadError, setTrackLoadError] = useState<TrackLoadError | null>(null)
+  const [trackReloadToken, setTrackReloadToken] = useState(0)
   const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
   const [accumulated, setAccumulated] = useState<SnippetResult[]>([])
   const [trackXpEarned, setTrackXpEarned] = useState(0)
@@ -160,44 +167,68 @@ export default function TrackPracticePage() {
     }
 
     let active = true
+    setTrackLoadError(null)
+    setIsTrackDataLoading(true)
 
     void (async () => {
-      const suffix = requestedLanguageId ? `?languageId=${encodeURIComponent(requestedLanguageId)}` : ''
-      const response = await fetch(`/api/tracks/${trackId}/practice${suffix}`, { cache: 'no-store' })
-      const payload = (await response.json()) as {
-        availableLanguages?: LanguageMeta[]
-        selectedLanguage?: LanguageMeta | null
-        snippets?: Snippet[]
-        wall?: PracticeWall
-      }
+      try {
+        const suffix = requestedLanguageId ? `?languageId=${encodeURIComponent(requestedLanguageId)}` : ''
+        const response = await fetch(`/api/tracks/${trackId}/practice${suffix}`, { cache: 'no-store' })
+        const requestId = response.headers.get('x-request-id')
+        const payload = (await response.json()) as {
+          availableLanguages?: LanguageMeta[]
+          selectedLanguage?: LanguageMeta | null
+          snippets?: Snippet[]
+          wall?: PracticeWall
+          error?: string
+          code?: string
+        }
 
-      if (!active) return
+        if (!active) return
 
-      if (response.status === 401) {
-        router.replace('/login')
-        return
-      }
+        if (response.status === 401) {
+          router.replace('/login')
+          return
+        }
 
-      if (!response.ok) {
-        setAvailableLanguages([])
-        setSelectedLang(null)
-        setTrackSnippets([])
-        setPracticeWall(null)
+        if (!response.ok) {
+          const premiumUnavailable = response.status === 503 && payload.code === 'PREMIUM_CONTENT_UNAVAILABLE'
+          setAvailableLanguages([])
+          setSelectedLang(null)
+          setTrackSnippets([])
+          setPracticeWall(null)
+          setTrackLoadError({
+            message: premiumUnavailable
+              ? (locale === 'pt' ? 'Conteúdo Plus temporariamente indisponível.' : 'Plus content is temporarily unavailable.')
+              : (payload.error ?? (locale === 'pt' ? 'Não foi possível carregar esta trilha.' : 'Could not load this track.')),
+            code: payload.code ?? null,
+            requestId,
+          })
+          setIsTrackDataLoading(false)
+          return
+        }
+
+        setAvailableLanguages(payload.availableLanguages ?? [])
+        setSelectedLang(payload.selectedLanguage ?? null)
+        setTrackSnippets(payload.snippets ?? [])
+        setPracticeWall(payload.wall ?? null)
+        setTrackLoadError(null)
         setIsTrackDataLoading(false)
-        return
+      } catch {
+        if (!active) return
+        setTrackLoadError({
+          message: locale === 'pt' ? 'Falha de rede ao carregar esta trilha.' : 'Network error while loading this track.',
+          code: 'NETWORK_ERROR',
+          requestId: null,
+        })
+        setIsTrackDataLoading(false)
       }
-
-      setAvailableLanguages(payload.availableLanguages ?? [])
-      setSelectedLang(payload.selectedLanguage ?? null)
-      setTrackSnippets(payload.snippets ?? [])
-      setPracticeWall(payload.wall ?? null)
-      setIsTrackDataLoading(false)
     })()
 
     return () => {
       active = false
     }
-  }, [router, track, trackId, requestedLanguageId])
+  }, [router, track, trackId, requestedLanguageId, trackReloadToken, locale])
 
   const displayCode = useMemo(() => {
     const raw = snippet?.code ?? ''
@@ -447,6 +478,7 @@ export default function TrackPracticePage() {
     clearPressedKey()
     resetTrackRunState()
     setIsTrackDataLoading(true)
+    setTrackLoadError(null)
     setSeqIndex(0)
     setSelectedLang(lang)
     setRequestedLanguageId(lang.id)
@@ -526,13 +558,53 @@ export default function TrackPracticePage() {
           isTyping={isTyping}
         />
 
-        {!isTyping ? <PracticePlusWall wall={practiceWall} locale={locale} scope="track" /> : null}
+        {!isTyping && !trackLoadError ? <PracticePlusWall wall={practiceWall} locale={locale} scope="track" /> : null}
 
         <div className="flex-1 flex flex-col items-center justify-center px-3 pb-3 sm:px-6 sm:pb-0 min-h-0 min-w-0">
           {isTrackDataLoading ? (
             <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
+          ) : trackLoadError ? (
+            <div
+              className="w-full max-w-lg rounded-2xl p-5 text-center shadow-xl"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--sub-alt) 90%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--error) 28%, transparent)',
+              }}
+            >
+              <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+                {trackLoadError.message}
+              </h2>
+              {trackLoadError.code === 'PREMIUM_CONTENT_UNAVAILABLE' ? (
+                <p className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>
+                  {locale === 'pt'
+                    ? 'Seu acesso Plus continua ativo. O conteúdo premium não foi entregue pelo servidor e não será substituído silenciosamente pelos exercícios gratuitos.'
+                    : 'Your Plus access remains active. Premium content was not delivered by the server and will not silently fall back to free exercises.'}
+                </p>
+              ) : null}
+              {trackLoadError.requestId ? (
+                <p className="mt-3 break-all text-[10px]" style={{ color: 'var(--sub)', opacity: 0.75 }}>
+                  Request ID: {trackLoadError.requestId}
+                </p>
+              ) : null}
+              <div className="mt-4 flex justify-center gap-2">
+                <button
+                  onClick={() => setTrackReloadToken((value) => value + 1)}
+                  className="rounded-lg px-4 py-2 text-xs font-semibold"
+                  style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+                >
+                  {locale === 'pt' ? 'Tentar novamente' : 'Try again'}
+                </button>
+                <button
+                  onClick={() => router.push('/tracks')}
+                  className="rounded-lg px-4 py-2 text-xs font-semibold"
+                  style={{ border: '1px solid color-mix(in srgb, var(--sub) 35%, transparent)', color: 'var(--text)' }}
+                >
+                  {locale === 'pt' ? 'Voltar às trilhas' : 'Back to tracks'}
+                </button>
+              </div>
+            </div>
           ) : !snippet ? (
-            <p style={{ color: 'var(--sub)' }}>{t('loading', locale)}</p>
+            <p style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Nenhum exercício disponível nesta trilha.' : 'No exercises available in this track.'}</p>
           ) : showResult && finalStats ? (
             <ResultScreen wpm={finalStats.wpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
               duration={finalStats.duration} snippet={snippet} languageLabel={selectedLang?.label ?? ''} sessionMode={sessionMode} wpmSamples={finalStats.wpmSamples}
