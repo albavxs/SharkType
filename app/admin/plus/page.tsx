@@ -20,6 +20,20 @@ interface EntitlementRow {
   } | null
 }
 
+type ApiErrorPayload = {
+  error?: string
+  code?: string
+}
+
+function toAdminError(payload: ApiErrorPayload, locale: string) {
+  if (payload.code === 'ADMIN_SERVICE_UNAVAILABLE') {
+    return locale === 'pt'
+      ? 'Backend administrativo indisponível. Configure SUPABASE_SERVICE_ROLE_KEY no ambiente da Vercel e faça um novo deploy.'
+      : 'Admin backend unavailable. Configure SUPABASE_SERVICE_ROLE_KEY in the Vercel environment and redeploy.'
+  }
+  return payload.error ?? 'Request failed.'
+}
+
 export default function PlusAdminPage() {
   const router = useRouter()
   const { profile, isLoading } = useAuth()
@@ -33,8 +47,8 @@ export default function PlusAdminPage() {
 
   async function loadRows() {
     const response = await fetch('/api/admin/plus', { cache: 'no-store' })
-    if (!response.ok) throw new Error((await response.json() as { error?: string }).error ?? 'Request failed.')
-    const payload = (await response.json()) as { entitlements?: EntitlementRow[] }
+    const payload = (await response.json()) as { entitlements?: EntitlementRow[] } & ApiErrorPayload
+    if (!response.ok) throw new Error(toAdminError(payload, locale))
     setRows(payload.entitlements ?? [])
   }
 
@@ -45,7 +59,7 @@ export default function PlusAdminPage() {
       return
     }
     void loadRows().catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Could not load Plus users.'))
-  }, [isLoading, profile?.isSuperUser, router])
+  }, [isLoading, profile?.isSuperUser, router, locale])
 
   async function submit(action: 'grant' | 'revoke', targetUsername = username) {
     setPending(true)
@@ -58,9 +72,10 @@ export default function PlusAdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, username: targetUsername, reason }),
       })
+      const payload = (await response.json()) as ApiErrorPayload
 
       if (!response.ok) {
-        throw new Error((await response.json() as { error?: string }).error ?? 'Request failed.')
+        throw new Error(toAdminError(payload, locale))
       }
 
       setNotice(action === 'grant'
@@ -80,20 +95,34 @@ export default function PlusAdminPage() {
     return <main className="min-h-screen p-6" style={{ color: 'var(--sub)' }}>{t('loading', locale)}</main>
   }
 
+  const panelStyle = {
+    backgroundColor: 'color-mix(in srgb, var(--sub-alt) 86%, transparent)',
+    border: '1px solid color-mix(in srgb, var(--sub) 16%, transparent)',
+  }
+
   return (
-    <main className="min-h-screen px-4 py-8 sm:px-6" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
+    <main className="min-h-screen px-4 py-8 sm:px-6" style={{ color: 'var(--text)' }}>
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <button onClick={() => router.push('/')} className="text-sm" style={{ color: 'var(--sub)' }}>
             {t('back', locale)}
           </button>
-          <button
-            onClick={() => router.push('/admin/billing')}
-            className="rounded-lg px-3 py-2 text-xs font-semibold"
-            style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
-          >
-            {locale === 'pt' ? 'Abrir painel Asaas' : 'Open Asaas panel'}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => router.push('/admin/premium')}
+              className="rounded-lg px-3 py-2 text-xs font-semibold"
+              style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
+            >
+              {locale === 'pt' ? 'Diagnóstico Premium' : 'Premium diagnostics'}
+            </button>
+            <button
+              onClick={() => router.push('/admin/billing')}
+              className="rounded-lg px-3 py-2 text-xs font-semibold"
+              style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
+            >
+              {locale === 'pt' ? 'Abrir painel Asaas' : 'Open Asaas panel'}
+            </button>
+          </div>
         </div>
 
         <h1 className="mb-2 text-2xl font-bold">SharkType Plus Admin</h1>
@@ -103,21 +132,21 @@ export default function PlusAdminPage() {
             : 'Grant or revoke lifetime manual Plus. Paid Asaas subscriptions remain independent.'}
         </p>
 
-        <section className="mb-6 rounded-xl p-4" style={{ backgroundColor: 'var(--sub-alt)' }}>
+        <section className="mb-6 rounded-xl p-4 shadow-xl" style={panelStyle}>
           <div className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto]">
             <input
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder="username"
               className="rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)' }}
+              style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 90%, transparent)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)' }}
             />
             <input
               value={reason}
               onChange={(event) => setReason(event.target.value)}
               placeholder={locale === 'pt' ? 'motivo (opcional)' : 'reason (optional)'}
               className="rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)' }}
+              style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 90%, transparent)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)' }}
             />
             <button
               disabled={pending || username.trim().length === 0}
@@ -132,7 +161,7 @@ export default function PlusAdminPage() {
           {error ? <p className="mt-3 text-sm" style={{ color: 'var(--error)' }}>{error}</p> : null}
         </section>
 
-        <section className="overflow-hidden rounded-xl" style={{ backgroundColor: 'var(--sub-alt)' }}>
+        <section className="overflow-hidden rounded-xl shadow-xl" style={panelStyle}>
           {rows.length === 0 ? (
             <p className="p-4 text-sm" style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Nenhum entitlement Plus encontrado.' : 'No Plus entitlements found.'}</p>
           ) : rows.map((row) => {
