@@ -54,9 +54,22 @@ try {
     }
   )
 
+  const verifyScript = [
+    "import('@albavxs/sharktype-premium').then(async (m) => {",
+    "  if (typeof m.getPremiumSnippets !== 'function') throw new Error('getPremiumSnippets export is missing')",
+    "  const expectations = { react: 6, git: 14 }",
+    "  for (const [languageId, expected] of Object.entries(expectations)) {",
+    "    const snippets = await m.getPremiumSnippets(languageId)",
+    "    if (!Array.isArray(snippets)) throw new Error(`${languageId} premium payload is not an array`)",
+    "    if (snippets.length !== expected) throw new Error(`${languageId} premium payload has ${snippets.length} snippets; expected ${expected}`)",
+    "  }",
+    "  console.info('[premium-content] payload verified: react=6, git=14')",
+    "}).catch((error) => { console.error('[premium-content] payload verification failed:', error); process.exit(2) })",
+  ].join('\n')
+
   execFileSync(
     process.platform === 'win32' ? 'node.exe' : 'node',
-    ['-e', "import('@albavxs/sharktype-premium').then(m => { if (typeof m.getPremiumSnippets !== 'function') process.exit(2) })"],
+    ['-e', verifyScript],
     { stdio: 'inherit', env: process.env },
   )
 
