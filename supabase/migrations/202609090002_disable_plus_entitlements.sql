@@ -1,0 +1,3 @@
+-- Legacy rollback migration version retained for Supabase migration-history
+-- compatibility. The original 202609090001 migration is now a no-op placeholder,
+-- so this matching rollback remains intentionally empty on fresh environments.
