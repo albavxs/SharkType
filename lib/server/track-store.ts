@@ -99,9 +99,16 @@ function applyLanguageAccessWall(snippets: Snippet[], access: UserAccess): Snipp
   return snippets.slice(0, PUBLIC_SNIPPET_LIMIT)
 }
 
-function getLanguageLockedCount(expectedTotal: number, access: UserAccess): number {
-  if (access.isPlus) return 0
-  return Math.max(0, expectedTotal - PUBLIC_SNIPPET_LIMIT)
+function buildPracticeWall(freeSnippetLimit: number, premiumCount: number, access: UserAccess) {
+  const lockedCount = access.isPlus ? 0 : premiumCount
+  return {
+    isLocked: lockedCount > 0,
+    hasPlusContent: premiumCount > 0,
+    freeSnippetLimit,
+    lockedCount,
+    premiumCount,
+    requiredPlan: 'plus' as const,
+  }
 }
 
 export async function getTrackPracticePayload(
@@ -125,12 +132,7 @@ export async function getTrackPracticePayload(
       selectedLanguage: null,
       snippets: [] as Snippet[],
       access,
-      wall: {
-        isLocked: false,
-        freeSnippetLimit: FREE_TRACK_SNIPPET_LIMIT,
-        lockedCount: 0,
-        requiredPlan: 'plus' as const,
-      },
+      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access),
     }
   }
 
@@ -142,17 +144,13 @@ export async function getTrackPracticePayload(
       selectedLanguage: fallbackMeta,
       snippets: [] as Snippet[],
       access,
-      wall: {
-        isLocked: false,
-        freeSnippetLimit: FREE_TRACK_SNIPPET_LIMIT,
-        lockedCount: 0,
-        requiredPlan: 'plus' as const,
-      },
+      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access),
     }
   }
 
   const freeTrackSnippets = freeTrackSnippetRegistry[track.id]?.[language.id] ?? []
   const expectedTotal = trackSnippetTotalRegistry[track.id]?.[language.id] ?? freeTrackSnippets.length
+  const premiumCount = Math.max(0, expectedTotal - freeTrackSnippets.length)
 
   let snippets = freeTrackSnippets
 
@@ -175,21 +173,12 @@ export async function getTrackPracticePayload(
       : freeTrackSnippets
   }
 
-  const lockedCount = access.isPlus
-    ? 0
-    : Math.max(0, expectedTotal - freeTrackSnippets.length)
-
   return {
     availableLanguages,
     selectedLanguage: toLanguageMeta(language),
     snippets,
     access,
-    wall: {
-      isLocked: lockedCount > 0,
-      freeSnippetLimit: FREE_TRACK_SNIPPET_LIMIT,
-      lockedCount,
-      requiredPlan: 'plus' as const,
-    },
+    wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, premiumCount, access),
   }
 }
 
@@ -199,17 +188,12 @@ export async function getLanguagePracticePayload(languageId: string, access: Use
 
   const allSnippets = await getFullLanguageSnippets(language)
   const expectedTotal = Math.max(getTotalSnippetCount(language.id), allSnippets.length)
-  const lockedCount = getLanguageLockedCount(expectedTotal, access)
+  const premiumCount = Math.max(0, expectedTotal - PUBLIC_SNIPPET_LIMIT)
 
   return {
     language: toLanguageMeta(language),
     snippets: applyLanguageAccessWall(allSnippets, access),
     access,
-    wall: {
-      isLocked: lockedCount > 0,
-      freeSnippetLimit: PUBLIC_SNIPPET_LIMIT,
-      lockedCount,
-      requiredPlan: 'plus' as const,
-    },
+    wall: buildPracticeWall(PUBLIC_SNIPPET_LIMIT, premiumCount, access),
   }
 }
