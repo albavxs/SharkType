@@ -13,9 +13,10 @@ interface EntitlementRow {
   source: string
   reason: string | null
   updated_at: string
-  profiles?: {
+  profile?: {
     username?: string
     display_name?: string | null
+    is_super_user?: boolean
   } | null
 }
 
@@ -39,12 +40,12 @@ export default function PlusAdminPage() {
 
   useEffect(() => {
     if (isLoading) return
-    if (!profile?.isSuperUser && profile?.username !== 'sharkcoder') {
+    if (!profile?.isSuperUser) {
       router.replace('/')
       return
     }
     void loadRows().catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Could not load Plus users.'))
-  }, [isLoading, profile?.isSuperUser, profile?.username, router])
+  }, [isLoading, profile?.isSuperUser, router])
 
   async function submit(action: 'grant' | 'revoke', targetUsername = username) {
     setPending(true)
@@ -62,7 +63,9 @@ export default function PlusAdminPage() {
         throw new Error((await response.json() as { error?: string }).error ?? 'Request failed.')
       }
 
-      setNotice(action === 'grant' ? 'Plus granted.' : 'Plus revoked.')
+      setNotice(action === 'grant'
+        ? (locale === 'pt' ? 'Plus vitalício concedido.' : 'Lifetime Plus granted.')
+        : (locale === 'pt' ? 'Plus manual revogado.' : 'Manual Plus revoked.'))
       setUsername('')
       setReason('')
       await loadRows()
@@ -79,18 +82,29 @@ export default function PlusAdminPage() {
 
   return (
     <main className="min-h-screen px-4 py-8 sm:px-6" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
-      <div className="mx-auto max-w-3xl">
-        <button onClick={() => router.push('/')} className="mb-6 text-sm" style={{ color: 'var(--sub)' }}>
-          {t('back', locale)}
-        </button>
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <button onClick={() => router.push('/')} className="text-sm" style={{ color: 'var(--sub)' }}>
+            {t('back', locale)}
+          </button>
+          <button
+            onClick={() => router.push('/admin/billing')}
+            className="rounded-lg px-3 py-2 text-xs font-semibold"
+            style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
+          >
+            {locale === 'pt' ? 'Abrir painel Asaas' : 'Open Asaas panel'}
+          </button>
+        </div>
 
-        <h1 className="mb-2 text-2xl font-bold">Plus admin</h1>
+        <h1 className="mb-2 text-2xl font-bold">SharkType Plus Admin</h1>
         <p className="mb-6 text-sm" style={{ color: 'var(--sub)' }}>
-          Grant or revoke SharkType Plus manual access.
+          {locale === 'pt'
+            ? 'Conceda ou remova Plus manual vitalício. Assinaturas pagas do Asaas continuam independentes.'
+            : 'Grant or revoke lifetime manual Plus. Paid Asaas subscriptions remain independent.'}
         </p>
 
         <section className="mb-6 rounded-xl p-4" style={{ backgroundColor: 'var(--sub-alt)' }}>
-          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+          <div className="grid gap-3 sm:grid-cols-[1fr_1.4fr_auto]">
             <input
               value={username}
               onChange={(event) => setUsername(event.target.value)}
@@ -101,7 +115,7 @@ export default function PlusAdminPage() {
             <input
               value={reason}
               onChange={(event) => setReason(event.target.value)}
-              placeholder="reason"
+              placeholder={locale === 'pt' ? 'motivo (opcional)' : 'reason (optional)'}
               className="rounded-lg px-3 py-2 text-sm outline-none"
               style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)' }}
             />
@@ -111,7 +125,7 @@ export default function PlusAdminPage() {
               className="rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
               style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
             >
-              Grant Plus
+              {locale === 'pt' ? 'Dar Plus vitalício' : 'Grant lifetime Plus'}
             </button>
           </div>
           {notice ? <p className="mt-3 text-sm" style={{ color: 'var(--main)' }}>{notice}</p> : null}
@@ -120,17 +134,18 @@ export default function PlusAdminPage() {
 
         <section className="overflow-hidden rounded-xl" style={{ backgroundColor: 'var(--sub-alt)' }}>
           {rows.length === 0 ? (
-            <p className="p-4 text-sm" style={{ color: 'var(--sub)' }}>No Plus entitlements yet.</p>
+            <p className="p-4 text-sm" style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Nenhum entitlement Plus encontrado.' : 'No Plus entitlements found.'}</p>
           ) : rows.map((row) => {
-            const rowUsername = row.profiles?.username ?? row.user_id
+            const rowUsername = row.profile?.username ?? row.user_id
             return (
               <div key={row.id} className="flex items-center justify-between gap-3 border-b px-4 py-3 last:border-b-0"
                 style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)' }}>
                 <div className="min-w-0">
                   <div className="truncate text-sm font-semibold">{rowUsername}</div>
                   <div className="text-xs" style={{ color: 'var(--sub)' }}>
-                    {row.status} · {row.source} · {new Date(row.updated_at).toLocaleDateString()}
+                    {row.status} · {row.source} · {new Date(row.updated_at).toLocaleString()}
                   </div>
+                  {row.reason ? <div className="mt-1 truncate text-xs" style={{ color: 'var(--sub)' }}>{row.reason}</div> : null}
                 </div>
                 {row.source === 'manual_grant' && row.status !== 'cancelled' ? (
                   <button
@@ -139,7 +154,7 @@ export default function PlusAdminPage() {
                     className="rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
                     style={{ backgroundColor: 'color-mix(in srgb, var(--error) 16%, transparent)', color: 'var(--error)' }}
                   >
-                    Revoke
+                    {locale === 'pt' ? 'Revogar' : 'Revoke'}
                   </button>
                 ) : null}
               </div>

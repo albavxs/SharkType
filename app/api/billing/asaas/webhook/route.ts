@@ -114,7 +114,6 @@ async function processCheckoutEvent(admin: any, payload: AsaasWebhookPayload) {
     .eq('id', localCheckout.id)
   if (updateError) throw updateError
 
-  // Sandbox transaction validation is deliberately isolated from Plus access.
   if (localCheckout.sandbox || localCheckout.purpose !== 'plus_subscription') return
 
   if (event === 'CHECKOUT_PAID') {
@@ -246,6 +245,8 @@ export async function POST(request: Request) {
   }
 
   const admin = createAdminClient() as any
+  let retryingUnprocessedEvent = false
+
   const { error: insertError } = await admin.from('billing_events').insert({
     provider: 'asaas',
     provider_event_id: payload.id,
@@ -254,11 +255,28 @@ export async function POST(request: Request) {
   })
 
   if (insertError) {
-    if (insertError.code === '23505') {
-      return NextResponse.json({ received: true, duplicate: true })
+    if (insertError.code !== '23505') {
+      console.error('[billing] webhook persistence failed:', insertError.message)
+      return NextResponse.json({ error: 'Could not persist webhook event.' }, { status: 500 })
     }
-    console.error('[billing] webhook persistence failed:', insertError.message)
-    return NextResponse.json({ error: 'Could not persist webhook event.' }, { status: 500 })
+
+    const { data: existing, error: existingError } = await admin
+      .from('billing_events')
+      .select('processed_at,processing_error')
+      .eq('provider', 'asaas')
+      .eq('provider_event_id', payload.id)
+      .maybeSingle()
+
+    if (existingError) {
+      console.error('[billing] duplicate webhook lookup failed:', existingError.message)
+      return NextResponse.json({ error: 'Could not inspect duplicate webhook event.' }, { status: 500 })
+    }
+
+    if (existing?.processed_at) {
+      return NextResponse.json({ received: true, duplicate: true, processed: true })
+    }
+
+    retryingUnprocessedEvent = true
   }
 
   try {
@@ -272,7 +290,7 @@ export async function POST(request: Request) {
       .eq('provider', 'asaas')
       .eq('provider_event_id', payload.id)
 
-    return NextResponse.json({ received: true })
+    return NextResponse.json({ received: true, retried: retryingUnprocessedEvent })
   } catch (processingError) {
     const message = processingError instanceof Error ? processingError.message : 'Unknown webhook processing error.'
     console.error('[billing] webhook processing failed:', message)
