@@ -5,8 +5,9 @@ import { languageManifest } from './manifest'
 import { tracks } from './tracks'
 
 // ── Imports estaticos (Next/webpack exige top-level imports) ─────────────
-// Ordem: code languages, depois cybersec (multi-export), depois frameworks, depois text.
+import { cSnippets } from './c'
 import { cppSnippets } from './cpp'
+import { csharpSnippets } from './csharp'
 import { javascriptSnippets } from './javascript'
 import { typescriptSnippets } from './typescript'
 import { pythonSnippets } from './python'
@@ -56,11 +57,10 @@ import { enSnippets } from './text-en'
 import { esSnippets } from './text-es'
 import { frSnippets } from './text-fr'
 
-// ── Resolver: mapa "module:exportName" -> Snippet[] ──────────────────────
-// Chave segue formato `${module}:${exportName ?? '<default>'}`. O builder
-// abaixo monta as Languages a partir do manifest + deste mapa.
 const snippetRegistry: Record<string, Snippet[]> = {
+  './c:cSnippets': cSnippets,
   './cpp:cppSnippets': cppSnippets,
+  './csharp:csharpSnippets': csharpSnippets,
   './javascript:javascriptSnippets': javascriptSnippets,
   './typescript:typescriptSnippets': typescriptSnippets,
   './python:pythonSnippets': pythonSnippets,
@@ -83,14 +83,12 @@ const snippetRegistry: Record<string, Snippet[]> = {
   './terraform:terraformSnippets': terraformSnippets,
   './ansible:ansibleSnippets': ansibleSnippets,
   './cicd:cicdSnippets': cicdSnippets,
-
   './cybersec:nmapSnippets': nmapSnippets,
   './cybersec:webReconSnippets': webReconSnippets,
   './cybersec:firewallSnippets': firewallSnippets,
   './cybersec:networkAnalysisSnippets': networkAnalysisSnippets,
   './cybersec:hardeningSnippets': hardeningSnippets,
   './cybersec:cryptoSnippets': cryptoSnippets,
-
   './vue:vueSnippets': vueSnippets,
   './react:reactSnippets': reactSnippets,
   './nodejs:nodejsSnippets': nodejsSnippets,
@@ -101,7 +99,6 @@ const snippetRegistry: Record<string, Snippet[]> = {
   './jinja:jinjaSnippets': jinjaSnippets,
   './nextjs:nextjsSnippets': nextjsSnippets,
   './angular:angularSnippets': angularSnippets,
-
   './text-typing:typingSnippets': typingSnippets,
   './text-ptbr:ptbrSnippets': ptbrSnippets,
   './text-en:enSnippets': enSnippets,

@@ -1,6 +1,6 @@
 'use client'
 
-import { LanguageMeta, Difficulty } from '@/lib/types'
+import { LanguageMeta, Difficulty, PracticeWall } from '@/lib/types'
 import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon, MailIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
@@ -8,11 +8,12 @@ import { formatTime } from '@/lib/utils'
 import BrandLogo from '@/components/brand/BrandLogo'
 import LanguageDropdown from './LanguageDropdown'
 import DifficultySelector from './DifficultySelector'
+import PracticePlusWall from './PracticePlusWall'
 import { useAuth } from '@/hooks/useAuth'
 import CommunityTicker from './CommunityTicker'
 
 interface ToolbarProps {
-  language: LanguageMeta
+  language: LanguageMeta & { wall?: PracticeWall }
   difficulty: Difficulty | 'all'
   seconds: number
   isTimerRunning: boolean
@@ -242,6 +243,10 @@ export default function Toolbar({
         </span>
       </div>
       </div>
+
+      {showLanguage && !isTyping ? (
+        <PracticePlusWall wall={language.wall} locale={locale ?? 'pt'} scope="language" />
+      ) : null}
     </div>
   )
 }

@@ -16,12 +16,14 @@ interface TrackBreadcrumbProps {
 
 export default function TrackBreadcrumb({ trackName, current, total, showProgress, locale, isTyping, showKeyboardToggle = false, keyboardEnabled = false, onKeyboardToggle }: TrackBreadcrumbProps) {
   return (
-    <div className={`px-3 sm:px-6 py-2 flex items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
-      <Link href="/tracks" className="flex items-center gap-1.5 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--sub)' }}>
-        <ArrowLeftIcon size={14} /> {t('pageTracks', locale)}
-      </Link>
-      <span style={{ color: 'var(--sub)', opacity: 0.4 }}>/</span>
-      <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>{trackName}</span>
+    <div className="px-3 sm:px-6 py-2 flex items-center gap-2 transition-all duration-300">
+      <div className={`flex min-w-0 items-center gap-2 transition-all duration-300 ${isTyping ? 'opacity-0 pointer-events-none' : ''}`}>
+        <Link href="/tracks" className="flex items-center gap-1.5 text-sm hover:opacity-80 transition-opacity" style={{ color: 'var(--sub)' }}>
+          <ArrowLeftIcon size={14} /> {t('pageTracks', locale)}
+        </Link>
+        <span style={{ color: 'var(--sub)', opacity: 0.4 }}>/</span>
+        <span className="truncate text-sm font-medium" style={{ color: 'var(--text)' }}>{trackName}</span>
+      </div>
       {showKeyboardToggle && onKeyboardToggle ? (
         <button
           type="button"
@@ -40,7 +42,7 @@ export default function TrackBreadcrumb({ trackName, current, total, showProgres
         </button>
       ) : null}
       {showProgress && (
-        <span className="text-xs" style={{ color: 'var(--sub)' }}>{current}/{total}</span>
+        <span className={`text-xs transition-all duration-300 ${isTyping ? 'opacity-0' : ''}`} style={{ color: 'var(--sub)' }}>{current}/{total}</span>
       )}
     </div>
   )
