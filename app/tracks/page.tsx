@@ -210,6 +210,7 @@ export default function TracksPage() {
           seconds={0} isTimerRunning={false}
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
+          showLanguage={false}
           onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
           level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
