@@ -28,8 +28,12 @@ const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
 const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
 
-function isPlusGatedTrack(track: Track): boolean {
-  return !track.textLanguages && track.accessPolicy !== 'free'
+type TrackAccessSummary = {
+  plusEligible: boolean
+  hasPremiumNow: boolean
+  freeCount: number
+  totalCount: number
+  premiumCount: number
 }
 
 export default function TracksPage() {
@@ -39,6 +43,7 @@ export default function TracksPage() {
   const [showHelp, setShowHelp] = useState(false)
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
   const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
+  const [trackAccessMap, setTrackAccessMap] = useState<Map<string, TrackAccessSummary>>(new Map())
   const { user } = useAuth()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -62,12 +67,17 @@ export default function TracksPage() {
     void (async () => {
       try {
         const response = await fetch('/api/tracks/catalog', { cache: 'no-store' })
-        const payload = (await response.json()) as { trackLanguageBadges?: Record<string, LanguageMeta[]> }
+        const payload = (await response.json()) as {
+          trackLanguageBadges?: Record<string, LanguageMeta[]>
+          trackAccessSummary?: Record<string, TrackAccessSummary>
+        }
         if (!active || !response.ok) return
         setTrackLangsMap(new Map(Object.entries(payload.trackLanguageBadges ?? {})))
+        setTrackAccessMap(new Map(Object.entries(payload.trackAccessSummary ?? {})))
       } catch {
         if (active) {
           setTrackLangsMap(new Map())
+          setTrackAccessMap(new Map())
         }
       }
     })()
@@ -132,7 +142,8 @@ export default function TracksPage() {
 
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     const progressSummary = getTrackProgressSummary(track)
-    const plusGated = isPlusGatedTrack(track)
+    const accessSummary = trackAccessMap.get(track.id)
+    const hasPremiumNow = accessSummary?.hasPremiumNow === true
 
     return (
       <button
@@ -154,9 +165,10 @@ export default function TracksPage() {
             >
               {t('completed', locale)}
             </span>
-          ) : plusGated ? (
+          ) : hasPremiumNow ? (
             <span
               className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+              title={accessSummary ? `${accessSummary.premiumCount} Plus` : undefined}
               style={{
                 backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
                 borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)',

@@ -4,6 +4,10 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireSuperAdmin } from '@/lib/server/access-control'
 import { getPremiumContentHealth } from '@/lib/server/premium-content'
 
+function isAdminConfigError(error: unknown) {
+  return error instanceof Error && error.message === 'Supabase admin credentials are not configured.'
+}
+
 export async function GET() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -46,6 +50,16 @@ export async function GET() {
     })
   } catch (statusError) {
     console.error('[admin-billing] status failed:', statusError instanceof Error ? statusError.message : statusError)
+    if (isAdminConfigError(statusError)) {
+      return NextResponse.json(
+        {
+          error: 'Admin backend is not configured.',
+          code: 'ADMIN_SERVICE_UNAVAILABLE',
+          premiumHealth: await getPremiumContentHealth(),
+        },
+        { status: 503 },
+      )
+    }
     return NextResponse.json({ error: 'Could not load billing status.' }, { status: 500 })
   }
 }
