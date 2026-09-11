@@ -3,6 +3,20 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireSuperAdmin } from '@/lib/server/access-control'
 
+function isAdminConfigError(error: unknown) {
+  return error instanceof Error && error.message === 'Supabase admin credentials are not configured.'
+}
+
+function adminBackendUnavailable() {
+  return NextResponse.json(
+    {
+      error: 'Admin backend is not configured.',
+      code: 'ADMIN_SERVICE_UNAVAILABLE',
+    },
+    { status: 503 },
+  )
+}
+
 async function getActor() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -49,6 +63,7 @@ export async function GET() {
     })
   } catch (error) {
     console.error('[admin-plus] list failed:', error instanceof Error ? error.message : error)
+    if (isAdminConfigError(error)) return adminBackendUnavailable()
     return NextResponse.json({ error: 'Could not load Plus entitlements.' }, { status: 500 })
   }
 }
@@ -136,6 +151,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, action, username: target.username })
   } catch (error) {
     console.error('[admin-plus] mutation failed:', error instanceof Error ? error.message : error)
+    if (isAdminConfigError(error)) return adminBackendUnavailable()
     return NextResponse.json({ error: 'Could not update Plus access.' }, { status: 500 })
   }
 }
