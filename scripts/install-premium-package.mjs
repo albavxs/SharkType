@@ -29,7 +29,17 @@ writeFileSync(
 try {
   execFileSync(
     process.platform === 'win32' ? 'npm.cmd' : 'npm',
-    ['install', '--no-save', '--package-lock=false', '--ignore-scripts', packageName],
+    [
+      'install',
+      '--no-save',
+      '--package-lock=false',
+      '--ignore-scripts',
+      // Vercel runs builds with NODE_ENV=production. Preserve build-time tooling
+      // such as @tailwindcss/postcss instead of letting this second npm install
+      // prune devDependencies before `next build` starts.
+      '--include=dev',
+      packageName,
+    ],
     {
       stdio: 'inherit',
       env: {
