@@ -1,7 +1,7 @@
 'use client'
 
 import { LanguageMeta, Difficulty, PracticeWall } from '@/lib/types'
-import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon, MailIcon } from '@/components/icons'
+import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon, MailIcon, ShieldIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
@@ -119,6 +119,11 @@ export default function Toolbar({
               <UserIcon size={18} />
             </Link>
           )}
+          {profile?.isSuperUser ? (
+            <Link href="/admin/plus" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
+              <ShieldIcon size={20} />
+            </Link>
+          ) : null}
           <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
             <HelpIcon size={22} />
           </button>
@@ -140,6 +145,11 @@ export default function Toolbar({
           <Link href="/community" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navCommunity', locale)}>
             <MailIcon size={18} />
           </Link>
+          {profile?.isSuperUser ? (
+            <Link href="/admin/plus" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
+              <ShieldIcon size={18} />
+            </Link>
+          ) : null}
           <button onClick={onHelpClick} className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
             <HelpIcon size={18} />
           </button>
