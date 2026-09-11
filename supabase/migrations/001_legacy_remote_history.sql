@@ -1,0 +1,3 @@
+-- Legacy Supabase migration version retained for history compatibility.
+-- The current schema is reconstructed by 202609080001_core_schema_baseline.sql.
+-- Intentionally no-op on fresh environments.
