@@ -10,11 +10,12 @@
   "scripts": {
     "check:pt-content": "node scripts/check-pt-content.mjs",
     "check:access-policies": "node scripts/check-access-policies.mjs",
+    "check:mastery-separation": "node scripts/check-mastery-separation.mjs",
     "dev": "next dev --webpack",
     "prebuild": "node scripts/install-premium-package.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "npm run check:pt-content && npm run check:access-policies && node scripts/run-eslint.mjs"
+    "lint": "npm run check:pt-content && npm run check:access-policies && npm run check:mastery-separation && node scripts/run-eslint.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
