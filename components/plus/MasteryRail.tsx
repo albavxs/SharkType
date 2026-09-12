@@ -12,10 +12,6 @@ type MasteryRailProps = {
   onOpenPlus: () => void
 }
 
-function romanLevel(level = 1): string {
-  return ['I', 'II', 'III', 'IV', 'V'][level - 1] ?? String(level)
-}
-
 export default function MasteryRail({ tracks, locale, isPlus, onOpenMastery, onOpenPlus }: MasteryRailProps) {
   if (tracks.length === 0) return null
 
@@ -62,16 +58,13 @@ function MasteryCard({
 
   return (
     <article
-      className="flex h-full min-h-[206px] w-full min-w-0 flex-col rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 sm:p-5"
+      className="flex h-full min-h-[190px] w-full min-w-0 flex-col rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 sm:p-5"
       style={{ backgroundColor: 'var(--sub-alt)' }}
     >
       <div className="mb-2 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="line-clamp-2 min-h-[3rem] text-base font-semibold" style={{ color: 'var(--text)' }}>
             {track.title[locale]} Mastery
-          </div>
-          <div className="mt-1 text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--main)' }}>
-            Mastery {romanLevel(track.masteryLevel)}
           </div>
         </div>
         <span
