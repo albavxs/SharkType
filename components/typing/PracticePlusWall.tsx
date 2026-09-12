@@ -21,7 +21,7 @@ const premiumTrackCount = tracks.filter(
 export default function PracticePlusWall({ wall, locale, scope, subjectName }: PracticePlusWallProps) {
   const pathname = usePathname()
 
-  if (!wall || wall.hasPlusAccess) return null
+  if (!wall) return null
 
   const trackId = scope === 'track' && pathname.startsWith('/tracks/')
     ? decodeURIComponent(pathname.split('/')[2] ?? '')
@@ -29,56 +29,116 @@ export default function PracticePlusWall({ wall, locale, scope, subjectName }: P
   const track = trackId ? getTrackById(trackId) : null
   const resolvedSubject = subjectName?.trim() || track?.name[locale] || null
 
+  if (wall.hasPlusAccess) return null
+
   if (scope === 'language') {
     if (premiumTrackCount <= 0) return null
 
-    const title = locale === 'pt' ? 'Mais conteúdo com SharkType Plus' : 'More content with SharkType Plus'
-    const description = locale === 'pt'
-      ? `Explore desafios avançados e recursos Plus em ${premiumTrackCount} trilhas elegíveis.`
-      : `Explore advanced challenges and Plus features across ${premiumTrackCount} eligible tracks.`
-    const action = locale === 'pt' ? 'Conhecer Plus' : 'Explore Plus'
+    const title = locale === 'pt'
+      ? 'Mais conteúdo com SharkType Plus'
+      : 'More content with SharkType Plus'
 
-    return <PlusWallLink title={title} description={description} action={action} />
+    const description = locale === 'pt'
+      ? `Desbloqueie ${premiumTrackCount} trilhas premium e tenha acesso às novas trilhas adicionadas ao SharkType.`
+      : `Unlock ${premiumTrackCount} premium tracks and get access to new tracks added to SharkType.`
+
+    const action = locale === 'pt' ? 'Conhecer Plus' : 'Explore Plus'
+    return (
+      <Link
+        href="/plus"
+        aria-label={`${title}. ${action}`}
+        className="group mx-auto mt-2 grid w-[calc(100%-1.5rem)] max-w-3xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 rounded-xl px-4 py-3 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:w-full sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
+          color: 'var(--text)',
+          border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
+        }}
+      >
+        <span
+          className="flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-lg"
+          style={{ color: 'var(--main)', backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)' }}
+          aria-hidden="true"
+        >
+          <LockIcon size={15} />
+        </span>
+        <span className="min-w-0 self-center">
+          <span className="block font-semibold leading-5">{title}</span>
+          <span className="block leading-5" style={{ color: 'var(--sub)' }}>{description}</span>
+        </span>
+        <span
+          className="col-start-2 shrink-0 self-center whitespace-nowrap font-semibold transition-transform duration-200 group-hover:translate-x-0.5 sm:col-start-auto"
+          style={{ color: 'var(--main)' }}
+        >
+          {action} →
+        </span>
+      </Link>
+    )
   }
 
   if (!wall.hasPlusContent) return null
 
   const quantity = `+ ${wall.premiumCount}`
+
   const title = locale === 'pt'
-    ? resolvedSubject
-      ? `${quantity} desafios avançados para ${resolvedSubject}`
-      : `${quantity} desafios avançados disponíveis`
-    : resolvedSubject
-      ? `${quantity} advanced ${resolvedSubject} challenges`
-      : `${quantity} advanced challenges available`
+    ? wall.premiumCount > 0
+      ? resolvedSubject
+        ? `${quantity} exercícios de ${resolvedSubject} disponíveis com SharkType Plus`
+        : `${quantity} exercícios disponíveis com SharkType Plus`
+      : resolvedSubject
+        ? `Mais conteúdo para ${resolvedSubject} com SharkType Plus`
+        : 'Mais conteúdo disponível com SharkType Plus'
+    : wall.premiumCount > 0
+      ? resolvedSubject
+        ? `${quantity} ${resolvedSubject} exercises available with SharkType Plus`
+        : `${quantity} exercises available with SharkType Plus`
+      : resolvedSubject
+        ? `More ${resolvedSubject} content with SharkType Plus`
+        : 'More content available with SharkType Plus'
+
   const description = locale === 'pt'
-    ? 'Continue no Mastery com SharkType Plus.'
-    : 'Continue in Mastery with SharkType Plus.'
+    ? wall.premiumCount > 0
+      ? resolvedSubject
+        ? `Continue a trilha ${resolvedSubject} com o conteúdo completo.`
+        : 'Desbloqueie o restante desta trilha e continue evoluindo.'
+      : resolvedSubject
+        ? `O Plus acompanha a evolução da trilha ${resolvedSubject} e libera o conteúdo premium adicionado a ela.`
+        : 'O Plus libera o conteúdo premium adicionado a esta trilha.'
+    : wall.premiumCount > 0
+      ? resolvedSubject
+        ? `Continue the ${resolvedSubject} track with the complete content.`
+        : 'Unlock the rest of this track and keep progressing.'
+      : resolvedSubject
+        ? `Plus grows with the ${resolvedSubject} track and unlocks premium content added to it.`
+        : 'Plus unlocks premium content added to this track.'
+
   const action = locale === 'pt' ? 'Conhecer Plus' : 'Explore Plus'
 
-  return <PlusWallLink title={title} description={description} action={action} />
-}
-
-function PlusWallLink({ title, description, action }: { title: string; description: string; action: string }) {
   return (
     <Link
       href="/plus"
       aria-label={`${title}. ${action}`}
-      className="group mx-auto mt-2 grid w-[calc(100%-1.5rem)] max-w-3xl cursor-pointer grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 rounded-xl px-4 py-3 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:w-full sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+      className="group mx-auto mt-2 grid w-[calc(100%-1.5rem)] max-w-3xl grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-2 rounded-xl px-4 py-3 text-xs transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:w-full sm:grid-cols-[auto_minmax(0,1fr)_auto]"
       style={{
         backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
         color: 'var(--text)',
         border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
       }}
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-lg" style={{ color: 'var(--main)', backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)' }} aria-hidden="true">
+      <span
+        className="flex h-8 w-8 shrink-0 items-center justify-center self-center rounded-lg"
+        style={{ color: 'var(--main)', backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)' }}
+        aria-hidden="true"
+      >
         <LockIcon size={15} />
       </span>
       <span className="min-w-0 self-center">
         <span className="block font-semibold leading-5">{title}</span>
         <span className="block leading-5" style={{ color: 'var(--sub)' }}>{description}</span>
       </span>
-      <span className="col-start-2 shrink-0 self-center whitespace-nowrap font-semibold transition-transform duration-200 group-hover:translate-x-0.5 sm:col-start-auto" style={{ color: 'var(--main)' }}>
+      <span
+        className="col-start-2 shrink-0 self-center whitespace-nowrap font-semibold transition-transform duration-200 group-hover:translate-x-0.5 sm:col-start-auto"
+        style={{ color: 'var(--main)' }}
+      >
         {action} →
       </span>
     </Link>
