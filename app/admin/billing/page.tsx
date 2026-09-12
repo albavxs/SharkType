@@ -86,12 +86,12 @@ export default function BillingAdminPage() {
     <main className="min-h-screen px-4 py-8 sm:px-6" style={{ color: 'var(--text)' }}>
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button onClick={() => router.push('/admin/plus')} className="text-sm" style={{ color: 'var(--sub)' }}>{t('back', locale)}</button>
+          <button onClick={() => router.push('/admin/plus')} className="text-sm cursor-pointer" style={{ color: 'var(--sub)' }}>{t('back', locale)}</button>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => router.push('/admin/premium')} className="rounded-lg px-3 py-2 text-xs font-semibold" style={{ border: '1px solid var(--sub)' }}>
+            <button onClick={() => router.push('/admin/premium')} className="rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer" style={{ border: '1px solid var(--sub)' }}>
               {locale === 'pt' ? 'Diagnóstico Premium' : 'Premium diagnostics'}
             </button>
-            <button onClick={() => void loadStatus()} className="rounded-lg px-3 py-2 text-xs font-semibold" style={{ border: '1px solid var(--sub)' }}>
+            <button onClick={() => void loadStatus()} className="rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer" style={{ border: '1px solid var(--sub)' }}>
               {locale === 'pt' ? 'Atualizar status' : 'Refresh status'}
             </button>
           </div>
@@ -120,7 +120,7 @@ export default function BillingAdminPage() {
                 <button
                   onClick={() => void startSandboxCheckout()}
                   disabled={pending || !status.config.sandbox || !status.config.apiConfigured}
-                  className="mt-4 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-45"
+                  className="mt-4 rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-45"
                   style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
                 >
                   {pending ? t('authWorking', locale) : locale === 'pt' ? 'Testar checkout Asaas — R$ 1,00' : 'Test Asaas checkout — R$1.00'}

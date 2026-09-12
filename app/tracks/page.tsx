@@ -12,12 +12,13 @@ import { t } from '@/lib/i18n'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import Toolbar from '@/components/typing/Toolbar'
 import Footer from '@/components/typing/Footer'
-import MasteryRail from '@/components/plus/MasteryRail'
+import CategorySection from '@/components/tracks/CategorySection'
 import { DEFAULT_LANGUAGE } from '@/lib/constants'
 import { LanguageMeta, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
 import { LockIcon } from '@/components/icons'
+import { isMasteryEligible, toMasteryTrack, type TrackAccessSummary, type TrackCategory } from '@/lib/mastery'
 
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
@@ -29,17 +30,43 @@ const cyberdevopsTracks = tracks.filter(t => t.section === 'cyberdevops')
 const codeTracks = [...conceptTracks, ...focusedTracks, ...cyberdevopsTracks]
 const idiomTracks = tracks.filter(t => t.textLanguages)
 
-type TrackAccessSummary = {
-  plusEligible: boolean
-  hasPremiumNow: boolean
-  freeCount: number
-  totalCount: number
-  premiumCount: number
-}
-
 type UserAccessPayload = {
   access?: {
     isPlus?: boolean
+  }
+}
+
+function buildCategory(input: {
+  id: string
+  title: TrackCategory['title']
+  description: TrackCategory['description']
+  tracks: Track[]
+  accessMap: Map<string, TrackAccessSummary>
+  isPlus: boolean
+}): TrackCategory {
+  const masteryTracks = input.tracks
+    .filter((track) => isMasteryEligible(track, input.accessMap.get(track.id)))
+    .map((track, index) => toMasteryTrack({
+      track,
+      categoryId: input.id,
+      accessSummary: input.accessMap.get(track.id),
+      isPlus: input.isPlus,
+      level: (index % 4) + 1,
+    }))
+
+  return {
+    id: input.id,
+    title: input.title,
+    description: input.description,
+    tracks: input.tracks,
+    mastery: masteryTracks.length > 0
+      ? {
+          eligible: true,
+          tracks: masteryTracks,
+          totalChallenges: masteryTracks.reduce((sum, track) => sum + track.challengeCount, 0),
+          totalStars: masteryTracks.reduce((sum, track) => sum + (track.totalStars ?? 0), 0),
+        }
+      : undefined,
   }
 }
 
@@ -52,6 +79,7 @@ export default function TracksPage() {
   const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
   const [trackAccessMap, setTrackAccessMap] = useState<Map<string, TrackAccessSummary>>(new Map())
   const [isPlus, setIsPlus] = useState(false)
+  const [activeMasterySection, setActiveMasterySection] = useState<string | null>(null)
   const { user } = useAuth()
   const { locale, toggleLocale } = useLocale()
   const isMobile = useIsMobile()
@@ -97,7 +125,7 @@ export default function TracksPage() {
 
   useEffect(() => {
     if (!user) {
-      setIsPlus(false)
+      queueMicrotask(() => setIsPlus(false))
       return
     }
 
@@ -171,12 +199,51 @@ export default function TracksPage() {
 
   const codeStats = getSectionStats(codeTracks)
 
+  const trackCategories = useMemo(() => [
+    buildCategory({
+      id: 'idioms',
+      title: { pt: t('sectionIdioms', 'pt'), en: t('sectionIdioms', 'en') },
+      description: { pt: t('idiomsDesc', 'pt'), en: t('idiomsDesc', 'en') },
+      tracks: idiomTracks,
+      accessMap: trackAccessMap,
+      isPlus,
+    }),
+    buildCategory({
+      id: 'concepts',
+      title: { pt: t('codeSection', 'pt'), en: t('codeSection', 'en') },
+      description: { pt: t('codeTracksDesc', 'pt'), en: t('codeTracksDesc', 'en') },
+      tracks: conceptTracks,
+      accessMap: trackAccessMap,
+      isPlus,
+    }),
+    buildCategory({
+      id: 'focused',
+      title: { pt: t('focusedSection', 'pt'), en: t('focusedSection', 'en') },
+      description: { pt: t('focusedTracksDesc', 'pt'), en: t('focusedTracksDesc', 'en') },
+      tracks: focusedTracks,
+      accessMap: trackAccessMap,
+      isPlus,
+    }),
+    buildCategory({
+      id: 'cyberdevops',
+      title: { pt: t('cyberdevopsSection', 'pt'), en: t('cyberdevopsSection', 'en') },
+      description: { pt: t('cyberdevopsTracksDesc', 'pt'), en: t('cyberdevopsTracksDesc', 'en') },
+      tracks: cyberdevopsTracks,
+      accessMap: trackAccessMap,
+      isPlus,
+    }),
+  ], [trackAccessMap, isPlus])
+
   function openTrack(trackId: string) {
     if (!user) {
       setShowGuestOverlay(true)
       return
     }
     router.push(`/tracks/${trackId}`)
+  }
+
+  function handleMasteryToggle(categoryId: string) {
+    setActiveMasterySection((current) => current === categoryId ? null : categoryId)
   }
 
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
@@ -270,74 +337,26 @@ export default function TracksPage() {
               {t('tracksSubtitle', locale)}
             </p>
 
-            <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('sectionIdioms', locale)}</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('idiomsDesc', locale)}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                {idiomTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('codeSection', locale)}</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('codeTracksDesc', locale)}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                {conceptTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
-                ))}
-              </div>
-              <MasteryRail
-                tracks={conceptTracks}
-                accessMap={trackAccessMap}
+            {trackCategories.map((category) => (
+              <CategorySection
+                key={category.id}
+                category={category}
                 locale={locale}
                 isPlus={isPlus}
-                onOpenTrack={openTrack}
-                onOpenPlus={() => router.push('/plus')}
-              />
-            </div>
-
-            <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('focusedSection', locale)}</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('focusedTracksDesc', locale)}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                {focusedTracks.map(track => (
+                isMasteryOpen={activeMasterySection === category.id}
+                onMasteryToggle={() => handleMasteryToggle(category.id)}
+                renderTrackCard={(track) => (
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
-                ))}
-              </div>
-              <MasteryRail
-                tracks={focusedTracks}
-                accessMap={trackAccessMap}
-                locale={locale}
-                isPlus={isPlus}
+                )}
                 onOpenTrack={openTrack}
                 onOpenPlus={() => router.push('/plus')}
+                footer={category.id === 'cyberdevops' && codeStats.total > 0 ? (
+                  <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
+                    {codeStats.completed}/{codeStats.total} {t('completed', locale)} · {codeStats.pct}%
+                  </div>
+                ) : null}
               />
-            </div>
-
-            <div className="mb-10">
-              <h2 className="text-lg font-bold font-[family-name:var(--font-geist-mono)] mb-0.5" style={{ color: 'var(--text)' }}>{t('cyberdevopsSection', locale)}</h2>
-              <p className="text-xs mb-4" style={{ color: 'var(--sub)' }}>{t('cyberdevopsTracksDesc', locale)}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                {cyberdevopsTracks.map(track => (
-                  <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
-                ))}
-              </div>
-              <MasteryRail
-                tracks={cyberdevopsTracks}
-                accessMap={trackAccessMap}
-                locale={locale}
-                isPlus={isPlus}
-                onOpenTrack={openTrack}
-                onOpenPlus={() => router.push('/plus')}
-              />
-              {codeStats.total > 0 && (
-                <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
-                  {codeStats.completed}/{codeStats.total} {t('completed', locale)} · {codeStats.pct}%
-                </div>
-              )}
-            </div>
+            ))}
           </div>
         </div>
 
