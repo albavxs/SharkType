@@ -31,12 +31,16 @@ const planOrder: PlanKey[] = ['monthly', 'quarterly', 'semiannual', 'annual']
 export default function PlusPage() {
   const router = useRouter()
   const { user, profile } = useAuth()
-  const { isPlus } = useUserAccess()
+  const { isPlus, isLoading: accessLoading } = useUserAccess()
   const { locale } = useLocale()
   const [error, setError] = useState<string | null>(null)
   const [pendingPlan, setPendingPlan] = useState<PlanKey | 'sandbox' | null>(null)
   const [offer, setOffer] = useState<OfferPayload | null>(null)
   const [selectedPlan, setSelectedPlan] = useState<PlanKey>('monthly')
+
+  useEffect(() => {
+    if (!accessLoading && isPlus) router.replace('/settings/billing')
+  }, [accessLoading, isPlus, router])
 
   useEffect(() => {
     let active = true
@@ -136,6 +140,17 @@ export default function PlusPage() {
     ? ['Desafios Mastery avançados', 'Progressão por estrelas', 'Camada Mastery nas trilhas elegíveis', 'Catálogo avançado em expansão']
     : ['Advanced Mastery challenges', 'Star-based progression', 'Mastery layer on eligible tracks', 'An expanding advanced catalog']
 
+  if (user && (accessLoading || isPlus)) {
+    return (
+      <main className="relative min-h-screen" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
+        <SceneWrapper />
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 text-sm" style={{ color: 'var(--sub)' }}>
+          {locale === 'pt' ? 'Abrindo seu plano Plus...' : 'Opening your Plus plan...'}
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="relative min-h-screen" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
       <SceneWrapper />
@@ -217,30 +232,21 @@ export default function PlusPage() {
             })}
           </div>
 
-          {isPlus ? (
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm font-medium" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
-              <span>{locale === 'pt' ? 'Seu SharkType Plus está ativo.' : 'Your SharkType Plus is active.'}</span>
-              <button type="button" onClick={() => router.push('/settings/billing')} className="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2" style={{ border: '1px solid color-mix(in srgb, var(--main) 35%, transparent)' }}>
-                {locale === 'pt' ? 'Gerenciar assinatura' : 'Manage subscription'}
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => void openCommercialCheckout(selectedPlan)}
-              disabled={Boolean(pendingPlan) || !offer?.checkoutEnabled || !currentPlan?.configured}
-              className="mt-6 w-full rounded-xl px-5 py-3.5 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
-              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-            >
-              {pendingPlan === selectedPlan
-                ? t('authWorking', locale)
-                : !offer?.checkoutEnabled
-                  ? locale === 'pt' ? 'Assinaturas em breve' : 'Subscriptions coming soon'
-                  : !currentPlan?.configured
-                    ? locale === 'pt' ? 'Preço em definição' : 'Price coming soon'
-                    : locale === 'pt' ? `Assinar plano ${planLabel(selectedPlan).toLowerCase()}` : `Subscribe ${planLabel(selectedPlan).toLowerCase()}`}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => void openCommercialCheckout(selectedPlan)}
+            disabled={Boolean(pendingPlan) || !offer?.checkoutEnabled || !currentPlan?.configured}
+            className="mt-6 w-full rounded-xl px-5 py-3.5 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
+            style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+          >
+            {pendingPlan === selectedPlan
+              ? t('authWorking', locale)
+              : !offer?.checkoutEnabled
+                ? locale === 'pt' ? 'Assinaturas em breve' : 'Subscriptions coming soon'
+                : !currentPlan?.configured
+                  ? locale === 'pt' ? 'Preço em definição' : 'Price coming soon'
+                  : locale === 'pt' ? `Assinar plano ${planLabel(selectedPlan).toLowerCase()}` : `Subscribe ${planLabel(selectedPlan).toLowerCase()}`}
+          </button>
 
           {error ? <p className="mt-4 text-sm" style={{ color: 'var(--error)' }}>{error}</p> : null}
         </section>

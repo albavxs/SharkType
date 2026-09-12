@@ -1,9 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
 import type { Locale } from '@/lib/i18n'
 import type { MasteryTrack } from '@/lib/mastery'
-import { ArrowLeftIcon, ArrowRightIcon, LockIcon } from '@/components/icons'
+import { LockIcon } from '@/components/icons'
 
 type MasteryRailProps = {
   tracks: MasteryTrack[]
@@ -18,59 +17,20 @@ function romanLevel(level = 1): string {
 }
 
 export default function MasteryRail({ tracks, locale, isPlus, onOpenMastery, onOpenPlus }: MasteryRailProps) {
-  const viewportRef = useRef<HTMLDivElement>(null)
-
   if (tracks.length === 0) return null
 
-  function scroll(direction: -1 | 1) {
-    const viewport = viewportRef.current
-    if (!viewport) return
-    viewport.scrollBy({
-      left: direction * Math.max(260, viewport.clientWidth * 0.8),
-      behavior: 'smooth',
-    })
-  }
-
   return (
-    <div className="relative">
-      {tracks.length > 1 ? (
-        <div className="mb-3 hidden justify-end gap-2 sm:flex">
-          <button
-            type="button"
-            onClick={() => scroll(-1)}
-            className="cursor-pointer rounded-lg p-2 transition-all hover:brightness-125 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--main)', border: '1px solid color-mix(in srgb, var(--main) 24%, transparent)', outlineColor: 'var(--main)' }}
-            aria-label={locale === 'pt' ? 'Mastery anterior' : 'Previous Mastery'}
-          >
-            <ArrowLeftIcon size={16} />
-          </button>
-          <button
-            type="button"
-            onClick={() => scroll(1)}
-            className="cursor-pointer rounded-lg p-2 transition-all hover:brightness-125 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ color: 'var(--main)', border: '1px solid color-mix(in srgb, var(--main) 24%, transparent)', outlineColor: 'var(--main)' }}
-            aria-label={locale === 'pt' ? 'Próximo Mastery' : 'Next Mastery'}
-          >
-            <ArrowRightIcon size={16} />
-          </button>
-        </div>
-      ) : null}
-
-      <div
-        ref={viewportRef}
-        className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 sm:gap-4"
-      >
-        {tracks.map((track) => (
-          <MasteryCard
-            key={track.id}
-            track={track}
-            locale={locale}
-            isPlus={isPlus}
-            onOpenMastery={onOpenMastery}
-            onOpenPlus={onOpenPlus}
-          />
-        ))}
-      </div>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3">
+      {tracks.map((track) => (
+        <MasteryCard
+          key={track.id}
+          track={track}
+          locale={locale}
+          isPlus={isPlus}
+          onOpenMastery={onOpenMastery}
+          onOpenPlus={onOpenPlus}
+        />
+      ))}
     </div>
   )
 }
@@ -102,7 +62,7 @@ function MasteryCard({
 
   return (
     <article
-      className="flex min-h-[250px] w-[82vw] max-w-[320px] min-w-[260px] shrink-0 snap-start flex-col rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 sm:w-[300px] sm:p-5"
+      className="flex h-full min-h-[206px] w-full min-w-0 flex-col rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 sm:p-5"
       style={{ backgroundColor: 'var(--sub-alt)' }}
     >
       <div className="mb-2 flex items-start justify-between gap-3">
