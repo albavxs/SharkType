@@ -3,12 +3,11 @@ import type { I18nString } from '@/lib/types'
 
 export type MasteryAvailability = 'locked' | 'available' | 'comingSoon' | 'inProgress'
 
-export type TrackAccessSummary = {
-  plusEligible: boolean
-  hasPremiumNow: boolean
-  freeCount: number
-  totalCount: number
-  premiumCount: number
+export type TrackMasterySummary = {
+  eligible: boolean
+  available: boolean
+  challengeCount: number
+  totalStars: number
 }
 
 export interface MasteryTrack {
@@ -38,44 +37,21 @@ export interface TrackCategory {
   }
 }
 
-const ALWAYS_MASTERY_CONCEPTS = new Set([
-  'conditionals',
-  'variables',
-  'functions',
-  'objects',
-  'loops',
-  'types',
-  'errors',
-  'classes',
-  'advanced',
-])
-
-function localTrackCount(track: Track): number {
-  if (track.slots?.length) return track.slots.length
-  return track.snippetIds.length
-}
-
-export function isMasteryEligible(track: Track, accessSummary?: TrackAccessSummary): boolean {
-  if (track.textLanguages) return false
-  if (track.section === 'concept') return ALWAYS_MASTERY_CONCEPTS.has(track.id)
-  if (track.section === 'focused' || track.section === 'cyberdevops') {
-    return (accessSummary?.totalCount ?? 0) > 4
-  }
-
-  return false
+export function isMasteryEligible(summary?: TrackMasterySummary): boolean {
+  return summary?.eligible === true
 }
 
 export function toMasteryTrack(input: {
   track: Track
   categoryId: string
-  accessSummary?: TrackAccessSummary
+  masterySummary?: TrackMasterySummary
   isPlus: boolean
   level: number
 }): MasteryTrack {
-  const { track, categoryId, accessSummary, isPlus, level } = input
-  const challengeCount = Math.max(accessSummary?.premiumCount ?? 0, track.section === 'concept' ? localTrackCount(track) : 0)
-  const hasPremiumNow = accessSummary?.hasPremiumNow === true || (track.section === 'concept' && challengeCount > 0)
-  const availability: MasteryAvailability = hasPremiumNow
+  const { track, categoryId, masterySummary, isPlus, level } = input
+  const challengeCount = masterySummary?.challengeCount ?? 0
+  const hasMasteryNow = masterySummary?.available === true && challengeCount > 0
+  const availability: MasteryAvailability = hasMasteryNow
     ? isPlus
       ? 'available'
       : 'locked'
@@ -89,7 +65,7 @@ export function toMasteryTrack(input: {
     categoryId,
     masteryLevel: level,
     challengeCount,
-    totalStars: challengeCount > 0 ? challengeCount * 3 : undefined,
+    totalStars: masterySummary?.totalStars ?? 0,
     earnedStars: 0,
     availability,
   }

@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import type { Locale } from '@/lib/i18n'
 import type { Track } from '@/data/tracks'
 import type { TrackCategory } from '@/lib/mastery'
 import MasteryRail from '@/components/plus/MasteryRail'
-import { ArrowLeftIcon, ArrowRightIcon } from '@/components/icons'
+import { ArrowRightIcon } from '@/components/icons'
 
 type CategorySectionProps = {
   category: TrackCategory
@@ -15,7 +14,7 @@ type CategorySectionProps = {
   isMasteryOpen: boolean
   onMasteryToggle: () => void
   renderTrackCard: (track: Track) => ReactNode
-  onOpenTrack: (trackId: string) => void
+  onOpenMastery: (trackId: string) => void
   onOpenPlus: () => void
   footer?: ReactNode
 }
@@ -27,21 +26,11 @@ export default function CategorySection({
   isMasteryOpen,
   onMasteryToggle,
   renderTrackCard,
-  onOpenTrack,
+  onOpenMastery,
   onOpenPlus,
   footer,
 }: CategorySectionProps) {
-  const viewportRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const viewport = viewportRef.current
-    if (!viewport) return
-
-    viewport.scrollTo({
-      left: isMasteryOpen ? viewport.clientWidth : 0,
-      behavior: 'smooth',
-    })
-  }, [isMasteryOpen])
+  const mastery = category.mastery
 
   return (
     <section className="mb-10">
@@ -53,32 +42,56 @@ export default function CategorySection({
         onToggle={onMasteryToggle}
       />
 
-      <div
-        ref={viewportRef}
-        id={`mastery-panel-${category.id}`}
-        className="overflow-hidden scroll-smooth"
-        aria-label={category.mastery?.eligible ? `${category.title[locale]} Mastery navigation` : undefined}
-      >
-        <div className="flex w-[200%]">
-          <div className="w-1/2 shrink-0 pr-0">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3">
-              {category.tracks.map((track) => renderTrackCard(track))}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3">
+        {category.tracks.map((track) => renderTrackCard(track))}
+      </div>
+
+      {isMasteryOpen && mastery?.eligible ? (
+        <div
+          id={`mastery-panel-${category.id}`}
+          className="mt-4 rounded-2xl border p-3 sm:p-4"
+          style={{
+            borderColor: 'color-mix(in srgb, var(--main) 26%, transparent)',
+            background: 'linear-gradient(135deg, color-mix(in srgb, var(--main) 7%, transparent), color-mix(in srgb, var(--sub-alt) 92%, transparent))',
+          }}
+        >
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--main)' }}>
+                ✦ Mastery
+              </div>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>
+                {isPlus
+                  ? locale === 'pt'
+                    ? 'Desafios avançados, estrelas e progressão separados da trilha base.'
+                    : 'Advanced challenges, stars, and progression separated from the base track.'
+                  : locale === 'pt'
+                    ? 'Veja os desafios Mastery disponíveis no Plus sem misturar conteúdo pago com a trilha base.'
+                    : 'Preview Mastery challenges in Plus without mixing paid content into the base track.'}
+              </p>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-3 text-[11px] font-medium" style={{ color: 'var(--sub)' }}>
+              {mastery.totalChallenges > 0 ? (
+                <>
+                  <span>{mastery.totalChallenges} {locale === 'pt' ? 'desafios' : 'challenges'}</span>
+                  <span>{mastery.totalStars ?? 0} {locale === 'pt' ? 'estrelas' : 'stars'}</span>
+                </>
+              ) : (
+                <span>{locale === 'pt' ? 'Conteúdo em preparação' : 'Content in preparation'}</span>
+              )}
             </div>
           </div>
 
-          <div className="w-1/2 shrink-0 pl-3 sm:pl-5" aria-hidden={!isMasteryOpen}>
-            {category.mastery?.eligible ? (
-              <MasteryRail
-                tracks={category.mastery.tracks}
-                locale={locale}
-                isPlus={isPlus}
-                onOpenTrack={onOpenTrack}
-                onOpenPlus={onOpenPlus}
-              />
-            ) : null}
-          </div>
+          <MasteryRail
+            tracks={mastery.tracks}
+            locale={locale}
+            isPlus={isPlus}
+            onOpenMastery={onOpenMastery}
+            onOpenPlus={onOpenPlus}
+          />
         </div>
-      </div>
+      ) : null}
 
       {footer}
     </section>
@@ -110,8 +123,8 @@ function CategoryHeader({
         {!isPlus && category.mastery?.eligible ? (
           <p className="mt-1 text-xs" style={{ color: 'var(--sub)' }}>
             {locale === 'pt'
-              ? 'Continue alem da trilha base com desafios Mastery no Plus.'
-              : 'Continue beyond the base track with Mastery challenges in Plus.'}
+              ? 'A trilha base continua gratuita; o Mastery fica separado no Plus.'
+              : 'The base track stays free; Mastery remains separate in Plus.'}
           </p>
         ) : null}
       </div>
@@ -145,16 +158,19 @@ function CategoryMasteryToggle({
   onClick: () => void
   locale: Locale
 }) {
-  const label = isPlus
-    ? locale === 'pt' ? 'Mastery' : 'Mastery'
-    : locale === 'pt' ? `${challengeCount} desafios extras` : `${challengeCount} extra challenges`
+  const closedLabel = isPlus
+    ? 'Mastery'
+    : challengeCount > 0
+      ? locale === 'pt' ? `${challengeCount} desafios Mastery` : `${challengeCount} Mastery challenges`
+      : locale === 'pt' ? 'Mastery Plus' : 'Mastery Plus'
 
   return (
     <button
       type="button"
       aria-controls={`mastery-panel-${categoryId}`}
+      aria-expanded={isOpen}
       onClick={onClick}
-      className="inline-flex max-w-full shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-150 hover:scale-[1.02] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+      className="inline-flex max-w-full shrink-0 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] transition-all duration-150 hover:scale-[1.02] active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
       style={{
         backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)',
         borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)',
@@ -162,18 +178,13 @@ function CategoryMasteryToggle({
         outlineColor: 'var(--main)',
       }}
     >
-      {isOpen ? (
-        <>
-          <ArrowLeftIcon size={15} className="shrink-0" />
-          <span className="truncate">{locale === 'pt' ? 'Trilhas base' : 'Base tracks'}</span>
-        </>
-      ) : (
-        <>
-          <span aria-hidden="true">✦</span>
-          <span className="truncate">{label}</span>
-          <ArrowRightIcon size={15} className="shrink-0" />
-        </>
-      )}
+      <span aria-hidden="true">✦</span>
+      <span className="truncate">
+        {isOpen
+          ? locale === 'pt' ? 'Fechar Mastery' : 'Close Mastery'
+          : closedLabel}
+      </span>
+      {isOpen ? <span aria-hidden="true">↑</span> : <ArrowRightIcon size={15} className="shrink-0" />}
     </button>
   )
 }

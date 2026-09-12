@@ -13,6 +13,18 @@ import type { UserAccess } from './access-control'
 
 const fullLanguageSnippetCache = new Map<string, Promise<Snippet[]>>()
 
+const ALWAYS_MASTERY_CONCEPTS = new Set([
+  'conditionals',
+  'variables',
+  'functions',
+  'objects',
+  'loops',
+  'types',
+  'errors',
+  'classes',
+  'advanced',
+])
+
 export interface TrackAccessSummary {
   plusEligible: boolean
   hasPremiumNow: boolean
@@ -113,6 +125,13 @@ function assertPremiumCoverage(input: {
   )
 }
 
+function isTrackMasteryEligible(track: Track, summary: TrackAccessSummary): boolean {
+  if (track.textLanguages) return false
+  if (track.section === 'concept') return ALWAYS_MASTERY_CONCEPTS.has(track.id)
+  if (track.section === 'focused' || track.section === 'cyberdevops') return summary.totalCount > 4
+  return false
+}
+
 export async function getTrackLanguages(track: Track): Promise<LanguageMeta[]> {
   const sourceLanguages = getTrackLanguageSource(track)
   const supportedIds = new Set(Object.keys(freeTrackSnippetRegistry[track.id] ?? {}))
@@ -172,9 +191,15 @@ export function listTrackMasterySummary(): Record<string, TrackMasterySummary> {
 
   return Object.fromEntries(
     tracks.map((track) => {
-      const summary = accessSummary[track.id]
-      const challengeCount = summary?.premiumCount ?? 0
-      const eligible = !track.textLanguages && summary?.plusEligible === true
+      const summary = accessSummary[track.id] ?? {
+        plusEligible: false,
+        hasPremiumNow: false,
+        freeCount: 0,
+        totalCount: 0,
+        premiumCount: 0,
+      }
+      const eligible = isTrackMasteryEligible(track, summary)
+      const challengeCount = eligible ? summary.premiumCount : 0
 
       return [
         track.id,
