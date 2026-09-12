@@ -33,6 +33,9 @@ jobs:
       - name: Typecheck billing runtime
         run: npx tsc -p tsconfig.billing.json --pretty false
 
+      - name: Generate Next.js types
+        run: npx next typegen
+
       - name: Typecheck app
         run: npx tsc --noEmit --pretty false
 
