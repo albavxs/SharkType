@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getUserAccess } from '@/lib/server/access-control'
 
+type BillingSubscriptionRow = {
+  provider: string
+  status: string
+  cycle: string | null
+  amount: number | null
+  next_due_date: string | null
+  sandbox: boolean
+  updated_at: string
+}
+
 export async function GET() {
   const supabase = await createClient()
   const {
@@ -15,8 +25,12 @@ export async function GET() {
 
   try {
     const access = await getUserAccess(supabase, user)
+    // The migration already defines billing_subscriptions + RLS, but the checked-in
+    // generated Database type is stale. Keep the authenticated client (and therefore
+    // RLS) while isolating the temporary typing gap to this query only.
+    const billingClient = supabase as any
 
-    const [{ data: entitlement, error: entitlementError }, { data: subscription, error: subscriptionError }] = await Promise.all([
+    const [{ data: entitlement, error: entitlementError }, subscriptionResult] = await Promise.all([
       supabase
         .from('user_entitlements')
         .select('status, source, starts_at, expires_at, provider_subscription_id, updated_at')
@@ -25,7 +39,7 @@ export async function GET() {
         .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle(),
-      supabase
+      billingClient
         .from('billing_subscriptions')
         .select('provider, status, cycle, amount, next_due_date, sandbox, updated_at')
         .eq('user_id', user.id)
@@ -36,8 +50,9 @@ export async function GET() {
     ])
 
     if (entitlementError) throw entitlementError
-    if (subscriptionError) throw subscriptionError
+    if (subscriptionResult.error) throw subscriptionResult.error
 
+    const subscription = (subscriptionResult.data ?? null) as BillingSubscriptionRow | null
     const source = access.isSuperAdmin
       ? 'super_admin'
       : entitlement?.source === 'manual_grant'
