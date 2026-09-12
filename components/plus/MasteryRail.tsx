@@ -1,171 +1,124 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
-import type { Track } from '@/data/tracks'
 import type { Locale } from '@/lib/i18n'
-import { ArrowLeftIcon, ArrowRightIcon, ChevronDownIcon, LockIcon } from '@/components/icons'
-
-type TrackAccessSummary = {
-  plusEligible: boolean
-  hasPremiumNow: boolean
-  freeCount: number
-  totalCount: number
-  premiumCount: number
-}
+import type { MasteryTrack } from '@/lib/mastery'
+import { LockIcon } from '@/components/icons'
 
 type MasteryRailProps = {
-  tracks: Track[]
-  accessMap: Map<string, TrackAccessSummary>
+  tracks: MasteryTrack[]
   locale: Locale
   isPlus: boolean
   onOpenTrack: (trackId: string) => void
   onOpenPlus: () => void
 }
 
-function localTrackCount(track: Track): number {
-  if (track.slots?.length) return track.slots.length
-  return track.snippetIds.length
+function romanLevel(level = 1): string {
+  return ['I', 'II', 'III', 'IV', 'V'][level - 1] ?? String(level)
 }
 
-export default function MasteryRail({ tracks, accessMap, locale, isPlus, onOpenTrack, onOpenPlus }: MasteryRailProps) {
-  const [expanded, setExpanded] = useState(true)
-  const railRef = useRef<HTMLDivElement>(null)
-
-  const masteryTracks = useMemo(() => tracks.filter((track) => {
-    if (track.textLanguages) return false
-    if (track.section === 'concept') return true
-    const summary = accessMap.get(track.id)
-    const effectiveCount = Math.max(summary?.totalCount ?? 0, localTrackCount(track))
-    return effectiveCount > 4
-  }), [accessMap, tracks])
-
-  if (masteryTracks.length === 0) return null
-
-  function scroll(direction: -1 | 1) {
-    railRef.current?.scrollBy({ left: direction * 360, behavior: 'smooth' })
-  }
+export default function MasteryRail({ tracks, locale, isPlus, onOpenTrack, onOpenPlus }: MasteryRailProps) {
+  if (tracks.length === 0) return null
 
   return (
-    <section
-      className="mt-5 rounded-2xl border p-3 sm:p-4"
-      style={{
-        borderColor: 'color-mix(in srgb, var(--main) 24%, transparent)',
-        background: 'linear-gradient(135deg, color-mix(in srgb, var(--main) 7%, transparent), color-mix(in srgb, var(--sub-alt) 76%, transparent))',
-      }}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={() => setExpanded((current) => !current)}
-          className="flex min-w-0 items-center gap-2 rounded-lg text-left transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
-          aria-expanded={expanded}
-        >
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--main)' }}>
-                SharkType Plus Mastery
-              </span>
-              <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}>
-                Plus
-              </span>
-            </div>
-            <p className="mt-1 text-[11px] sm:text-xs" style={{ color: 'var(--sub)' }}>
-              {locale === 'pt' ? 'Desafios avançados, estrelas e progressão de domínio.' : 'Advanced challenges, stars, and mastery progression.'}
-            </p>
-          </div>
-          <ChevronDownIcon size={16} className={`shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-        </button>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:grid-cols-3">
+      {tracks.map((track) => (
+        <MasteryCard
+          key={track.id}
+          track={track}
+          locale={locale}
+          isPlus={isPlus}
+          onOpenTrack={onOpenTrack}
+          onOpenPlus={onOpenPlus}
+        />
+      ))}
+    </div>
+  )
+}
 
-        {expanded ? (
-          <div className="hidden shrink-0 items-center gap-2 sm:flex">
-            <button
-              type="button"
-              onClick={() => scroll(-1)}
-              className="rounded-lg p-2 transition-all duration-150 hover:scale-105 active:scale-90"
-              style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 68%, transparent)', color: 'var(--sub)' }}
-              aria-label={locale === 'pt' ? 'Voltar no carrossel Mastery' : 'Scroll Mastery carousel back'}
-            >
-              <ArrowLeftIcon size={16} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scroll(1)}
-              className="rounded-lg p-2 transition-all duration-150 hover:scale-105 active:scale-90"
-              style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 68%, transparent)', color: 'var(--sub)' }}
-              aria-label={locale === 'pt' ? 'Avançar no carrossel Mastery' : 'Scroll Mastery carousel forward'}
-            >
-              <ArrowRightIcon size={16} />
-            </button>
+function MasteryCard({
+  track,
+  locale,
+  isPlus,
+  onOpenTrack,
+  onOpenPlus,
+}: {
+  track: MasteryTrack
+  locale: Locale
+  isPlus: boolean
+  onOpenTrack: (trackId: string) => void
+  onOpenPlus: () => void
+}) {
+  const isAvailable = track.availability === 'available' || track.availability === 'inProgress'
+  const isComingSoon = track.availability === 'comingSoon'
+  const isLocked = track.availability === 'locked'
+  const showLock = !isPlus && isLocked
+  const actionLabel = isComingSoon
+    ? locale === 'pt' ? 'Em breve' : 'Coming soon'
+    : isAvailable
+      ? track.availability === 'inProgress'
+        ? locale === 'pt' ? 'Continuar Mastery' : 'Continue Mastery'
+        : locale === 'pt' ? 'Entrar no Mastery' : 'Enter Mastery'
+      : locale === 'pt' ? 'Desbloquear com Plus' : 'Unlock with Plus'
+
+  return (
+    <article
+      className="flex h-full min-h-[206px] w-full min-w-0 flex-col rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 sm:p-5"
+      style={{ backgroundColor: 'var(--sub-alt)' }}
+    >
+      <div className="mb-2 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-base font-semibold" style={{ color: 'var(--text)' }}>
+            {track.title[locale]} Mastery
           </div>
-        ) : null}
+          <div className="mt-1 text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--main)' }}>
+            Mastery {romanLevel(track.masteryLevel)}
+          </div>
+        </div>
+        <span
+          className="inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
+          style={{
+            backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
+            borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)',
+            color: 'var(--main)',
+          }}
+        >
+          {showLock ? <LockIcon size={11} /> : null}
+          Plus
+        </span>
       </div>
 
-      {expanded ? (
-        <div
-          ref={railRef}
-          className="mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [scrollbar-width:thin]"
-        >
-          {masteryTracks.map((track) => {
-            const summary = accessMap.get(track.id)
-            const hasPremiumNow = summary?.hasPremiumNow === true
-            const challengeCount = summary?.premiumCount ?? 0
-            const canEnter = isPlus && hasPremiumNow
+      <p className="mb-3 min-h-[3rem] text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>
+        {isComingSoon
+          ? locale === 'pt'
+            ? 'Novos desafios avancados estao sendo preparados.'
+            : 'New advanced challenges are being prepared.'
+          : track.description[locale]}
+      </p>
 
-            return (
-              <article
-                key={track.id}
-                className="min-w-[240px] max-w-[240px] snap-start rounded-xl border p-4 sm:min-w-[270px] sm:max-w-[270px]"
-                style={{
-                  backgroundColor: 'color-mix(in srgb, var(--bg) 76%, transparent)',
-                  borderColor: 'color-mix(in srgb, var(--main) 18%, transparent)',
-                }}
-              >
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-semibold" style={{ color: 'var(--text)' }}>{track.name[locale]} Mastery</div>
-                    <div className="mt-1 text-[10px] uppercase tracking-[0.16em]" style={{ color: 'var(--main)' }}>
-                      ☆☆☆ · Mastery I
-                    </div>
-                  </div>
-                  {!isPlus ? <LockIcon size={15} /> : null}
-                </div>
-
-                <p className="min-h-12 text-xs leading-relaxed" style={{ color: 'var(--sub)' }}>
-                  {hasPremiumNow
-                    ? locale === 'pt'
-                      ? `${challengeCount} desafios Plus disponíveis para avançar além da trilha base.`
-                      : `${challengeCount} Plus challenges available beyond the base track.`
-                    : locale === 'pt'
-                      ? 'A extensão Mastery desta trilha está sendo preparada.'
-                      : 'This track\'s Mastery extension is being prepared.'}
-                </p>
-
-                <div className="mt-4 flex items-center justify-between gap-3 text-[10px]" style={{ color: 'var(--sub)' }}>
-                  <span>{locale === 'pt' ? 'Estrelas' : 'Stars'} 0/18</span>
-                  <span>{hasPremiumNow ? (locale === 'pt' ? 'Disponível' : 'Available') : (locale === 'pt' ? 'Em breve' : 'Coming soon')}</span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => canEnter ? onOpenTrack(track.id) : onOpenPlus()}
-                  className="mt-4 w-full rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
-                  style={{
-                    backgroundColor: canEnter ? 'var(--main)' : 'color-mix(in srgb, var(--main) 14%, transparent)',
-                    color: canEnter ? 'var(--bg)' : 'var(--main)',
-                    border: canEnter ? 'none' : '1px solid color-mix(in srgb, var(--main) 24%, transparent)',
-                  }}
-                >
-                  {canEnter
-                    ? (locale === 'pt' ? 'Entrar no Mastery' : 'Enter Mastery')
-                    : isPlus
-                      ? (locale === 'pt' ? 'Ver benefícios Plus' : 'View Plus benefits')
-                      : (locale === 'pt' ? 'Desbloquear com Plus' : 'Unlock with Plus')}
-                </button>
-              </article>
-            )
-          })}
+      <div className="mt-auto">
+        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium" style={{ color: 'var(--sub)' }}>
+          <span>{track.challengeCount} {locale === 'pt' ? 'desafios' : 'challenges'}</span>
+          {track.totalStars ? <span>{track.totalStars} {locale === 'pt' ? 'estrelas' : 'stars'}</span> : null}
+          {isComingSoon ? <span>{locale === 'pt' ? 'Em breve' : 'Coming soon'}</span> : null}
         </div>
-      ) : null}
-    </section>
+        <button
+          type="button"
+          disabled={isComingSoon}
+          onClick={() => {
+            if (isAvailable) onOpenTrack(track.slug)
+            else onOpenPlus()
+          }}
+          className="w-full rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{
+            backgroundColor: isAvailable ? 'var(--main)' : 'color-mix(in srgb, var(--main) 14%, transparent)',
+            color: isAvailable ? 'var(--bg)' : 'var(--main)',
+            border: isAvailable ? 'none' : '1px solid color-mix(in srgb, var(--main) 24%, transparent)',
+            outlineColor: 'var(--main)',
+          }}
+        >
+          {actionLabel}
+        </button>
+      </div>
+    </article>
   )
 }
