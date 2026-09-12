@@ -232,21 +232,44 @@ export default function PlusPage() {
             })}
           </div>
 
-          <button
-            type="button"
-            onClick={() => void openCommercialCheckout(selectedPlan)}
-            disabled={Boolean(pendingPlan) || !offer?.checkoutEnabled || !currentPlan?.configured}
-            className="mt-6 w-full rounded-xl px-5 py-3.5 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto"
-            style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-          >
-            {pendingPlan === selectedPlan
-              ? t('authWorking', locale)
-              : !offer?.checkoutEnabled
-                ? locale === 'pt' ? 'Assinaturas em breve' : 'Subscriptions coming soon'
-                : !currentPlan?.configured
-                  ? locale === 'pt' ? 'Preço em definição' : 'Price coming soon'
-                  : locale === 'pt' ? `Assinar plano ${planLabel(selectedPlan).toLowerCase()}` : `Subscribe ${planLabel(selectedPlan).toLowerCase()}`}
-          </button>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => void openCommercialCheckout(selectedPlan)}
+              disabled={Boolean(pendingPlan) || !offer?.checkoutEnabled || !currentPlan?.configured}
+              className="w-full rounded-xl px-5 py-3.5 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
+              style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+            >
+              {pendingPlan === selectedPlan
+                ? t('authWorking', locale)
+                : !offer?.checkoutEnabled
+                  ? locale === 'pt' ? 'Cartão em breve' : 'Card coming soon'
+                  : !currentPlan?.configured
+                    ? locale === 'pt' ? 'Preço em definição' : 'Price coming soon'
+                    : locale === 'pt' ? `Assinar com cartão · ${planLabel(selectedPlan)}` : `Subscribe with card · ${planLabel(selectedPlan)}`}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (!user) router.push('/login')
+                else router.push(`/plus/pix-automatic?plan=${selectedPlan}`)
+              }}
+              disabled={!currentPlan?.configured}
+              className="w-full rounded-xl border px-5 py-3.5 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
+              style={{ borderColor: 'color-mix(in srgb, var(--main) 40%, transparent)', color: 'var(--main)', backgroundColor: 'color-mix(in srgb, var(--main) 8%, transparent)' }}
+            >
+              {currentPlan?.configured
+                ? locale === 'pt' ? `Pix Automático · ${planLabel(selectedPlan)}` : `Automatic Pix · ${planLabel(selectedPlan)}`
+                : locale === 'pt' ? 'Preço em definição' : 'Price coming soon'}
+            </button>
+          </div>
+
+          <p className="mt-3 text-xs leading-5" style={{ color: 'var(--sub)' }}>
+            {locale === 'pt'
+              ? 'No Pix Automático, você autoriza uma vez e o Asaas realiza as próximas cobranças recorrentes automaticamente.'
+              : 'With Automatic Pix, you authorize once and Asaas handles future recurring charges automatically.'}
+          </p>
 
           {error ? <p className="mt-4 text-sm" style={{ color: 'var(--error)' }}>{error}</p> : null}
         </section>
