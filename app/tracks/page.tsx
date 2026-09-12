@@ -18,7 +18,7 @@ import { LanguageMeta, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
 import { LockIcon } from '@/components/icons'
-import { isMasteryEligible, toMasteryTrack, type TrackAccessSummary, type TrackCategory } from '@/lib/mastery'
+import { isMasteryEligible, toMasteryTrack, type TrackMasterySummary, type TrackCategory } from '@/lib/mastery'
 
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
@@ -41,15 +41,15 @@ function buildCategory(input: {
   title: TrackCategory['title']
   description: TrackCategory['description']
   tracks: Track[]
-  accessMap: Map<string, TrackAccessSummary>
+  masteryMap: Map<string, TrackMasterySummary>
   isPlus: boolean
 }): TrackCategory {
   const masteryTracks = input.tracks
-    .filter((track) => isMasteryEligible(track, input.accessMap.get(track.id)))
+    .filter((track) => isMasteryEligible(input.masteryMap.get(track.id)))
     .map((track, index) => toMasteryTrack({
       track,
       categoryId: input.id,
-      accessSummary: input.accessMap.get(track.id),
+      masterySummary: input.masteryMap.get(track.id),
       isPlus: input.isPlus,
       level: (index % 4) + 1,
     }))
@@ -77,7 +77,7 @@ export default function TracksPage() {
   const [showHelp, setShowHelp] = useState(false)
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
   const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
-  const [trackAccessMap, setTrackAccessMap] = useState<Map<string, TrackAccessSummary>>(new Map())
+  const [trackMasteryMap, setTrackMasteryMap] = useState<Map<string, TrackMasterySummary>>(new Map())
   const [isPlus, setIsPlus] = useState(false)
   const [activeMasterySection, setActiveMasterySection] = useState<string | null>(null)
   const { user } = useAuth()
@@ -105,15 +105,15 @@ export default function TracksPage() {
         const response = await fetch('/api/tracks/catalog', { cache: 'no-store' })
         const payload = (await response.json()) as {
           trackLanguageBadges?: Record<string, LanguageMeta[]>
-          trackAccessSummary?: Record<string, TrackAccessSummary>
+          trackMasterySummary?: Record<string, TrackMasterySummary>
         }
         if (!active || !response.ok) return
         setTrackLangsMap(new Map(Object.entries(payload.trackLanguageBadges ?? {})))
-        setTrackAccessMap(new Map(Object.entries(payload.trackAccessSummary ?? {})))
+        setTrackMasteryMap(new Map(Object.entries(payload.trackMasterySummary ?? {})))
       } catch {
         if (active) {
           setTrackLangsMap(new Map())
-          setTrackAccessMap(new Map())
+          setTrackMasteryMap(new Map())
         }
       }
     })()
@@ -205,7 +205,7 @@ export default function TracksPage() {
       title: { pt: t('sectionIdioms', 'pt'), en: t('sectionIdioms', 'en') },
       description: { pt: t('idiomsDesc', 'pt'), en: t('idiomsDesc', 'en') },
       tracks: idiomTracks,
-      accessMap: trackAccessMap,
+      masteryMap: trackMasteryMap,
       isPlus,
     }),
     buildCategory({
@@ -213,7 +213,7 @@ export default function TracksPage() {
       title: { pt: t('codeSection', 'pt'), en: t('codeSection', 'en') },
       description: { pt: t('codeTracksDesc', 'pt'), en: t('codeTracksDesc', 'en') },
       tracks: conceptTracks,
-      accessMap: trackAccessMap,
+      masteryMap: trackMasteryMap,
       isPlus,
     }),
     buildCategory({
@@ -221,7 +221,7 @@ export default function TracksPage() {
       title: { pt: t('focusedSection', 'pt'), en: t('focusedSection', 'en') },
       description: { pt: t('focusedTracksDesc', 'pt'), en: t('focusedTracksDesc', 'en') },
       tracks: focusedTracks,
-      accessMap: trackAccessMap,
+      masteryMap: trackMasteryMap,
       isPlus,
     }),
     buildCategory({
@@ -229,10 +229,10 @@ export default function TracksPage() {
       title: { pt: t('cyberdevopsSection', 'pt'), en: t('cyberdevopsSection', 'en') },
       description: { pt: t('cyberdevopsTracksDesc', 'pt'), en: t('cyberdevopsTracksDesc', 'en') },
       tracks: cyberdevopsTracks,
-      accessMap: trackAccessMap,
+      masteryMap: trackMasteryMap,
       isPlus,
     }),
-  ], [trackAccessMap, isPlus])
+  ], [trackMasteryMap, isPlus])
 
   function openTrack(trackId: string) {
     if (!user) {
@@ -242,19 +242,25 @@ export default function TracksPage() {
     router.push(`/tracks/${trackId}`)
   }
 
+  function openMasteryTrack(trackId: string) {
+    if (!user) {
+      setShowGuestOverlay(true)
+      return
+    }
+    router.push(`/tracks/${trackId}/mastery`)
+  }
+
   function handleMasteryToggle(categoryId: string) {
     setActiveMasterySection((current) => current === categoryId ? null : categoryId)
   }
 
   function TrackCard({ track, badges }: { track: Track; badges: LanguageMeta[] }) {
     const progressSummary = getTrackProgressSummary(track)
-    const accessSummary = trackAccessMap.get(track.id)
-    const hasPremiumNow = accessSummary?.hasPremiumNow === true
 
     return (
       <button
         onClick={() => openTrack(track.id)}
-        className="block w-full min-w-0 rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 cursor-pointer sm:p-5"
+        className="block w-full min-w-0 cursor-pointer rounded-xl p-4 text-left transition-all duration-150 hover:brightness-110 hover:scale-[1.02] active:scale-95 sm:p-5"
         style={{ backgroundColor: 'var(--sub-alt)' }}>
         <div className="mb-2 flex items-start justify-between gap-3">
           <div className="text-base font-semibold" style={{ color: 'var(--text)' }}>{track.name[locale]}</div>
@@ -264,18 +270,6 @@ export default function TracksPage() {
               style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
             >
               {t('completed', locale)}
-            </span>
-          ) : hasPremiumNow ? (
-            <span
-              className="shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]"
-              title={accessSummary ? `${accessSummary.premiumCount} Plus` : undefined}
-              style={{
-                backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)',
-                borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)',
-                color: 'var(--main)',
-              }}
-            >
-              {t('trackAccessFreePlus', locale)}
             </span>
           ) : (
             <span
@@ -348,7 +342,7 @@ export default function TracksPage() {
                 renderTrackCard={(track) => (
                   <TrackCard key={track.id} track={track} badges={trackLangsMap.get(track.id) ?? []} />
                 )}
-                onOpenTrack={openTrack}
+                onOpenMastery={openMasteryTrack}
                 onOpenPlus={() => router.push('/plus')}
                 footer={category.id === 'cyberdevops' && codeStats.total > 0 ? (
                   <div className="mt-4 text-xs" style={{ color: 'var(--sub)' }}>
@@ -390,14 +384,14 @@ export default function TracksPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowGuestOverlay(false)}
-                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
+                className="flex-1 cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
                 style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
               >
                 {t('cancel', locale)}
               </button>
               <button
                 onClick={() => router.push('/login')}
-                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
+                className="flex-1 cursor-pointer rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-150 hover:scale-[1.02] active:scale-95"
                 style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
               >
                 {t('tracksGuestButton', locale)}
