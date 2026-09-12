@@ -52,4 +52,4 @@ jobs:
             echo "No changed source files to lint."
             exit 0
           fi
-          npx eslint "${files[@]}"
+          node scripts/run-eslint.mjs "${files[@]}"
