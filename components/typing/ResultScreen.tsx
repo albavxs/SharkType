@@ -6,6 +6,7 @@ import { calculateConsistency } from '@/lib/utils'
 import { calculateRankedBreakdown } from '@/lib/gamification'
 import { FlameIcon, ShareIcon, ArrowRightIcon, RefreshIcon, ChevronDownIcon } from '@/components/icons'
 import WPMGraph from '@/components/stats/WPMGraph'
+import TrackMasteryUpsell from '@/components/plus/TrackMasteryUpsell'
 import ShareCardModal from './ShareCardModal'
 import { Locale, t } from '@/lib/i18n'
 
@@ -191,7 +192,7 @@ export default function ResultScreen({
                 type="button"
                 aria-expanded={showBreakdown}
                 onClick={() => setShowBreakdown((current) => !current)}
-                className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium transition-opacity hover:opacity-90"
+                className="inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2"
                 style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 58%, transparent)', color: 'var(--sub)' }}
               >
                 <span>{showBreakdown ? t('rankBreakdownHide', locale) : t('rankBreakdownShow', locale)}</span>
@@ -267,10 +268,12 @@ export default function ResultScreen({
         <span style={{ color: 'var(--sub)' }}>{diff}</span>
       </div>
 
+      <TrackMasteryUpsell locale={locale} />
+
       <div className="flex items-center justify-center gap-4">
         <button
           onClick={() => setShowShareModal(true)}
-          className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+          className="cursor-pointer p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90 focus-visible:outline-none focus-visible:ring-2"
           style={{ color: 'var(--sub)' }}
           onMouseEnter={(event) => { event.currentTarget.style.color = 'var(--main)' }}
           onMouseLeave={(event) => { event.currentTarget.style.color = 'var(--sub)' }}
@@ -293,7 +296,7 @@ export default function ResultScreen({
         ) : null}
         <button
           onClick={onNext}
-          className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+          className="cursor-pointer p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90 focus-visible:outline-none focus-visible:ring-2"
           style={{ color: 'var(--sub)' }}
           onMouseEnter={(event) => { event.currentTarget.style.color = 'var(--main)' }}
           onMouseLeave={(event) => { event.currentTarget.style.color = 'var(--sub)' }}
@@ -303,7 +306,7 @@ export default function ResultScreen({
         </button>
         <button
           onClick={onRestart}
-          className="p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90"
+          className="cursor-pointer p-2.5 rounded-lg transition-all duration-150 hover:scale-110 active:scale-90 focus-visible:outline-none focus-visible:ring-2"
           style={{ color: 'var(--sub)' }}
           onMouseEnter={(event) => { event.currentTarget.style.color = 'var(--main)' }}
           onMouseLeave={(event) => { event.currentTarget.style.color = 'var(--sub)' }}
