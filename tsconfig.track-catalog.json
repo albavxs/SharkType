@@ -12,7 +12,8 @@
     "lib/server/premium-content.ts",
     "lib/server/track-store.ts",
     "app/api/tracks/catalog/route.ts",
-    "app/api/tracks/[track]/practice/route.ts"
+    "app/api/tracks/[track]/practice/route.ts",
+    "app/api/tracks/[track]/mastery/route.ts"
   ],
   "exclude": ["node_modules"]
 }

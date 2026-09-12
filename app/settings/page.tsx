@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getSoundPref, setSoundPref, setAllSoundPrefs, SoundProfile, SoundEvent, soundProfiles, previewSound } from '@/lib/sounds'
-import { ArrowLeftIcon, UserIcon } from '@/components/icons'
+import { ArrowLeftIcon } from '@/components/icons'
 import { useLocale } from '@/hooks/useLocale'
 import { t } from '@/lib/i18n'
 import Link from 'next/link'
@@ -31,7 +31,7 @@ function A11ySection({ locale }: { locale: 'pt' | 'en' }) {
           <button
             onClick={font.decrease}
             disabled={!font.canDecrease}
-            className="rounded-full px-3 py-1 text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="rounded-full px-3 py-1 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
             style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 60%, transparent)', color: 'var(--text)' }}
             title={t('fontSizeDecrease', locale)}
           >
@@ -43,7 +43,7 @@ function A11ySection({ locale }: { locale: 'pt' | 'en' }) {
           <button
             onClick={font.increase}
             disabled={!font.canIncrease}
-            className="rounded-full px-3 py-1 text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="rounded-full px-3 py-1 text-sm font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
             style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 60%, transparent)', color: 'var(--text)' }}
             title={t('fontSizeIncrease', locale)}
           >
@@ -52,7 +52,7 @@ function A11ySection({ locale }: { locale: 'pt' | 'en' }) {
         </div>
       </div>
 
-      <label className="flex items-start gap-3 cursor-pointer">
+      <label className="flex cursor-pointer items-start gap-3">
         <input
           type="checkbox"
           checked={lenient.enabled}
@@ -90,7 +90,7 @@ export default function SettingsPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const { locale } = useLocale()
   const { resetCurrentProgress } = useProgress()
-  const { profile, user } = useAuth()
+  const { user } = useAuth()
   const isMobile = useIsMobile()
 
   useEffect(() => {
@@ -125,36 +125,56 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-h-screen relative" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="relative flex min-h-screen flex-1 flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       {!isMobile && <SceneWrapper />}
 
-      <div className="relative z-10 flex-1 flex flex-col">
-        <div className="px-3 sm:px-6 py-4">
-          <Link href="/" className="inline-flex w-fit items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 pointer-events-auto cursor-pointer" style={{ color: 'var(--sub)' }}>
+      <div className="relative z-10 flex flex-1 flex-col">
+        <div className="px-3 py-4 sm:px-6">
+          <Link href="/" className="pointer-events-auto inline-flex w-fit cursor-pointer items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
             <ArrowLeftIcon size={14} />
             {t('back', locale)}
           </Link>
         </div>
 
-        <div className="flex-1 flex flex-col items-center px-3 sm:px-6 py-4 sm:py-8">
+        <div className="flex flex-1 flex-col items-center px-3 py-4 sm:px-6 sm:py-8">
           <div className="w-full max-w-lg space-y-6 sm:space-y-8">
-            <h1 className="text-xl sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)]" style={{ color: 'var(--text)' }}>
+            <h1 className="text-xl font-bold font-[family-name:var(--font-geist-mono)] sm:text-2xl" style={{ color: 'var(--text)' }}>
               {t('pageSettings', locale)}
             </h1>
 
-            {/* Accessibility Section */}
+            {user ? (
+              <Link
+                href="/settings/billing"
+                className="group flex cursor-pointer items-center justify-between gap-4 rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 sm:p-5"
+                style={{
+                  borderColor: 'color-mix(in srgb, var(--main) 24%, transparent)',
+                  background: 'linear-gradient(135deg, color-mix(in srgb, var(--main) 8%, transparent), transparent 50%), var(--sub-alt)',
+                }}
+              >
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--main)' }}>SharkType Plus</p>
+                  <h2 className="mt-1 text-sm font-semibold" style={{ color: 'var(--text)' }}>
+                    {locale === 'pt' ? 'Plano e assinatura' : 'Plan and subscription'}
+                  </h2>
+                  <p className="mt-1 text-xs leading-5" style={{ color: 'var(--sub)' }}>
+                    {locale === 'pt' ? 'Veja seu acesso Plus e os dados da sua assinatura.' : 'Review your Plus access and subscription details.'}
+                  </p>
+                </div>
+                <span className="shrink-0 text-lg transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--main)' }} aria-hidden="true">→</span>
+              </Link>
+            ) : null}
+
             <A11ySection locale={locale} />
 
-            {/* Quick set all */}
             <div className="py-3" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>
-              <span className="text-sm mb-3 block font-medium" style={{ color: 'var(--text)' }}>{t('soundAll', locale)}</span>
-              <p className="text-[10px] mb-3" style={{ color: 'var(--sub)' }}>{t('soundAllDesc', locale)}</p>
+              <span className="mb-3 block text-sm font-medium" style={{ color: 'var(--text)' }}>{t('soundAll', locale)}</span>
+              <p className="mb-3 text-[10px]" style={{ color: 'var(--sub)' }}>{t('soundAllDesc', locale)}</p>
               <div className="flex flex-wrap gap-2">
                 {soundProfiles.map(o => {
                   const allSame = prefs.key === o.key && prefs.space === o.key && prefs.error === o.key && prefs.complete === o.key
                   return (
                     <button key={o.key} onClick={() => handleSetAll(o.key)}
-                      className="px-3 py-1.5 text-xs rounded transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer"
+                      className="cursor-pointer rounded px-3 py-1.5 text-xs transition-all duration-150 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2"
                       style={{ border: `1px solid ${allSame ? 'var(--main)' : 'var(--sub)'}`, color: allSame ? 'var(--main)' : 'var(--sub)' }}>
                       {o.key === 'off' ? t('soundOff', locale) : o.label}
                     </button>
@@ -163,14 +183,13 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Per-event controls */}
             {soundEvents.map(ev => (
               <div key={ev.key} className="py-3" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>
-                <span className="text-sm mb-3 block" style={{ color: 'var(--text)' }}>{t('soundPrefix', locale)} — {t(ev.labelKey, locale)}</span>
+                <span className="mb-3 block text-sm" style={{ color: 'var(--text)' }}>{t('soundPrefix', locale)} — {t(ev.labelKey, locale)}</span>
                 <div className="flex flex-wrap gap-2">
                   {soundProfiles.map(o => (
                     <button key={o.key} onClick={() => handleChange(ev.key, o.key)}
-                      className="px-3 py-1.5 text-xs rounded transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer"
+                      className="cursor-pointer rounded px-3 py-1.5 text-xs transition-all duration-150 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2"
                       style={{ border: `1px solid ${prefs[ev.key] === o.key ? 'var(--main)' : 'var(--sub)'}`, color: prefs[ev.key] === o.key ? 'var(--main)' : 'var(--sub)' }}>
                       {o.key === 'off' ? t('soundOff', locale) : o.label}
                     </button>
@@ -179,27 +198,26 @@ export default function SettingsPage() {
               </div>
             ))}
 
-            {/* Reset */}
             <div className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid color-mix(in srgb, var(--sub) 30%, transparent)' }}>
               <span className="text-sm" style={{ color: 'var(--text)' }}>{t('resetProgress', locale)}</span>
               {showConfirm ? (
                 <div className="flex items-center gap-2">
-                  <button onClick={handleReset} className="px-3 py-1 text-xs rounded transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 20%, transparent)', color: 'var(--error)' }}>
+                  <button onClick={handleReset} className="cursor-pointer rounded px-3 py-1 text-xs transition-all duration-150 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 20%, transparent)', color: 'var(--error)' }}>
                     {t('confirm', locale)}
                   </button>
-                  <button onClick={() => setShowConfirm(false)} className="px-3 py-1 text-xs rounded transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer" style={{ border: '1px solid var(--sub)', color: 'var(--sub)' }}>
+                  <button onClick={() => setShowConfirm(false)} className="cursor-pointer rounded px-3 py-1 text-xs transition-all duration-150 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2" style={{ border: '1px solid var(--sub)', color: 'var(--sub)' }}>
                     {t('cancel', locale)}
                   </button>
                 </div>
               ) : (
-                <button onClick={() => setShowConfirm(true)} className="px-3 py-1 text-xs rounded transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer" style={{ border: '1px solid var(--sub)', color: 'var(--error)' }}>
+                <button onClick={() => setShowConfirm(true)} className="cursor-pointer rounded px-3 py-1 text-xs transition-all duration-150 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2" style={{ border: '1px solid var(--sub)', color: 'var(--error)' }}>
                   {t('resetBtn', locale)}
                 </button>
               )}
             </div>
 
             <div className="pt-4">
-              <Link href="/stats" className="text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--sub)' }}>
+              <Link href="/stats" className="cursor-pointer text-xs transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
                 {t('viewStats', locale)} →
               </Link>
             </div>
