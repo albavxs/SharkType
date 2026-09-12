@@ -50,6 +50,7 @@ export default function TrackMasteryPage() {
   }, [currentSnippet])
 
   const engine = useTypingEngine(displayCode, handleFinish, { lenient })
+  const resetEngine = engine.reset
 
   const loadMastery = useCallback(async (languageId?: string | null) => {
     setLoading(true)
@@ -71,13 +72,13 @@ export default function TrackMasteryPage() {
       setPayload(data)
       setSelectedLanguageId(data.selectedLanguage?.id ?? null)
       setCurrentIndex(0)
-      engine.reset()
+      resetEngine()
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Could not load Mastery.')
     } finally {
       setLoading(false)
     }
-  }, [engine, router, trackId])
+  }, [resetEngine, router, trackId])
 
   useEffect(() => {
     void loadMastery()
@@ -86,12 +87,11 @@ export default function TrackMasteryPage() {
   const earnedStars = completed.size * 3
   const totalStars = payload?.mastery.totalStars ?? 0
   const progress = payload?.snippets.length ? Math.round((completed.size / payload.snippets.length) * 100) : 0
-
   const languageOptions = useMemo(() => payload?.availableLanguages ?? [], [payload?.availableLanguages])
 
   function selectChallenge(index: number) {
     setCurrentIndex(index)
-    engine.reset()
+    resetEngine()
   }
 
   async function selectLanguage(languageId: string) {
@@ -105,17 +105,10 @@ export default function TrackMasteryPage() {
       <SceneWrapper />
       <div className="relative z-10 mx-auto w-full max-w-5xl px-4 py-6 sm:py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => router.push('/tracks')}
-            className="cursor-pointer text-sm transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2"
-            style={{ color: 'var(--sub)' }}
-          >
+          <button type="button" onClick={() => router.push('/tracks')} className="cursor-pointer text-sm transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
             ← {locale === 'pt' ? 'Trilhas' : 'Tracks'}
           </button>
-          <span className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--main)', backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>
-            ✦ Mastery
-          </span>
+          <span className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: 'var(--main)', backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>✦ Mastery</span>
         </div>
 
         <section className="mt-6 rounded-[2rem] border p-5 sm:p-7" style={{ borderColor: 'color-mix(in srgb, var(--main) 28%, transparent)', background: 'linear-gradient(135deg, color-mix(in srgb, var(--main) 9%, transparent), transparent 45%), var(--sub-alt)' }}>
@@ -123,18 +116,11 @@ export default function TrackMasteryPage() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: 'var(--main)' }}>{trackId}</p>
               <h1 className="mt-2 text-3xl font-bold">{locale === 'pt' ? 'Mastery avançado' : 'Advanced Mastery'}</h1>
-              <p className="mt-2 text-sm" style={{ color: 'var(--sub)' }}>
-                {locale === 'pt' ? 'Complete os desafios avançados e acumule estrelas.' : 'Complete advanced challenges and earn stars.'}
-              </p>
+              <p className="mt-2 text-sm" style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Complete os desafios avançados e acumule estrelas.' : 'Complete advanced challenges and earn stars.'}</p>
             </div>
 
             {languageOptions.length > 1 ? (
-              <select
-                value={selectedLanguageId ?? ''}
-                onChange={(event) => void selectLanguage(event.target.value)}
-                className="cursor-pointer rounded-lg px-3 py-2 text-sm outline-none focus-visible:ring-2"
-                style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 26%, transparent)' }}
-              >
+              <select value={selectedLanguageId ?? ''} onChange={(event) => void selectLanguage(event.target.value)} className="cursor-pointer rounded-lg px-3 py-2 text-sm outline-none focus-visible:ring-2" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', border: '1px solid color-mix(in srgb, var(--sub) 26%, transparent)' }}>
                 {languageOptions.map((language) => <option key={language.id} value={language.id}>{language.label}</option>)}
               </select>
             ) : null}
@@ -163,40 +149,17 @@ export default function TrackMasteryPage() {
         ) : currentSnippet && payload?.selectedLanguage ? (
           <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
             <section className="min-w-0 rounded-2xl border p-4 sm:p-6" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 90%, transparent)' }}>
-              <SnippetInfo
-                snippet={currentSnippet}
-                languageLabel={payload.selectedLanguage.label}
-                languageColor={payload.selectedLanguage.color}
-                current={currentIndex + 1}
-                total={payload.snippets.length}
-                locale={locale}
-              />
+              <SnippetInfo snippet={currentSnippet} languageLabel={payload.selectedLanguage.label} languageColor={payload.selectedLanguage.color} current={currentIndex + 1} total={payload.snippets.length} locale={locale} />
 
               <div className="mt-6">
-                <TypingArea
-                  code={displayCode}
-                  charStatuses={engine.state.charStatuses}
-                  currentIndex={engine.state.currentIndex}
-                  onKey={engine.handleKey}
-                  languageId={payload.selectedLanguage.id}
-                  isTyping={engine.state.status === 'running'}
-                  locale={locale}
-                />
+                <TypingArea code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex} onKey={engine.handleKey} languageId={payload.selectedLanguage.id} isTyping={engine.state.status === 'running'} locale={locale} />
               </div>
 
               <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-xs" style={{ color: 'var(--sub)' }}>
                 <span>{engine.wpm} WPM · {engine.accuracy}% · {engine.state.errors} {locale === 'pt' ? 'erros' : 'errors'}</span>
                 <div className="flex gap-2">
-                  <button type="button" onClick={engine.reset} className="cursor-pointer rounded-lg px-3 py-2 font-semibold transition-all hover:brightness-110" style={{ border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)', color: 'var(--text)' }}>
-                    {locale === 'pt' ? 'Reiniciar' : 'Reset'}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={currentIndex >= payload.snippets.length - 1}
-                    onClick={() => selectChallenge(currentIndex + 1)}
-                    className="rounded-lg px-3 py-2 font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
-                    style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-                  >
+                  <button type="button" onClick={resetEngine} className="cursor-pointer rounded-lg px-3 py-2 font-semibold transition-all hover:brightness-110" style={{ border: '1px solid color-mix(in srgb, var(--sub) 28%, transparent)', color: 'var(--text)' }}>{locale === 'pt' ? 'Reiniciar' : 'Reset'}</button>
+                  <button type="button" disabled={currentIndex >= payload.snippets.length - 1} onClick={() => selectChallenge(currentIndex + 1)} className="rounded-lg px-3 py-2 font-semibold transition-all enabled:cursor-pointer enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45" style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>
                     {locale === 'pt' ? 'Próximo' : 'Next'} →
                   </button>
                 </div>
@@ -208,13 +171,7 @@ export default function TrackMasteryPage() {
                 const isCurrent = index === currentIndex
                 const isDone = completed.has(snippet.id)
                 return (
-                  <button
-                    key={snippet.id}
-                    type="button"
-                    onClick={() => selectChallenge(index)}
-                    className="w-full cursor-pointer rounded-xl border p-3 text-left transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2"
-                    style={{ borderColor: isCurrent ? 'var(--main)' : 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: isCurrent ? 'color-mix(in srgb, var(--main) 8%, transparent)' : 'var(--sub-alt)' }}
-                  >
+                  <button key={snippet.id} type="button" onClick={() => selectChallenge(index)} className="w-full cursor-pointer rounded-xl border p-3 text-left transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2" style={{ borderColor: isCurrent ? 'var(--main)' : 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: isCurrent ? 'color-mix(in srgb, var(--main) 8%, transparent)' : 'var(--sub-alt)' }}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs font-semibold">{index + 1}. {snippet.concept[locale]}</span>
                       <span style={{ color: isDone ? 'var(--main)' : 'var(--sub)' }}>{isDone ? '★★★' : '☆☆☆'}</span>
