@@ -35,7 +35,6 @@ export default function BillingSettingsPage() {
   const { locale } = useLocale()
   const [payload, setPayload] = useState<BillingPayload | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (authLoading) return
@@ -45,7 +44,6 @@ export default function BillingSettingsPage() {
     }
 
     let active = true
-    setLoading(true)
 
     void fetch('/api/me/billing', { cache: 'no-store' })
       .then(async (response) => {
@@ -61,9 +59,6 @@ export default function BillingSettingsPage() {
       .catch((loadError) => {
         if (!active) return
         setError(loadError instanceof Error ? loadError.message : 'Could not load billing state.')
-      })
-      .finally(() => {
-        if (active) setLoading(false)
       })
 
     return () => {
@@ -94,6 +89,8 @@ export default function BillingSettingsPage() {
         ? locale === 'pt' ? 'Acesso administrativo' : 'Administrative access'
         : locale === 'pt' ? 'Plano gratuito' : 'Free plan'
 
+  const loading = authLoading || (Boolean(user) && !payload && !error)
+
   return (
     <main className="relative min-h-screen" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
       <SceneWrapper />
@@ -107,12 +104,8 @@ export default function BillingSettingsPage() {
         </Link>
 
         <div className="mt-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--main)' }}>
-            SharkType Plus
-          </p>
-          <h1 className="mt-2 text-3xl font-bold">
-            {locale === 'pt' ? 'Plano e assinatura' : 'Plan and subscription'}
-          </h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--main)' }}>SharkType Plus</p>
+          <h1 className="mt-2 text-3xl font-bold">{locale === 'pt' ? 'Plano e assinatura' : 'Plan and subscription'}</h1>
           <p className="mt-3 text-sm leading-6" style={{ color: 'var(--sub)' }}>
             {locale === 'pt'
               ? 'Veja o estado do seu acesso Plus e, quando houver uma assinatura vinculada, os dados básicos de cobrança.'
@@ -144,11 +137,7 @@ export default function BillingSettingsPage() {
               </div>
 
               {!payload.access.isPlus ? (
-                <Link
-                  href="/plus"
-                  className="inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2"
-                  style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
-                >
+                <Link href="/plus" className="inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2" style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>
                   {locale === 'pt' ? 'Conhecer SharkType Plus' : 'Explore SharkType Plus'}
                 </Link>
               ) : null}
@@ -160,7 +149,7 @@ export default function BillingSettingsPage() {
                 <dd className="mt-2 text-sm font-semibold">{sourceLabel}</dd>
               </div>
               <div className="rounded-xl p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 68%, transparent)' }}>
-                <dt className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Status' : 'Status'}</dt>
+                <dt className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--sub)' }}>Status</dt>
                 <dd className="mt-2 text-sm font-semibold">{payload.subscription?.status ?? payload.entitlement?.status ?? (payload.access.isPlus ? 'active' : 'free')}</dd>
               </div>
 
