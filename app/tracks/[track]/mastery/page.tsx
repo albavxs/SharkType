@@ -181,7 +181,6 @@ export default function TrackMasteryPage() {
           showControls={false}
           showLanguage={false}
           showCommunityBanner={false}
-          onHomeClick={() => router.push('/')}
           onHelpClick={() => setShowHelp(true)}
           level={levelInfo.level}
           streak={userProgress.streak.current}
@@ -193,7 +192,7 @@ export default function TrackMasteryPage() {
         {isFocusMode ? (
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/home')}
             className="absolute left-3 top-3 z-30 cursor-pointer sm:hidden"
             aria-label="SharkType"
           >

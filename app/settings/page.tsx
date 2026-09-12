@@ -121,7 +121,7 @@ export default function SettingsPage() {
   async function handleReset() {
     await resetCurrentProgress()
     setShowConfirm(false)
-    window.location.href = '/'
+    window.location.href = '/home'
   }
 
   return (
@@ -130,7 +130,7 @@ export default function SettingsPage() {
 
       <div className="relative z-10 flex flex-1 flex-col">
         <div className="px-3 py-4 sm:px-6">
-          <Link href="/" className="pointer-events-auto inline-flex w-fit cursor-pointer items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
+          <Link href="/home" className="pointer-events-auto inline-flex w-fit cursor-pointer items-center gap-1.5 text-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
             <ArrowLeftIcon size={14} />
             {t('back', locale)}
           </Link>

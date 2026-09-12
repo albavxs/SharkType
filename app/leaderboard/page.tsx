@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { LeaderboardEntry } from '@/lib/auth-types'
 import { getLevel } from '@/lib/gamification'
@@ -21,7 +20,6 @@ const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 
 export default function LeaderboardPage() {
-  const router = useRouter()
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -80,7 +78,7 @@ export default function LeaderboardPage() {
           seconds={0} isTimerRunning={false}
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
-          onHomeClick={() => router.push('/')} onHelpClick={() => {}}
+          onHelpClick={() => {}}
           level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
         />

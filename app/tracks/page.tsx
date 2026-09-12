@@ -307,7 +307,7 @@ export default function TracksPage() {
           onLanguageChange={() => {}} onDifficultyChange={() => {}}
           showControls={false}
           showLanguage={false}
-          onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
+          onHelpClick={() => setShowHelp(true)}
           level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
         />

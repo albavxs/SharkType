@@ -57,7 +57,7 @@ export default function PremiumAdminPage() {
   useEffect(() => {
     if (isLoading) return
     if (!profile?.isSuperUser) {
-      router.replace('/')
+      router.replace('/home')
       return
     }
     void loadHealth()

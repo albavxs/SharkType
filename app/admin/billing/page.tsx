@@ -51,7 +51,7 @@ export default function BillingAdminPage() {
   useEffect(() => {
     if (isLoading) return
     if (!profile?.isSuperUser) {
-      router.replace('/')
+      router.replace('/home')
       return
     }
     void loadStatus().catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Could not load billing status.'))

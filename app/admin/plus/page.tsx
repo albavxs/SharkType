@@ -55,7 +55,7 @@ export default function PlusAdminPage() {
   useEffect(() => {
     if (isLoading) return
     if (!profile?.isSuperUser) {
-      router.replace('/')
+      router.replace('/home')
       return
     }
     void loadRows().catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Could not load Plus users.'))
@@ -104,7 +104,7 @@ export default function PlusAdminPage() {
     <main className="min-h-screen px-4 py-8 sm:px-6" style={{ color: 'var(--text)' }}>
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <button onClick={() => router.push('/')} className="text-sm cursor-pointer" style={{ color: 'var(--sub)' }}>
+          <button onClick={() => router.push('/home')} className="text-sm cursor-pointer" style={{ color: 'var(--sub)' }}>
             {t('back', locale)}
           </button>
           <div className="flex flex-wrap gap-2">

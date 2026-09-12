@@ -1,329 +1,311 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
-import { getLanguageMetaById } from '@/data/metadata'
-import { loadLanguageById } from '@/data/loaders'
-import { generateChallengeSequence, sanitizeSnippetForTyping } from '@/lib/utils'
-import { Language, LanguageMeta, Snippet, Difficulty } from '@/lib/types'
-import { DEFAULT_LANGUAGE } from '@/lib/constants'
-import { useTypingEngine } from '@/hooks/useTypingEngine'
-import { useLenientKeyboard } from '@/hooks/useLenientKeyboard'
-import { useFontScale } from '@/hooks/useFontScale'
-import { useTimer } from '@/hooks/useTimer'
-import { useProgress } from '@/hooks/useProgress'
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
-import { useIsMobile } from '@/hooks/useMediaQuery'
-import { SessionOutput, applySessionToProgress, getLevel, isRankedSession } from '@/lib/gamification'
-import { DEFAULT_THEME, getTheme, getThemePref, applyTheme } from '@/lib/themes'
-import { playKey, playSpace, playError, playComplete } from '@/lib/sounds'
-import { useLocale } from '@/hooks/useLocale'
-import { t } from '@/lib/i18n'
-import Toolbar from '@/components/typing/Toolbar'
-import AchievementToast from '@/components/gamification/AchievementToast'
-import TypingArea from '@/components/typing/TypingArea'
-import SnippetInfo from '@/components/typing/SnippetInfo'
-import ResultScreen from '@/components/typing/ResultScreen'
-import Footer from '@/components/typing/Footer'
-import { RefreshIcon } from '@/components/icons'
-import CapsLockWarning, { useCapsLock } from '@/components/typing/CapsLockWarning'
-import PracticeNavButtons from '@/components/typing/PracticeNavButtons'
-import SceneWrapper from '@/components/three/SceneWrapper'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import BrandLogo from '@/components/brand/BrandLogo'
+import Footer from '@/components/typing/Footer'
+import { ArrowRightIcon, BookIcon, ChartIcon, DiscordIcon, GithubIcon, ShieldIcon } from '@/components/icons'
+import { useAuth } from '@/hooks/useAuth'
+import { useLocale } from '@/hooks/useLocale'
+import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
+import { COMMUNITY_LINKS } from '@/lib/community'
+import { codeLanguageMetas } from '@/data/metadata'
+import sharkLogo from '@/icons/SharkSolo.png'
 
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
+const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
 
-export default function Home() {
-  const initialLanguageMeta = getLanguageMetaById(DEFAULT_LANGUAGE)!
-  const [selectedLanguageId, setSelectedLanguageId] = useState(DEFAULT_LANGUAGE)
-  const [language, setLanguage] = useState<Language | null>(null)
-  const [difficulty, setDifficulty] = useState<Difficulty | 'all'>('all')
-  const [sequence, setSequence] = useState<Snippet[]>([])
-  const [seqIndex, setSeqIndex] = useState(0)
-  const [showResult, setShowResult] = useState(false)
-  const [sessionResult, setSessionResult] = useState<SessionOutput | null>(null)
+const copy = {
+  pt: {
+    navTracks: 'Trilhas',
+    navPlus: 'Plus',
+    navLogin: 'Entrar',
+    tagline: 'Aprenda. Digite. Domine.',
+    body: 'Treine programação através de prática de digitação, trilhas estruturadas e desafios avançados Mastery.',
+    start: 'Começar agora',
+    continue: 'Continuar praticando',
+    explore: 'Explorar trilhas',
+    communityTitle: 'Comunidade SharkType',
+    communityBody: 'Aprender é melhor quando não acontece sozinho.',
+    discordTitle: 'Discord',
+    discordBody: 'Converse, peça ajuda e compartilhe progresso.',
+    githubTitle: 'GitHub',
+    githubBody: 'Acompanhe desenvolvimento e contribua.',
+    projectTitle: 'Projeto',
+    projectBody: 'Conheça o ecossistema do SharkType.',
+    open: 'Abrir',
+    productTitle: 'Treino, trilhas e Mastery',
+    productBody: 'Entre pela prática Base, siga por trilhas estruturadas e avance para Mastery quando quiser desafios premium separados.',
+    practiceTitle: 'Prática Base',
+    practiceBody: 'Sessões rápidas com snippets Base seguros para aquecer e manter ritmo.',
+    tracksTitle: 'Trilhas',
+    tracksBody: 'Fundamentos organizados por linguagem, conceito e stack.',
+    masteryTitle: 'Mastery',
+    masteryBody: 'Desafios avançados, estrelas e progressão premium sem misturar com Base.',
+  },
+  en: {
+    navTracks: 'Tracks',
+    navPlus: 'Plus',
+    navLogin: 'Sign in',
+    tagline: 'Learn. Type. Master.',
+    body: 'Train programming through typing practice, structured tracks, and advanced Mastery challenges.',
+    start: 'Start now',
+    continue: 'Continue practicing',
+    explore: 'Explore tracks',
+    communityTitle: 'SharkType Community',
+    communityBody: 'Learning is better when it does not happen alone.',
+    discordTitle: 'Discord',
+    discordBody: 'Talk, ask for help, and share progress.',
+    githubTitle: 'GitHub',
+    githubBody: 'Follow development and contribute.',
+    projectTitle: 'Project',
+    projectBody: 'Explore the SharkType ecosystem.',
+    open: 'Open',
+    productTitle: 'Practice, tracks, and Mastery',
+    productBody: 'Start with Base practice, follow structured tracks, and move into Mastery when you want separate premium challenges.',
+    practiceTitle: 'Base Practice',
+    practiceBody: 'Fast sessions with safe Base snippets for warmups and steady rhythm.',
+    tracksTitle: 'Tracks',
+    tracksBody: 'Fundamentals organized by language, concept, and stack.',
+    masteryTitle: 'Mastery',
+    masteryBody: 'Advanced challenges, stars, and premium progression without mixing into Base.',
+  },
+} as const
+
+const communityCards = [
+  {
+    key: 'discord',
+    href: COMMUNITY_LINKS.discord,
+    icon: DiscordIcon,
+    title: 'discordTitle',
+    body: 'discordBody',
+  },
+  {
+    key: 'github',
+    href: COMMUNITY_LINKS.github,
+    icon: GithubIcon,
+    title: 'githubTitle',
+    body: 'githubBody',
+  },
+  {
+    key: 'project',
+    href: COMMUNITY_LINKS.website,
+    icon: ShieldIcon,
+    title: 'projectTitle',
+    body: 'projectBody',
+  },
+] as const
+
+const productCards = [
+  {
+    key: 'practice',
+    icon: ShieldIcon,
+    title: 'practiceTitle',
+    body: 'practiceBody',
+    href: '/home',
+  },
+  {
+    key: 'tracks',
+    icon: BookIcon,
+    title: 'tracksTitle',
+    body: 'tracksBody',
+    href: '/tracks',
+  },
+  {
+    key: 'mastery',
+    icon: ChartIcon,
+    title: 'masteryTitle',
+    body: 'masteryBody',
+    href: null,
+  },
+] as const
+
+export default function PublicHomePage() {
+  const { profile, isLoading } = useAuth()
   const { locale, toggleLocale } = useLocale()
-  const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
+  const [currentTheme, setCurrentTheme] = useState(() => getThemePref())
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [isLanguageLoading, setIsLanguageLoading] = useState(true)
-  const [languageLoadError, setLanguageLoadError] = useState<string | null>(null)
-  const [languageReloadKey, setLanguageReloadKey] = useState(0)
-  const isMobile = useIsMobile()
-  const capsLock = useCapsLock()
-  const { progress, recordSession } = useProgress()
+  const text = copy[locale]
+  const featuredLanguages = useMemo(
+    () => codeLanguageMetas.filter((language) => ['javascript', 'python', 'linux', 'typescript', 'react', 'git'].includes(language.id)),
+    [],
+  )
+  const primaryHref = profile ? '/home' : '/signup'
+  const primaryLabel = profile ? text.continue : text.start
+  const masteryHref = profile ? '/tracks' : '/plus'
 
-  // Init theme + progress on client
   useEffect(() => {
-    const themeName = getThemePref()
-    if (themeName !== currentTheme) {
-      queueMicrotask(() => setCurrentTheme(themeName))
-    }
     applyTheme(getTheme(currentTheme))
   }, [currentTheme])
 
-  const timerDuration = difficulty === 'hard' ? 30 : difficulty === 'medium' ? 45 : difficulty === 'easy' ? 60 : 0
-  const isCountdown = difficulty !== 'all'
-
-  const snippet = sequence[seqIndex] || language?.snippets[0] || null
-  const displayCode = useMemo(() => {
-    const raw = snippet?.code ?? ''
-    return sanitizeSnippetForTyping(raw, language?.id ?? selectedLanguageId)
-  }, [language?.id, selectedLanguageId, snippet])
-  const handleTimerEnd = useCallback(() => { setShowResult(true); playComplete() }, [])
-
-  const { enabled: lenient } = useLenientKeyboard()
-  useFontScale() // setta CSS var no mount
-  const timer = useTimer(timerDuration, isCountdown, handleTimerEnd)
-  const {
-    seconds: timerSeconds,
-    isRunning: isTimerRunning,
-    start: startTimer,
-    stop: stopTimer,
-    reset: resetTimer,
-  } = timer
-  const handleFinish = useCallback(() => { setShowResult(true); playComplete(); stopTimer() }, [stopTimer])
-  const engine = useTypingEngine(displayCode, handleFinish, { lenient })
-  const { reset: resetEngine, handleKey: handleEngineKey } = engine
-
-  // Reset timer + engine when difficulty changes
-  useEffect(() => { resetEngine(); resetTimer(timerDuration) }, [difficulty, resetEngine, resetTimer, timerDuration])
-
-  useEffect(() => { if (engine.state.status === 'running' && !isTimerRunning) startTimer() }, [engine.state.status, isTimerRunning, startTimer])
-
-  const [finalStats, setFinalStats] = useState<{ wpm: number; rawWpm: number; accuracy: number; errors: number; duration: number; wpmSamples: number[]; rawWpmSamples: number[]; accuracySamples: number[]; errorSamples: number[] } | null>(null)
-  const [elapsedSeconds, setElapsedSeconds] = useState(0)
-  const [isResultSyncing, setIsResultSyncing] = useState(false)
-
-  useEffect(() => {
-    let active = true
-
-    void (async () => {
-      try {
-        const loadedLanguage = await loadLanguageById(selectedLanguageId)
-        if (!active) return
-        if (!loadedLanguage) {
-          setLanguageLoadError(t('loadingSnippetError', locale))
-          setIsLanguageLoading(false)
-          return
-        }
-        setLanguage(loadedLanguage)
-        setSequence(generateChallengeSequence(loadedLanguage.snippets))
-        setSeqIndex(0)
-        setIsLanguageLoading(false)
-        setLanguageLoadError(null)
-      } catch {
-        if (!active) return
-        setLanguageLoadError(t('loadingSnippetError', locale))
-        setIsLanguageLoading(false)
-      }
-    })()
-
-    return () => {
-      active = false
-    }
-  }, [locale, selectedLanguageId, languageReloadKey])
-
-  useEffect(() => {
-    if (!showResult || !snippet || !language || sessionResult) return
-
-    let active = true
-
-    void (async () => {
-      await Promise.resolve()
-      if (!active) return
-
-      const dur = engine.state.startTime ? Math.floor((Date.now() - engine.state.startTime) / 1000) : 0
-      const stats = {
-        wpm: engine.wpm,
-        rawWpm: engine.rawWpm,
-        accuracy: engine.accuracy,
-        errors: engine.state.errors,
-        duration: dur,
-        wpmSamples: [...engine.wpmSamples],
-        rawWpmSamples: [...engine.rawWpmSamples],
-        accuracySamples: [...engine.accuracySamples],
-        errorSamples: [...engine.errorSamples],
-      }
-      const input = {
-        languageId: language.id,
-        snippetId: snippet.id,
-        wpm: stats.wpm,
-        rawWpm: stats.rawWpm,
-        accuracy: stats.accuracy,
-        errors: stats.errors,
-        duration: dur,
-        difficulty: snippet.difficulty,
-        lenient,
-        rankedMode: difficulty !== 'all',
-      }
-      const optimisticOutput = applySessionToProgress(progress, input).output
-
-      setFinalStats(stats)
-      setSessionResult(optimisticOutput)
-      setIsResultSyncing(true)
-
-      const output = await recordSession(input)
-      if (active) {
-        setSessionResult(output)
-        setIsResultSyncing(false)
-      }
-    })()
-
-    return () => {
-      active = false
-    }
-  }, [engine.accuracy, engine.accuracySamples, engine.errorSamples, engine.rawWpm, engine.rawWpmSamples, engine.state.errors, engine.state.startTime, engine.wpm, engine.wpmSamples, language, lenient, progress, recordSession, sessionResult, showResult, snippet])
-
-  const handleRestart = useCallback(() => { resetEngine(); resetTimer(timerDuration); setShowResult(false); setSessionResult(null); setFinalStats(null); setIsResultSyncing(false) }, [resetEngine, resetTimer, timerDuration])
-  const handleNext = useCallback(() => { setSeqIndex(i => (i + 1) % sequence.length); setShowResult(false); setSessionResult(null); setFinalStats(null); setIsResultSyncing(false); resetTimer(timerDuration) }, [sequence.length, resetTimer, timerDuration])
-  function handlePrev() { setSeqIndex(i => i > 0 ? i - 1 : sequence.length - 1); setShowResult(false); setSessionResult(null); setFinalStats(null); setIsResultSyncing(false); resetTimer(timerDuration) }
-  function handleLanguageChange(lang: LanguageMeta) {
-    setIsLanguageLoading(true)
-    setLanguageLoadError(null)
-    setSelectedLanguageId(lang.id)
-    setSeqIndex(0)
-    resetEngine()
-    resetTimer(timerDuration)
-    setShowResult(false)
-    setSessionResult(null)
-    setFinalStats(null)
-    setIsResultSyncing(false)
-  }
-  function handleDifficultyChange(nextDifficulty: Difficulty | 'all') {
-    setDifficulty(nextDifficulty)
-    setSequence(generateChallengeSequence(language?.snippets ?? []))
-    setSeqIndex(0)
-    resetEngine()
-    resetTimer(nextDifficulty === 'hard' ? 30 : nextDifficulty === 'medium' ? 45 : nextDifficulty === 'easy' ? 60 : 0)
-    setShowResult(false)
-    setSessionResult(null)
-    setFinalStats(null)
-    setIsResultSyncing(false)
-  }
-
-  useKeyboardShortcuts(useMemo(() => ({ Tab: showResult ? handleNext : handleRestart, ShiftTab: handleRestart, Escape: () => { setShowThemeSelector(false); setShowHelp(false) } }), [handleNext, handleRestart, showResult]), true)
-
-  const prevErrors = useRef(0)
-  const wrappedHandleKey = useCallback((key: string) => { if (key === ' ' || key === 'Enter') playSpace(); else playKey(); handleEngineKey(key) }, [handleEngineKey])
-  useEffect(() => { if (engine.state.errors > prevErrors.current) { playError() }; prevErrors.current = engine.state.errors }, [engine.state.errors])
-
-  useEffect(() => {
-    if (isCountdown || !engine.state.startTime || showResult) return
-
-    const updateElapsed = () => {
-      setElapsedSeconds(Math.floor((Date.now() - engine.state.startTime!) / 1000))
-    }
-
-    updateElapsed()
-    const intervalId = window.setInterval(updateElapsed, 1000)
-    return () => window.clearInterval(intervalId)
-  }, [engine.state.startTime, isCountdown, showResult])
-
-  const displaySeconds = isCountdown ? timerSeconds : engine.state.startTime ? elapsedSeconds : 0
-  const levelInfo = getLevel(progress.totalXP)
-  const sessionMode = isRankedSession(
-    language?.id ?? selectedLanguageId,
-    lenient,
-    difficulty !== 'all'
-  ) ? 'ranked' : 'precision'
-
   return (
-    <main className="flex-1 flex flex-col min-h-screen relative">
-      {!isMobile && <SceneWrapper />}
+    <main className="relative min-h-screen overflow-hidden">
+      <SceneWrapper />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+          <Link href="/" className="transition-opacity hover:opacity-80">
+            <BrandLogo size={32} textSizeClassName="text-xl sm:text-2xl" />
+          </Link>
 
-      <div className="relative z-10 flex-1 flex flex-col min-h-screen">
-        {/* Header */}
-        <Toolbar language={language ?? initialLanguageMeta} difficulty={difficulty} seconds={displaySeconds}
-          isTimerRunning={isTimerRunning} onLanguageChange={handleLanguageChange}
-          onDifficultyChange={handleDifficultyChange} onHomeClick={handleRestart} onHelpClick={() => setShowHelp(true)}
-          level={levelInfo.level} streak={progress.streak.current}
-          locale={locale} onLocaleToggle={toggleLocale} isTyping={engine.state.status === 'running'} />
+          <nav className="flex items-center gap-2 sm:gap-3">
+            <Link href="/tracks" className="rounded-full px-3 py-2 text-xs font-medium transition-opacity hover:opacity-80 sm:text-sm" style={{ color: 'var(--text)' }}>
+              {text.navTracks}
+            </Link>
+            <Link href="/plus" className="rounded-full px-3 py-2 text-xs font-medium transition-opacity hover:opacity-80 sm:text-sm" style={{ color: 'var(--text)' }}>
+              {text.navPlus}
+            </Link>
+            <button
+              onClick={toggleLocale}
+              className="rounded-full px-3 py-2 text-xs font-mono font-medium transition-opacity hover:opacity-80"
+              style={{ border: '1px solid color-mix(in srgb, var(--sub) 32%, transparent)', color: 'var(--text)' }}
+            >
+              {locale === 'pt' ? 'PT' : 'EN'}
+            </button>
+            {!profile && !isLoading ? (
+              <Link href="/login" className="hidden rounded-full px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80 sm:inline-flex" style={{ color: 'var(--main)' }}>
+                {text.navLogin}
+              </Link>
+            ) : null}
+          </nav>
+        </header>
 
-        {/* Main */}
-        <div className="flex-1 flex flex-col items-center justify-center px-3 pb-3 sm:px-6 sm:pb-0 min-w-0">
-          {languageLoadError ? (
-            <div className="w-full max-w-lg rounded-2xl border px-4 py-4 text-center" style={{ borderColor: 'color-mix(in srgb, var(--error) 24%, transparent)', backgroundColor: 'color-mix(in srgb, var(--error) 10%, transparent)' }}>
-              <p className="text-sm" style={{ color: 'var(--error)' }}>
-                {languageLoadError}
-              </p>
-              <button
-                onClick={() => {
-                  setIsLanguageLoading(true)
-                  setLanguageLoadError(null)
-                  setLanguageReloadKey((value) => value + 1)
-                }}
-                className="mt-4 rounded-xl px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
-                style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
+        <section className="mx-auto w-full max-w-5xl px-4 pb-8 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
+          <div
+            className="rounded-[24px] border px-5 py-7 sm:px-8 sm:py-10"
+            style={{
+              borderColor: 'color-mix(in srgb, var(--main) 24%, transparent)',
+              background:
+                'linear-gradient(135deg, color-mix(in srgb, var(--sub-alt) 94%, transparent), color-mix(in srgb, var(--main) 10%, transparent))',
+            }}
+          >
+            <div className="max-w-3xl">
+              <h1
+                className="flex flex-col gap-4 text-4xl font-bold leading-none font-[family-name:var(--font-geist-mono)] sm:flex-row sm:items-center sm:text-6xl"
+                style={{ color: 'var(--text)' }}
               >
-                {t('retry', locale)}
-              </button>
-            </div>
-          ) : isLanguageLoading || !language || !snippet ? (
-            <div className="text-sm" style={{ color: 'var(--sub)' }}>
-              {t('loading', locale)}
-            </div>
-          ) : showResult && sessionResult && finalStats ? (
-            <ResultScreen wpm={finalStats.wpm} accuracy={finalStats.accuracy} errors={finalStats.errors}
-              duration={finalStats.duration} snippet={snippet} languageLabel={language.label} sessionMode={sessionMode} wpmSamples={finalStats.wpmSamples}
-              rawWpmSamples={finalStats.rawWpmSamples} accuracySamples={finalStats.accuracySamples} errorSamples={finalStats.errorSamples} languageId={language.id}
-              xpEarned={sessionResult.xpEarned} rankedPointsEarned={sessionResult.rankedPointsEarned} newLevel={sessionResult.newLevel}
-              leveledUp={sessionResult.leveledUp} levelPercent={sessionResult.levelPercent} streak={sessionResult.streak}
-              onNext={handleNext} onRestart={handleRestart} locale={locale} />
-          ) : (
-            <>
-              <div className={`w-full max-w-3xl min-w-0 mb-4 sm:mb-6 transition-all duration-300 ${engine.state.status === 'running' ? 'opacity-0 pointer-events-none' : ''}`}>
-                <SnippetInfo snippet={snippet} languageLabel={language.label} languageColor={language.color}
-                  current={seqIndex + 1} total={sequence.length} locale={locale} />
+                <Image
+                  src={sharkLogo}
+                  alt=""
+                  width={96}
+                  height={96}
+                  priority
+                  className="h-20 w-20 shrink-0 sm:h-24 sm:w-24"
+                />
+                <span>
+                  Shark<span style={{ color: 'var(--main)' }}>Type</span>
+                </span>
+              </h1>
+              <p className="mt-5 text-2xl font-semibold sm:text-3xl" style={{ color: 'var(--text)' }}>
+                {text.tagline}
+              </p>
+              <p className="mt-4 max-w-2xl text-sm leading-7 sm:text-base" style={{ color: 'var(--sub)' }}>
+                {text.body}
+              </p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link href={primaryHref} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-transform hover:scale-[1.02]" style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>
+                  {primaryLabel}
+                  <ArrowRightIcon size={16} />
+                </Link>
+                <Link href="/tracks" className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-opacity hover:opacity-80" style={{ border: '1px solid color-mix(in srgb, var(--sub) 36%, transparent)', color: 'var(--text)' }}>
+                  {text.explore}
+                </Link>
               </div>
+            </div>
+          </div>
+        </section>
 
-              {/* Mobile: logo + reset above code while typing */}
-              {engine.state.status === 'running' && isMobile && (
-                <div className="mb-4 flex flex-wrap items-center justify-center gap-3 animate-fade-in">
-                  <button onClick={handleRestart}
-                    className="active:scale-95 transition-all duration-150"
+        <section id="community" className="px-4 py-8 sm:px-6 sm:py-10">
+          <div className="mx-auto w-full max-w-5xl">
+            <div className="max-w-2xl">
+              <h2 className="text-2xl font-bold sm:text-3xl" style={{ color: 'var(--text)' }}>{text.communityTitle}</h2>
+              <p className="mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text.communityBody}</p>
+            </div>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {communityCards.map((card) => {
+                const Icon = card.icon
+                return (
+                  <a
+                    key={card.key}
+                    href={card.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group rounded-[24px] border p-5 transition-all duration-150 hover:-translate-y-1 hover:brightness-110"
+                    style={{
+                      borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)',
+                      backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)',
+                    }}
                   >
-                    <BrandLogo size={24} textSizeClassName="text-base" />
-                  </button>
-                  <button onClick={handleRestart}
-                    className="p-1.5 rounded-full active:scale-90 transition-all duration-150"
-                    style={{ color: 'var(--sub)' }}>
-                    <RefreshIcon size={14} />
-                  </button>
-                </div>
-              )}
+                    <span
+                      className="mb-4 inline-flex rounded-2xl p-3"
+                      style={{
+                        backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)',
+                        color: 'var(--main)',
+                      }}
+                    >
+                      <Icon size={22} />
+                    </span>
+                    <h3 className="text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
+                    <p className="mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text[card.body]}</p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium" style={{ color: 'var(--main)' }}>
+                      {text.open}
+                      <ArrowRightIcon size={14} />
+                    </span>
+                  </a>
+                )
+              })}
+            </div>
+          </div>
+        </section>
 
-              {/* Caps Lock warning — desktop: above text */}
-              <CapsLockWarning visible={capsLock && !showResult && !isMobile} isMobile={false} locale={locale} />
+        <section className="px-4 py-8 sm:px-6 sm:py-10">
+          <div className="mx-auto w-full max-w-5xl rounded-[24px] border p-5 sm:p-6" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 72%, transparent)' }}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>{text.productTitle}</h2>
+                <p className="mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text.productBody}</p>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {featuredLanguages.map((language) => (
+                  <span key={language.id} className="rounded-full px-3 py-1.5 text-xs font-semibold" style={{ backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)', color: language.color, border: `1px solid ${language.color}` }}>
+                    {language.label}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-              <TypingArea key={`${language.id}:${snippet.id}`} code={displayCode} charStatuses={engine.state.charStatuses} currentIndex={engine.state.currentIndex}
-                onKey={wrappedHandleKey} disabled={showResult} languageId={language.id} isTyping={engine.state.status === 'running'} locale={locale} />
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {productCards.map((card) => {
+                const Icon = card.icon
+                const href = card.key === 'mastery' ? masteryHref : card.href
+                return (
+                  <Link key={card.key} href={href} className="group rounded-[20px] border p-5 transition-all duration-150 hover:-translate-y-1 hover:brightness-110" style={{ borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 30%, transparent)' }}>
+                    <span className="inline-flex rounded-2xl p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
+                      <Icon size={20} />
+                    </span>
+                    <h3 className="mt-4 text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
+                    <p className="mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text[card.body]}</p>
+                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--main)' }}>
+                      {card.key === 'tracks' ? text.explore : text.open}
+                      <ArrowRightIcon size={14} />
+                    </span>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </section>
 
-              {/* Caps Lock warning — mobile: below text */}
-              <CapsLockWarning visible={capsLock && !showResult && !!isMobile} isMobile={true} locale={locale} />
-
-              {engine.state.status === 'running' && (
-                <div className="mt-3 text-center text-[10px] animate-fade-in sm:text-left" style={{ color: 'var(--sub)', opacity: 0.4 }}>
-                  <span>{t('hintShiftTab', locale)}</span>
-                </div>
-              )}
-
-              <PracticeNavButtons onPrev={handlePrev} onRestart={handleRestart} onNext={handleNext} locale={locale} isTyping={engine.state.status === 'running'} />
-            </>
-          )}
-        </div>
-
-        {/* Footer */}
-        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} isTyping={engine.state.status === 'running'} locale={locale} />
+        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} locale={locale} />
       </div>
 
-      {/* Modals */}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
       {showThemeSelector && (
         <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />
       )}
-      {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
-      <AchievementToast newlyUnlocked={sessionResult?.newlyUnlocked ?? []} locale={locale} />
     </main>
   )
 }

@@ -156,7 +156,7 @@ export default function PlusPage() {
       <SceneWrapper />
 
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-10 px-4 py-8 sm:py-12">
-        <button onClick={() => router.push('/')} className="w-fit cursor-pointer text-sm transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
+        <button onClick={() => router.push('/home')} className="w-fit cursor-pointer text-sm transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2" style={{ color: 'var(--sub)' }}>
           {t('back', locale)}
         </button>
 

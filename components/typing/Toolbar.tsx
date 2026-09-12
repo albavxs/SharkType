@@ -20,7 +20,6 @@ interface ToolbarProps {
   isTimerRunning: boolean
   onLanguageChange: (lang: LanguageMeta) => void
   onDifficultyChange: (d: Difficulty | 'all') => void
-  onHomeClick: () => void
   onHelpClick: () => void
   level: number | null
   streak: number
@@ -35,7 +34,7 @@ interface ToolbarProps {
 export default function Toolbar({
   language, difficulty, seconds, isTimerRunning,
   onLanguageChange, onDifficultyChange,
-  onHomeClick, onHelpClick, level, streak, locale, onLocaleToggle,
+  onHelpClick, level, streak, locale, onLocaleToggle,
   isTyping = false, showControls = true, showLanguage = true, showCommunityBanner = true,
 }: ToolbarProps) {
   const hide = isTyping ? 'opacity-0 pointer-events-none' : 'opacity-100'
@@ -86,9 +85,9 @@ export default function Toolbar({
       {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
       <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center sm:gap-4">
         <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
-          <button onClick={onHomeClick} className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
+          <Link href="/home" className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
             <BrandLogo size={30} textSizeClassName="text-lg sm:text-2xl" />
-          </button>
+          </Link>
 
           {/* Right side on mobile (locale + level + streak) */}
           <div className={`flex items-center gap-2 shrink-0 transition-all duration-300 sm:hidden ${hide}`}>
