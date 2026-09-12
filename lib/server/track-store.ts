@@ -21,6 +21,13 @@ export interface TrackAccessSummary {
   premiumCount: number
 }
 
+export interface TrackMasterySummary {
+  eligible: boolean
+  available: boolean
+  challengeCount: number
+  totalStars: number
+}
+
 function toLanguageMeta(language: Language): LanguageMeta {
   return {
     id: language.id,
@@ -160,6 +167,28 @@ export function listTrackAccessSummary(): Record<string, TrackAccessSummary> {
   )
 }
 
+export function listTrackMasterySummary(): Record<string, TrackMasterySummary> {
+  const accessSummary = listTrackAccessSummary()
+
+  return Object.fromEntries(
+    tracks.map((track) => {
+      const summary = accessSummary[track.id]
+      const challengeCount = summary?.premiumCount ?? 0
+      const eligible = !track.textLanguages && summary?.plusEligible === true
+
+      return [
+        track.id,
+        {
+          eligible,
+          available: eligible && challengeCount > 0,
+          challengeCount,
+          totalStars: challengeCount * 3,
+        },
+      ] as const
+    }),
+  )
+}
+
 function buildPracticeWall(
   freeSnippetLimit: number,
   premiumCount: number,
@@ -192,7 +221,6 @@ export async function getTrackPracticePayload(
     (requestedLanguageId
       ? availableLanguages.find((language) => language.id === requestedLanguageId)
       : null) ?? availableLanguages[0] ?? null
-  const trackHasPlusContent = (track.accessPolicy ?? 'plus_after_limit') !== 'free'
 
   if (!selectedLanguageMeta) {
     return {
@@ -200,7 +228,7 @@ export async function getTrackPracticePayload(
       selectedLanguage: null,
       snippets: [] as Snippet[],
       access,
-      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, trackHasPlusContent),
+      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, false),
     }
   }
 
@@ -212,36 +240,78 @@ export async function getTrackPracticePayload(
       selectedLanguage: fallbackMeta,
       snippets: [] as Snippet[],
       access,
-      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, trackHasPlusContent),
+      wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, false),
     }
   }
 
   const freeTrackSnippets = freeTrackSnippetRegistry[track.id]?.[language.id] ?? []
-  const expectedTotal = trackSnippetTotalRegistry[track.id]?.[language.id] ?? freeTrackSnippets.length
-  const premiumCount = Math.max(0, expectedTotal - freeTrackSnippets.length)
-
-  let snippets = freeTrackSnippets
-
-  if (access.isPlus && trackHasPlusContent && premiumCount > 0) {
-    const allLanguageSnippets = await getFullLanguageSnippets(language)
-    const fullTrackSnippets = buildTrackSnippets(track, allLanguageSnippets)
-
-    assertPremiumCoverage({
-      trackId: track.id,
-      languageId: language.id,
-      expectedTotal,
-      resolvedTotal: fullTrackSnippets.length,
-    })
-
-    snippets = fullTrackSnippets
-  }
 
   return {
     availableLanguages,
     selectedLanguage: toLanguageMeta(language),
-    snippets,
+    snippets: freeTrackSnippets,
     access,
-    wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, premiumCount, access, trackHasPlusContent),
+    wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, false),
+  }
+}
+
+export async function getTrackMasteryPayload(
+  trackId: string,
+  requestedLanguageId: string | null | undefined,
+  access: UserAccess
+) {
+  const track = getTrackById(trackId)
+  if (!track || track.textLanguages) return null
+
+  const summary = listTrackMasterySummary()[track.id]
+  if (!summary?.eligible || !summary.available) return null
+
+  const sourceLanguages = getTrackLanguageSource(track)
+  const availableLanguages = await getTrackLanguages(track)
+  const selectedLanguageMeta =
+    (requestedLanguageId
+      ? availableLanguages.find((language) => language.id === requestedLanguageId)
+      : null) ?? availableLanguages[0] ?? null
+
+  if (!selectedLanguageMeta) {
+    return {
+      availableLanguages,
+      selectedLanguage: null,
+      snippets: [] as Snippet[],
+      access,
+      mastery: summary,
+    }
+  }
+
+  const language = sourceLanguages.find((entry) => entry.id === selectedLanguageMeta.id)
+  if (!language) return null
+
+  const baseSnippets = freeTrackSnippetRegistry[track.id]?.[language.id] ?? []
+  const baseIds = new Set(baseSnippets.map((snippet) => snippet.id))
+  const expectedTotal = trackSnippetTotalRegistry[track.id]?.[language.id] ?? baseSnippets.length
+  const allLanguageSnippets = await getFullLanguageSnippets(language)
+  const fullTrackSnippets = buildTrackSnippets(track, allLanguageSnippets)
+
+  assertPremiumCoverage({
+    trackId: track.id,
+    languageId: language.id,
+    expectedTotal,
+    resolvedTotal: fullTrackSnippets.length,
+  })
+
+  const masterySnippets = fullTrackSnippets.filter((snippet) => !baseIds.has(snippet.id))
+
+  return {
+    availableLanguages,
+    selectedLanguage: toLanguageMeta(language),
+    snippets: masterySnippets,
+    access,
+    mastery: {
+      eligible: true,
+      available: masterySnippets.length > 0,
+      challengeCount: masterySnippets.length,
+      totalStars: masterySnippets.length * 3,
+    },
   }
 }
 
