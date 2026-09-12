@@ -1,0 +1,35 @@
+name: Validate pull request
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Typecheck track and Mastery runtime
+        run: npx tsc -p tsconfig.track-catalog.json --pretty false
+
+      - name: Typecheck billing runtime
+        run: npx tsc -p tsconfig.billing.json --pretty false
+
+      - name: Typecheck app
+        run: npx tsc --noEmit --pretty false
+
+      - name: Lint
+        run: npm run lint
