@@ -116,7 +116,6 @@ function CategoryHeader({
       {category.mastery?.eligible ? (
         <CategoryMasteryToggle
           categoryId={category.id}
-          challengeCount={category.mastery.totalChallenges}
           isPlus={isPlus}
           isOpen={isOpen}
           onClick={onToggle}
@@ -129,14 +128,12 @@ function CategoryHeader({
 
 function CategoryMasteryToggle({
   categoryId,
-  challengeCount,
   isPlus,
   isOpen,
   onClick,
   locale,
 }: {
   categoryId: string
-  challengeCount: number
   isPlus: boolean
   isOpen: boolean
   onClick: () => void
@@ -144,9 +141,9 @@ function CategoryMasteryToggle({
 }) {
   const closedLabel = isPlus
     ? 'Mastery'
-    : challengeCount > 0
-      ? locale === 'pt' ? `${challengeCount} desafios Mastery` : `${challengeCount} Mastery challenges`
-      : locale === 'pt' ? 'Mastery Plus' : 'Mastery Plus'
+    : locale === 'pt'
+      ? 'Mais trilhas com Plus'
+      : 'More tracks with Plus'
 
   return (
     <button
