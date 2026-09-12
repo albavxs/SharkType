@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import Footer from '@/components/typing/Footer'
-import LandingHeroScene from '@/components/landing/LandingHeroScene'
+import SharkTitleMark from '@/components/landing/SharkTitleMark'
 import { ArrowRightIcon, BookIcon, ChartIcon, DiscordIcon, GithubIcon, ShieldIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
@@ -88,7 +88,14 @@ const productCards = [
   { key: 'mastery', icon: ChartIcon, title: 'masteryTitle', body: 'masteryBody', href: null },
 ] as const
 
-const demoCode = `const sharktype = {\n  language: "TypeScript",\n  streak: 14,\n  mastery: true,\n}`
+const demoLines = [
+  'const sharktype = {',
+  '  language: "TypeScript",',
+  '  streak: 14,',
+  '  mastery: true,',
+  '}',
+]
+const demoCode = demoLines.join('\n')
 
 function CodePreview() {
   const reduceMotion = useReducedMotion()
@@ -101,21 +108,23 @@ function CodePreview() {
     }
 
     let index = 0
-    let pauseTimer: ReturnType<typeof setTimeout> | null = null
+    let resetTimer: ReturnType<typeof setTimeout> | null = null
     const interval = window.setInterval(() => {
       index += 1
       setVisibleCode(demoCode.slice(0, index))
       if (index >= demoCode.length) {
         window.clearInterval(interval)
-        pauseTimer = window.setTimeout(() => setVisibleCode(demoCode), 400)
+        resetTimer = window.setTimeout(() => setVisibleCode(demoCode), 500)
       }
     }, 28)
 
     return () => {
       window.clearInterval(interval)
-      if (pauseTimer) window.clearTimeout(pauseTimer)
+      if (resetTimer) window.clearTimeout(resetTimer)
     }
   }, [reduceMotion])
+
+  const visibleLines = visibleCode.split('\n')
 
   return (
     <motion.div
@@ -123,22 +132,45 @@ function CodePreview() {
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ duration: 0.7, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
       whileHover={reduceMotion ? undefined : { y: -5, rotateX: 1.2, rotateY: -1.4 }}
-      className="relative z-20 w-full max-w-[520px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
+      className="relative z-20 w-full max-w-[540px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
       style={{
-        borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
-        backgroundColor: 'color-mix(in srgb, var(--bg) 86%, transparent)',
+        borderColor: 'color-mix(in srgb, var(--main) 24%, color-mix(in srgb, var(--sub) 24%, transparent))',
+        backgroundColor: 'color-mix(in srgb, var(--bg) 88%, transparent)',
+        boxShadow: '0 24px 80px color-mix(in srgb, var(--main) 10%, transparent)',
         transformStyle: 'preserve-3d',
       }}
     >
-      <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 76%, transparent)' }}>
+      <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#ff625f' }} />
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#ffbe3f' }} />
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#2bcf65' }} />
         <span className="ml-auto font-mono text-[10px] tracking-wide" style={{ color: 'var(--sub)' }}>practice.ts · TypeScript</span>
       </div>
-      <div className="min-h-[245px] p-5 font-mono text-[13px] leading-7 sm:p-6 sm:text-sm">
-        <pre className="whitespace-pre-wrap" style={{ color: 'var(--text)' }}>{visibleCode}<span style={{ color: 'var(--main)' }}>▌</span></pre>
-        <div className="mt-7 flex flex-wrap items-center gap-3 text-xs">
+
+      <div className="min-h-[250px] p-5 sm:p-6">
+        <div className="font-mono text-[13px] leading-7 sm:text-sm">
+          {visibleLines.map((line, index) => (
+            <div key={`${index}-${line}`} className="grid grid-cols-[24px_1fr] gap-3">
+              <span className="select-none text-right text-[10px]" style={{ color: 'var(--sub)', opacity: 0.45 }}>{index + 1}</span>
+              <pre className="whitespace-pre-wrap" style={{ color: 'var(--text)' }}>
+                {line}
+                {index === visibleLines.length - 1 ? <span className="animate-pulse" style={{ color: 'var(--main)' }}>▌</span> : null}
+              </pre>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 h-1 overflow-hidden rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--sub) 16%, transparent)' }}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{ backgroundColor: 'var(--main)' }}
+            initial={reduceMotion ? { width: '100%' } : { width: '10%' }}
+            animate={{ width: '100%' }}
+            transition={{ duration: reduceMotion ? 0 : 2.3, delay: 0.7, ease: 'easeOut' }}
+          />
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full px-3 py-1.5 font-semibold" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}>72 WPM</span>
           <span style={{ color: 'var(--sub)' }}>98% accuracy</span>
           <span style={{ color: 'var(--sub)' }}>0 errors</span>
@@ -156,8 +188,8 @@ export default function PublicHomePage() {
   const [showHelp, setShowHelp] = useState(false)
   const reduceMotion = useReducedMotion()
   const { scrollYProgress } = useScroll()
-  const heroTextY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 42])
-  const heroVisualY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 78])
+  const heroTextY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 36])
+  const heroVisualY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 62])
   const text = copy[locale]
   const featuredLanguages = useMemo(
     () => codeLanguageMetas.filter((language) => ['javascript', 'python', 'linux', 'typescript', 'react', 'git'].includes(language.id)),
@@ -182,7 +214,7 @@ export default function PublicHomePage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden">
-      <SceneWrapper />
+      <SceneWrapper variant="landing" />
       <div className="relative z-10 flex min-h-screen flex-col">
         <header className="absolute inset-x-0 top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-end px-4 py-5 sm:px-6 sm:py-6">
           <nav className="flex items-center gap-2 sm:gap-3">
@@ -212,17 +244,22 @@ export default function PublicHomePage() {
         </header>
 
         <section className="relative flex min-h-[86svh] items-center px-4 pb-16 pt-24 sm:px-6 lg:min-h-[88vh] lg:pb-20 lg:pt-28">
-          <div className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8">
+          <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:gap-14">
             <motion.div style={{ y: heroTextY }} className="relative z-20 max-w-xl">
-              <motion.h1
+              <motion.div
                 initial={reduceMotion ? false : { opacity: 0, x: -30, filter: 'blur(10px)' }}
                 animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                 transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-                className="text-5xl font-black leading-[0.94] tracking-[-0.055em] font-[family-name:var(--font-geist-mono)] sm:text-6xl lg:text-7xl xl:text-[5.35rem]"
-                style={{ color: 'var(--text)' }}
+                className="flex items-center gap-2 sm:gap-3"
               >
-                Shark<span style={{ color: 'var(--main)' }}>Type</span>
-              </motion.h1>
+                <SharkTitleMark themeSignal={currentTheme} />
+                <h1
+                  className="text-5xl font-black leading-[0.94] tracking-[-0.055em] font-[family-name:var(--font-geist-mono)] sm:text-6xl lg:text-7xl xl:text-[5.35rem]"
+                  style={{ color: 'var(--text)' }}
+                >
+                  Shark<span style={{ color: 'var(--main)' }}>Type</span>
+                </h1>
+              </motion.div>
 
               <motion.p
                 initial={reduceMotion ? false : { opacity: 0, y: 20 }}
@@ -260,13 +297,9 @@ export default function PublicHomePage() {
               </motion.div>
             </motion.div>
 
-            <motion.div style={{ y: heroVisualY }} className="relative z-10 min-h-[430px] sm:min-h-[500px] lg:min-h-[590px]">
-              <div className="absolute inset-[-8%_-4%_2%_-6%] opacity-95">
-                <LandingHeroScene themeSignal={currentTheme} />
-              </div>
-              <div className="absolute inset-x-0 bottom-3 flex justify-center lg:justify-end lg:pr-2">
-                <CodePreview />
-              </div>
+            <motion.div style={{ y: heroVisualY }} className="relative z-20 flex min-h-[360px] items-center justify-center lg:min-h-[480px] lg:justify-end">
+              <div className="pointer-events-none absolute inset-[-14%_-12%] rounded-full opacity-70 blur-3xl" style={{ background: 'radial-gradient(circle, color-mix(in srgb, var(--main) 10%, transparent), transparent 64%)' }} />
+              <CodePreview />
             </motion.div>
           </div>
 
