@@ -27,6 +27,27 @@ type AsaasWebhookPayload = {
     status?: string
     value?: number | null
   }
+  authorization?: {
+    id?: string
+    status?: string
+    customerId?: string | null
+    frequency?: string | null
+    value?: number | null
+    startDate?: string | null
+    finishDate?: string | null
+    immediateQrCode?: {
+      conciliationIdentifier?: string | null
+      expirationDate?: string | null
+    }
+  }
+  paymentInstruction?: {
+    id?: string
+    status?: string
+    dueDate?: string | null
+    paymentId?: string | null
+    payment?: string | null
+    authorization?: { id?: string | null }
+  }
   [key: string]: unknown
 }
 
@@ -44,17 +65,34 @@ function checkoutStatus(event: string): string | null {
   return null
 }
 
-async function findCheckoutForSubscription(admin: any, customerId: string | null | undefined) {
+async function findBillingOwnerForCustomer(admin: any, customerId: string | null | undefined) {
   if (!customerId) return null
-  const { data } = await admin
+
+  const { data: checkout } = await admin
     .from('billing_checkouts')
-    .select('*')
+    .select('user_id,purpose,sandbox,provider_customer_id')
     .eq('provider', 'asaas')
     .eq('provider_customer_id', customerId)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
-  return data ?? null
+
+  if (checkout) return checkout
+
+  const { data: pixAuthorization } = await admin
+    .from('billing_pix_authorizations')
+    .select('user_id,sandbox,provider_customer_id')
+    .eq('provider', 'asaas')
+    .eq('provider_customer_id', customerId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!pixAuthorization) return null
+  return {
+    ...pixAuthorization,
+    purpose: 'plus_subscription',
+  }
 }
 
 async function upsertPlusEntitlement(admin: any, input: {
@@ -127,49 +165,98 @@ async function processCheckoutEvent(admin: any, payload: AsaasWebhookPayload) {
   }
 }
 
+async function processPixAutomaticEvent(admin: any, payload: AsaasWebhookPayload) {
+  const event = payload.event ?? ''
+  const authorization = payload.authorization
+  if (!event.startsWith('PIX_AUTOMATIC_RECURRING_AUTHORIZATION_') || !authorization?.id) return
+
+  const { data: localAuthorization, error: findError } = await admin
+    .from('billing_pix_authorizations')
+    .select('*')
+    .eq('provider', 'asaas')
+    .eq('provider_authorization_id', authorization.id)
+    .maybeSingle()
+  if (findError) throw findError
+  if (!localAuthorization) return
+
+  const status = authorization.status
+    ?? (event.endsWith('_ACTIVATED') ? 'ACTIVE'
+      : event.endsWith('_CANCELLED') ? 'CANCELLED'
+        : event.endsWith('_EXPIRED') ? 'EXPIRED'
+          : event.endsWith('_REFUSED') ? 'REFUSED'
+            : 'CREATED')
+
+  const { error: updateError } = await admin
+    .from('billing_pix_authorizations')
+    .update({
+      status,
+      provider_customer_id: authorization.customerId ?? localAuthorization.provider_customer_id,
+      frequency: authorization.frequency ?? localAuthorization.frequency,
+      amount: authorization.value ?? localAuthorization.amount,
+      conciliation_identifier: authorization.immediateQrCode?.conciliationIdentifier
+        ?? localAuthorization.conciliation_identifier,
+    })
+    .eq('id', localAuthorization.id)
+  if (updateError) throw updateError
+
+  if (localAuthorization.sandbox) return
+
+  if (event === 'PIX_AUTOMATIC_RECURRING_AUTHORIZATION_ACTIVATED') {
+    await upsertPlusEntitlement(admin, {
+      userId: localAuthorization.user_id,
+      customerId: authorization.customerId ?? localAuthorization.provider_customer_id,
+      status: 'active',
+      reason: 'Asaas Pix Automatic authorization activated',
+    })
+    await recordAudit(admin, localAuthorization.user_id, 'asaas_pix_automatic_activated', {
+      authorizationId: authorization.id,
+    })
+  }
+}
+
 async function processSubscriptionEvent(admin: any, payload: AsaasWebhookPayload) {
   const subscription = payload.subscription
   const event = payload.event ?? ''
   if (!subscription?.id) return
 
-  const linkedCheckout = await findCheckoutForSubscription(admin, subscription.customer)
-  if (!linkedCheckout) return
+  const linkedOwner = await findBillingOwnerForCustomer(admin, subscription.customer)
+  if (!linkedOwner) return
 
   const subscriptionStatus = event === 'SUBSCRIPTION_DELETED' || event === 'SUBSCRIPTION_INACTIVATED'
     ? 'INACTIVE'
     : subscription.status ?? 'UNKNOWN'
 
   const { error: upsertError } = await admin.from('billing_subscriptions').upsert({
-    user_id: linkedCheckout.user_id,
+    user_id: linkedOwner.user_id,
     provider: 'asaas',
-    purpose: linkedCheckout.purpose,
+    purpose: linkedOwner.purpose,
     provider_subscription_id: subscription.id,
     provider_customer_id: subscription.customer ?? null,
     status: subscriptionStatus,
     cycle: subscription.cycle ?? null,
     amount: subscription.value ?? null,
     next_due_date: subscription.nextDueDate?.slice(0, 10) ?? null,
-    sandbox: Boolean(linkedCheckout.sandbox),
+    sandbox: Boolean(linkedOwner.sandbox),
   }, { onConflict: 'provider,provider_subscription_id' })
   if (upsertError) throw upsertError
 
-  if (linkedCheckout.sandbox || linkedCheckout.purpose !== 'plus_subscription') return
+  if (linkedOwner.sandbox || linkedOwner.purpose !== 'plus_subscription') return
 
   if (event === 'SUBSCRIPTION_INACTIVATED' || event === 'SUBSCRIPTION_DELETED') {
     await upsertPlusEntitlement(admin, {
-      userId: linkedCheckout.user_id,
+      userId: linkedOwner.user_id,
       customerId: subscription.customer,
       subscriptionId: subscription.id,
       status: 'cancelled',
       reason: `Asaas ${event.toLowerCase()}`,
     })
-    await recordAudit(admin, linkedCheckout.user_id, 'asaas_subscription_inactive', { subscriptionId: subscription.id, event })
+    await recordAudit(admin, linkedOwner.user_id, 'asaas_subscription_inactive', { subscriptionId: subscription.id, event })
     return
   }
 
   if (subscriptionStatus === 'ACTIVE') {
     await upsertPlusEntitlement(admin, {
-      userId: linkedCheckout.user_id,
+      userId: linkedOwner.user_id,
       customerId: subscription.customer,
       subscriptionId: subscription.id,
       status: 'active',
@@ -283,6 +370,7 @@ export async function POST(request: Request) {
     if (payload.event.startsWith('CHECKOUT_')) await processCheckoutEvent(admin, payload)
     if (payload.event.startsWith('SUBSCRIPTION_')) await processSubscriptionEvent(admin, payload)
     if (payload.event.startsWith('PAYMENT_')) await processPaymentEvent(admin, payload)
+    if (payload.event.startsWith('PIX_AUTOMATIC_RECURRING_')) await processPixAutomaticEvent(admin, payload)
 
     await admin
       .from('billing_events')
