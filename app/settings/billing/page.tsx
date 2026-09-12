@@ -116,14 +116,13 @@ export default function BillingSettingsPage() {
     <main className="relative min-h-screen" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
       <SceneWrapper />
       <div className="relative z-10 mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
-        <button
-          type="button"
-          onClick={() => router.back()}
+        <Link
+          href="/settings"
           className="inline-flex cursor-pointer items-center text-sm transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2"
           style={{ color: 'var(--sub)' }}
         >
-          ← {locale === 'pt' ? 'Voltar' : 'Back'}
-        </button>
+          ← {locale === 'pt' ? 'Configurações' : 'Settings'}
+        </Link>
 
         <div className="mt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--main)' }}>SharkType Plus</p>

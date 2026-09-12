@@ -35,7 +35,7 @@ export default function VerifyEmailClient() {
     }
 
     setNotice(t('authVerificationSuccess', locale))
-    router.push('/')
+    router.push('/home')
   }
 
   async function handleResend() {

@@ -164,7 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-          redirectTo: getAuthCallbackUrl('/'),
+          redirectTo: getAuthCallbackUrl('/home'),
         },
       })
 
@@ -184,7 +184,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: getAuthCallbackUrl('/'),
+          redirectTo: getAuthCallbackUrl('/home'),
         },
       })
 
@@ -264,7 +264,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username,
             display_name: username,
           },
-          emailRedirectTo: getAuthCallbackUrl('/'),
+        emailRedirectTo: getAuthCallbackUrl('/home'),
         },
       })
 

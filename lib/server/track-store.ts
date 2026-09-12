@@ -5,8 +5,8 @@ import {
   freeTrackSnippetRegistry,
   trackSnippetTotalRegistry,
 } from '@/data/generated/free-track-snippets'
-import { PUBLIC_SNIPPET_LIMIT, getTotalSnippetCount } from '@/data/public-snippet-counts'
 import { loadPremiumSnippets, PremiumContentUnavailableError } from '@/lib/server/premium-content'
+import { getBaseSnippetsForLanguage } from '@/lib/server/base-practice'
 import type { Language, LanguageMeta, Snippet } from '@/lib/types'
 import { getLanguageMetaById } from '@/data/metadata'
 import type { UserAccess } from './access-control'
@@ -411,28 +411,12 @@ export async function getLanguagePracticePayload(languageId: string, access: Use
   const language = languages.find((entry) => entry.id === languageId)
   if (!language) return null
 
-  const expectedTotal = Math.max(getTotalSnippetCount(language.id), language.snippets.length)
-  const premiumCount = Math.max(0, expectedTotal - PUBLIC_SNIPPET_LIMIT)
-  let snippets = language.snippets.slice(0, PUBLIC_SNIPPET_LIMIT)
-
-  if (access.isPlus) {
-    if (premiumCount > 0) {
-      const allSnippets = await getFullLanguageSnippets(language)
-      assertPremiumCoverage({
-        languageId: language.id,
-        expectedTotal,
-        resolvedTotal: allSnippets.length,
-      })
-      snippets = allSnippets
-    } else {
-      snippets = language.snippets
-    }
-  }
+  const snippets = getBaseSnippetsForLanguage(language.id)
 
   return {
     language: toLanguageMeta(language),
     snippets,
     access,
-    wall: buildPracticeWall(PUBLIC_SNIPPET_LIMIT, premiumCount, access),
+    wall: buildPracticeWall(FREE_TRACK_SNIPPET_LIMIT, 0, access, false),
   }
 }

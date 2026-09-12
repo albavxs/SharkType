@@ -533,7 +533,7 @@ export default function TrackPracticePage() {
           onLanguageChange={() => {}} onDifficultyChange={handleDifficultyChange}
           showControls={!(track.textLanguages && track.snippetIds.length > 0)}
           showLanguage={false}
-          onHomeClick={() => router.push('/')} onHelpClick={() => setShowHelp(true)}
+          onHelpClick={() => setShowHelp(true)}
           level={levelInfo.level} streak={progress.streak.current}
           locale={locale} onLocaleToggle={toggleLocale}
           isTyping={isTyping}
