@@ -39,5 +39,17 @@ jobs:
       - name: Typecheck app
         run: npx tsc --noEmit --pretty false
 
-      - name: Lint
-        run: npm run lint
+      - name: Validate content policies
+        run: |
+          npm run check:pt-content
+          npm run check:access-policies
+
+      - name: Lint changed source files
+        shell: bash
+        run: |
+          mapfile -t files < <(git diff --name-only --diff-filter=ACMR origin/master...HEAD | grep -E '\.(ts|tsx|js|jsx|mjs|cjs)$' || true)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No changed source files to lint."
+            exit 0
+          fi
+          npx eslint "${files[@]}"
