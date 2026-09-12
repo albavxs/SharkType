@@ -40,6 +40,16 @@ export interface TrackMasterySummary {
   totalStars: number
 }
 
+export interface TrackBaseUnit {
+  key: string
+  snippetIds: string[]
+}
+
+export interface TrackBaseSummary {
+  totalUnits: number
+  units: TrackBaseUnit[]
+}
+
 function toLanguageMeta(language: Language): LanguageMeta {
   return {
     id: language.id,
@@ -132,6 +142,57 @@ function isTrackMasteryEligible(track: Track, summary: TrackAccessSummary): bool
   return false
 }
 
+function buildTrackBaseSummary(track: Track): TrackBaseSummary {
+  const freeByLanguage = freeTrackSnippetRegistry[track.id] ?? {}
+  const languageSnippets = Object.values(freeByLanguage)
+
+  if (track.slots?.length) {
+    const units = track.slots
+      .map((slot) => {
+        const snippetIds = Array.from(new Set(
+          languageSnippets
+            .flatMap((snippets) => snippets)
+            .filter((snippet) => snippet.slot === slot)
+            .map((snippet) => snippet.id),
+        ))
+
+        return {
+          key: `slot:${slot}`,
+          snippetIds,
+        }
+      })
+      .filter((unit) => unit.snippetIds.length > 0)
+
+    return {
+      totalUnits: units.length,
+      units,
+    }
+  }
+
+  const maxUnits = languageSnippets.reduce(
+    (max, snippets) => Math.max(max, snippets.length),
+    0,
+  )
+
+  const units = Array.from({ length: maxUnits }, (_, index) => {
+    const snippetIds = Array.from(new Set(
+      languageSnippets
+        .map((snippets) => snippets[index]?.id)
+        .filter((snippetId): snippetId is string => Boolean(snippetId)),
+    ))
+
+    return {
+      key: `unit:${index + 1}`,
+      snippetIds,
+    }
+  }).filter((unit) => unit.snippetIds.length > 0)
+
+  return {
+    totalUnits: units.length,
+    units,
+  }
+}
+
 export async function getTrackLanguages(track: Track): Promise<LanguageMeta[]> {
   const sourceLanguages = getTrackLanguageSource(track)
   const supportedIds = new Set(Object.keys(freeTrackSnippetRegistry[track.id] ?? {}))
@@ -147,6 +208,12 @@ export async function listTrackLanguageBadges(): Promise<Record<string, Language
   )
 
   return Object.fromEntries(entries)
+}
+
+export function listTrackBaseSummary(): Record<string, TrackBaseSummary> {
+  return Object.fromEntries(
+    tracks.map((track) => [track.id, buildTrackBaseSummary(track)] as const),
+  )
 }
 
 export function listTrackAccessSummary(): Record<string, TrackAccessSummary> {

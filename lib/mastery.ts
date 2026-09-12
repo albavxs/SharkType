@@ -10,6 +10,16 @@ export type TrackMasterySummary = {
   totalStars: number
 }
 
+export type TrackBaseUnit = {
+  key: string
+  snippetIds: string[]
+}
+
+export type TrackBaseSummary = {
+  totalUnits: number
+  units: TrackBaseUnit[]
+}
+
 export interface MasteryTrack {
   id: string
   slug: string

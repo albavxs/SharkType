@@ -18,7 +18,13 @@ import { LanguageMeta, Difficulty } from '@/lib/types'
 import { useProgress } from '@/hooks/useProgress'
 import { useAuth } from '@/hooks/useAuth'
 import { LockIcon } from '@/components/icons'
-import { isMasteryEligible, toMasteryTrack, type TrackMasterySummary, type TrackCategory } from '@/lib/mastery'
+import {
+  isMasteryEligible,
+  toMasteryTrack,
+  type TrackBaseSummary,
+  type TrackMasterySummary,
+  type TrackCategory,
+} from '@/lib/mastery'
 
 const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
 const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
@@ -77,6 +83,7 @@ export default function TracksPage() {
   const [showHelp, setShowHelp] = useState(false)
   const [showGuestOverlay, setShowGuestOverlay] = useState(false)
   const [trackLangsMap, setTrackLangsMap] = useState<Map<string, LanguageMeta[]>>(new Map())
+  const [trackBaseMap, setTrackBaseMap] = useState<Map<string, TrackBaseSummary>>(new Map())
   const [trackMasteryMap, setTrackMasteryMap] = useState<Map<string, TrackMasterySummary>>(new Map())
   const [isPlus, setIsPlus] = useState(false)
   const [activeMasterySection, setActiveMasterySection] = useState<string | null>(null)
@@ -85,7 +92,13 @@ export default function TracksPage() {
   const isMobile = useIsMobile()
   const { progress } = useProgress()
   const levelInfo = getLevel(progress.totalXP)
-  const completedTrackIds = useMemo(() => new Set(progress.completedTrackIds ?? []), [progress.completedTrackIds])
+  const completedSnippetIds = useMemo(() => {
+    const completed = new Set<string>()
+    for (const languageProgress of Object.values(progress.languages)) {
+      for (const snippetId of languageProgress.completedSnippetIds) completed.add(snippetId)
+    }
+    return completed
+  }, [progress.languages])
 
   const dummyLang = getLanguageMetaById(DEFAULT_LANGUAGE) ?? codeLanguageMetas[0]
 
@@ -105,14 +118,17 @@ export default function TracksPage() {
         const response = await fetch('/api/tracks/catalog', { cache: 'no-store' })
         const payload = (await response.json()) as {
           trackLanguageBadges?: Record<string, LanguageMeta[]>
+          trackBaseSummary?: Record<string, TrackBaseSummary>
           trackMasterySummary?: Record<string, TrackMasterySummary>
         }
         if (!active || !response.ok) return
         setTrackLangsMap(new Map(Object.entries(payload.trackLanguageBadges ?? {})))
+        setTrackBaseMap(new Map(Object.entries(payload.trackBaseSummary ?? {})))
         setTrackMasteryMap(new Map(Object.entries(payload.trackMasterySummary ?? {})))
       } catch {
         if (active) {
           setTrackLangsMap(new Map())
+          setTrackBaseMap(new Map())
           setTrackMasteryMap(new Map())
         }
       }
@@ -146,42 +162,18 @@ export default function TracksPage() {
     }
   }, [user])
 
-  function getTrackProgress(snippetIds: string[]): number {
-    let completed = 0
-    for (const id of snippetIds) {
-      for (const lp of Object.values(progress.languages)) {
-        if (lp.completedSnippetIds.includes(id)) { completed++; break }
-      }
-    }
-    return completed
-  }
-
   function getTrackProgressSummary(track: Track) {
-    const isCompleted = completedTrackIds.has(track.id)
-
-    if (track.slots && track.slots.length > 0) {
-      return {
-        completed: isCompleted ? track.slots.length : 0,
-        total: track.slots.length,
-        isCompleted,
-      }
-    }
-
-    const snippetTotal = track.snippetIds.length
-    const snippetCompleted = snippetTotal > 0 ? getTrackProgress(track.snippetIds) : 0
-
-    if (snippetTotal > 0) {
-      return {
-        completed: snippetCompleted,
-        total: snippetTotal,
-        isCompleted,
-      }
-    }
+    const baseSummary = trackBaseMap.get(track.id)
+    const units = baseSummary?.units ?? []
+    const completed = units.filter((unit) =>
+      unit.snippetIds.some((snippetId) => completedSnippetIds.has(snippetId))
+    ).length
+    const total = baseSummary?.totalUnits ?? 0
 
     return {
-      completed: isCompleted ? 1 : 0,
-      total: 1,
-      isCompleted,
+      completed,
+      total,
+      isCompleted: total > 0 && completed >= total,
     }
   }
 
@@ -296,11 +288,9 @@ export default function TracksPage() {
           </div>
         ) : null}
         <div className="mt-3 text-[11px] font-medium" style={{ color: progressSummary.isCompleted ? 'var(--main)' : 'var(--sub)' }}>
-          {progressSummary.total > 1
+          {progressSummary.total > 0
             ? `${progressSummary.completed}/${progressSummary.total} ${t('completed', locale)}`
-            : progressSummary.isCompleted
-              ? t('completed', locale)
-              : `0/${progressSummary.total} ${t('completed', locale)}`}
+            : locale === 'pt' ? 'Base em preparação' : 'Base coming soon'}
         </div>
       </button>
     )

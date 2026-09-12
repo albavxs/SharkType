@@ -81,15 +81,36 @@ export default function BillingSettingsPage() {
     }).format(value)
   }
 
-  const sourceLabel = payload?.access.source === 'subscription'
-    ? locale === 'pt' ? 'Assinatura' : 'Subscription'
-    : payload?.access.source === 'manual_grant'
-      ? locale === 'pt' ? 'Acesso concedido' : 'Granted access'
-      : payload?.access.source === 'super_admin'
-        ? locale === 'pt' ? 'Acesso administrativo' : 'Administrative access'
-        : locale === 'pt' ? 'Plano gratuito' : 'Free plan'
-
   const loading = authLoading || (Boolean(user) && !payload && !error)
+  const isLifetime = payload?.access.source === 'manual_grant' && !payload.entitlement?.expiresAt
+  const isGranted = payload?.access.source === 'manual_grant'
+  const isAdminAccess = payload?.access.source === 'super_admin'
+
+  const planLabel = payload?.access.isPlus
+    ? isLifetime
+      ? locale === 'pt' ? 'Plus Vitalício' : 'Lifetime Plus'
+      : isGranted
+        ? locale === 'pt' ? 'Plus concedido' : 'Granted Plus'
+        : isAdminAccess
+          ? locale === 'pt' ? 'Plus administrativo' : 'Administrative Plus'
+          : 'SharkType Plus'
+    : 'SharkType Free'
+
+  const rawStatus = payload?.subscription?.status ?? payload?.entitlement?.status ?? null
+  const normalizedStatus = rawStatus?.toLowerCase() ?? null
+  const statusLabel = payload?.access.isPlus && (isGranted || isAdminAccess)
+    ? locale === 'pt' ? 'Ativo' : 'Active'
+    : normalizedStatus === 'active' || normalizedStatus === 'confirmed' || normalizedStatus === 'received'
+      ? locale === 'pt' ? 'Ativo' : 'Active'
+      : normalizedStatus === 'past_due' || normalizedStatus === 'overdue' || normalizedStatus === 'pending'
+        ? locale === 'pt' ? 'Pagamento pendente' : 'Payment pending'
+        : normalizedStatus === 'canceled' || normalizedStatus === 'cancelled'
+          ? locale === 'pt' ? 'Cancelado' : 'Canceled'
+          : normalizedStatus === 'expired'
+            ? locale === 'pt' ? 'Expirado' : 'Expired'
+            : payload?.access.isPlus
+              ? locale === 'pt' ? 'Ativo' : 'Active'
+              : locale === 'pt' ? 'Gratuito' : 'Free'
 
   return (
     <main className="relative min-h-screen" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
@@ -108,14 +129,14 @@ export default function BillingSettingsPage() {
           <h1 className="mt-2 text-3xl font-bold">{locale === 'pt' ? 'Plano e assinatura' : 'Plan and subscription'}</h1>
           <p className="mt-3 text-sm leading-6" style={{ color: 'var(--sub)' }}>
             {locale === 'pt'
-              ? 'Veja o estado do seu acesso Plus e, quando houver uma assinatura vinculada, os dados básicos de cobrança.'
-              : 'Review your Plus access and, when a subscription is linked, its basic billing details.'}
+              ? 'Consulte seu plano, o status do acesso e os dados de cobrança quando houver uma assinatura recorrente.'
+              : 'Review your plan, access status, and billing details when a recurring subscription exists.'}
           </p>
         </div>
 
         {loading ? (
           <div className="mt-8 rounded-2xl border p-6 text-sm" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'var(--sub-alt)', color: 'var(--sub)' }}>
-            {locale === 'pt' ? 'Carregando assinatura...' : 'Loading subscription...'}
+            {locale === 'pt' ? 'Carregando plano...' : 'Loading plan...'}
           </div>
         ) : error ? (
           <div className="mt-8 rounded-2xl border p-6 text-sm" style={{ borderColor: 'color-mix(in srgb, var(--error) 30%, transparent)', backgroundColor: 'var(--sub-alt)', color: 'var(--error)' }}>
@@ -128,12 +149,22 @@ export default function BillingSettingsPage() {
                 <p className="text-sm font-semibold uppercase tracking-[0.16em]" style={{ color: payload.access.isPlus ? 'var(--main)' : 'var(--sub)' }}>
                   {payload.access.isPlus ? 'SharkType Plus' : 'SharkType Free'}
                 </p>
-                <h2 className="mt-2 text-2xl font-bold">
-                  {payload.access.isPlus
-                    ? locale === 'pt' ? 'Acesso ativo' : 'Access active'
-                    : locale === 'pt' ? 'Plano gratuito' : 'Free plan'}
-                </h2>
-                <p className="mt-2 text-sm" style={{ color: 'var(--sub)' }}>{sourceLabel}</p>
+                <h2 className="mt-2 text-2xl font-bold">{planLabel}</h2>
+                <p className="mt-2 max-w-xl text-sm leading-6" style={{ color: 'var(--sub)' }}>
+                  {isLifetime
+                    ? locale === 'pt'
+                      ? 'Você possui o SharkType Plus Vitalício concedido à sua conta. Aproveite todos os recursos Plus e a experiência Mastery sem renovação ou prazo de expiração.'
+                      : 'You have Lifetime SharkType Plus granted to your account. Enjoy every Plus feature and the Mastery experience with no renewal or expiration date.'
+                    : isGranted
+                      ? locale === 'pt'
+                        ? `Seu acesso Plus está ativo${payload.entitlement?.expiresAt ? ` até ${formatDate(payload.entitlement.expiresAt)}` : ''}.`
+                        : `Your Plus access is active${payload.entitlement?.expiresAt ? ` until ${formatDate(payload.entitlement.expiresAt)}` : ''}.`
+                      : isAdminAccess
+                        ? locale === 'pt' ? 'Seu acesso Plus faz parte da sua conta administrativa.' : 'Your Plus access is included with your administrative account.'
+                        : payload.access.isPlus
+                          ? locale === 'pt' ? 'Sua assinatura Plus está ativa.' : 'Your Plus subscription is active.'
+                          : locale === 'pt' ? 'Você está usando o plano gratuito.' : 'You are using the free plan.'}
+                </p>
               </div>
 
               {!payload.access.isPlus ? (
@@ -145,12 +176,12 @@ export default function BillingSettingsPage() {
 
             <dl className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-xl p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 68%, transparent)' }}>
-                <dt className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Origem' : 'Source'}</dt>
-                <dd className="mt-2 text-sm font-semibold">{sourceLabel}</dd>
+                <dt className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--sub)' }}>{locale === 'pt' ? 'Plano' : 'Plan'}</dt>
+                <dd className="mt-2 text-sm font-semibold">{planLabel}</dd>
               </div>
               <div className="rounded-xl p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--bg) 68%, transparent)' }}>
                 <dt className="text-xs uppercase tracking-[0.14em]" style={{ color: 'var(--sub)' }}>Status</dt>
-                <dd className="mt-2 text-sm font-semibold">{payload.subscription?.status ?? payload.entitlement?.status ?? (payload.access.isPlus ? 'active' : 'free')}</dd>
+                <dd className="mt-2 text-sm font-semibold" style={{ color: payload.access.isPlus ? 'var(--main)' : 'var(--text)' }}>{statusLabel}</dd>
               </div>
 
               {payload.subscription ? (
@@ -172,13 +203,33 @@ export default function BillingSettingsPage() {
                     <dd className="mt-2 text-sm font-semibold">{payload.subscription.sandbox ? 'Sandbox' : 'Production'}</dd>
                   </div>
                 </>
-              ) : payload.access.isPlus ? (
+              ) : isLifetime ? (
+                <div
+                  className="sm:col-span-2 rounded-xl border p-4 text-sm leading-6"
+                  style={{
+                    borderColor: 'color-mix(in srgb, var(--main) 24%, transparent)',
+                    backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)',
+                    color: 'var(--sub)',
+                  }}
+                >
+                  <div className="font-semibold" style={{ color: 'var(--main)' }}>
+                    ✦ {locale === 'pt' ? 'Acesso vitalício exclusivo' : 'Exclusive lifetime access'}
+                  </div>
+                  <p className="mt-1">
+                    {locale === 'pt'
+                      ? 'Seu Plus foi concedido permanentemente. Não existe cobrança recorrente, renovação ou data de expiração vinculada a este acesso.'
+                      : 'Your Plus was granted permanently. There is no recurring charge, renewal, or expiration date attached to this access.'}
+                  </p>
+                </div>
+              ) : isGranted && payload.entitlement?.expiresAt ? (
                 <div className="sm:col-span-2 rounded-xl p-4 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 8%, transparent)', color: 'var(--sub)' }}>
-                  {payload.access.source === 'manual_grant'
-                    ? locale === 'pt' ? 'Este acesso foi concedido manualmente e não possui cobrança recorrente vinculada.' : 'This access was granted manually and has no recurring billing attached.'
-                    : payload.access.source === 'super_admin'
-                      ? locale === 'pt' ? 'Seu Plus vem do acesso administrativo e não representa uma assinatura cobrada.' : 'Your Plus comes from administrative access and does not represent a billed subscription.'
-                      : locale === 'pt' ? 'Nenhuma assinatura recorrente está vinculada a este acesso.' : 'No recurring subscription is linked to this access.'}
+                  {locale === 'pt'
+                    ? `Acesso concedido sem cobrança recorrente, válido até ${formatDate(payload.entitlement.expiresAt)}.`
+                    : `Granted access with no recurring billing, valid until ${formatDate(payload.entitlement.expiresAt)}.`}
+                </div>
+              ) : isAdminAccess ? (
+                <div className="sm:col-span-2 rounded-xl p-4 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 8%, transparent)', color: 'var(--sub)' }}>
+                  {locale === 'pt' ? 'Seu Plus é fornecido pela conta administrativa e não representa uma assinatura cobrada.' : 'Your Plus is provided by the administrative account and does not represent a billed subscription.'}
                 </div>
               ) : null}
             </dl>
