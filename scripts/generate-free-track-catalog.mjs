@@ -108,13 +108,13 @@ try {
       totalsByLanguage[entry.id] = trackSnippets.length
     }
 
-    // Dedicated tracks declare the complete exercise set in snippetIds. Premium
-    // snippet bodies intentionally live outside the public repository, so using
-    // only the public catalog would undercount totals after the public limit.
-    // For single-language tracks, snippetIds is safe metadata and remains the
-    // authoritative total without pulling any historical/private content.
+    // Dedicated premium tracks declare the complete exercise set in snippetIds.
+    // Premium snippet bodies intentionally live outside the public repository,
+    // so snippetIds remains the authoritative total for a single-language
+    // locked track without reintroducing historical/private content.
+    const accessPolicy = track.accessPolicy ?? DEFAULT_ACCESS_POLICY
     const languageIds = Object.keys(freeByLanguage)
-    if (track.snippetIds.length > 0 && languageIds.length === 1) {
+    if (accessPolicy !== 'free' && track.snippetIds.length > 0 && languageIds.length === 1) {
       totalsByLanguage[languageIds[0]] = track.snippetIds.length
     }
 

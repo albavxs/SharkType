@@ -7,10 +7,7 @@ on:
       - 'scripts/generate-free-track-catalog.mjs'
       - 'data/tracks.ts'
       - 'data/manifest.ts'
-      - 'data/c.ts'
-      - 'data/csharp.ts'
-      - 'data/index.ts'
-      - 'data/public-snippet-counts.ts'
+      - 'data/*.ts'
       - 'data/generated/free-track-snippets.ts'
       - 'lib/server/track-store.ts'
       - 'lib/server/access-control.ts'
@@ -71,5 +68,6 @@ jobs:
             echo "Free track catalog already up to date."
           else
             git commit -m "chore: regenerate free track catalog"
+            git pull --rebase origin dev
             git push origin HEAD:dev
           fi
