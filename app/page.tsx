@@ -9,7 +9,7 @@ import SharkTitleMark from '@/components/landing/SharkTitleMark'
 import { ArrowRightIcon, BookIcon, ChartIcon, DiscordIcon, GithubIcon, ShieldIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
-import { getTheme, getThemePref, applyTheme } from '@/lib/themes'
+import { DEFAULT_THEME, applyTheme, getTheme, getThemePref } from '@/lib/themes'
 import { COMMUNITY_LINKS } from '@/lib/community'
 import { codeLanguageMetas } from '@/data/metadata'
 
@@ -108,35 +108,28 @@ function CodePreview() {
     }
 
     let index = 0
-    let resetTimer: ReturnType<typeof setTimeout> | null = null
     const interval = window.setInterval(() => {
       index += 1
       setVisibleCode(demoCode.slice(0, index))
-      if (index >= demoCode.length) {
-        window.clearInterval(interval)
-        resetTimer = window.setTimeout(() => setVisibleCode(demoCode), 500)
-      }
-    }, 28)
+      if (index >= demoCode.length) window.clearInterval(interval)
+    }, 95)
 
-    return () => {
-      window.clearInterval(interval)
-      if (resetTimer) window.clearTimeout(resetTimer)
-    }
+    return () => window.clearInterval(interval)
   }, [reduceMotion])
 
   const visibleLines = visibleCode.split('\n')
 
   return (
     <motion.div
-      initial={reduceMotion ? false : { opacity: 0, y: 24, rotateX: -4 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 20, rotateX: -3 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
-      transition={{ duration: 0.7, delay: 0.48, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={reduceMotion ? undefined : { y: -5, rotateX: 1.2, rotateY: -1.4 }}
+      transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={reduceMotion ? undefined : { y: -4, rotateX: 1, rotateY: -1.2 }}
       className="relative z-20 w-full max-w-[540px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
       style={{
         borderColor: 'color-mix(in srgb, var(--main) 24%, color-mix(in srgb, var(--sub) 24%, transparent))',
-        backgroundColor: 'color-mix(in srgb, var(--bg) 88%, transparent)',
-        boxShadow: '0 24px 80px color-mix(in srgb, var(--main) 10%, transparent)',
+        backgroundColor: 'color-mix(in srgb, var(--bg) 90%, transparent)',
+        boxShadow: '0 24px 80px color-mix(in srgb, var(--main) 9%, transparent)',
         transformStyle: 'preserve-3d',
       }}
     >
@@ -147,30 +140,22 @@ function CodePreview() {
         <span className="ml-auto font-mono text-[10px] tracking-wide" style={{ color: 'var(--sub)' }}>practice.ts · TypeScript</span>
       </div>
 
-      <div className="min-h-[250px] p-5 sm:p-6">
+      <div className="min-h-[245px] p-5 sm:p-6">
         <div className="font-mono text-[13px] leading-7 sm:text-sm">
           {visibleLines.map((line, index) => (
             <div key={`${index}-${line}`} className="grid grid-cols-[24px_1fr] gap-3">
               <span className="select-none text-right text-[10px]" style={{ color: 'var(--sub)', opacity: 0.45 }}>{index + 1}</span>
               <pre className="whitespace-pre-wrap" style={{ color: 'var(--text)' }}>
                 {line}
-                {index === visibleLines.length - 1 ? <span className="animate-pulse" style={{ color: 'var(--main)' }}>▌</span> : null}
+                {index === visibleLines.length - 1 && visibleCode.length < demoCode.length ? (
+                  <span className="animate-pulse" style={{ color: 'var(--main)' }}>▌</span>
+                ) : null}
               </pre>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 h-1 overflow-hidden rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--sub) 16%, transparent)' }}>
-          <motion.div
-            className="h-full rounded-full"
-            style={{ backgroundColor: 'var(--main)' }}
-            initial={reduceMotion ? { width: '100%' } : { width: '10%' }}
-            animate={{ width: '100%' }}
-            transition={{ duration: reduceMotion ? 0 : 2.3, delay: 0.7, ease: 'easeOut' }}
-          />
-        </div>
-
-        <div className="mt-5 flex flex-wrap items-center gap-3 text-xs">
+        <div className="mt-7 flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full px-3 py-1.5 font-semibold" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}>72 WPM</span>
           <span style={{ color: 'var(--sub)' }}>98% accuracy</span>
           <span style={{ color: 'var(--sub)' }}>0 errors</span>
@@ -183,7 +168,7 @@ function CodePreview() {
 export default function PublicHomePage() {
   const { profile, isLoading } = useAuth()
   const { locale, toggleLocale } = useLocale()
-  const [currentTheme, setCurrentTheme] = useState(() => getThemePref())
+  const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const reduceMotion = useReducedMotion()
@@ -198,6 +183,12 @@ export default function PublicHomePage() {
   const primaryHref = profile ? '/home' : '/signup'
   const primaryLabel = profile ? text.continue : text.start
   const masteryHref = profile ? '/tracks' : '/plus'
+
+  useEffect(() => {
+    const preferredTheme = getThemePref()
+    setCurrentTheme(preferredTheme)
+    applyTheme(getTheme(preferredTheme))
+  }, [])
 
   useEffect(() => {
     applyTheme(getTheme(currentTheme))
