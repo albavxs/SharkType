@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { listFeedEvents } from '@/lib/server/feed-store'
@@ -13,7 +12,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const scope = url.searchParams.get('scope') === 'following' ? 'following' : 'global'
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (scope === 'following' && !user) {
@@ -22,8 +21,12 @@ export async function GET(request: Request) {
 
   try {
     const events = await listFeedEvents(supabase, scope, user?.id ?? null, 50)
-    return NextResponse.json({ events, scope })
+    const headers: HeadersInit = scope === 'global'
+      ? { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=30' }
+      : { 'Cache-Control': 'private, no-store' }
+    return NextResponse.json({ events, scope }, { headers })
   } catch (err) {
-    return NextResponse.json({ events: [], scope, error: "Could not load feed." }, { status: 500 })
+    console.error('[feed] load failed:', err)
+    return NextResponse.json({ events: [], scope, error: 'Could not load feed.' }, { status: 500 })
   }
 }
