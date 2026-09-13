@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { importLocalProgress } from '@/lib/server/progress-store'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 import { sanitizeImportedProgressSnapshot } from '@/lib/server/session-validation'
 
 function legacyImportEnabled(): boolean {
@@ -27,9 +27,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  // Imported browser history is not authoritative enough for competitive stats.
-  // Keep the migration path closed by default and enable it only during an
-  // explicitly controlled migration window.
   if (!legacyImportEnabled()) {
     return NextResponse.json(
       { error: 'Legacy progress import is disabled.' },
@@ -37,7 +34,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const { success } = rateLimit(`progress-import:${user.id}`, 1, 24 * 60 * 60 * 1000)
+  const { success } = await sharedRateLimit(`progress-import:${user.id}`, 1, 24 * 60 * 60 * 1000)
   if (!success) {
     return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
   }
