@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import Footer from '@/components/typing/Footer'
 import SharkTitleMark from '@/components/landing/SharkTitleMark'
@@ -149,7 +149,6 @@ function CodePreview() {
                       </span>
                     )
                   })}
-                  {line.length === 0 ? ' ' : null}
                 </pre>
               </div>
             )
@@ -173,9 +172,12 @@ export default function PublicHomePage() {
   const [showThemeSelector, setShowThemeSelector] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const reduceMotion = useReducedMotion()
-  const { scrollYProgress } = useScroll()
-  const heroTextY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 36])
-  const heroVisualY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 62])
+  const heroRef = useRef<HTMLElement>(null)
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const heroTextY = useTransform(heroProgress, [0, 1], [0, reduceMotion ? 0 : -46])
+  const heroVisualY = useTransform(heroProgress, [0, 1], [0, reduceMotion ? 0 : -88])
+  const heroOpacity = useTransform(heroProgress, [0, 0.78, 1], [1, 1, reduceMotion ? 1 : 0.42])
+  const cueOpacity = useTransform(heroProgress, [0, 0.12], [1, 0])
   const text = copy[locale]
   const primaryHref = profile ? '/home' : '/signup'
   const primaryLabel = profile ? text.continue : text.start
@@ -211,13 +213,23 @@ export default function PublicHomePage() {
           </nav>
         </header>
 
-        <section className="relative flex min-h-[86svh] items-center px-4 pb-16 pt-24 sm:px-6 lg:min-h-[88vh] lg:pb-20 lg:pt-28">
+        <motion.section ref={heroRef} style={{ opacity: heroOpacity }} className="relative flex min-h-[86svh] items-center px-4 pb-16 pt-24 sm:px-6 lg:min-h-[88vh] lg:pb-20 lg:pt-28">
           <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:gap-14">
             <motion.div style={{ y: heroTextY }} className="relative z-20 max-w-xl">
-              <motion.div initial={reduceMotion ? false : { opacity: 0, x: -30, filter: 'blur(10px)' }} animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }} transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }} className="flex items-center gap-2 sm:gap-3">
-                <SharkTitleMark themeSignal={currentTheme} />
-                <h1 className="text-5xl font-black leading-[0.94] tracking-[-0.055em] font-[family-name:var(--font-geist-mono)] sm:text-6xl lg:text-7xl xl:text-[5.35rem]" style={{ color: 'var(--text)' }}>Shark<span style={{ color: 'var(--main)' }}>Type</span></h1>
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, x: -30, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
+              >
+                <div className="absolute -top-16 left-0 origin-bottom-left scale-75 sm:right-full sm:left-auto sm:top-1/2 sm:mr-3 sm:-translate-y-1/2 sm:scale-100">
+                  <SharkTitleMark />
+                </div>
+                <h1 className="text-5xl font-black leading-[0.94] tracking-[-0.055em] font-[family-name:var(--font-geist-mono)] sm:text-6xl lg:text-7xl xl:text-[5.35rem]" style={{ color: 'var(--text)' }}>
+                  Shark<span style={{ color: 'var(--main)' }}>Type</span>
+                </h1>
               </motion.div>
+
               <motion.p initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.24 }} className="mt-6 text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl" style={{ color: 'var(--text)' }}>{text.tagline}</motion.p>
               <motion.p initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.34 }} className="mt-5 max-w-lg text-sm leading-7 sm:text-base sm:leading-8" style={{ color: 'var(--sub)' }}>{text.body}</motion.p>
               <motion.div initial={reduceMotion ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.44 }} className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -232,10 +244,10 @@ export default function PublicHomePage() {
             </motion.div>
           </div>
 
-          <motion.a href="#community" initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1, y: reduceMotion ? 0 : [0, 7, 0] }} transition={reduceMotion ? { duration: 0.3 } : { opacity: { delay: 0.8, duration: 0.5 }, y: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }} className="absolute bottom-5 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-medium uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+          <motion.a href="#community" style={{ opacity: cueOpacity }} animate={{ y: reduceMotion ? 0 : [0, 7, 0] }} transition={reduceMotion ? { duration: 0.3 } : { y: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }} className="absolute bottom-5 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-medium uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
             <span>{text.scroll}</span><span className="text-2xl leading-none">⌄</span>
           </motion.a>
-        </section>
+        </motion.section>
 
         <section id="community" className="scroll-mt-10 px-4 py-12 sm:px-6 sm:py-16">
           <div className="mx-auto w-full max-w-5xl">
