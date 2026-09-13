@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import type { Json } from '@/lib/supabase/database'
 
 // Installed during prebuild by scripts/install-premium-package.mjs.
 // @ts-expect-error Private package is intentionally absent from the public lockfile.
@@ -15,7 +16,7 @@ type AsaasWebhookPayload = {
 
 type PrivateWebhookRuntime = {
   webhookTokenMatches: (received: string) => boolean
-  summarizeAsaasWebhookPayload: (payload: AsaasWebhookPayload) => Record<string, unknown>
+  summarizeAsaasWebhookPayload: (payload: AsaasWebhookPayload) => Json
   processAsaasWebhookEvent: (admin: unknown, payload: AsaasWebhookPayload) => Promise<void>
 }
 
