@@ -5,7 +5,7 @@
   "packageManager": "npm@10.9.4",
   "engines": {
     "npm": ">=10",
-    "node": ">=22"
+    "node": "22.x"
   },
   "scripts": {
     "check:pt-content": "node scripts/check-pt-content.mjs",
