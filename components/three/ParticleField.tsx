@@ -64,11 +64,17 @@ export default function ParticleField({
 
     if (landing && !reducedMotion) {
       const pointerStrength = layer === 'near' ? 0.42 : 0.14
-      const scrollProgress = typeof window === 'undefined'
-        ? 0
-        : Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1.6)
-      const scrollY = layer === 'near' ? -scrollProgress * 0.9 : -scrollProgress * 0.28
-      const scrollZ = layer === 'near' ? scrollProgress * 0.22 : scrollProgress * 0.06
+      let scrollProgress = 0
+
+      if (typeof window !== 'undefined') {
+        const community = document.getElementById('community')
+        const heroEnd = community?.offsetTop ?? window.innerHeight * 1.48
+        const scrollRange = Math.max(heroEnd - window.innerHeight, 1)
+        scrollProgress = THREE.MathUtils.clamp(window.scrollY / scrollRange, 0, 1)
+      }
+
+      const scrollY = layer === 'near' ? -scrollProgress * 1.15 : -scrollProgress * 0.32
+      const scrollZ = layer === 'near' ? scrollProgress * 0.3 : scrollProgress * 0.07
 
       meshRef.current.position.x = THREE.MathUtils.damp(
         meshRef.current.position.x,
