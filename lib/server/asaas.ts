@@ -1,3 +1,5 @@
+import 'server-only'
+
 const ASAAS_SANDBOX_API = 'https://api-sandbox.asaas.com/v3'
 const ASAAS_PRODUCTION_API = 'https://api.asaas.com/v3'
 const ASAAS_CHECKOUT_URL = 'https://asaas.com/checkoutSession/show?id='
