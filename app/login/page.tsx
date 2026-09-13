@@ -152,42 +152,42 @@ export default function LoginPage() {
             </div>
           </label>
 
-          <label className="block space-y-1.5">
-            <div className="flex items-center justify-between gap-3">
+          <div className="space-y-1.5">
+            <label className="block space-y-1.5">
               <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
                 {t('authPassword', locale)}
               </span>
-              <Link href="/forgot-password" className="text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--main)' }}>
-                {locale === 'pt' ? 'Esqueci minha senha' : 'Forgot password?'}
-              </Link>
-            </div>
-            <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{
-              borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
-              backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
-            }}>
-              <input
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                type={showPassword ? 'text' : 'password'}
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-                style={{ color: 'var(--text)' }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((visible) => !visible)}
-                aria-pressed={showPassword}
-                aria-label={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
-                title={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
-                className="shrink-0 rounded-lg p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ color: 'var(--sub)' }}
-              >
-                {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
-              </button>
-            </div>
-          </label>
+              <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{
+                borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
+                backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
+              }}>
+                <input
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                  style={{ color: 'var(--text)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-pressed={showPassword}
+                  aria-label={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
+                  title={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
+                  className="shrink-0 rounded-lg p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ color: 'var(--sub)' }}
+                >
+                  {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+                </button>
+              </div>
+            </label>
+            <Link href="/forgot-password" className="inline-block text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--main)' }}>
+              {locale === 'pt' ? 'Esqueci minha senha' : 'Forgot password?'}
+            </Link>
+          </div>
 
           {error ? (
             <div role="alert" className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 14%, transparent)', color: 'var(--error)' }}>
