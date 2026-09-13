@@ -81,7 +81,9 @@ export async function POST(request: Request) {
       description: `SharkType Plus — ${plan.key}`,
     })
 
-    const admin = createAdminClient()
+    // Keep this cast until lib/supabase/database.ts is regenerated from the
+    // production schema that already contains billing_pix_authorizations.
+    const admin = createAdminClient() as any
     const qrExpiration = authorization.qrCode.expirationDate
       ? new Date(authorization.qrCode.expirationDate.replace(' ', 'T') + (authorization.qrCode.expirationDate.includes('Z') ? '' : '-03:00')).toISOString()
       : null
