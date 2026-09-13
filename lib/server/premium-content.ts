@@ -1,3 +1,5 @@
+import 'server-only'
+
 import type { Snippet } from '@/lib/types'
 
 type PremiumContentModule = {
