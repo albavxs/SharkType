@@ -41,7 +41,7 @@ export const themes: Theme[] = [
     syntax: { keyword: '#5e81ac', string: '#a3be8c', number: '#b48ead', comment: '#9da7b5', type: '#88c0d0' },
   },
   {
-    name: 'gruvbox dark', bg: '#1d2021', main: '#d79921', caret: '#fabd2f', sub: '#665c54', subAlt: '#282828', text: '#ebdbb2', error: '#fb4934', errorExtra: '#cc241d',
+    name: 'gruvbox dark', bg: '#1d2021', main: '#d79921', caret: '#fabd2f', sub: '#665c54', subAlt: '#282828', text: '#ebdbb2', error: '#ff5f87', errorExtra: '#b53d5f',
     syntax: { keyword: '#fb4934', string: '#b8bb26', number: '#d3869b', comment: '#665c54', type: '#83a598' },
   },
   {
@@ -49,7 +49,7 @@ export const themes: Theme[] = [
     syntax: { keyword: '#b57614', string: '#79740e', number: '#8f3f71', comment: '#a89984', type: '#076678' },
   },
   {
-    name: 'monokai', bg: '#272822', main: '#f92672', caret: '#f8f8f2', sub: '#75715e', subAlt: '#1e1f1a', text: '#f8f8f2', error: '#f92672', errorExtra: '#9e1a47',
+    name: 'monokai', bg: '#272822', main: '#f92672', caret: '#f8f8f2', sub: '#75715e', subAlt: '#1e1f1a', text: '#f8f8f2', error: '#ff8a3d', errorExtra: '#a84f1f',
     syntax: { keyword: '#f92672', string: '#e6db74', number: '#ae81ff', comment: '#75715e', type: '#66d9ef' },
   },
   {
@@ -155,7 +155,7 @@ export const themes: Theme[] = [
   },
   // ── A11y: protanopia (vermelho-fraco) ─ paleta azul/amarelo/cinza
   {
-    name: 'a11y protanopia', bg: '#1c1c24', main: '#2563eb', caret: '#facc15', sub: '#71717a', subAlt: '#14141a', text: '#f4f4f5', error: '#eab308', errorExtra: '#a16207',
+    name: 'a11y protanopia', bg: '#1c1c24', main: '#2563eb', caret: '#facc15', sub: '#71717a', subAlt: '#14141a', text: '#f4f4f5', error: '#f97316', errorExtra: '#9a3412',
     syntax: { keyword: '#2563eb', string: '#facc15', number: '#a855f7', comment: '#71717a', type: '#0891b2' },
   },
 ]
