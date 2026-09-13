@@ -103,15 +103,14 @@ function buildSyntheticLegacyTimestamp(date: string): string {
 function migrateLegacyStreak(streak?: Partial<StreakState> | null): StreakState {
   const legacyCurrent = Math.max(0, streak?.current ?? 0)
   const lastPracticeDate = streak?.lastPracticeDate ?? ''
-  const migratedCurrent = lastPracticeDate ? legacyCurrent + 1 : 0
+  const migratedCurrent = lastPracticeDate ? Math.max(0, legacyCurrent - 1) : 0
   const syntheticActivityAt = buildSyntheticLegacyTimestamp(lastPracticeDate)
 
   return {
     current: migratedCurrent,
     lastPracticeDate,
     lastActivityAt: syntheticActivityAt,
-    // Legacy snapshots do not contain enough precision to auto-award a new streak.
-    lastStreakAt: syntheticActivityAt,
+    lastStreakAt: migratedCurrent > 0 ? syntheticActivityAt : '',
   }
 }
 
@@ -134,8 +133,7 @@ function normalizeProgress(progress?: Partial<UserProgress> | null): UserProgres
   if (!progress) return createDefaultProgress()
 
   const history = Array.isArray(progress.history) ? progress.history.slice(0, MAX_HISTORY) : []
-
-  return {
+  const normalized: UserProgress = {
     version: 1,
     totalXP: progress.totalXP ?? 0,
     level: progress.level ?? 1,
@@ -146,6 +144,14 @@ function normalizeProgress(progress?: Partial<UserProgress> | null): UserProgres
     history,
     completedTrackIds: Array.isArray(progress.completedTrackIds) ? progress.completedTrackIds : [],
   }
+
+  if (history.length > 0) {
+    normalized.streak = deriveStreakFromActivityTimestamps(
+      history.map((session) => buildSyntheticLegacyTimestamp(session.date))
+    )
+  }
+
+  return normalized
 }
 
 export function loadProgress(): UserProgress {
@@ -253,7 +259,7 @@ export function deriveStreakFromActivityTimestamps(timestamps: string[]): Streak
   }
 
   const lastActivityAt = chain[chain.length - 1] ?? ''
-  const current = chain.length
+  const current = Math.max(0, chain.length - 1)
 
   return {
     current,
@@ -276,11 +282,13 @@ export function reconcileStreakOnLogin(
   }
 
   const withinWindow = nowMs - lastActivityMs < EXPIRY_WINDOW_MS
-  const normalizedCurrent = withinWindow ? (streak.current > 0 ? streak.current : 1) : 0
+  const normalizedCurrent = withinWindow ? streak.current : 0
   const normalizedLastPracticeDate = withinWindow
     ? (streak.lastPracticeDate || getIsoDate(streak.lastActivityAt))
     : streak.lastPracticeDate
-  const normalizedLastStreakAt = withinWindow ? streak.lastActivityAt : ''
+  const normalizedLastStreakAt = withinWindow && normalizedCurrent > 0
+    ? (streak.lastStreakAt || streak.lastActivityAt)
+    : ''
 
   if (
     normalizedCurrent === streak.current &&
@@ -312,13 +320,13 @@ export function applyPracticeActivity(
   if (!lastActivityAt) {
     return {
       streak: {
-        current: 1,
+        current: 0,
         lastPracticeDate: activityDate,
         lastActivityAt: activityAt,
-        lastStreakAt: activityAt,
+        lastStreakAt: '',
       },
-      incremented: true,
-      eventKey: buildStreakEventKey(activityAt),
+      incremented: false,
+      eventKey: null,
     }
   }
 
@@ -341,15 +349,17 @@ export function applyPracticeActivity(
     activityMs !== null &&
     activityMs - lastActivityMs < EXPIRY_WINDOW_MS
 
+  const current = isConsecutiveDay ? streak.current + 1 : 0
+
   return {
     streak: {
-      current: isConsecutiveDay ? Math.max(1, streak.current) + 1 : 1,
+      current,
       lastPracticeDate: activityDate,
       lastActivityAt: activityAt,
-      lastStreakAt: activityAt,
+      lastStreakAt: current > 0 ? activityAt : '',
     },
-    incremented: true,
-    eventKey: buildStreakEventKey(activityAt),
+    incremented: isConsecutiveDay,
+    eventKey: isConsecutiveDay ? buildStreakEventKey(activityAt) : null,
   }
 }
 

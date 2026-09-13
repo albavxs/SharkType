@@ -8,7 +8,7 @@ import {
   useEffect,
   useState,
 } from 'react'
-import type { Session, User, MobileOtpType } from '@supabase/supabase-js'
+import type { EmailOtpType, Session, User } from '@supabase/supabase-js'
 import type { AuthActionResult, AuthProfile, SignUpActionResult } from '@/lib/auth-types'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -17,6 +17,10 @@ import {
   getSupabaseEnvErrorMessage,
   type SupabaseEnvVarName,
 } from '@/lib/supabase/env'
+import {
+  clearPendingIntroTourVersion,
+  getPendingIntroTourVersion,
+} from '@/lib/intro-tour'
 import { isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 interface AuthContextValue {
@@ -37,9 +41,10 @@ interface AuthContextValue {
     password: string
     confirmPassword: string
   }) => Promise<SignUpActionResult>
-  verifyOtp: (email: string, token: string, type: MobileOtpType) => Promise<AuthActionResult>
+  verifyOtp: (email: string, token: string, type: EmailOtpType) => Promise<AuthActionResult>
   resendEmailCode: (email: string) => Promise<AuthActionResult>
   resetPassword: (email: string) => Promise<AuthActionResult>
+  updatePassword: (password: string, confirmPassword: string) => Promise<AuthActionResult>
   updateProfile: (input: {
     username: string
     displayName?: string | null
@@ -254,30 +259,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const supabase = createClient()
-      
-      // Armazenamos o username nos metadados para quando o usuário confirmar o OTP
+      const normalizedEmail = input.email.trim().toLowerCase()
       const { data, error } = await supabase.auth.signUp({
-        email: input.email,
+        email: normalizedEmail,
         password: input.password,
         options: {
           data: {
             username,
             display_name: username,
           },
-        emailRedirectTo: getAuthCallbackUrl('/home'),
+          emailRedirectTo: getAuthCallbackUrl('/home'),
         },
       })
 
       if (error) return { error: error.message, needsVerification: false }
 
-      // Se já tem sessão, confirmação de email está desligada — login direto
       if (data.session) {
         return { error: null, needsVerification: false }
       }
 
-      // Precisa confirmar email via OTP
-      window.localStorage.setItem(PENDING_VERIFICATION_KEY, input.email)
-      setPendingVerificationEmail(input.email)
+      window.localStorage.setItem(PENDING_VERIFICATION_KEY, normalizedEmail)
+      setPendingVerificationEmail(normalizedEmail)
       return { error: null, needsVerification: true }
     } catch (error) {
       return {
@@ -287,20 +289,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function verifyOtp(email: string, token: string, type: MobileOtpType): Promise<AuthActionResult> {
+  async function verifyOtp(email: string, token: string, type: EmailOtpType): Promise<AuthActionResult> {
     if (!supabaseConfigured) {
       return { error: supabaseConfigError ?? 'Supabase is not configured.' }
     }
 
     try {
       const supabase = createClient()
-      // Se o tipo for 'signup', tentamos 'email' primeiro caso venha do fluxo de signInWithOtp
-      const otpType = type === 'signup' ? 'email' : type
-
       const { error } = await supabase.auth.verifyOtp({
         email,
         token,
-        type: otpType as any,
+        type,
       })
 
       if (error) return { error: error.message }
@@ -309,8 +308,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         window.localStorage.removeItem(PENDING_VERIFICATION_KEY)
         setPendingVerificationEmail(null)
       }
-      
-      await refreshProfile().catch(() => {})
+
+      await refreshProfile()
+
+      const pendingIntroTourVersion = getPendingIntroTourVersion()
+      if (pendingIntroTourVersion > 0) {
+        const response = await fetch('/api/me/profile/intro-tour', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ versionSeen: pendingIntroTourVersion }),
+        })
+
+        if (response.ok) {
+          const payload = (await response.json()) as { profile: AuthProfile }
+          setProfile(payload.profile)
+          clearPendingIntroTourVersion()
+        }
+      }
 
       return { error: null }
     } catch (error) {
@@ -350,14 +366,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: getAuthCallbackUrl('/settings'),
+      const response = await fetch('/api/auth/password-reset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       })
 
-      return { error: error?.message ?? null }
+      if (!response.ok) {
+        return { error: await parseJsonError(response) }
+      }
+
+      return { error: null }
     } catch (error) {
       return { error: error instanceof Error ? error.message : 'Password reset request failed.' }
+    }
+  }
+
+  async function updatePassword(password: string, confirmPassword: string): Promise<AuthActionResult> {
+    if (!supabaseConfigured) {
+      return { error: supabaseConfigError ?? 'Supabase is not configured.' }
+    }
+
+    if (password.length < 8) {
+      return { error: 'Password must be at least 8 characters long.' }
+    }
+
+    if (password !== confirmPassword) {
+      return { error: 'Password confirmation does not match.' }
+    }
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.updateUser({ password })
+      if (error) return { error: error.message }
+
+      await supabase.auth.signOut()
+      setSession(null)
+      setUser(null)
+      setProfile(null)
+      setProfileError(null)
+      return { error: null }
+    } catch (error) {
+      return { error: error instanceof Error ? error.message : 'Could not update password.' }
     }
   }
 
@@ -455,6 +507,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     verifyOtp,
     resendEmailCode,
     resetPassword,
+    updatePassword,
     updateProfile,
     markIntroTourSeen,
     signOut,

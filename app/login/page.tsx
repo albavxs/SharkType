@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [oauthErrorId, setOauthErrorId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -26,6 +27,12 @@ export default function LoginPage() {
       setError(t('authOAuthError', locale))
       const errorId = params.get('error_id')
       setOauthErrorId(errorId ? errorId.slice(0, 8) : null)
+      window.history.replaceState({}, '', window.location.pathname)
+      return
+    }
+
+    if (params.get('password_reset') === '1') {
+      setNotice(locale === 'pt' ? 'Senha atualizada. Entre com sua nova senha.' : 'Password updated. Sign in with your new password.')
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [locale])
@@ -41,6 +48,7 @@ export default function LoginPage() {
     event.preventDefault()
     setIsSubmitting(true)
     setError(null)
+    setNotice(null)
     setOauthErrorId(null)
 
     const result = await signInWithPassword(email, password)
@@ -54,6 +62,7 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setError(null)
+    setNotice(null)
     setOauthErrorId(null)
     setIsSubmitting(true)
     const result = await signInWithGoogle()
@@ -66,6 +75,7 @@ export default function LoginPage() {
 
   async function handleGitHubLogin() {
     setError(null)
+    setNotice(null)
     setOauthErrorId(null)
     setIsSubmitting(true)
     const result = await signInWithGitHub()
@@ -143,9 +153,14 @@ export default function LoginPage() {
           </label>
 
           <label className="block space-y-1.5">
-            <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
-              {t('authPassword', locale)}
-            </span>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+                {t('authPassword', locale)}
+              </span>
+              <Link href="/forgot-password" className="text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--main)' }}>
+                {locale === 'pt' ? 'Esqueci minha senha' : 'Forgot password?'}
+              </Link>
+            </div>
             <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{
               borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
               backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
@@ -179,6 +194,12 @@ export default function LoginPage() {
               <p>{error}</p>
               {oauthErrorId ? <p className="mt-1 text-xs opacity-80">Ref: {oauthErrorId}</p> : null}
             </div>
+          ) : null}
+
+          {notice ? (
+            <p className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
+              {notice}
+            </p>
           ) : null}
 
           {!supabaseConfigured ? (
