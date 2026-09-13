@@ -1,5 +1,8 @@
+import 'server-only'
+
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 import type { Database } from '@/lib/supabase/database'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export type PlanId = 'free' | 'plus'
 export type AccessRole = 'user' | 'super_admin'
@@ -25,11 +28,12 @@ export const anonymousAccess: UserAccess = {
   isSuperAdmin: false,
 }
 
-export async function getUserAccess(supabase: DBClient, user: User | null): Promise<UserAccess> {
+export async function getUserAccess(_supabase: DBClient, user: User | null): Promise<UserAccess> {
   if (!user) return anonymousAccess
 
+  const db = createAdminClient()
   const sources: AccessSource[] = []
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await db
     .from('profiles')
     .select('id, username, is_super_user')
     .eq('id', user.id)
@@ -51,7 +55,7 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
 
   if (profile) sources.push('profile')
 
-  const { data: entitlement, error: entitlementError } = await supabase
+  const { data: entitlement, error: entitlementError } = await db
     .from('user_entitlements')
     .select('status, source, expires_at')
     .eq('user_id', user.id)
@@ -62,7 +66,6 @@ export async function getUserAccess(supabase: DBClient, user: User | null): Prom
     .maybeSingle()
 
   if (entitlementError) {
-    // During deploy/migration ordering, fail closed instead of breaking auth or granting access.
     if (entitlementError.code === '42P01' || entitlementError.code === 'PGRST205') {
       console.warn('[access-control] entitlement schema unavailable; defaulting to free access.')
     } else {
