@@ -504,7 +504,7 @@ export interface Database {
           user_id: string
           username: string
           display_name: string | null
-          avatar_url: string
+          avatar_url: string | null
           total_xp: number
           best_wpm: number
           avg_wpm: number
