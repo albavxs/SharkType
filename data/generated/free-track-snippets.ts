@@ -5641,13 +5641,13 @@ export const trackSnippetTotalRegistry: Record<string, Record<string, number>> =
     "bash": 1
   },
   "git": {
-    "git": 6
+    "git": 20
   },
   "linux": {
-    "linux": 6
+    "linux": 17
   },
   "docker": {
-    "docker": 6
+    "docker": 10
   },
   "red-team": {
     "nmap": 6,
@@ -5662,34 +5662,34 @@ export const trackSnippetTotalRegistry: Record<string, Record<string, number>> =
     "crypto": 6
   },
   "react": {
-    "react": 6
+    "react": 12
   },
   "vue": {
-    "vue": 6
+    "vue": 12
   },
   "nodejs": {
-    "nodejs": 6
+    "nodejs": 10
   },
   "nextjs": {
-    "nextjs": 6
+    "nextjs": 12
   },
   "angular-junior": {
-    "angular": 6
+    "angular": 20
   },
   "angular-pleno": {},
   "angular-senior": {},
   "dom": {},
   "templates": {
-    "jinja": 6
+    "jinja": 10
   },
   "design-patterns": {
-    "patterns": 6
+    "patterns": 12
   },
   "algorithms": {
-    "algorithms": 6
+    "algorithms": 132
   },
   "testing": {
-    "testing": 6
+    "testing": 10
   },
   "backend": {
     "python": 1,
@@ -5698,7 +5698,7 @@ export const trackSnippetTotalRegistry: Record<string, Record<string, number>> =
     "ruby": 1
   },
   "comece-aqui": {
-    "text-typing": 6
+    "text-typing": 20
   },
   "posicao-inicial": {},
   "dedos-e-alcance": {},
