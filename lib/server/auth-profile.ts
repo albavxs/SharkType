@@ -1,9 +1,16 @@
+import 'server-only'
+
 import type { User, SupabaseClient } from '@supabase/supabase-js'
 import type { AuthProfile } from '@/lib/auth-types'
 import type { Database } from '@/lib/supabase/database'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { buildUsernameCandidate, isReservedUsername, sanitizeUsername } from '@/lib/usernames'
 
 type DBClient = SupabaseClient<any>
+
+function adminDb(): DBClient {
+  return createAdminClient() as unknown as DBClient
+}
 
 function inferProvider(user: User): string | null {
   return user.app_metadata.provider ?? user.identities?.[0]?.provider ?? null
@@ -70,8 +77,8 @@ function mapProfile(row: Database['public']['Tables']['profiles']['Row']): AuthP
   }
 }
 
-export async function getOwnProfile(supabase: DBClient, userId: string): Promise<AuthProfile | null> {
-  const { data, error } = await supabase
+export async function getOwnProfile(_supabase: DBClient, userId: string): Promise<AuthProfile | null> {
+  const { data, error } = await adminDb()
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -82,6 +89,7 @@ export async function getOwnProfile(supabase: DBClient, userId: string): Promise
 }
 
 export async function ensureProfileForUser(supabase: DBClient, user: User): Promise<AuthProfile> {
+  const db = adminDb()
   const existing = await getOwnProfile(supabase, user.id)
   const basePayload = {
     provider: inferProvider(user),
@@ -103,7 +111,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
       updatePayload.avatar_url = inferAvatarUrl(user)
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('profiles')
       .update(updatePayload)
       .eq('id', user.id)
@@ -113,7 +121,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
     if (error) {
       if (!isMissingColumn(error, 'intro_tour_version_seen')) throw error
 
-      const fallback = await supabase
+      const fallback = await db
         .from('profiles')
         .update(stripIntroTourVersionSeen(updatePayload))
         .eq('id', user.id)
@@ -127,9 +135,6 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
   }
 
   const requested = inferRequestedUsername(user)
-  // Reserved handles (including sharkcoder) must never be auto-allocated to a
-  // newly authenticated account. The existing real super-user profile keeps
-  // its reserved handle because the path above returns before allocation.
   const desired = isReservedUsername(requested) ? `${requested}_user`.slice(0, 20) : requested
   let lastError: Error | null = null
 
@@ -137,7 +142,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
     const username = buildUsernameCandidate(desired, attempt)
     if (isReservedUsername(username)) continue
 
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('profiles')
       .insert({
         id: user.id,
@@ -152,7 +157,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
     if (!error && data) return mapProfile(data)
 
     if (error && isMissingColumn(error, 'intro_tour_version_seen')) {
-      const fallback = await supabase
+      const fallback = await db
         .from('profiles')
         .insert(stripIntroTourVersionSeen({
           id: user.id,
@@ -188,7 +193,7 @@ export async function ensureProfileForUser(supabase: DBClient, user: User): Prom
 }
 
 export async function updateProfileIdentity(
-  supabase: DBClient,
+  _supabase: DBClient,
   userId: string,
   input: {
     username: string
@@ -212,7 +217,7 @@ export async function updateProfileIdentity(
     payload.bio = input.bio
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminDb()
     .from('profiles')
     .update(payload)
     .eq('id', userId)
@@ -228,7 +233,7 @@ export async function updateIntroTourVersionSeen(
   userId: string,
   versionSeen: number
 ): Promise<AuthProfile> {
-  const { data, error } = await supabase
+  const { data, error } = await adminDb()
     .from('profiles')
     .update({ intro_tour_version_seen: versionSeen })
     .eq('id', userId)
