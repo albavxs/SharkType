@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { createPublicClient } from '@/lib/supabase/public'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   const emailKey = createHash('sha256').update(email).digest('hex').slice(0, 32)
-  const { success } = rateLimit(`auth-resend:${emailKey}`, 3, 15 * 60_000)
+  const { success } = await sharedRateLimit(`auth-resend:${emailKey}`, 3, 15 * 60_000)
   if (!success) {
     return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
   }
@@ -45,7 +45,5 @@ export async function POST(request: Request) {
     console.warn('[auth-resend] resend failed:', resendError instanceof Error ? resendError.message : resendError)
   }
 
-  // Deliberately do not reveal whether the account exists or whether the
-  // provider accepted the request. This keeps the public response uniform.
   return NextResponse.json({ ok: true })
 }
