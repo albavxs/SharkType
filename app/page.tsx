@@ -24,7 +24,7 @@ const copy = {
     communityTitle: 'Comunidade SharkType', communityBody: 'Aprender é melhor quando não acontece sozinho.',
     discordTitle: 'Discord', discordBody: 'Converse, peça ajuda e compartilhe progresso.',
     githubTitle: 'GitHub', githubBody: 'Acompanhe o desenvolvimento e contribua.',
-    projectTitle: 'Projeto', projectBody: 'Conheça o ecossistema e a evolução do SharkType.', open: 'Abrir',
+    companyTitle: 'Conheça a Few Company', companyBody: 'Conheça a Few Company, seus projetos e o ecossistema por trás de produtos como o SharkType.', open: 'Abrir',
     productTitle: 'Pratique. Evolua. Domine.',
     productBody: 'Entre pela prática Base, evolua pelas trilhas e avance para Mastery quando quiser desafios premium separados.',
     practiceTitle: 'Prática Base', practiceBody: 'Sessões rápidas com snippets Base para aquecer e manter ritmo.',
@@ -39,7 +39,7 @@ const copy = {
     communityTitle: 'SharkType Community', communityBody: 'Learning is better when it does not happen alone.',
     discordTitle: 'Discord', discordBody: 'Talk, ask for help, and share progress.',
     githubTitle: 'GitHub', githubBody: 'Follow development and contribute.',
-    projectTitle: 'Project', projectBody: 'Explore the SharkType ecosystem and its evolution.', open: 'Open',
+    companyTitle: 'Meet Few Company', companyBody: 'Meet Few Company, its projects, and the ecosystem behind products like SharkType.', open: 'Open',
     productTitle: 'Practice. Progress. Master.',
     productBody: 'Start with Base practice, progress through structured tracks, and move into separate premium Mastery challenges.',
     practiceTitle: 'Base Practice', practiceBody: 'Fast sessions with Base snippets for warmups and steady rhythm.',
@@ -52,7 +52,7 @@ const copy = {
 const communityCards = [
   { key: 'discord', href: COMMUNITY_LINKS.discord, icon: DiscordIcon, title: 'discordTitle', body: 'discordBody' },
   { key: 'github', href: COMMUNITY_LINKS.github, icon: GithubIcon, title: 'githubTitle', body: 'githubBody' },
-  { key: 'project', href: COMMUNITY_LINKS.website, icon: ShieldIcon, title: 'projectTitle', body: 'projectBody' },
+  { key: 'company', href: COMMUNITY_LINKS.website, icon: ShieldIcon, title: 'companyTitle', body: 'companyBody' },
 ] as const
 
 const productCards = [
@@ -174,10 +174,26 @@ export default function PublicHomePage() {
   const reduceMotion = useReducedMotion()
   const heroRef = useRef<HTMLElement>(null)
   const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
-  const heroTextY = useTransform(heroProgress, [0, 1], [0, reduceMotion ? 0 : -90])
-  const heroVisualY = useTransform(heroProgress, [0, 1], [0, reduceMotion ? 0 : -180])
-  const heroOpacity = useTransform(heroProgress, [0, 0.74, 1], [1, 1, reduceMotion ? 1 : 0.26])
-  const cueOpacity = useTransform(heroProgress, [0, 0.08], [1, 0])
+
+  const heroTextY = useTransform(heroProgress, [0, 0.35, 1], [0, 0, reduceMotion ? 0 : -72])
+  const heroTextOpacity = useTransform(heroProgress, [0, 0.28, 0.72, 1], [1, 1, reduceMotion ? 1 : 0.34, reduceMotion ? 1 : 0.05])
+  const heroTextScale = useTransform(heroProgress, [0, 1], [1, reduceMotion ? 1 : 0.94])
+  const heroTextBlur = useTransform(heroProgress, [0, 0.34, 1], [0, 0, reduceMotion ? 0 : 6])
+  const heroTextFilter = useTransform(heroTextBlur, value => `blur(${value}px)`)
+
+  const heroVisualY = useTransform(heroProgress, [0, 0.42, 1], [0, 0, reduceMotion ? 0 : -124])
+  const heroVisualOpacity = useTransform(heroProgress, [0, 0.46, 0.82, 1], [1, 1, reduceMotion ? 1 : 0.5, reduceMotion ? 1 : 0.1])
+  const heroVisualScale = useTransform(heroProgress, [0, 1], [1, reduceMotion ? 1 : 0.97])
+  const heroVisualBlur = useTransform(heroProgress, [0, 0.5, 1], [0, 0, reduceMotion ? 0 : 3])
+  const heroVisualFilter = useTransform(heroVisualBlur, value => `blur(${value}px)`)
+
+  const cueOpacity = useTransform(heroProgress, [0, 0.1], [1, 0])
+  const communityOpacity = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 1 : 0, 1])
+  const communityY = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 0 : 54, 0])
+  const communityScale = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 1 : 0.97, 1])
+  const communityBlur = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 0 : 7, 0])
+  const communityFilter = useTransform(communityBlur, value => `blur(${value}px)`)
+
   const text = copy[locale]
   const primaryHref = profile ? '/home' : '/signup'
   const primaryLabel = profile ? text.continue : text.start
@@ -213,10 +229,13 @@ export default function PublicHomePage() {
           </nav>
         </header>
 
-        <motion.section ref={heroRef} className="relative min-h-[122svh] sm:min-h-[132svh] lg:min-h-[148vh]">
-          <motion.div style={{ opacity: heroOpacity }} className="sticky top-0 flex min-h-[100svh] items-center px-4 pb-16 pt-24 sm:px-6 lg:pb-20 lg:pt-28">
+        <motion.section ref={heroRef} className="relative min-h-[118svh] sm:min-h-[124svh] lg:min-h-[130vh]">
+          <div className="sticky top-0 flex min-h-[100svh] items-center px-4 pb-12 pt-24 sm:px-6 lg:pb-16 lg:pt-28">
             <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:gap-14">
-              <motion.div style={{ y: heroTextY }} className="relative z-20 max-w-xl">
+              <motion.div
+                style={{ y: heroTextY, opacity: heroTextOpacity, scale: heroTextScale, filter: heroTextFilter }}
+                className="relative z-20 max-w-xl origin-left"
+              >
                 <motion.div
                   initial={reduceMotion ? false : { opacity: 0, x: -30, filter: 'blur(10px)' }}
                   animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
@@ -239,25 +258,38 @@ export default function PublicHomePage() {
                 </motion.div>
               </motion.div>
 
-              <motion.div style={{ y: heroVisualY }} className="relative z-20 flex min-h-[360px] items-center justify-center lg:min-h-[480px] lg:justify-end">
+              <motion.div
+                style={{ y: heroVisualY, opacity: heroVisualOpacity, scale: heroVisualScale, filter: heroVisualFilter }}
+                className="relative z-20 flex min-h-[360px] origin-center items-center justify-center lg:min-h-[480px] lg:justify-end"
+              >
                 <div className="pointer-events-none absolute inset-[-14%_-12%] rounded-full opacity-70 blur-3xl" style={{ background: 'radial-gradient(circle, color-mix(in srgb, var(--main) 10%, transparent), transparent 64%)' }} />
                 <CodePreview />
               </motion.div>
             </div>
 
-            <motion.a href="#community" style={{ opacity: cueOpacity }} animate={{ y: reduceMotion ? 0 : [0, 7, 0] }} transition={reduceMotion ? { duration: 0.3 } : { y: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }} className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-medium uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+            <motion.a
+              href="#community"
+              style={{ opacity: cueOpacity, color: 'var(--sub)' }}
+              animate={{ y: reduceMotion ? 0 : [0, 7, 0] }}
+              transition={reduceMotion ? { duration: 0.3 } : { y: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }}
+              className="absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-medium uppercase tracking-[0.18em]"
+            >
               <span>{text.scroll}</span><span className="text-2xl leading-none">⌄</span>
             </motion.a>
-          </motion.div>
+          </div>
         </motion.section>
 
-        <section id="community" className="scroll-mt-10 px-4 pb-16 pt-20 sm:px-6 sm:pb-20 sm:pt-28 lg:pt-32">
+        <motion.section
+          id="community"
+          style={{ opacity: communityOpacity, y: communityY, scale: communityScale, filter: communityFilter }}
+          className="relative z-20 -mt-[10svh] scroll-mt-10 px-4 pb-16 pt-10 sm:-mt-[8svh] sm:px-6 sm:pb-20 sm:pt-14 lg:-mt-[6vh] lg:pt-16"
+        >
           <div className="mx-auto w-full max-w-5xl">
-            <motion.div {...reveal} className="max-w-2xl"><h2 className="text-3xl font-bold sm:text-4xl" style={{ color: 'var(--text)' }}>{text.communityTitle}</h2><p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: 'var(--sub)' }}>{text.communityBody}</p></motion.div>
+            <div className="max-w-2xl"><h2 className="text-3xl font-bold sm:text-4xl" style={{ color: 'var(--text)' }}>{text.communityTitle}</h2><p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: 'var(--sub)' }}>{text.communityBody}</p></div>
             <div className="mt-7 grid gap-4 md:grid-cols-3">
               {communityCards.map((card, index) => {
                 const Icon = card.icon
-                return <motion.a key={card.key} href={card.href} target="_blank" rel="noopener noreferrer" initial={reduceMotion ? false : { opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.25 }} transition={{ duration: 0.55, delay: index * 0.09, ease: [0.22, 1, 0.36, 1] }} whileHover={reduceMotion ? undefined : { y: -5 }} className="group relative overflow-hidden rounded-[24px] border p-5 backdrop-blur-sm" style={{ borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
+                return <motion.a key={card.key} href={card.href} target="_blank" rel="noopener noreferrer" transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }} whileHover={reduceMotion ? undefined : { y: -5 }} className="group relative overflow-hidden rounded-[24px] border p-5 backdrop-blur-sm" style={{ borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
                   <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(circle at 25% 15%, color-mix(in srgb, var(--main) 12%, transparent), transparent 48%)' }} />
                   <span className="relative mb-4 inline-flex rounded-2xl p-3 transition-all duration-200 group-hover:scale-105" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}><Icon size={22} /></span>
                   <h3 className="relative text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
@@ -267,7 +299,7 @@ export default function PublicHomePage() {
               })}
             </div>
           </div>
-        </section>
+        </motion.section>
 
         <section className="px-4 py-12 sm:px-6 sm:py-16">
           <motion.div {...reveal} className="mx-auto w-full max-w-5xl rounded-[28px] border p-5 backdrop-blur-sm sm:p-7" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)' }}>
@@ -276,7 +308,7 @@ export default function PublicHomePage() {
               {productCards.map((card) => {
                 const Icon = card.icon
                 const href = card.key === 'mastery' ? masteryHref : card.href
-                return <motion.div key={card.key} whileHover={reduceMotion ? undefined : { y: -4 }}><Link href={href} className="group block h-full rounded-[22px] border p-5 transition-all hover:brightness-110" style={{ borderColor: card.key === 'mastery' ? 'color-mix(in srgb, var(--main) 35%, transparent)' : 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 32%, transparent)' }}>
+                return <motion.div key={card.key} whileHover={reduceMotion ? undefined : { y: -4 }}><Link href={href ?? '/'} className="group block h-full rounded-[22px] border p-5 transition-all hover:brightness-110" style={{ borderColor: card.key === 'mastery' ? 'color-mix(in srgb, var(--main) 35%, transparent)' : 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 32%, transparent)' }}>
                   <span className="inline-flex rounded-2xl p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}><Icon size={20} /></span>
                   <h3 className="mt-4 text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text[card.body]}</p>
