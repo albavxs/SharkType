@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { saveRemoteSession } from '@/lib/server/progress-store'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 import { isSessionInput, isValidLiveSessionInput } from '@/lib/server/session-validation'
 
 export async function POST(request: Request) {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const { success } = rateLimit(`session:${user.id}`, 20, 60_000)
+  const { success } = await sharedRateLimit(`session:${user.id}`, 20, 60_000)
   if (!success) {
     return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
   }
