@@ -6,6 +6,10 @@ import { importLocalProgress } from '@/lib/server/progress-store'
 import { rateLimit } from '@/lib/server/rate-limit'
 import { sanitizeImportedProgressSnapshot } from '@/lib/server/session-validation'
 
+function legacyImportEnabled(): boolean {
+  return process.env.ALLOW_LEGACY_PROGRESS_IMPORT?.trim().toLowerCase() === 'true'
+}
+
 export async function POST(request: Request) {
   const env = getSupabaseEnv()
 
@@ -23,7 +27,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const { success } = rateLimit(`progress-import:${user.id}`, 3, 24 * 60 * 60 * 1000)
+  // Imported browser history is not authoritative enough for competitive stats.
+  // Keep the migration path closed by default and enable it only during an
+  // explicitly controlled migration window.
+  if (!legacyImportEnabled()) {
+    return NextResponse.json(
+      { error: 'Legacy progress import is disabled.' },
+      { status: 410 }
+    )
+  }
+
+  const { success } = rateLimit(`progress-import:${user.id}`, 1, 24 * 60 * 60 * 1000)
   if (!success) {
     return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
   }
