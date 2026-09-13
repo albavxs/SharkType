@@ -76,10 +76,17 @@ Para detalhes técnicos sobre a arquitetura, estrutura de arquivos e como contri
 
 ---
 
-
 ## 📄 Licença
 
-Este projeto está sob a licença MIT.
+O código desta revisão do SharkType é disponibilizado sob a **PolyForm Noncommercial License 1.0.0**. Uso, modificação e redistribuição são permitidos apenas para finalidades não comerciais conforme os termos da licença em [LICENSE](LICENSE).
+
+Versões anteriormente publicadas sob MIT continuam sujeitas aos termos MIT que valiam para aquelas revisões; a mudança de licença não revoga permissões já concedidas.
+
+Componentes privados ou distribuídos separadamente, incluindo conteúdo e pacotes SharkType Premium, não fazem parte desta licença pública salvo quando indicado expressamente.
+
+Para uso comercial, entre em contato com o mantenedor para obter autorização ou licença separada.
+
+> **Source available, não open source:** a PolyForm Noncommercial restringe uso comercial.
 
 ---
 
@@ -155,8 +162,14 @@ For technical details about the architecture, file structure, and how to contrib
 
 ---
 
-
-
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This revision of SharkType is made available under the **PolyForm Noncommercial License 1.0.0**. Use, modification, and redistribution are permitted only for noncommercial purposes under the terms in [LICENSE](LICENSE).
+
+Revisions previously released under MIT remain subject to the MIT terms that applied to those revisions; this license change does not revoke permissions already granted.
+
+Private or separately distributed components, including SharkType Premium content and packages, are not covered by this public repository license unless explicitly stated otherwise.
+
+For commercial use, contact the maintainer for separate permission or a commercial license.
+
+> **Source available, not open source:** PolyForm Noncommercial restricts commercial use.
