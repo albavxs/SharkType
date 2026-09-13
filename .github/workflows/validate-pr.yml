@@ -44,6 +44,9 @@ jobs:
           npm run check:pt-content
           npm run check:access-policies
 
+      - name: Validate security boundaries
+        run: npm run check:security-boundaries
+
       - name: Lint changed source files
         shell: bash
         run: |
