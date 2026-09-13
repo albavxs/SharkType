@@ -29,6 +29,20 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+button:not(:disabled),
+a[href],
+[role="button"]:not([aria-disabled="true"]),
+summary,
+select,
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 .gradient-text {
   background: linear-gradient(135deg, var(--main), var(--main));
   -webkit-background-clip: text;

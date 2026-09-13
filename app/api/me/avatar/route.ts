@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
 
-const MAX_BYTES = 2 * 1024 * 1024 // 2 MB
+const MAX_BYTES = 2 * 1024 * 1024
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 export async function POST(request: Request) {
@@ -16,13 +16,13 @@ export async function POST(request: Request) {
     return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
   const { data: { user }, error: authErr } = await supabase.auth.getUser()
   if (authErr || !user) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const { success } = rateLimit(`avatar-upload:${user.id}`, 10, 60 * 60 * 1000)
+  const { success } = await sharedRateLimit(`avatar-upload:${user.id}`, 10, 60 * 60 * 1000)
   if (!success) {
     return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
   }
@@ -45,10 +45,9 @@ export async function POST(request: Request) {
   const path = `${user.id}/avatar.${ext}`
   const arrayBuffer = await file.arrayBuffer()
 
-  // Magic bytes validation — rejeita SVG/HTML disfarçados de imagem (C3)
   const bytes = new Uint8Array(arrayBuffer.slice(0, 12))
   const isJPEG = bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF
-  const isPNG  = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47
+  const isPNG = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47
   const isWebP = bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
   if (!isJPEG && !isPNG && !isWebP) {
     return NextResponse.json({ error: 'Invalid file type. Use jpeg, png or webp.' }, { status: 415 })
@@ -63,25 +62,24 @@ export async function POST(request: Request) {
     })
 
   if (uploadErr) {
-    const uploadMessage = String(uploadErr.message ?? '')
-    const hint = uploadMessage
-      ? `${uploadMessage} Ensure the avatars bucket exists and allows authenticated uploads.`
-      : 'Could not upload avatar. Ensure the avatars bucket exists and allows authenticated uploads.'
-    return NextResponse.json({ error: hint }, { status: 500 })
+    console.error('[avatar] upload failed:', uploadErr.message)
+    return NextResponse.json({ error: 'Could not upload avatar.' }, { status: 500 })
   }
 
   const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(path)
-  const hashBuf = await crypto.subtle.digest("SHA-256", arrayBuffer)
-  const hashHex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,"0")).join("").slice(0,8)
+  const hashBuf = await crypto.subtle.digest('SHA-256', arrayBuffer)
+  const hashHex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 8)
   const avatarUrl = `${publicUrlData.publicUrl}?v=${hashHex}`
 
-  const { error: updateErr } = await supabase
+  const admin = createAdminClient()
+  const { error: updateErr } = await admin
     .from('profiles')
     .update({ avatar_url: avatarUrl })
     .eq('id', user.id)
 
   if (updateErr) {
-    return NextResponse.json({ error: 'Could not update avatar on the profile row.' }, { status: 500 })
+    console.error('[avatar] profile update failed:', updateErr.message)
+    return NextResponse.json({ error: 'Could not update avatar.' }, { status: 500 })
   }
 
   return NextResponse.json({ avatarUrl })

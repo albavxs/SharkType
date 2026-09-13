@@ -1,6 +1,10 @@
+import { createHash } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { createPublicClient } from '@/lib/supabase/public'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export async function POST(request: Request) {
   const env = getSupabaseEnv()
@@ -9,27 +13,37 @@ export async function POST(request: Request) {
     return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
-  const body = (await request.json()) as { email?: string }
-  if (!body.email) {
-    return NextResponse.json({ error: 'Email is required.' }, { status: 400 })
+  let body: { email?: unknown }
+  try {
+    body = (await request.json()) as { email?: unknown }
+  } catch {
+    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
+  }
+
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
+  if (!email || email.length > 320 || !EMAIL_PATTERN.test(email)) {
+    return NextResponse.json({ error: 'A valid email is required.' }, { status: 400 })
+  }
+
+  const emailKey = createHash('sha256').update(email).digest('hex').slice(0, 32)
+  const { success } = await sharedRateLimit(`auth-resend:${emailKey}`, 3, 15 * 60_000)
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
   }
 
   try {
     const supabase = createPublicClient()
     const { error } = await supabase.auth.resend({
       type: 'signup',
-      email: body.email,
+      email,
     })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
+      console.warn('[auth-resend] provider rejected resend:', error.message)
     }
-
-    return NextResponse.json({ ok: true })
   } catch (resendError) {
-    return NextResponse.json(
-      { error: resendError instanceof Error ? resendError.message : 'Could not resend confirmation code.' },
-      { status: 500 }
-    )
+    console.warn('[auth-resend] resend failed:', resendError instanceof Error ? resendError.message : resendError)
   }
+
+  return NextResponse.json({ ok: true })
 }

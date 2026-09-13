@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createDefaultProgress } from '@/lib/gamification'
 import { getSupabaseEnv } from '@/lib/supabase/env'
 import { ensureProfileForUser } from '@/lib/server/auth-profile'
@@ -28,7 +29,8 @@ export async function GET() {
   }
 
   try {
-    const payload = await bootstrapProfileAndProgress(supabase, user)
+    const admin = createAdminClient()
+    const payload = await bootstrapProfileAndProgress(admin, user)
     return NextResponse.json(payload)
   } catch (progressError) {
     logStructuredError('progress.load_degraded', getSafeErrorDetails(progressError))
@@ -66,12 +68,13 @@ export async function DELETE() {
   }
 
   try {
-    await resetRemoteProgress(supabase, user.id)
+    const admin = createAdminClient()
+    await resetRemoteProgress(admin, user.id)
     return NextResponse.json({ ok: true })
   } catch (resetError) {
-    console.error('[progress] reset failed:', resetError)
+    console.error('[progress] reset failed:', resetError instanceof Error ? resetError.message : resetError)
     return NextResponse.json(
-      { error: resetError instanceof Error ? resetError.message : 'Could not reset progress.' },
+      { error: 'Could not reset progress.' },
       { status: 500 }
     )
   }

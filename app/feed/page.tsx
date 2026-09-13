@@ -77,7 +77,7 @@ function FeedPageInner() {
       {!isMobile && <SceneWrapper />}
       <div className="relative z-10 flex-1 flex flex-col">
         <div className="px-3 sm:px-6 py-4">
-          <Link href="/" className="inline-flex items-center gap-1.5 text-sm hover:opacity-80" style={{ color: 'var(--sub)' }}>
+          <Link href="/home" className="inline-flex items-center gap-1.5 text-sm hover:opacity-80" style={{ color: 'var(--sub)' }}>
             <ArrowLeftIcon size={14} />
             {t('back', locale)}
           </Link>

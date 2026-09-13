@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { LanguageMeta, Difficulty, PracticeWall } from '@/lib/types'
 import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon, MailIcon, ShieldIcon } from '@/components/icons'
 import Link from 'next/link'
@@ -19,7 +20,6 @@ interface ToolbarProps {
   isTimerRunning: boolean
   onLanguageChange: (lang: LanguageMeta) => void
   onDifficultyChange: (d: Difficulty | 'all') => void
-  onHomeClick: () => void
   onHelpClick: () => void
   level: number | null
   streak: number
@@ -34,15 +34,46 @@ interface ToolbarProps {
 export default function Toolbar({
   language, difficulty, seconds, isTimerRunning,
   onLanguageChange, onDifficultyChange,
-  onHomeClick, onHelpClick, level, streak, locale, onLocaleToggle,
+  onHelpClick, level, streak, locale, onLocaleToggle,
   isTyping = false, showControls = true, showLanguage = true, showCommunityBanner = true,
 }: ToolbarProps) {
   const hide = isTyping ? 'opacity-0 pointer-events-none' : 'opacity-100'
   const { profile, signOut } = useAuth()
+  const [isPlus, setIsPlus] = useState(false)
+
+  useEffect(() => {
+    if (!profile) {
+      queueMicrotask(() => setIsPlus(false))
+      return
+    }
+
+    let active = true
+    void (async () => {
+      try {
+        const response = await fetch('/api/me/access', { cache: 'no-store' })
+        const payload = await response.json() as { access?: { isPlus?: boolean } }
+        if (active) setIsPlus(response.ok && payload.access?.isPlus === true)
+      } catch {
+        if (active) setIsPlus(false)
+      }
+    })()
+
+    return () => {
+      active = false
+    }
+  }, [profile])
 
   async function handleSignOut() {
     await signOut()
   }
+
+  const plusHref = isPlus ? '/plus' : '/plus'
+  const plusTitle = isPlus
+    ? locale === 'pt' ? 'Gerenciar assinatura Plus' : 'Manage Plus subscription'
+    : locale === 'pt' ? 'Assinar SharkType Plus' : 'Subscribe to SharkType Plus'
+  const plusLabel = isPlus
+    ? locale === 'pt' ? 'Gerenciar Plus' : 'Manage Plus'
+    : locale === 'pt' ? 'Assinar Plus' : 'Subscribe Plus'
 
   return (
     <div className="relative z-20 px-3 pt-3 pb-1 sm:px-6 sm:py-2">
@@ -54,9 +85,9 @@ export default function Toolbar({
       {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
       <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center sm:gap-4">
         <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
-          <button onClick={onHomeClick} className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
+          <Link href="/home" className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
             <BrandLogo size={30} textSizeClassName="text-lg sm:text-2xl" />
-          </button>
+          </Link>
 
           {/* Right side on mobile (locale + level + streak) */}
           <div className={`flex items-center gap-2 shrink-0 transition-all duration-300 sm:hidden ${hide}`}>
@@ -120,14 +151,28 @@ export default function Toolbar({
             </Link>
           )}
           {profile?.isSuperUser ? (
-            <Link href="/admin/plus" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
+            <Link href="/admin/plus" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
               <ShieldIcon size={20} />
             </Link>
           ) : null}
-          <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
+          {profile ? (
+            <Link
+              href={plusHref}
+              className="hidden items-center rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-all duration-150 hover:scale-105 hover:brightness-110 active:scale-95 cursor-pointer lg:inline-flex"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
+                color: 'var(--main)',
+              }}
+              title={plusTitle}
+            >
+              {plusLabel}
+            </Link>
+          ) : null}
+          <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
             <HelpIcon size={22} />
           </button>
-          <Link href="/settings" className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
+          <Link href="/settings" className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
             <SlidersIcon size={22} />
           </Link>
         </div>
@@ -146,14 +191,28 @@ export default function Toolbar({
             <MailIcon size={18} />
           </Link>
           {profile?.isSuperUser ? (
-            <Link href="/admin/plus" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
+            <Link href="/admin/plus" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
               <ShieldIcon size={18} />
             </Link>
           ) : null}
-          <button onClick={onHelpClick} className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
+          {profile ? (
+            <Link
+              href={plusHref}
+              className="rounded-full px-2 py-1 text-[10px] font-semibold transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)',
+                color: 'var(--main)',
+                border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
+              }}
+              title={plusTitle}
+            >
+              Plus
+            </Link>
+          ) : null}
+          <button onClick={onHelpClick} className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
             <HelpIcon size={18} />
           </button>
-          <Link href="/settings" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
+          <Link href="/settings" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
             <SlidersIcon size={18} />
           </Link>
         </div>
@@ -201,7 +260,7 @@ export default function Toolbar({
       <div className={`ml-auto hidden sm:flex items-center gap-2 lg:gap-4 shrink-0 transition-all duration-300 ${hide}`}>
         {onLocaleToggle && (
           <button onClick={onLocaleToggle}
-            className="text-sm font-mono font-medium px-2 py-0.5 rounded transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95"
+            className="text-sm font-mono font-medium px-2 py-0.5 rounded transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95 cursor-pointer"
             style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}
             title={t('toggleLocale', locale)}>
             {locale === 'pt' ? 'PT' : 'EN'}
@@ -231,7 +290,7 @@ export default function Toolbar({
             </Link>
             <button
               onClick={handleSignOut}
-              className="rounded-full p-2 transition-all duration-150 hover:scale-105 active:scale-95"
+              className="rounded-full p-2 transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer"
               style={{ color: 'var(--sub)' }}
               title={t('authSignOut', locale)}
             >

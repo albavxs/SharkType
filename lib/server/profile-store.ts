@@ -1,16 +1,22 @@
+import 'server-only'
+
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { getLevel, reconcileStreakOnLogin } from '@/lib/gamification'
 import { getRankFromScore, type RankState } from '@/lib/ranks'
+import { createAdminClient } from '@/lib/supabase/admin'
+import type { Database } from '@/lib/supabase/database'
 import { getUserProgressSnapshot } from './progress-store'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
+type QueryError = { code?: string; message?: string }
+type QueryResult<T> = { data: T[] | null; error: QueryError | null }
 
-function isMissingTableError(error: { code?: string; message?: string } | null | undefined): boolean {
+function isMissingTableError(error: QueryError | null | undefined): boolean {
   return error?.code === '42P01' || String(error?.message ?? '').includes('does not exist')
 }
 
 function logSafeQueryError(scope: string, table: string, error: unknown) {
-  const candidate = error as { code?: string; message?: string } | null
+  const candidate = error as QueryError | null
   console.error(`[profile-store] ${scope} failed for ${table}:`, {
     code: candidate?.code ?? 'unknown',
     message: candidate?.message ?? String(error),
@@ -47,20 +53,16 @@ export interface PublicProfile {
   isFollowedByMe: boolean
 }
 
-/**
- * Busca perfil publico por username.
- * Retorna null se nao existir.
- * `viewerId` opcional — se passado, popula `isFollowedByMe`.
- */
 export async function getPublicProfile(
-  supabase: DBClient,
+  _supabase: DBClient,
   username: string,
   viewerId?: string | null,
 ): Promise<PublicProfile | null> {
+  const db = createAdminClient()
   const normalizedUsername = username.toLowerCase()
-  const { data: profile, error: profileErr } = await supabase
+  const { data: profile, error: profileErr } = await db
     .from('profiles')
-    .select('*')
+    .select('id,username,display_name,avatar_url,bio,created_at')
     .eq('username', normalizedUsername)
     .maybeSingle()
 
@@ -69,26 +71,29 @@ export async function getPublicProfile(
 
   const userId = profile.id
   const [snapshot, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
-    // A public profile request must never initialize or reconcile the owner's
-    // progress. Those operations write user-owned tables and are subject to RLS.
-    getUserProgressSnapshot(supabase, userId, { persistAggregates: false }),
-    safeSelect<{ achievement_id: string }>(supabase, 'user_achievements', q =>
-      q.select('achievement_id').eq('user_id', userId),
-    ),
-    safeSelect<{ follower_id: string }>(supabase, 'follows', q =>
-      q.select('follower_id').eq('following_id', userId),
-    ),
-    safeSelect<{ following_id: string }>(supabase, 'follows', q =>
-      q.select('following_id').eq('follower_id', userId),
-    ),
+    getUserProgressSnapshot(db, userId, { persistAggregates: false }),
+    safeSelect<{ achievement_id: string }>('user_achievements', async () => {
+      const result = await db.from('user_achievements').select('achievement_id').eq('user_id', userId)
+      return { data: result.data, error: result.error }
+    }),
+    safeSelect<{ follower_id: string }>('follows', async () => {
+      const result = await db.from('follows').select('follower_id').eq('following_id', userId)
+      return { data: result.data, error: result.error }
+    }),
+    safeSelect<{ following_id: string }>('follows', async () => {
+      const result = await db.from('follows').select('following_id').eq('follower_id', userId)
+      return { data: result.data, error: result.error }
+    }),
     viewerId
-      ? safeSelect<{ follower_id: string }>(supabase, 'follows', q =>
-          q
+      ? safeSelect<{ follower_id: string }>('follows', async () => {
+          const result = await db
+            .from('follows')
             .select('follower_id')
             .eq('follower_id', viewerId)
             .eq('following_id', userId)
-            .limit(1),
-        )
+            .limit(1)
+          return { data: result.data, error: result.error }
+        })
       : Promise.resolve({ data: [], error: null }),
   ])
 
@@ -135,26 +140,20 @@ export async function getPublicProfile(
   }
 }
 
-/**
- * Wrapper de select que devolve { data: [], error: null } se a tabela nao existir
- * (ex: migrations 004/005 ainda nao aplicadas). Evita 500 em ambientes parciais.
- */
 async function safeSelect<T>(
-  supabase: DBClient,
   table: string,
-  build: (q: any) => any,
-): Promise<{ data: T[] | null; error: any }> {
+  execute: () => Promise<QueryResult<T>>,
+): Promise<QueryResult<T>> {
   try {
-    const res = await build(supabase.from(table))
+    const res = await execute()
     if (res.error) {
-      // 42P01 = undefined_table no Postgres
       if (isMissingTableError(res.error)) {
         return { data: [], error: null }
       }
       logSafeQueryError('safeSelect', table, res.error)
       return { data: null, error: res.error }
     }
-    return { data: res.data as T[], error: null }
+    return res
   } catch (error) {
     logSafeQueryError('safeSelect', table, error)
     return { data: [], error: null }

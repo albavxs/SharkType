@@ -250,6 +250,139 @@ export interface Database {
         Update: never
         Relationships: []
       }
+      feed_likes: {
+        Row: {
+          id: string
+          feed_event_id: number
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          feed_event_id: number
+          user_id: string
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
+      track_completions: {
+        Row: {
+          id: string
+          user_id: string
+          track_slug: string
+          completed_at: string
+          best_wpm: number | null
+          accuracy: number | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          track_slug: string
+          completed_at?: string
+          best_wpm?: number | null
+          accuracy?: number | null
+        }
+        Update: {
+          track_slug?: string
+          completed_at?: string
+          best_wpm?: number | null
+          accuracy?: number | null
+        }
+        Relationships: []
+      }
+      billing_checkouts: {
+        Row: {
+          id: string
+          user_id: string
+          provider: 'asaas'
+          purpose: 'plus_subscription' | 'sandbox_test'
+          external_reference: string
+          provider_checkout_id: string | null
+          provider_customer_id: string | null
+          status: 'creating' | 'active' | 'paid' | 'canceled' | 'expired' | 'failed'
+          amount: number
+          currency: 'BRL'
+          sandbox: boolean
+          checkout_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          provider?: 'asaas'
+          purpose: 'plus_subscription' | 'sandbox_test'
+          external_reference: string
+          provider_checkout_id?: string | null
+          provider_customer_id?: string | null
+          status?: 'creating' | 'active' | 'paid' | 'canceled' | 'expired' | 'failed'
+          amount: number
+          currency?: 'BRL'
+          sandbox?: boolean
+          checkout_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          provider?: 'asaas'
+          purpose?: 'plus_subscription' | 'sandbox_test'
+          provider_checkout_id?: string | null
+          provider_customer_id?: string | null
+          status?: 'creating' | 'active' | 'paid' | 'canceled' | 'expired' | 'failed'
+          amount?: number
+          currency?: 'BRL'
+          sandbox?: boolean
+          checkout_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      billing_subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          provider: 'asaas'
+          purpose: 'plus_subscription' | 'sandbox_test'
+          provider_subscription_id: string
+          provider_customer_id: string | null
+          status: string
+          cycle: string | null
+          amount: number | null
+          next_due_date: string | null
+          sandbox: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          provider?: 'asaas'
+          purpose?: 'plus_subscription' | 'sandbox_test'
+          provider_subscription_id: string
+          provider_customer_id?: string | null
+          status: string
+          cycle?: string | null
+          amount?: number | null
+          next_due_date?: string | null
+          sandbox?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          provider?: 'asaas'
+          purpose?: 'plus_subscription' | 'sandbox_test'
+          provider_subscription_id?: string
+          provider_customer_id?: string | null
+          status?: string
+          cycle?: string | null
+          amount?: number | null
+          next_due_date?: string | null
+          sandbox?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_entitlements: {
         Row: {
           id: string
@@ -330,16 +463,23 @@ export interface Database {
           provider_event_id: string
           event_type: string
           payload: Json
-          processed_at: string
+          received_at: string
+          processed_at: string | null
+          processing_error: string | null
         }
         Insert: {
           provider: string
           provider_event_id: string
           event_type: string
           payload: Json
-          processed_at?: string
+          received_at?: string
+          processed_at?: string | null
+          processing_error?: string | null
         }
-        Update: never
+        Update: {
+          processed_at?: string | null
+          processing_error?: string | null
+        }
         Relationships: []
       }
     }

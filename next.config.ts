@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
+import fs from "fs";
 import path from "path";
+
+const PREMIUM_PACKAGE = '@albavxs/sharktype-premium'
+const premiumPackageInstalled = fs.existsSync(
+  path.join(__dirname, 'node_modules', '@albavxs', 'sharktype-premium', 'package.json')
+)
+const premiumFallbackPath = path.resolve(__dirname, 'lib/server/premium-package-fallback.ts')
 
 function getAllowedDevOrigins() {
   const configuredOrigins = process.env.NEXT_ALLOWED_DEV_ORIGINS
@@ -100,8 +107,22 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  webpack(config) {
+    if (!premiumPackageInstalled) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        [PREMIUM_PACKAGE]: premiumFallbackPath,
+      }
+    }
+    return config
+  },
   turbopack: {
     root: path.resolve(__dirname),
+    resolveAlias: premiumPackageInstalled
+      ? {}
+      : {
+          [PREMIUM_PACKAGE]: premiumFallbackPath,
+        },
   },
 };
 

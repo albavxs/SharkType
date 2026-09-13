@@ -63,7 +63,7 @@ export default function SignupPage() {
       return
     }
 
-    router.push('/')
+    router.push('/home')
   }
 
   return (
@@ -76,7 +76,7 @@ export default function SignupPage() {
             {t('authHaveAccount', locale)}
           </Link>
           <div>
-            <Link href="/" className="inline-block cursor-pointer text-xs transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" style={{ color: 'var(--sub)' }}>
+            <Link href="/home" className="inline-block cursor-pointer text-xs transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" style={{ color: 'var(--sub)' }}>
               {t('authContinueGuest', locale)}
             </Link>
           </div>

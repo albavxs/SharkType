@@ -25,7 +25,7 @@ export default function ProfilePage() {
       return
     }
 
-    router.replace('/')
+    router.replace('/home')
   }, [isLoading, user, profile, router])
 
   return (

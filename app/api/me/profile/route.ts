@@ -5,6 +5,8 @@ import { ensureProfileForUser, updateProfileIdentity } from '@/lib/server/auth-p
 import { ensureUserSocialBackfill } from '@/lib/server/progress-store'
 import { isReservedUsername, isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
+const MAX_BIO_LENGTH = 256
+
 export async function GET() {
   const env = getSupabaseEnv()
 
@@ -30,10 +32,7 @@ export async function GET() {
     return NextResponse.json({ profile })
   } catch (profileError) {
     console.error('[profile] load failed:', profileError)
-    return NextResponse.json(
-      { error: profileError instanceof Error ? profileError.message : 'Could not load profile.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Could not load profile.' }, { status: 500 })
   }
 }
 
@@ -91,7 +90,9 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'This username is reserved.' }, { status: 409 })
     }
 
-    const bio = typeof body.bio === 'string' ? body.bio.trim() : null
+    const bio = typeof body.bio === 'string'
+      ? body.bio.trim().slice(0, MAX_BIO_LENGTH)
+      : null
     const profile = await updateProfileIdentity(supabase, user.id, {
       username,
       displayName: body.displayName ?? null,
@@ -103,11 +104,12 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ profile })
   } catch (profileError) {
     console.error('[profile] update failed:', profileError)
-    const message = profileError instanceof Error ? profileError.message : 'Could not update profile.'
+    const message = profileError instanceof Error ? profileError.message : ''
     const normalized = message.toLowerCase()
     const isDuplicate = normalized.includes('duplicate') || normalized.includes('unique')
-    const status = isDuplicate ? 409 : 500
-    const errorResponse = isDuplicate ? 'This username is already taken.' : message
-    return NextResponse.json({ error: errorResponse }, { status })
+    return NextResponse.json(
+      { error: isDuplicate ? 'This username is already taken.' : 'Could not update profile.' },
+      { status: isDuplicate ? 409 : 500 }
+    )
   }
 }
