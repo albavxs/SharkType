@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserAccess } from '@/lib/server/access-control'
 import { createAsaasRecurringCheckout, getAsaasConfig } from '@/lib/server/asaas'
 
-const SANDBOX_TEST_AMOUNT = 1
+const SANDBOX_TEST_AMOUNT = 5
 
 function getCallbackBaseUrl(request: Request): string {
   const configured = process.env.APP_URL?.trim()
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
   } catch (checkoutError) {
     console.error('[billing] sandbox checkout failed:', checkoutError instanceof Error ? checkoutError.message : checkoutError)
     return NextResponse.json(
-      { error: checkoutError instanceof Error ? checkoutError.message : 'Could not start sandbox checkout.' },
+      { error: 'Could not start sandbox checkout.' },
       { status: 500 },
     )
   }

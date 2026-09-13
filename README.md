@@ -76,10 +76,17 @@ Para detalhes técnicos sobre a arquitetura, estrutura de arquivos e como contri
 
 ---
 
-
 ## 📄 Licença
 
-Este projeto está sob a licença MIT.
+A partir da introdução da linha **SharkType Plus**, as revisões atuais do projeto são disponibilizadas sob a **PolyForm Noncommercial License 1.0.0**. Uso, modificação e redistribuição são permitidos apenas para finalidades não comerciais conforme os termos em [LICENSE](LICENSE).
+
+Revisões anteriores que foram efetivamente disponibilizadas sob MIT permanecem sujeitas aos direitos já concedidos naquela época. A mudança de licença não revoga permissões que já tenham sido concedidas, mas nenhuma revisão atual ou futura deve ser tratada como MIT apenas por causa do histórico do repositório.
+
+Componentes privados ou distribuídos separadamente, incluindo conteúdo e pacotes SharkType Premium, não fazem parte desta licença pública salvo quando indicado expressamente.
+
+Para uso comercial, entre em contato com o mantenedor para obter autorização ou uma licença separada.
+
+> **Source available, não open source:** a PolyForm Noncommercial restringe uso comercial.
 
 ---
 
@@ -155,8 +162,14 @@ For technical details about the architecture, file structure, and how to contrib
 
 ---
 
-
-
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+Starting with the introduction of the **SharkType Plus** line, current revisions of the project are made available under the **PolyForm Noncommercial License 1.0.0**. Use, modification, and redistribution are permitted only for noncommercial purposes under the terms in [LICENSE](LICENSE).
+
+Earlier revisions that were actually made available under MIT remain subject to rights already granted at that time. The license change does not revoke rights already granted, but current and future revisions must not be treated as MIT merely because of repository history.
+
+Private or separately distributed components, including SharkType Premium content and packages, are not covered by this public repository license unless explicitly stated otherwise.
+
+For commercial use, contact the maintainer for separate permission or a commercial license.
+
+> **Source available, not open source:** PolyForm Noncommercial restricts commercial use.

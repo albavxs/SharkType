@@ -28,6 +28,13 @@ function loadLocalPremiumToken() {
   }
 }
 
+function buildChildEnv() {
+  const childEnv = { ...process.env }
+  delete childEnv.GITHUB_PACKAGES_TOKEN
+  delete childEnv.NODE_AUTH_TOKEN
+  return childEnv
+}
+
 loadLocalPremiumToken()
 
 const token = process.env.GITHUB_PACKAGES_TOKEN?.trim()
@@ -48,6 +55,7 @@ if (!token) {
 
 const tempDir = mkdtempSync(path.join(tmpdir(), 'sharktype-npm-'))
 const userConfigPath = path.join(tempDir, '.npmrc')
+const childEnv = buildChildEnv()
 
 writeFileSync(
   userConfigPath,
@@ -75,7 +83,7 @@ try {
     {
       stdio: 'inherit',
       env: {
-        ...process.env,
+        ...childEnv,
         npm_config_userconfig: userConfigPath,
       },
     }
@@ -99,7 +107,7 @@ try {
   execFileSync(
     process.platform === 'win32' ? 'node.exe' : 'node',
     ['-e', verifyScript],
-    { stdio: 'inherit', env: process.env },
+    { stdio: 'inherit', env: childEnv },
   )
 
   console.info(`[private-runtime] installed and verified ${packageName}`)

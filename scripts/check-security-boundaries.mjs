@@ -58,6 +58,28 @@ assert(
   'shared throttle RPC must only be executable by service_role',
 )
 
+const privacyHardening = await text('supabase/migrations/202609130004_privacy_hardening.sql')
+assert(
+  privacyHardening.includes('alter table public.feed_likes enable row level security;'),
+  'feed_likes must remain protected by RLS',
+)
+assert(
+  privacyHardening.includes('with check (auth.uid() = user_id);'),
+  'feed_likes inserts must be bound to the authenticated user',
+)
+assert(
+  privacyHardening.includes('drop policy if exists "user_progress_public_read" on public.user_progress;'),
+  'raw user_progress must not regain public-row visibility',
+)
+assert(
+  privacyHardening.includes('using (auth.uid() = user_id);'),
+  'raw user_progress must remain owner-scoped',
+)
+assert(
+  privacyHardening.includes('revoke all on public.track_completions from anon, authenticated;'),
+  'legacy track_completions must remain server-only',
+)
+
 const sensitiveServerModules = [
   'lib/supabase/admin.ts',
   'lib/server/asaas.ts',
@@ -98,6 +120,7 @@ const sharedLimitedRoutes = [
   'app/api/auth/resend-code/route.ts',
   'app/api/billing/plus/checkout/route.ts',
   'app/api/billing/plus/pix-automatic/route.ts',
+  'app/api/feed/manual/route.ts',
   'app/api/me/avatar/route.ts',
   'app/api/progress/import/route.ts',
   'app/api/progress/session/route.ts',
@@ -107,6 +130,26 @@ for (const file of sharedLimitedRoutes) {
   const source = await text(file)
   assert(source.includes('sharedRateLimit'), `${file} must use the shared rate limiter`)
 }
+
+const manualFeedRoute = await text('app/api/feed/manual/route.ts')
+assert(
+  manualFeedRoute.includes('createAdminClient'),
+  'manual feed posts must be persisted through the server-authoritative client',
+)
+assert(
+  manualFeedRoute.includes('requireSuperAdmin'),
+  'manual feed posts must remain super-admin-only',
+)
+
+const installer = await text('scripts/install-premium-package.mjs')
+assert(
+  installer.includes('delete childEnv.GITHUB_PACKAGES_TOKEN'),
+  'package token must not be forwarded to installer child processes',
+)
+assert(
+  installer.includes('delete childEnv.NODE_AUTH_TOKEN'),
+  'generic npm auth token must not be forwarded to installer child processes',
+)
 
 const importRoute = await text('app/api/progress/import/route.ts')
 assert(

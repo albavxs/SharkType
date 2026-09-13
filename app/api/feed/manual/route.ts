@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
-import { ensureProfileForUser } from '@/lib/server/auth-profile'
+import { requireSuperAdmin } from '@/lib/server/access-control'
 import { getFeedEventById, type FeedManualPostPayload, type ManualPostCategory } from '@/lib/server/feed-store'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 
 const MAX_MANUAL_POST_BYTES = 8 * 1024
 const MAX_TITLE_LENGTH = 120
@@ -46,19 +47,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const contentLength = Number(request.headers.get('content-length') ?? '0')
-  if (Number.isFinite(contentLength) && contentLength > MAX_MANUAL_POST_BYTES) {
-    return NextResponse.json({ error: 'Manual post payload is too large.' }, { status: 400 })
-  }
-
-  const profile = await ensureProfileForUser(supabase, user)
-  if (!profile.isSuperUser) {
+  try {
+    await requireSuperAdmin(supabase, user)
+  } catch (authorizationError) {
+    console.error('[feed-manual] authorization failed:', authorizationError instanceof Error ? authorizationError.message : authorizationError)
     return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
   }
 
-  const { success } = rateLimit(`manual-post:${user.id}`, 10, 60 * 60 * 1000)
+  const { success } = await sharedRateLimit(`manual-post:${user.id}`, 10, 60 * 60 * 1000)
   if (!success) {
     return NextResponse.json({ error: 'Rate limited.' }, { status: 429 })
+  }
+
+  const contentLength = Number(request.headers.get('content-length') ?? '0')
+  if (Number.isFinite(contentLength) && contentLength > MAX_MANUAL_POST_BYTES) {
+    return NextResponse.json({ error: 'Manual post payload is too large.' }, { status: 413 })
+  }
+
+  const rawBody = await request.text()
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_MANUAL_POST_BYTES) {
+    return NextResponse.json({ error: 'Manual post payload is too large.' }, { status: 413 })
   }
 
   let body: {
@@ -68,7 +76,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    body = (await request.json()) as typeof body
+    body = JSON.parse(rawBody) as typeof body
   } catch {
     return NextResponse.json({ error: 'Invalid JSON payload.' }, { status: 400 })
   }
@@ -85,24 +93,28 @@ export async function POST(request: Request) {
     category: body.category,
   }
 
-  const inserted = await supabase
-    .from('feed_events')
-    .insert({
-      user_id: user.id,
-      event_type: 'manual_post',
-      payload,
-    })
-    .select('id')
-    .single()
+  try {
+    const admin = createAdminClient()
+    const inserted = await admin
+      .from('feed_events')
+      .insert({
+        user_id: user.id,
+        event_type: 'manual_post',
+        payload,
+      })
+      .select('id')
+      .single()
 
-  if (inserted.error) {
+    if (inserted.error) throw inserted.error
+
+    const event = await getFeedEventById(admin, inserted.data.id)
+    if (!event) {
+      return NextResponse.json({ error: 'Could not load created manual feed post.' }, { status: 500 })
+    }
+
+    return NextResponse.json({ event }, { status: 201 })
+  } catch (postError) {
+    console.error('[feed-manual] create failed:', postError instanceof Error ? postError.message : postError)
     return NextResponse.json({ error: 'Could not create manual feed post.' }, { status: 500 })
   }
-
-  const event = await getFeedEventById(supabase, inserted.data.id)
-  if (!event) {
-    return NextResponse.json({ error: 'Could not load created manual feed post.' }, { status: 500 })
-  }
-
-  return NextResponse.json({ event }, { status: 201 })
 }

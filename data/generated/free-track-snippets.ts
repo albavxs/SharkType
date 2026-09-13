@@ -63,78 +63,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "int divide(int a, int b, int *out) {\n    if (b == 0 || out == NULL) return 0;\n    *out = a / b;\n    return 1;\n}"
       }
     ],
-    "cpp": [
-      {
-        "id": "cpp-011",
-        "concept": {
-          "pt": "If Simples",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "If em C++ usa parenteses na condicao. Verifique se age e maior ou igual a 18 e imprima com std::cout.",
-          "en": "If in C++ uses parentheses for the condition. Check if age is 18 or older and print with std::cout."
-        },
-        "code": "if (age >= 18) {\n    std::cout << \"You are an adult\" << std::endl;\n}",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "cpp-012",
-        "concept": {
-          "pt": "If-Else",
-          "en": "If-Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "If-else em C++ permite dois caminhos de execucao. Classifique score como \"Pass\" ou \"Fail\" usando std::string.",
-          "en": "If-else in C++ allows two execution paths. Classify score as \"Pass\" or \"Fail\" using std::string."
-        },
-        "code": "std::string result;\nif (score >= 70) {\n    result = \"Pass\";\n} else {\n    result = \"Fail\";\n}",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "cpp-013",
-        "concept": {
-          "pt": "Operador Ternario",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O operador ternario em C++ condensa if-else em uma expressao. Use pra classificar idade em \"adult\" ou \"minor\".",
-          "en": "The ternary operator in C++ condenses if-else into an expression. Use it to classify age as \"adult\" or \"minor\"."
-        },
-        "code": "std::string status = (age >= 18) ? \"adult\" : \"minor\";",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "cpp-014",
-        "concept": {
-          "pt": "Switch",
-          "en": "Switch"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Switch em C++ compara uma expressao inteira ou enum contra cases. Use pra mapear um codigo numerico a uma mensagem de erro.",
-          "en": "Switch in C++ compares an integer or enum expression against cases. Use it to map a numeric code to an error message."
-        },
-        "code": "switch (code) {\n    case 200: msg = \"OK\"; break;\n    case 404: msg = \"Not Found\"; break;\n    case 500: msg = \"Server Error\"; break;\n    default:  msg = \"Unknown\";\n}",
-        "slot": "cond-switch"
-      },
-      {
-        "id": "cpp-015",
-        "concept": {
-          "pt": "If com Inicializador",
-          "en": "If with Initializer"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "C++17 permite declaracao no if antes da condicao, limitando o escopo da variável ao bloco. Use pra buscar num map e verificar se encontrou.",
-          "en": "C++17 allows a declaration in if before the condition, limiting the variable's scope to the block. Use it to search a map and check if found."
-        },
-        "code": "if (auto it = cache.find(key); it != cache.end()) {\n    return it->second;\n} else {\n    return compute(key);\n}",
-        "slot": "cond-guard"
-      }
-    ],
     "csharp": [
       {
         "id": "cs-001",
@@ -207,93 +135,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "static int Divide(int a, int b)\n{\n    if (b == 0) throw new ArgumentException(\"b cannot be zero\");\n    return a / b;\n}"
       }
     ],
-    "javascript": [
-      {
-        "id": "js-011",
-        "concept": {
-          "pt": "If Simples",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "A estrutura if avalia uma condição e executa o bloco se for verdadeira. Verifique se age é maior ou igual a 18 e imprima a mensagem.",
-          "en": "The if statement evaluates a condition and executes the block if true. Check if age is 18 or older and print the message."
-        },
-        "code": "if (age >= 18) {\n  console.log(\"You are an adult\");\n}",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "js-012",
-        "concept": {
-          "pt": "If e Else",
-          "en": "If and Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O else define o que acontece quando a condição do if é falsa. Verifique se o número é par ou ímpar e atribua o resultado a uma constante.",
-          "en": "The else block runs when the if condition is false. Check whether a number is even or odd and assign the result to a constant."
-        },
-        "code": "const parity = n % 2 === 0 ? \"even\" : \"odd\";",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "js-013",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O operador ternário é um if/else inline que retorna um valor. Use-o pra definir o status do usuário baseado na propriedade active.",
-          "en": "The ternary operator is an inline if/else that returns a value. Use it to define the user status based on the active property."
-        },
-        "code": "const status = user.active ? \"online\" : \"offline\";",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "js-014",
-        "concept": {
-          "pt": "Switch",
-          "en": "Switch Statement"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Switch compara um valor contra vários casos e executa o bloco correspondente. Implemente uma função que retorna o nome do dia da semana a partir de um número.",
-          "en": "Switch compares a value against multiple cases and runs the matching block. Implement a function that returns the weekday name from a number."
-        },
-        "code": "switch (day) {\n  case 0: return \"Sunday\";\n  case 1: return \"Monday\";\n  default: return \"Other\";\n}",
-        "slot": "cond-switch"
-      },
-      {
-        "id": "js-015",
-        "concept": {
-          "pt": "Cláusula de Guarda",
-          "en": "Guard Clause"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Guard clauses retornam cedo pra evitar aninhamento excessivo. Valide a entrada no início da função e retorne antes de executar a lógica principal.",
-          "en": "Guard clauses return early to avoid deep nesting. Validate the input at the top of the function and return before running the main logic."
-        },
-        "code": "function divide(a, b) {\n  if (b === 0) return null;\n  return a / b;\n}",
-        "slot": "cond-guard"
-      }
-    ],
     "typescript": [
-      {
-        "id": "ts-011",
-        "concept": {
-          "pt": "If Simples",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "A estrutura if avalia uma condição e executa o bloco se for verdadeira. Verifique se o array está vazio e imprima um aviso.",
-          "en": "The if statement evaluates a condition and runs the block if true. Check if the array is empty and print a warning."
-        },
-        "code": "if (items.length === 0) {\n  console.log(\"No items found\");\n}",
-        "slot": "cond-basic-if"
-      },
       {
         "id": "ts-005",
         "concept": {
@@ -307,237 +149,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "function printId(id: string | number) {\n  if (typeof id === 'string') {\n    console.log(id.toUpperCase());\n  } else {\n    console.log(id.toFixed(2));\n  }\n}",
         "slot": "cond-if-else"
-      },
-      {
-        "id": "ts-012",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O operador ternário retorna um valor baseado numa condição. Use-o pra definir a label baseada no tipo de usuário.",
-          "en": "The ternary operator returns a value based on a condition. Use it to define the label based on the user type."
-        },
-        "code": "const label: string = isAdmin ? \"Admin\" : \"User\";",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "ts-013",
-        "concept": {
-          "pt": "Switch com Tipos",
-          "en": "Switch with Types"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Switch combinado com tipos literais permite exhaustive checking. O TypeScript avisa se você esquecer de tratar algum caso de um union type.",
-          "en": "Switch combined with literal types enables exhaustive checking. TypeScript warns if you forget to handle a case from a union type."
-        },
-        "code": "function handle(status: Status): string {\n  switch (status) {\n    case \"active\": return \"Running\";\n    case \"inactive\": return \"Stopped\";\n    case \"pending\": return \"Waiting\";\n  }\n}",
-        "slot": "cond-switch"
-      },
-      {
-        "id": "ts-010",
-        "concept": {
-          "pt": "Guarda de Tipo",
-          "en": "Type Guard"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Type guards são funções que informam o compilador sobre o tipo de um valor em runtime. Implemente isString com retorno \"value is string\": quando retornar true, o TS automaticamente refina o tipo no bloco seguinte.",
-          "en": "Type guards are functions that tell the compiler about a value's type at runtime. Implement isString with return type \"value is string\": when it returns true, TypeScript automatically narrows the type in the following block."
-        },
-        "code": "function isString(value: unknown): value is string {\n  return typeof value === 'string';\n}",
-        "slot": "cond-guard"
-      }
-    ],
-    "python": [
-      {
-        "id": "py-011",
-        "concept": {
-          "pt": "If Simples",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "A estrutura if avalia uma condição e executa o bloco indentado se for verdadeira. Verifique se age é maior ou igual a 18 e imprima a mensagem.",
-          "en": "The if statement evaluates a condition and runs the indented block if true. Check if age is 18 or older and print the message."
-        },
-        "code": "if age >= 18:\n    print(\"You are an adult\")",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "py-012",
-        "concept": {
-          "pt": "If e Else",
-          "en": "If and Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O else define o que acontece quando a condição do if é falsa. Verifique se a temperatura está acima de 30 e imprima a mensagem adequada.",
-          "en": "The else block runs when the if condition is false. Check if the temperature is above 30 and print the appropriate message."
-        },
-        "code": "if temperature > 30:\n    print(\"It's hot!\")\nelse:\n    print(\"It's cool.\")",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "py-013",
-        "concept": {
-          "pt": "Expressão Ternária",
-          "en": "Ternary Expression"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Python tem operador ternário com a sintaxe \"valor_se_true if condição else valor_se_false\". Use-o pra definir o status numa linha.",
-          "en": "Python has a ternary operator with the syntax \"value_if_true if condition else value_if_false\". Use it to define the status in one line."
-        },
-        "code": "status = \"adult\" if age >= 18 else \"minor\"",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "py-014",
-        "concept": {
-          "pt": "Match/Case",
-          "en": "Match/Case"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "match/case (Python 3.10+) é o pattern matching estrutural do Python. Use-o pra despachar ações baseadas no comando recebido.",
-          "en": "match/case (Python 3.10+) is Python's structural pattern matching. Use it to dispatch actions based on the received command."
-        },
-        "code": "match command:\n    case \"start\":\n        run()\n    case \"stop\":\n        halt()\n    case _:\n        print(\"Unknown\")",
-        "slot": "cond-switch"
-      },
-      {
-        "id": "py-015",
-        "concept": {
-          "pt": "Cláusula de Guarda",
-          "en": "Guard Clause"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Guard clauses retornam cedo pra evitar aninhamento. Valide a entrada no início da função e retorne antes da lógica principal.",
-          "en": "Guard clauses return early to avoid nesting. Validate the input at the top of the function and return before the main logic."
-        },
-        "code": "def divide(a, b):\n    if b == 0:\n        return None\n    return a / b",
-        "slot": "cond-guard"
-      }
-    ],
-    "java": [
-      {
-        "id": "java-011",
-        "concept": {
-          "pt": "If Simples",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "If em Java usa parenteses na condicao e chaves pro bloco. Verifique se age e maior ou igual a 18 e imprima com System.out.println.",
-          "en": "If in Java uses parentheses for the condition and braces for the block. Check if age is 18 or older and print with System.out.println."
-        },
-        "code": "if (age >= 18) {\n    System.out.println(\"You are an adult\");\n}",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "java-012",
-        "concept": {
-          "pt": "If-Else",
-          "en": "If-Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "If-else em Java permite escolher entre dois caminhos. Classifique score como \"Pass\" ou \"Fail\" e guarde numa variável.",
-          "en": "If-else in Java lets you choose between two paths. Classify score as \"Pass\" or \"Fail\" and store in a variable."
-        },
-        "code": "String result;\nif (score >= 70) {\n    result = \"Pass\";\n} else {\n    result = \"Fail\";\n}",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "java-013",
-        "concept": {
-          "pt": "Operador Ternario",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O operador ternario em Java condensa um if-else em uma unica expressao. Use pra classificar idade em \"adult\" ou \"minor\".",
-          "en": "The ternary operator in Java condenses an if-else into a single expression. Use it to classify age as \"adult\" or \"minor\"."
-        },
-        "code": "String status = (age >= 18) ? \"adult\" : \"minor\";",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "java-008",
-        "concept": {
-          "pt": "Expressao Switch",
-          "en": "Switch Expression"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Switch expression (Java 14+) retorna um valor e usa -> eliminando break e fall-through. Mapeie os valores do enum \"day\" pra strings usando a sintaxe nova, agrupando cases com virgula quando dao no mesmo resultado.",
-          "en": "Switch expressions (Java 14+) return a value and use -> eliminating break and fall-through. Map enum \"day\" values to strings using the new syntax, grouping cases with commas when they map to the same result."
-        },
-        "code": "String label = switch (day) {\n    case MONDAY, FRIDAY -> \"Work\";\n    case SATURDAY, SUNDAY -> \"Rest\";\n    default -> \"Midweek\";\n};",
-        "slot": "cond-switch"
-      },
-      {
-        "id": "java-014",
-        "concept": {
-          "pt": "Guard Clause",
-          "en": "Guard Clause"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Guard clause retorna cedo pra evitar aninhamento excessivo. Valide os parâmetros no inicio do método e lance exceção se forem invalidos.",
-          "en": "Guard clauses return early to avoid excessive nesting. Validate parameters at the start of the method and throw if invalid."
-        },
-        "code": "public void process(String input) {\n    if (input == null || input.isEmpty()) {\n        throw new IllegalArgumentException(\"input required\");\n    }\n    System.out.println(input.toUpperCase());\n}",
-        "slot": "cond-guard"
       }
     ],
     "rust": [
-      {
-        "id": "rs-011",
-        "concept": {
-          "pt": "If Básico",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Rust, \"if\" não usa parênteses na condição e é uma expressão que retorna valor. Use if pra checar se um número é positivo.",
-          "en": "In Rust, \"if\" does not use parentheses around the condition and is an expression that returns a value. Use if to check whether a number is positive."
-        },
-        "code": "let n = 42;\nif n > 0 {\n    println!(\"positivo\");\n}",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "rs-012",
-        "concept": {
-          "pt": "If-Else como Expressão",
-          "en": "If-Else Expression"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Como \"if\" é expressão em Rust, dá pra atribuir o resultado direto a uma variável com let. Use if-else pra classificar um número.",
-          "en": "Since \"if\" is an expression in Rust, you can assign its result directly to a variable with let. Use if-else to classify a number."
-        },
-        "code": "let n = 7;\nlet label = if n % 2 == 0 { \"par\" } else { \"ímpar\" };\nprintln!(\"{n} é {label}\");",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "rs-013",
-        "concept": {
-          "pt": "Ternário com If Inline",
-          "en": "Ternary with Inline If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Rust não tem operador ternário (?:), mas if-else inline faz o mesmo papel como expressão. Use pra escolher entre dois valores.",
-          "en": "Rust has no ternary operator (?:), but inline if-else serves the same purpose as an expression. Use it to choose between two values."
-        },
-        "code": "let age = 20;\nlet status = if age >= 18 { \"adulto\" } else { \"menor\" };\nprintln!(\"{status}\");",
-        "slot": "cond-ternary"
-      },
       {
         "id": "rs-003",
         "concept": {
@@ -551,137 +165,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "match status {\n    Status::Active => println!(\"active\"),\n    Status::Inactive(reason) => println!(\"{reason}\"),\n    _ => println!(\"unknown\"),\n}",
         "slot": "cond-switch"
-      },
-      {
-        "id": "rs-014",
-        "concept": {
-          "pt": "Guard com Retorno Antecipado",
-          "en": "Guard with Early Return"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Rust usa retorno antecipado como guard clause, abortando a função cedo se a condição não for atendida. Valide parâmetros no início.",
-          "en": "Rust uses early return as a guard clause, aborting the function early if the condition is not met. Validate parameters at the start."
-        },
-        "code": "fn withdraw(amount: f64, balance: f64) -> Result<f64, &'static str> {\n    if amount <= 0.0 { return Err(\"valor inválido\"); }\n    if amount > balance { return Err(\"saldo insuficiente\"); }\n    Ok(balance - amount)\n}",
-        "slot": "cond-guard"
-      }
-    ],
-    "go": [
-      {
-        "id": "go-011",
-        "concept": {
-          "pt": "If Simples",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Go, o if nao precisa de parenteses na condicao. Verifique se age e maior ou igual a 18 e imprima com fmt.Println.",
-          "en": "In Go, if statements don't need parentheses. Check if age is 18 or older and print with fmt.Println."
-        },
-        "code": "if age >= 18 {\n    fmt.Println(\"You are an adult\")\n}",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "go-012",
-        "concept": {
-          "pt": "If-Else",
-          "en": "If-Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "If-else em Go segue a mesma regra: sem parenteses e a chave abre na mesma linha. Classifique score como \"Pass\" ou \"Fail\" e guarde numa variável.",
-          "en": "If-else in Go follows the same rule: no parentheses and the brace opens on the same line. Classify score as \"Pass\" or \"Fail\" and store in a variable."
-        },
-        "code": "var result string\nif score >= 70 {\n    result = \"Pass\"\n} else {\n    result = \"Fail\"\n}",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "go-013",
-        "concept": {
-          "pt": "Expressao Condicional Curta",
-          "en": "Short Conditional"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go nao tem operador ternario, mas uma func helper inline resolve. Crie uma função ternary genérica com Go 1.18+ que recebe uma condicao bool e dois valores.",
-          "en": "Go has no ternary operator, but an inline helper function works. Create a generic ternary function with Go 1.18+ that takes a bool condition and two values."
-        },
-        "code": "func ternary[T any](cond bool, a, b T) T {\n    if cond {\n        return a\n    }\n    return b\n}",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "go-014",
-        "concept": {
-          "pt": "Switch",
-          "en": "Switch"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Switch em Go nao precisa de break -- cada case para automaticamente. Use switch pra mapear um dia da semana a uma categoria, com default pra \"Midweek\".",
-          "en": "Switch in Go doesn't need break -- each case stops automatically. Use switch to map a day of the week to a category, with default for \"Midweek\"."
-        },
-        "code": "switch day {\ncase \"Monday\", \"Friday\":\n    label = \"Work\"\ncase \"Saturday\", \"Sunday\":\n    label = \"Rest\"\ndefault:\n    label = \"Midweek\"\n}",
-        "slot": "cond-switch"
-      },
-      {
-        "id": "go-015",
-        "concept": {
-          "pt": "If com Inicializador",
-          "en": "If with Initializer"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Go, o if pode ter uma declaracao curta antes da condicao, separada por \";\". Use isso pra abrir um arquivo e checar o erro na mesma linha -- o escopo da variável fica limitado ao bloco.",
-          "en": "In Go, if can have a short statement before the condition, separated by \";\". Use this to open a file and check the error on the same line -- the variable's scope is limited to the block."
-        },
-        "code": "if f, err := os.Open(\"config.json\"); err != nil {\n    log.Fatal(err)\n} else {\n    defer f.Close()\n}",
-        "slot": "cond-guard"
       }
     ],
     "kotlin": [
-      {
-        "id": "kotlin-011",
-        "concept": {
-          "pt": "If e Else",
-          "en": "If and Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Kotlin, \"if\" é uma expressão que retorna valor. Use if pra checar se um número é positivo e imprima o resultado.",
-          "en": "In Kotlin, \"if\" is an expression that returns a value. Use if to check whether a number is positive and print the result."
-        },
-        "code": "val n = 42\nif (n > 0) {\n    println(\"positivo\")\n}",
-        "slot": "cond-basic-if"
-      },
-      {
-        "id": "kotlin-012",
-        "concept": {
-          "pt": "If-Else como Expressão",
-          "en": "If-Else Expression"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Como \"if\" é expressão em Kotlin, dá pra atribuir o resultado direto a uma variável. Use if-else pra classificar um número como \"par\" ou \"ímpar\".",
-          "en": "Since \"if\" is an expression in Kotlin, you can assign its result directly to a variable. Use if-else to classify a number as \"even\" or \"odd\"."
-        },
-        "code": "val n = 7\nval label = if (n % 2 == 0) \"par\" else \"ímpar\"\nprintln(\"$n é $label\")",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "kotlin-013",
-        "concept": {
-          "pt": "Operador Ternário (If Inline)",
-          "en": "Ternary (Inline If)"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Kotlin não tem operador ternário (?:), mas o if-else inline faz o mesmo papel. Use pra escolher entre dois textos com base numa condição.",
-          "en": "Kotlin has no ternary operator (?:), but inline if-else serves the same purpose. Use it to pick between two texts based on a condition."
-        },
-        "code": "val age = 20\nval status = if (age >= 18) \"adulto\" else \"menor\"",
-        "slot": "cond-ternary"
-      },
       {
         "id": "kotlin-002",
         "concept": {
@@ -695,65 +181,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "fun describe(x: Any): String = when (x) {\n    is Int    -> \"integer: $x\"\n    is String -> \"string of length ${x.length}\"\n    null      -> \"null\"\n    else      -> \"unknown\"\n}",
         "slot": "cond-switch"
-      },
-      {
-        "id": "kotlin-014",
-        "concept": {
-          "pt": "Guard com Require",
-          "en": "Guard with Require"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Kotlin, \"require\" age como guard clause: se a condição for falsa, lança IllegalArgumentException. Use pra validar parâmetros no início da função.",
-          "en": "In Kotlin, \"require\" acts as a guard clause: if the condition is false, it throws IllegalArgumentException. Use it to validate parameters at the start of a function."
-        },
-        "code": "fun withdraw(amount: Double, balance: Double): Double {\n    require(amount > 0) { \"Valor deve ser positivo\" }\n    require(amount <= balance) { \"Saldo insuficiente\" }\n    return balance - amount\n}",
-        "slot": "cond-guard"
       }
     ],
     "scala": [
-      {
-        "id": "scala-011",
-        "concept": {
-          "pt": "If Básico",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "slot": "cond-basic-if",
-        "prompt": {
-          "pt": "Em Scala, if é uma expressão que retorna valor. Use if pra checar se um número é positivo e atribua a mensagem resultante a uma val.",
-          "en": "In Scala, if is an expression that returns a value. Use if to check whether a number is positive and assign the resulting message to a val."
-        },
-        "code": "val x = 42\nval msg = if (x > 0) \"positive\" else \"non-positive\"\nprintln(msg)"
-      },
-      {
-        "id": "scala-012",
-        "concept": {
-          "pt": "If e Else",
-          "en": "If and Else"
-        },
-        "difficulty": "easy",
-        "slot": "cond-if-else",
-        "prompt": {
-          "pt": "if/else if/else em Scala encadeia condições e retorna um valor. Classifique uma nota numérica em \"A\", \"B\" ou \"C\" com if encadeado.",
-          "en": "if/else if/else in Scala chains conditions and returns a value. Classify a numeric grade into \"A\", \"B\", or \"C\" with chained if."
-        },
-        "code": "val score = 85\nval grade = if (score >= 90) \"A\"\n  else if (score >= 80) \"B\"\n  else \"C\""
-      },
-      {
-        "id": "scala-013",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "slot": "cond-ternary",
-        "prompt": {
-          "pt": "Scala não tem operador ternário dedicado porque if/else já é expressão. Use um if inline pra escolher entre \"even\" e \"odd\" e atribua a uma val.",
-          "en": "Scala has no dedicated ternary operator because if/else is already an expression. Use an inline if to choose between \"even\" and \"odd\" and assign it to a val."
-        },
-        "code": "val n = 7\nval parity = if (n % 2 == 0) \"even\" else \"odd\"\nprintln(s\"$n is $parity\")"
-      },
       {
         "id": "scala-005",
         "concept": {
@@ -767,20 +197,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Scala pattern matching is richer than switch: it can check types, values and structures. Implement describe with cases for the literal 0, any Int (binding to n), a String (binding to s) and a wildcard."
         },
         "code": "def describe(x: Any): String = x match {\n  case 0          => \"zero\"\n  case n: Int     => s\"integer: $n\"\n  case s: String  => s\"string: $s\"\n  case _          => \"something else\"\n}"
-      },
-      {
-        "id": "scala-014",
-        "concept": {
-          "pt": "Guard em Pattern Matching",
-          "en": "Pattern Match Guard"
-        },
-        "difficulty": "medium",
-        "slot": "cond-guard",
-        "prompt": {
-          "pt": "Guards adicionam condições extras aos cases de um match. Use \"case n if ...\" pra classificar um número em \"negative\", \"zero\" ou \"positive\".",
-          "en": "Guards add extra conditions to match cases. Use \"case n if ...\" to classify a number into \"negative\", \"zero\", or \"positive\"."
-        },
-        "code": "def classify(x: Int): String = x match {\n  case n if n < 0 => \"negative\"\n  case 0          => \"zero\"\n  case n if n > 0 => \"positive\"\n}"
       }
     ],
     "swift": [
@@ -799,48 +215,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "cond-basic-if"
       },
       {
-        "id": "swift-011",
-        "concept": {
-          "pt": "If-Else",
-          "en": "If-Else"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Use if-else pra checar se um número é positivo, negativo ou zero e atribuir o resultado a uma constante.",
-          "en": "Use if-else to check whether a number is positive, negative or zero and assign the result to a constant."
-        },
-        "code": "let n = -3\nlet label: String\nif n > 0 {\n    label = \"positivo\"\n} else if n < 0 {\n    label = \"negativo\"\n} else {\n    label = \"zero\"\n}",
-        "slot": "cond-if-else"
-      },
-      {
-        "id": "swift-012",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Swift tem o operador ternário clássico \"condição ? verdadeiro : falso\". Use pra escolher um texto com base numa condição.",
-          "en": "Swift has the classic ternary operator \"condition ? true : false\". Use it to choose a text based on a condition."
-        },
-        "code": "let age = 20\nlet status = age >= 18 ? \"adulto\" : \"menor\"\nprint(status)",
-        "slot": "cond-ternary"
-      },
-      {
-        "id": "swift-013",
-        "concept": {
-          "pt": "Switch",
-          "en": "Switch"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O switch em Swift é exaustivo e não precisa de break. Use com ranges e default pra classificar uma nota.",
-          "en": "Switch in Swift is exhaustive and does not need break. Use it with ranges and default to classify a grade."
-        },
-        "code": "let grade = 85\nswitch grade {\ncase 90...100: print(\"A\")\ncase 80..<90:  print(\"B\")\ncase 70..<80:  print(\"C\")\ndefault:       print(\"F\")\n}",
-        "slot": "cond-switch"
-      },
-      {
         "id": "swift-006",
         "concept": {
           "pt": "Guard Let",
@@ -855,165 +229,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "cond-guard"
       }
     ],
-    "ruby": [
-      {
-        "id": "ruby-011",
-        "concept": {
-          "pt": "If Básico",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "slot": "cond-basic-if",
-        "prompt": {
-          "pt": "Ruby suporta if, unless e modificadores de linha. Use if pra verificar se um número é positivo e unless como forma invertida.",
-          "en": "Ruby supports if, unless, and line modifiers. Use if to check if a number is positive and unless as an inverted form."
-        },
-        "code": "x = 10\nputs \"positive\" if x > 0\nunless x.zero?\n  puts \"not zero\"\nend"
-      },
-      {
-        "id": "ruby-012",
-        "concept": {
-          "pt": "If e Else",
-          "en": "If and Else"
-        },
-        "difficulty": "easy",
-        "slot": "cond-if-else",
-        "prompt": {
-          "pt": "if/elsif/else em Ruby encadeia condições sem parênteses. Classifique uma temperatura em \"cold\", \"warm\" ou \"hot\" com condicionais encadeadas.",
-          "en": "if/elsif/else in Ruby chains conditions without parentheses. Classify a temperature as \"cold\", \"warm\", or \"hot\" with chained conditionals."
-        },
-        "code": "temp = 25\nif temp < 10\n  puts \"cold\"\nelsif temp < 30\n  puts \"warm\"\nelse\n  puts \"hot\"\nend"
-      },
-      {
-        "id": "ruby-013",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "slot": "cond-ternary",
-        "prompt": {
-          "pt": "Ruby tem operador ternário \"condição ? verdadeiro : falso\" pra expressões curtas. Use pra atribuir um status baseado em idade.",
-          "en": "Ruby has a ternary operator \"condition ? true : false\" for short expressions. Use it to assign a status based on age."
-        },
-        "code": "age = 20\nstatus = age >= 18 ? \"adult\" : \"minor\"\nputs \"Status: #{status}\""
-      },
-      {
-        "id": "ruby-014",
-        "concept": {
-          "pt": "Estrutura Case",
-          "en": "Case Statement"
-        },
-        "difficulty": "medium",
-        "slot": "cond-switch",
-        "prompt": {
-          "pt": "case/when em Ruby suporta ranges, classes e regex nos padrões. Use case pra classificar um valor com diferentes tipos de padrão.",
-          "en": "case/when in Ruby supports ranges, classes, and regex in patterns. Use case to classify a value with different pattern types."
-        },
-        "code": "def classify(val)\n  case val\n  when 1..10   then \"small\"\n  when Integer then \"big number\"\n  when String  then \"text\"\n  else \"unknown\"\n  end\nend"
-      },
-      {
-        "id": "ruby-015",
-        "concept": {
-          "pt": "Guard Clause",
-          "en": "Guard Clause"
-        },
-        "difficulty": "medium",
-        "slot": "cond-guard",
-        "prompt": {
-          "pt": "Guard clauses com return antecipado simplificam o fluxo. Use return no início do método pra tratar casos inválidos antes da lógica principal.",
-          "en": "Guard clauses with early return simplify the flow. Use return at the start of the method to handle invalid cases before the main logic."
-        },
-        "code": "def process(data)\n  return \"no data\" if data.nil?\n  return \"empty\" if data.empty?\n  data.upcase\nend\n\nputs process(nil)\nputs process(\"hello\")"
-      }
-    ],
-    "lua": [
-      {
-        "id": "lua-011",
-        "concept": {
-          "pt": "If Básico",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "slot": "cond-basic-if",
-        "prompt": {
-          "pt": "Condicionais em Lua usam \"if ... then ... end\". Verifique se um número é positivo e imprima o resultado.",
-          "en": "Lua conditionals use \"if ... then ... end\". Check if a number is positive and print the result."
-        },
-        "code": "local x = 10\nif x > 0 then\n  print(\"positive\")\nend"
-      },
-      {
-        "id": "lua-012",
-        "concept": {
-          "pt": "If e Else",
-          "en": "If and Else"
-        },
-        "difficulty": "easy",
-        "slot": "cond-if-else",
-        "prompt": {
-          "pt": "if/elseif/else em Lua encadeia múltiplas condições. Classifique uma nota em \"A\", \"B\" ou \"C\" usando condicionais encadeadas.",
-          "en": "if/elseif/else in Lua chains multiple conditions. Classify a grade into \"A\", \"B\", or \"C\" using chained conditionals."
-        },
-        "code": "local score = 85\nif score >= 90 then\n  print(\"A\")\nelseif score >= 80 then\n  print(\"B\")\nelse\n  print(\"C\")\nend"
-      },
-      {
-        "id": "lua-013",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "slot": "cond-ternary",
-        "prompt": {
-          "pt": "Lua não tem operador ternário, mas o idioma \"a and b or c\" funciona como um. Use esse padrão pra escolher entre dois valores.",
-          "en": "Lua has no ternary operator, but the idiom \"a and b or c\" works as one. Use this pattern to choose between two values."
-        },
-        "code": "local n = 7\nlocal parity = (n % 2 == 0) and \"even\" or \"odd\"\nprint(n .. \" is \" .. parity)"
-      },
-      {
-        "id": "lua-014",
-        "concept": {
-          "pt": "Switch com Tabela",
-          "en": "Switch with Table"
-        },
-        "difficulty": "medium",
-        "slot": "cond-switch",
-        "prompt": {
-          "pt": "Lua não tem switch/case nativo, mas tabelas de funções funcionam como despacho. Crie uma tabela onde cada chave mapeia pra uma ação.",
-          "en": "Lua has no native switch/case, but function tables work as dispatch. Create a table where each key maps to an action."
-        },
-        "code": "local actions = {\n  start = function() print(\"Starting...\") end,\n  stop  = function() print(\"Stopping...\") end,\n}\n\nlocal cmd = \"start\"\nlocal fn = actions[cmd]\nif fn then fn() else print(\"Unknown: \" .. cmd) end"
-      },
-      {
-        "id": "lua-015",
-        "concept": {
-          "pt": "Guard Clause",
-          "en": "Guard Clause"
-        },
-        "difficulty": "medium",
-        "slot": "cond-guard",
-        "prompt": {
-          "pt": "Guard clauses com return antecipado simplificam funções em Lua. Valide os argumentos no início e retorne cedo se inválidos.",
-          "en": "Guard clauses with early return simplify Lua functions. Validate arguments at the start and return early if invalid."
-        },
-        "code": "local function process(data)\n  if data == nil then return \"no data\" end\n  if type(data) ~= \"string\" then return \"bad type\" end\n  return string.upper(data)\nend\n\nprint(process(nil))\nprint(process(\"hello\"))"
-      }
-    ],
     "bash": [
-      {
-        "id": "bash-011",
-        "concept": {
-          "pt": "If Básico",
-          "en": "Basic If"
-        },
-        "difficulty": "easy",
-        "slot": "cond-basic-if",
-        "prompt": {
-          "pt": "O if mais simples no Bash testa uma condição e executa comandos no then. Use [[ ]] pra verificar se uma variável não está vazia.",
-          "en": "The simplest Bash if tests a condition and runs commands in then. Use [[ ]] to check if a variable is not empty."
-        },
-        "code": "NAME=\"Alice\"\nif [[ -n \"$NAME\" ]]; then\n    echo \"Name is set: $NAME\"\nfi"
-      },
       {
         "id": "bash-002",
         "concept": {
@@ -1027,48 +243,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Bash conditionals use [ ] (test) to evaluate expressions. The -f operator checks if a path points to a regular file. Check $FILE with -f and display different messages in then and else."
         },
         "code": "if [ -f \"$FILE\" ]; then\n    echo \"File exists\"\nelse\n    echo \"File not found\"\nfi"
-      },
-      {
-        "id": "bash-012",
-        "concept": {
-          "pt": "Operador Ternário",
-          "en": "Ternary Operator"
-        },
-        "difficulty": "easy",
-        "slot": "cond-ternary",
-        "prompt": {
-          "pt": "Bash não tem ternário, mas && e || combinados simulam o efeito. Use \"condição && comando_true || comando_false\" pra uma decisão inline.",
-          "en": "Bash has no ternary, but && and || combined simulate it. Use \"condition && true_cmd || false_cmd\" for an inline decision."
-        },
-        "code": "age=20\n[[ $age -ge 18 ]] && status=\"adult\" || status=\"minor\"\necho \"Status: $status\""
-      },
-      {
-        "id": "bash-009",
-        "concept": {
-          "pt": "Estrutura Escolha",
-          "en": "Case Statement"
-        },
-        "difficulty": "medium",
-        "slot": "cond-switch",
-        "prompt": {
-          "pt": "Case statement compara um valor contra vários padrões com sintaxe limpa. Usa case \"$1\" pra tratar os argumentos \"start\" e \"stop\" com mensagens específicas, e o \"*\" como fallback mostrando o uso correto.",
-          "en": "Case statements check a value against multiple patterns with clean syntax. Use case \"$1\" to handle the \"start\" and \"stop\" arguments with specific messages, and the \"*\" pattern as a fallback showing correct usage."
-        },
-        "code": "case \"$1\" in\n    start)\n        echo \"Starting...\"\n        ;;\n    stop)\n        echo \"Stopping...\"\n        ;;\n    *)\n        echo \"Usage: $0 {start|stop}\"\n        ;;\nesac"
-      },
-      {
-        "id": "bash-013",
-        "concept": {
-          "pt": "Guard Clause",
-          "en": "Guard Clause"
-        },
-        "difficulty": "medium",
-        "slot": "cond-guard",
-        "prompt": {
-          "pt": "Guard clauses em Bash usam testes com exit ou return antecipado pra validar pré-condições antes da lógica principal.",
-          "en": "Bash guard clauses use tests with early exit or return to validate preconditions before the main logic."
-        },
-        "code": "process() {\n    [[ -z \"$1\" ]] && { echo \"no arg\"; return 1; }\n    [[ ! -f \"$1\" ]] && { echo \"not a file\"; return 1; }\n    echo \"Processing $1\"\n}\nprocess \"$1\""
       }
     ]
   },
@@ -1146,76 +320,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
       }
     ],
     "cpp": [
-      {
-        "id": "cpp-016",
-        "concept": {
-          "pt": "Declaracao de Variável",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "C++ oferece varios jeitos de declarar variáveis: tipo explicito, auto, e inicializacao uniforme com {}. Declare uma string, um int e use auto.",
-          "en": "C++ offers several ways to declare variables: explicit type, auto, and uniform initialization with {}. Declare a string, an int, and use auto."
-        },
-        "code": "std::string name = \"Alice\";\nint age{25};\nauto score = 95.5;",
-        "slot": "var-declare"
-      },
-      {
-        "id": "cpp-007",
-        "concept": {
-          "pt": "Espaço de Nomes",
-          "en": "Namespace"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Namespaces servem pra organizar declaracoes e evitar conflito de nomes entre libs. Crie o namespace \"math\" com PI como constexpr double (resolvido em compile-time) e uma função area que calcula a area de um circulo.",
-          "en": "Namespaces group declarations to avoid name collisions between libraries. Create the \"math\" namespace containing PI as a constexpr double (evaluated at compile-time) and an area function that calculates a circle's area."
-        },
-        "code": "namespace math {\n    constexpr double PI = 3.14159265358979;\n\n    double area(double radius) {\n        return PI * radius * radius;\n    }\n}",
-        "slot": "var-const"
-      },
-      {
-        "id": "cpp-017",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "C++ tem tipos primitivos e tipos da STL. Declare variáveis de varios tipos incluindo string, int, double e bool.",
-          "en": "C++ has primitive types and STL types. Declare variables of various types including string, int, double, and bool."
-        },
-        "code": "int count = 42;\ndouble price = 9.99;\nbool active = true;\nstd::string label = \"item\";",
-        "slot": "var-types"
-      },
-      {
-        "id": "cpp-018",
-        "concept": {
-          "pt": "Interpolação com Format",
-          "en": "String Formatting"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "C++20 introduziu std::format similar ao Python. Use pra construir uma string formatada com placeholders {}.",
-          "en": "C++20 introduced std::format similar to Python. Use it to build a formatted string with {} placeholders."
-        },
-        "code": "std::string name = \"Alice\";\nint age = 30;\nauto msg = std::format(\"Hello, {}! You are {}.\", name, age);",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "cpp-008",
-        "concept": {
-          "pt": "Operações com Vector",
-          "en": "Vector Operations"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "std::vector e o array dinâmico da STL. Adicione um elemento com push_back, ordene com std::sort e tire as duplicatas com o idioma erase-unique: primeiro std::unique (joga duplicatas pro final) e depois erase.",
-          "en": "std::vector is the STL's dynamic array. Add an element with push_back, sort with std::sort and remove duplicates with the erase-unique idiom: first std::unique (moves duplicates to the end) then erase."
-        },
-        "code": "std::vector<int> v = {3, 1, 4, 1, 5};\nv.push_back(9);\nstd::sort(v.begin(), v.end());\nv.erase(std::unique(v.begin(), v.end()), v.end());",
-        "slot": "var-array"
-      },
       {
         "id": "cpp-005",
         "concept": {
@@ -1319,76 +423,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "javascript": [
       {
-        "id": "js-016",
-        "concept": {
-          "pt": "Declaração de Variável",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "let declara uma variável que pode ser reatribuída. Declare a variável count com let e atribua o valor inicial 0.",
-          "en": "let declares a variable that can be reassigned. Declare the variable count with let and assign the initial value 0."
-        },
-        "code": "let count = 0;\ncount = count + 1;",
-        "slot": "var-declare"
-      },
-      {
-        "id": "js-017",
-        "concept": {
-          "pt": "Constante",
-          "en": "Constant"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "const declara uma variável que não pode ser reatribuída. Use const pra definir valores que não mudam, como configurações ou constantes matemáticas.",
-          "en": "const declares a variable that cannot be reassigned. Use const to define values that do not change, like configuration or math constants."
-        },
-        "code": "const PI = 3.14159;\nconst MAX_RETRIES = 3;",
-        "slot": "var-const"
-      },
-      {
-        "id": "js-018",
-        "concept": {
-          "pt": "Tipos Primitivos",
-          "en": "Primitive Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "JavaScript tem tipos primitivos: string, number, boolean, null e undefined. Declare variáveis de cada tipo pra entender a diferença entre eles.",
-          "en": "JavaScript has primitive types: string, number, boolean, null and undefined. Declare variables of each type to understand the differences."
-        },
-        "code": "const name = \"Alice\";\nconst age = 30;\nconst active = true;",
-        "slot": "var-types"
-      },
-      {
-        "id": "js-019",
-        "concept": {
-          "pt": "Template Literal",
-          "en": "Template Literal"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Template literals permitem interpolar variáveis dentro de strings usando crases e ${}. Monte uma mensagem de saudação com o nome e a idade.",
-          "en": "Template literals let you interpolate variables inside strings using backticks and ${}. Build a greeting message with the name and age."
-        },
-        "code": "const msg = `Hello, ${name}! You are ${age} years old.`;",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "js-020",
-        "concept": {
-          "pt": "Array",
-          "en": "Array"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Arrays armazenam listas ordenadas de valores. Crie um array de cores e acesse o primeiro elemento com índice 0.",
-          "en": "Arrays store ordered lists of values. Create an array of colors and access the first element with index 0."
-        },
-        "code": "const colors = [\"red\", \"green\", \"blue\"];\nconst first = colors[0];",
-        "slot": "var-array"
-      },
-      {
         "id": "js-002",
         "concept": {
           "pt": "Desestruturação de Array",
@@ -1403,479 +437,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "var-destructure"
       }
     ],
-    "typescript": [
-      {
-        "id": "ts-014",
-        "concept": {
-          "pt": "Declaração com Tipo",
-          "en": "Typed Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "No TypeScript, você pode anotar o tipo de uma variável ao declarar. Declare variáveis com let e const indicando seus tipos explicitamente.",
-          "en": "In TypeScript, you can annotate the type when declaring a variable. Declare variables with let and const specifying their types explicitly."
-        },
-        "code": "let count: number = 0;\nconst name: string = \"Alice\";",
-        "slot": "var-declare"
-      },
-      {
-        "id": "ts-015",
-        "concept": {
-          "pt": "Constante Tipada",
-          "en": "Typed Constant"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "const com anotação de tipo garante que o valor é imutável e tipado. Use \"as const\" pra inferir o tipo literal mais estreito possível.",
-          "en": "const with type annotation ensures the value is immutable and typed. Use \"as const\" to infer the narrowest possible literal type."
-        },
-        "code": "const API_URL = \"https://api.example.com\" as const;\nconst MAX_RETRIES: number = 3;",
-        "slot": "var-const"
-      },
-      {
-        "id": "ts-016",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "TypeScript adiciona tipagem estática sobre o JavaScript. Declare variáveis com os tipos primitivos: string, number, boolean e array.",
-          "en": "TypeScript adds static typing on top of JavaScript. Declare variables with the primitive types: string, number, boolean, and array."
-        },
-        "code": "const name: string = \"Alice\";\nconst age: number = 30;\nconst scores: number[] = [90, 85, 92];",
-        "slot": "var-types"
-      },
-      {
-        "id": "ts-017",
-        "concept": {
-          "pt": "Template Literal Tipado",
-          "en": "Typed Template Literal"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Template literals funcionam igual ao JS, mas o TypeScript garante que as variáveis interpoladas são do tipo certo.",
-          "en": "Template literals work like JS, but TypeScript ensures the interpolated variables are the correct type."
-        },
-        "code": "const greeting: string = `Hello, ${name}! Age: ${age}`;",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "ts-018",
-        "concept": {
-          "pt": "Array Tipado",
-          "en": "Typed Array"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Arrays em TypeScript são tipados, garantindo que todos os elementos tenham o mesmo tipo. Declare arrays usando a sintaxe tipo[] ou Array<tipo>.",
-          "en": "Arrays in TypeScript are typed, ensuring all elements share the same type. Declare arrays using the type[] or Array<type> syntax."
-        },
-        "code": "const names: string[] = [\"Alice\", \"Bob\"];\nconst ages: Array<number> = [25, 30];",
-        "slot": "var-array"
-      },
-      {
-        "id": "ts-019",
-        "concept": {
-          "pt": "Desestruturação Tipada",
-          "en": "Typed Destructuring"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Desestruturação em TypeScript funciona como em JS, mas você pode anotar os tipos das variáveis extraídas.",
-          "en": "Destructuring in TypeScript works like JS, but you can annotate the types of the extracted variables."
-        },
-        "code": "const { name, age }: { name: string; age: number } = user;",
-        "slot": "var-destructure"
-      }
-    ],
-    "python": [
-      {
-        "id": "py-016",
-        "concept": {
-          "pt": "Declaração de Variável",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Python, variáveis são declaradas por atribuição simples sem palavras-chave como let ou const. Atribua valores a variáveis de diferentes tipos.",
-          "en": "In Python, variables are declared by simple assignment without keywords like let or const. Assign values to variables of different types."
-        },
-        "code": "name = \"Alice\"\nage = 30\nactive = True",
-        "slot": "var-declare"
-      },
-      {
-        "id": "py-017",
-        "concept": {
-          "pt": "Constante (convenção)",
-          "en": "Constant (convention)"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Python não tem constantes reais, mas a convenção é usar UPPER_SNAKE_CASE pra indicar que o valor não deve ser alterado.",
-          "en": "Python has no real constants, but the convention is to use UPPER_SNAKE_CASE to indicate the value should not be changed."
-        },
-        "code": "MAX_RETRIES = 3\nPI = 3.14159\nBASE_URL = \"https://api.example.com\"",
-        "slot": "var-const"
-      },
-      {
-        "id": "py-018",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Python tem tipagem dinâmica: int, float, str, bool e list são os tipos mais comuns. Use type() pra verificar o tipo de cada valor.",
-          "en": "Python has dynamic typing: int, float, str, bool, and list are the most common types. Use type() to check the type of each value."
-        },
-        "code": "count: int = 42\nprice: float = 9.99\nname: str = \"Alice\"",
-        "slot": "var-types"
-      },
-      {
-        "id": "py-007",
-        "concept": {
-          "pt": "String Formatada",
-          "en": "F-String"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "F-string (Python 3.6+) é o jeito moderno de formatar strings: mais rápido e legível que .format() ou %. Monte a mensagem de saudação colocando \"name\" e \"age\" direto na string com a sintaxe f\"... {variável} ...\".",
-          "en": "F-strings (Python 3.6+) are the modern way to format strings: faster and more readable than .format() or %. Build the greeting message by embedding \"name\" and \"age\" directly in the string using the f\"... {variable} ...\" syntax."
-        },
-        "code": "greeting = f\"Hello, {name}! You are {age} years old.\"",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "py-019",
-        "concept": {
-          "pt": "Lista",
-          "en": "List"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Listas são coleções ordenadas e mutáveis. Crie uma lista de cores e acesse o primeiro elemento com índice 0.",
-          "en": "Lists are ordered and mutable collections. Create a list of colors and access the first element with index 0."
-        },
-        "code": "colors = [\"red\", \"green\", \"blue\"]\nfirst = colors[0]",
-        "slot": "var-array"
-      },
-      {
-        "id": "py-009",
-        "concept": {
-          "pt": "Desempacotamento",
-          "en": "Unpacking"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Unpacking estendido quebra sequências em partes nomeadas. A partir de [1, 2, 3, 4, 5], coloque o primeiro em \"first\", o último em \"last\" e capture tudo do meio em \"middle\" com o asterisco (*middle).",
-          "en": "Extended unpacking breaks sequences into named parts. From [1, 2, 3, 4, 5], assign the first element to \"first\", the last to \"last\", and capture everything in between into \"middle\" with the asterisk (*middle)."
-        },
-        "code": "first, *middle, last = [1, 2, 3, 4, 5]",
-        "slot": "var-destructure"
-      }
-    ],
-    "java": [
-      {
-        "id": "java-015",
-        "concept": {
-          "pt": "Declaracao de Variável",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Java exige o tipo na declaracao, mas desde o Java 10 \"var\" infere o tipo local. Declare variáveis com tipo explicito e com var.",
-          "en": "Java requires the type in declarations, but since Java 10 \"var\" infers the local type. Declare variables with explicit type and with var."
-        },
-        "code": "String name = \"Alice\";\nint age = 25;\nvar list = new ArrayList<String>();",
-        "slot": "var-declare"
-      },
-      {
-        "id": "java-016",
-        "concept": {
-          "pt": "Constante",
-          "en": "Constant"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Java, constantes sao declaradas com \"static final\" e por convencao usam UPPER_SNAKE_CASE. Declare PI e MAX_RETRIES como constantes de classe.",
-          "en": "In Java, constants are declared with \"static final\" and by convention use UPPER_SNAKE_CASE. Declare PI and MAX_RETRIES as class constants."
-        },
-        "code": "public static final double PI = 3.14159;\npublic static final int MAX_RETRIES = 3;",
-        "slot": "var-const"
-      },
-      {
-        "id": "java-017",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Java tem tipos primitivos (int, double, boolean) e wrappers (Integer, Double). Declare um de cada e use autoboxing pra converter.",
-          "en": "Java has primitive types (int, double, boolean) and wrappers (Integer, Double). Declare one of each and use autoboxing to convert."
-        },
-        "code": "int count = 42;\ndouble price = 9.99;\nboolean active = true;\nInteger boxed = count;",
-        "slot": "var-types"
-      },
-      {
-        "id": "java-018",
-        "concept": {
-          "pt": "Interpolação de String",
-          "en": "String Interpolation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Java usa String.format ou concatenacao pra montar strings. Use String.format com %s e %d pra construir uma saudacao.",
-          "en": "Java uses String.format or concatenation to build strings. Use String.format with %s and %d to construct a greeting."
-        },
-        "code": "String name = \"Alice\";\nint age = 30;\nString msg = String.format(\"Hello, %s! You are %d.\", name, age);",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "java-019",
-        "concept": {
-          "pt": "Array e Lista",
-          "en": "Array and List"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Java tem arrays nativos e ArrayList pra colecoes dinâmicas. Crie um ArrayList, adicione elementos e acesse por indice.",
-          "en": "Java has native arrays and ArrayList for dynamic collections. Create an ArrayList, add elements, and access by index."
-        },
-        "code": "List<String> fruits = new ArrayList<>();\nfruits.add(\"apple\");\nfruits.add(\"banana\");\nString first = fruits.get(0);",
-        "slot": "var-array"
-      },
-      {
-        "id": "java-020",
-        "concept": {
-          "pt": "Desestruturacao com Record",
-          "en": "Destructuring with Record"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Java 21+ suporta record patterns pra desestruturar direto no if. Use pattern matching pra extrair x e y de um Point.",
-          "en": "Java 21+ supports record patterns for direct destructuring in if. Use pattern matching to extract x and y from a Point."
-        },
-        "code": "if (obj instanceof Point(double x, double y)) {\n    System.out.println(\"x=\" + x + \", y=\" + y);\n}",
-        "slot": "var-destructure"
-      }
-    ],
-    "rust": [
-      {
-        "id": "rs-015",
-        "concept": {
-          "pt": "Declaração de Variável",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "\"let\" cria binding imutável e \"let mut\" cria mutável. Declare variáveis dos dois tipos com e sem anotação de tipo.",
-          "en": "\"let\" creates an immutable binding and \"let mut\" a mutable one. Declare variables of both kinds with and without type annotation."
-        },
-        "code": "let name = \"Rust\";\nlet mut counter = 0;\nlet pi: f64 = 3.14;\ncounter += 1;",
-        "slot": "var-declare"
-      },
-      {
-        "id": "rs-016",
-        "concept": {
-          "pt": "Constante",
-          "en": "Constant"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "\"const\" define constantes em tempo de compilação em Rust, exigindo tipo explícito e valor conhecido em compile time.",
-          "en": "\"const\" defines compile-time constants in Rust, requiring explicit type and a value known at compile time."
-        },
-        "code": "const MAX_RETRIES: u32 = 3;\nconst TIMEOUT_MS: u64 = 5000;\nconst PI: f64 = 3.14159;",
-        "slot": "var-const"
-      },
-      {
-        "id": "rs-017",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Rust tem tipos numéricos explícitos (i32, u64, f64, bool, char). Declare variáveis de tipos diferentes com anotação.",
-          "en": "Rust has explicit numeric types (i32, u64, f64, bool, char). Declare variables of different types with annotation."
-        },
-        "code": "let count: i32 = 42;\nlet big: u64 = 1_000_000;\nlet ratio: f64 = 3.14;\nlet active: bool = true;\nlet letter: char = 'R';",
-        "slot": "var-types"
-      },
-      {
-        "id": "rs-018",
-        "concept": {
-          "pt": "Interpolação com format!",
-          "en": "Interpolation with format!"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Rust usa macros como format!, println! e write! pra interpolação de string com {} como placeholder.",
-          "en": "Rust uses macros like format!, println! and write! for string interpolation with {} as placeholder."
-        },
-        "code": "let lang = \"Rust\";\nlet version = 2024;\nlet msg = format!(\"{lang} edition {version}\");\nprintln!(\"{msg}\");",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "rs-007",
-        "concept": {
-          "pt": "Operações com Vec",
-          "en": "Vec Operations"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Vec<T> é o array dinâmico do Rust. Crie um Vec<i32> vazio com Vec::new(), adicione dois elementos com .push() e some tudo de forma idiomática usando o iterador .iter().sum().",
-          "en": "Vec<T> is Rust's dynamic array. Create an empty Vec<i32> with Vec::new(), add two elements with .push(), and calculate the sum of all elements idiomatically using the .sum() iterator method."
-        },
-        "code": "let mut v: Vec<i32> = Vec::new();\nv.push(1);\nv.push(2);\nlet sum: i32 = v.iter().sum();",
-        "slot": "var-array"
-      },
-      {
-        "id": "rs-019",
-        "concept": {
-          "pt": "Desestruturação",
-          "en": "Destructuring"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Rust suporta desestruturação de tuplas e structs em let bindings. Extraia campos em variáveis separadas.",
-          "en": "Rust supports destructuring of tuples and structs in let bindings. Extract fields into separate variables."
-        },
-        "code": "let (x, y, z) = (1, 2.0, \"three\");\nstruct Point { x: f64, y: f64 }\nlet p = Point { x: 3.0, y: 7.0 };\nlet Point { x: px, y: py } = p;\nprintln!(\"{px}, {py}\");",
-        "slot": "var-destructure"
-      }
-    ],
-    "go": [
-      {
-        "id": "go-016",
-        "concept": {
-          "pt": "Declaracao de Variável",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go tem dois jeitos de declarar variável: \"var\" com tipo explicito e \":=\" com inferencia. Declare uma string com var e um inteiro com :=.",
-          "en": "Go has two ways to declare variables: \"var\" with explicit type and \":=\" with inference. Declare a string with var and an int with :=."
-        },
-        "code": "var name string = \"Alice\"\nage := 25",
-        "slot": "var-declare"
-      },
-      {
-        "id": "go-017",
-        "concept": {
-          "pt": "Constante",
-          "en": "Constant"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Constantes em Go sao declaradas com \"const\" e podem ser agrupadas num bloco. Declare PI e MaxRetries num bloco const.",
-          "en": "Constants in Go are declared with \"const\" and can be grouped in a block. Declare PI and MaxRetries in a const block."
-        },
-        "code": "const (\n    PI         = 3.14159\n    MaxRetries = 3\n)",
-        "slot": "var-const"
-      },
-      {
-        "id": "go-009",
-        "concept": {
-          "pt": "Mapa",
-          "en": "Map"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Map em Go associa chaves a valores e pode ser declarado com make ou literal. Inicialize um map[string]int com literal, coloque dois pares e acesse um valor checando se existe: age, ok := m[\"alice\"].",
-          "en": "Maps in Go associate keys with values and are declared with make or a literal. Initialize a map[string]int with a literal, insert two pairs, and access a value with existence check: age, ok := m[\"alice\"]."
-        },
-        "code": "m := map[string]int{\n    \"alice\": 25,\n    \"bob\":   30,\n}\nage, ok := m[\"alice\"]",
-        "slot": "var-types"
-      },
-      {
-        "id": "go-018",
-        "concept": {
-          "pt": "Interpolação com Sprintf",
-          "en": "String Interpolation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go nao tem interpolação nativa, mas fmt.Sprintf formata strings com verbos como %s e %d. Construa uma saudacao usando Sprintf.",
-          "en": "Go doesn't have native interpolation, but fmt.Sprintf formats strings with verbs like %s and %d. Build a greeting using Sprintf."
-        },
-        "code": "name := \"Alice\"\nage := 30\nmsg := fmt.Sprintf(\"Hello, %s! You are %d.\", name, age)",
-        "slot": "var-interpolation"
-      },
-      {
-        "id": "go-019",
-        "concept": {
-          "pt": "Slice",
-          "en": "Slice"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Slice e o array dinâmico de Go. Crie um slice literal de strings, adicione um elemento com append e imprima o tamanho com len.",
-          "en": "Slices are Go's dynamic arrays. Create a string slice literal, add an element with append, and print the length with len."
-        },
-        "code": "fruits := []string{\"apple\", \"banana\"}\nfruits = append(fruits, \"cherry\")\nfmt.Println(len(fruits))",
-        "slot": "var-array"
-      },
-      {
-        "id": "go-020",
-        "concept": {
-          "pt": "Retorno Multiplo",
-          "en": "Multiple Return"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go permite retornar multiplos valores, o que e usado pra retornar resultado + erro. Crie divide que retorna float64 e error, checando divisao por zero.",
-          "en": "Go allows multiple return values, commonly used for result + error. Create divide that returns float64 and error, checking for division by zero."
-        },
-        "code": "func divide(a, b float64) (float64, error) {\n    if b == 0 {\n        return 0, errors.New(\"division by zero\")\n    }\n    return a / b, nil\n}",
-        "slot": "var-destructure"
-      }
-    ],
     "kotlin": [
-      {
-        "id": "kotlin-015",
-        "concept": {
-          "pt": "Declaração de Variáveis",
-          "en": "Variable Declaration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "\"val\" cria uma referência imutável e \"var\" uma mutável. Declare variáveis dos dois tipos com inferência de tipo e tipo explícito.",
-          "en": "\"val\" creates an immutable reference and \"var\" a mutable one. Declare variables of both kinds with type inference and explicit type."
-        },
-        "code": "val name = \"Kotlin\"\nvar counter = 0\nval pi: Double = 3.14\ncounter += 1",
-        "slot": "var-declare"
-      },
-      {
-        "id": "kotlin-016",
-        "concept": {
-          "pt": "Constante em Tempo de Compilação",
-          "en": "Compile-Time Constant"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "\"const val\" define constantes resolvidas em tempo de compilação (só tipos primitivos e String). Declare uma constante e uma val normal pra comparar.",
-          "en": "\"const val\" defines compile-time constants (only primitive types and String). Declare a constant and a regular val for comparison."
-        },
-        "code": "const val MAX_RETRIES = 3\nval timeout = 5000L",
-        "slot": "var-const"
-      },
-      {
-        "id": "kotlin-017",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Kotlin tem tipos numéricos explícitos (Int, Long, Double, Float) e conversão deve ser feita manualmente. Declare variáveis de tipos diferentes e converta entre elas.",
-          "en": "Kotlin has explicit numeric types (Int, Long, Double, Float) and conversion must be done manually. Declare variables of different types and convert between them."
-        },
-        "code": "val count: Int = 42\nval big: Long = count.toLong()\nval ratio: Double = 3.14\nval label: String = \"total: $count\"",
-        "slot": "var-types"
-      },
       {
         "id": "kotlin-003",
         "concept": {
@@ -1889,34 +451,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "val language = \"Kotlin\"\nval version = 2.0\nprintln(\"$language $version foi lançado!\")\nprintln(\"${language.uppercase()} é incrível.\")",
         "slot": "var-interpolation"
-      },
-      {
-        "id": "kotlin-018",
-        "concept": {
-          "pt": "Array e Lista",
-          "en": "Array and List"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "listOf cria uma lista imutável e mutableListOf uma mutável. Crie as duas, adicione um elemento na mutável e acesse por índice.",
-          "en": "listOf creates an immutable list and mutableListOf a mutable one. Create both, add an element to the mutable one and access by index."
-        },
-        "code": "val fruits = listOf(\"apple\", \"banana\", \"cherry\")\nval nums = mutableListOf(1, 2, 3)\nnums.add(4)\nprintln(fruits[0])",
-        "slot": "var-array"
-      },
-      {
-        "id": "kotlin-019",
-        "concept": {
-          "pt": "Desestruturação",
-          "en": "Destructuring"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Data classes suportam desestruturação automática em Kotlin. Extraia as propriedades de um par e de uma data class em variáveis separadas.",
-          "en": "Data classes support automatic destructuring in Kotlin. Extract properties from a pair and a data class into separate variables."
-        },
-        "code": "val (first, second) = Pair(\"Kotlin\", 2.0)\ndata class Point(val x: Int, val y: Int)\nval (x, y) = Point(3, 7)\nprintln(\"$first $second at ($x, $y)\")",
-        "slot": "var-destructure"
       }
     ],
     "scala": [
@@ -1935,34 +469,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "val name: String = \"Scala\"\nvar version = 3.3\nval pi: Double = 3.14159"
       },
       {
-        "id": "scala-015",
-        "concept": {
-          "pt": "Val Imutável",
-          "en": "Immutable Val"
-        },
-        "difficulty": "easy",
-        "slot": "var-const",
-        "prompt": {
-          "pt": "val é a constante do Scala: uma vez atribuída, não muda. Declare val com tipo explícito e tente reatribuir pra ver o erro conceitual (demonstre o uso correto).",
-          "en": "val is Scala's constant: once assigned, it cannot change. Declare val with explicit type and show proper usage of immutable bindings."
-        },
-        "code": "val maxRetries: Int = 3\nval apiUrl: String = \"https://api.example.com\"\nval timeout: Double = 30.0"
-      },
-      {
-        "id": "scala-016",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "slot": "var-types",
-        "prompt": {
-          "pt": "Scala tem tipos ricos: Int, Double, Boolean, String, Char. Declare variáveis de cada tipo com anotação explícita pra mostrar o sistema de tipos.",
-          "en": "Scala has rich types: Int, Double, Boolean, String, Char. Declare variables of each type with explicit annotations to show the type system."
-        },
-        "code": "val age: Int = 25\nval price: Double = 19.99\nval active: Boolean = true\nval initial: Char = 'S'"
-      },
-      {
         "id": "scala-003",
         "concept": {
           "pt": "Interpolação de String",
@@ -1975,34 +481,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Scala offers several interpolation prefixes. Use s\"\" to insert variables and expressions with $name and ${expression}, and f\"\" to format floating-point numbers with specifiers like %.4f."
         },
         "code": "val name = \"World\"\nval greeting = s\"Hello, $name!\"\nval msg = f\"Pi is approximately ${math.Pi}%.4f\""
-      },
-      {
-        "id": "scala-017",
-        "concept": {
-          "pt": "Array e Seq",
-          "en": "Array and Seq"
-        },
-        "difficulty": "easy",
-        "slot": "var-array",
-        "prompt": {
-          "pt": "Scala usa List, Vector e Array como coleções sequenciais. Crie uma List, acesse por índice e use :+ pra adicionar ao final (retornando nova lista).",
-          "en": "Scala uses List, Vector and Array as sequential collections. Create a List, access by index and use :+ to append (returning a new list)."
-        },
-        "code": "val langs = List(\"Scala\", \"Kotlin\", \"Java\")\nval first = langs(0)\nval updated = langs :+ \"Rust\"\nprintln(updated)"
-      },
-      {
-        "id": "scala-018",
-        "concept": {
-          "pt": "Destructuring",
-          "en": "Destructuring"
-        },
-        "difficulty": "medium",
-        "slot": "var-destructure",
-        "prompt": {
-          "pt": "Pattern matching no val desestrutura tuplas e case classes diretamente. Extraia campos de uma tupla e de uma case class em vals separados.",
-          "en": "Pattern matching on val destructures tuples and case classes directly. Extract fields from a tuple and a case class into separate vals."
-        },
-        "code": "val (x, y, z) = (1, 2, 3)\ncase class Point(a: Int, b: Int)\nval Point(px, py) = Point(10, 20)\nprintln(s\"$x $y $z $px $py\")"
       }
     ],
     "swift": [
@@ -2021,34 +499,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "var-declare"
       },
       {
-        "id": "swift-014",
-        "concept": {
-          "pt": "Constante com Let",
-          "en": "Constant with Let"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "\"let\" cria uma constante que não pode ser reatribuída. Declare constantes de tipos diferentes pra mostrar a imutabilidade.",
-          "en": "\"let\" creates a constant that cannot be reassigned. Declare constants of different types to show immutability."
-        },
-        "code": "let maxRetries = 3\nlet apiUrl = \"https://api.example.com\"\nlet pi = 3.14159",
-        "slot": "var-const"
-      },
-      {
-        "id": "swift-015",
-        "concept": {
-          "pt": "Tipos Básicos",
-          "en": "Basic Types"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Swift tem tipos explícitos como Int, Double, String e Bool. Declare variáveis com tipo explícito e use conversão entre eles.",
-          "en": "Swift has explicit types like Int, Double, String and Bool. Declare variables with explicit types and use conversion between them."
-        },
-        "code": "let count: Int = 42\nlet ratio: Double = Double(count) / 7.0\nlet active: Bool = true\nlet label: String = \"Total: \\(count)\"",
-        "slot": "var-types"
-      },
-      {
         "id": "swift-002",
         "concept": {
           "pt": "Interpolação de String",
@@ -2061,79 +511,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "let language = \"Swift\"\nlet year = 2014\nlet msg = \"\\(language) foi lançado em \\(year).\"",
         "slot": "var-interpolation"
-      },
-      {
-        "id": "swift-016",
-        "concept": {
-          "pt": "Array",
-          "en": "Array"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Arrays em Swift são tipados e mutáveis com \"var\". Crie um array, adicione elementos e acesse por índice.",
-          "en": "Swift arrays are typed and mutable with \"var\". Create an array, add elements and access by index."
-        },
-        "code": "var nums = [1, 2, 3]\nnums.append(4)\nnums.insert(0, at: 0)\nprint(nums[2])",
-        "slot": "var-array"
-      },
-      {
-        "id": "swift-017",
-        "concept": {
-          "pt": "Desestruturação com Tupla",
-          "en": "Tuple Destructuring"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Tuplas permitem agrupar e desestruturar múltiplos valores de uma vez. Extraia os componentes de uma tupla em variáveis separadas.",
-          "en": "Tuples allow grouping and destructuring multiple values at once. Extract the components of a tuple into separate variables."
-        },
-        "code": "let point = (x: 3.0, y: 7.0)\nlet (x, y) = point\nprint(\"(\\(x), \\(y))\")\n\nlet (name, age) = (\"Alice\", 30)",
-        "slot": "var-destructure"
       }
     ],
     "ruby": [
-      {
-        "id": "ruby-016",
-        "concept": {
-          "pt": "Variáveis Locais",
-          "en": "Local Variables"
-        },
-        "difficulty": "easy",
-        "slot": "var-declare",
-        "prompt": {
-          "pt": "Ruby usa tipagem dinâmica: variáveis são criadas na atribuição. Declare variáveis de tipos diferentes e mostre seus valores com puts.",
-          "en": "Ruby uses dynamic typing: variables are created on assignment. Declare variables of different types and show their values with puts."
-        },
-        "code": "name = \"Ruby\"\nversion = 3.2\nactive = true\nputs \"#{name} #{version} active=#{active}\""
-      },
-      {
-        "id": "ruby-017",
-        "concept": {
-          "pt": "Constantes",
-          "en": "Constants"
-        },
-        "difficulty": "easy",
-        "slot": "var-const",
-        "prompt": {
-          "pt": "Constantes em Ruby começam com letra maiúscula. Defina constantes e use freeze pra impedir modificação do valor.",
-          "en": "Ruby constants start with an uppercase letter. Define constants and use freeze to prevent value modification."
-        },
-        "code": "MAX_RETRIES = 3\nAPI_URL = \"https://api.example.com\".freeze\nPI = 3.14159\nputs \"#{API_URL} max=#{MAX_RETRIES}\""
-      },
-      {
-        "id": "ruby-018",
-        "concept": {
-          "pt": "Tipos Dinâmicos",
-          "en": "Dynamic Types"
-        },
-        "difficulty": "easy",
-        "slot": "var-types",
-        "prompt": {
-          "pt": "Ruby é dinamicamente tipada: a mesma variável pode mudar de tipo. Use .class pra inspecionar o tipo de cada valor.",
-          "en": "Ruby is dynamically typed: the same variable can change type. Use .class to inspect the type of each value."
-        },
-        "code": "val = 42\nputs \"#{val} is #{val.class}\"\nval = \"hello\"\nputs \"#{val} is #{val.class}\"\nval = [1, 2, 3]\nputs \"#{val} is #{val.class}\""
-      },
       {
         "id": "ruby-002",
         "concept": {
@@ -2147,79 +527,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Ruby string interpolation uses #{expression} inside double quotes. Combine the \"language\" variable and the \"version\" number in a message -- any Ruby expression can be evaluated inside #{}."
         },
         "code": "language = \"Ruby\"\nversion = 3.2\nputs \"#{language} #{version} is awesome!\""
-      },
-      {
-        "id": "ruby-019",
-        "concept": {
-          "pt": "Array",
-          "en": "Array"
-        },
-        "difficulty": "easy",
-        "slot": "var-array",
-        "prompt": {
-          "pt": "Arrays em Ruby são dinâmicos e aceitam tipos mistos. Crie um array, acesse por índice, adicione elementos e use métodos como .length.",
-          "en": "Ruby arrays are dynamic and accept mixed types. Create an array, access by index, add elements and use methods like .length."
-        },
-        "code": "langs = [\"Ruby\", \"Python\", \"Lua\"]\nputs langs[0]\nlangs << \"Scala\"\nputs langs.length"
-      },
-      {
-        "id": "ruby-020",
-        "concept": {
-          "pt": "Destructuring",
-          "en": "Destructuring"
-        },
-        "difficulty": "medium",
-        "slot": "var-destructure",
-        "prompt": {
-          "pt": "Ruby permite atribuição múltipla e destructuring de arrays. Use atribuição paralela pra extrair valores de arrays e retornos de métodos.",
-          "en": "Ruby allows multiple assignment and array destructuring. Use parallel assignment to extract values from arrays and method returns."
-        },
-        "code": "a, b, c = 1, 2, 3\nfirst, *rest = [10, 20, 30, 40]\nx, y = y, x rescue nil\nputs \"#{a} #{b} #{c}\"\nputs \"first=#{first} rest=#{rest}\""
       }
     ],
     "lua": [
-      {
-        "id": "lua-016",
-        "concept": {
-          "pt": "Variável Local",
-          "en": "Local Variable"
-        },
-        "difficulty": "easy",
-        "slot": "var-declare",
-        "prompt": {
-          "pt": "Em Lua, \"local\" cria variáveis com escopo restrito. Sem local, a variável é global. Declare variáveis locais de diferentes tipos.",
-          "en": "In Lua, \"local\" creates scoped variables. Without local, the variable is global. Declare local variables of different types."
-        },
-        "code": "local name = \"Lua\"\nlocal version = 5.4\nlocal active = true\nprint(name, version, active)"
-      },
-      {
-        "id": "lua-017",
-        "concept": {
-          "pt": "Constantes (Convenção)",
-          "en": "Constants (Convention)"
-        },
-        "difficulty": "easy",
-        "slot": "var-const",
-        "prompt": {
-          "pt": "Lua não tem constantes nativas, mas a convenção é usar MAIÚSCULAS. Em Lua 5.4, <const> marca variáveis locais como constantes.",
-          "en": "Lua has no native constants, but the convention is UPPER_CASE. In Lua 5.4, <const> marks local variables as constants."
-        },
-        "code": "local MAX_RETRIES <const> = 3\nlocal API_URL = \"https://api.example.com\"\nlocal PI = 3.14159\nprint(MAX_RETRIES, API_URL)"
-      },
-      {
-        "id": "lua-018",
-        "concept": {
-          "pt": "Tipos Dinâmicos",
-          "en": "Dynamic Types"
-        },
-        "difficulty": "easy",
-        "slot": "var-types",
-        "prompt": {
-          "pt": "Lua é dinamicamente tipada: use type() pra inspecionar o tipo de qualquer valor. Crie variáveis de tipos diferentes e verifique cada uma.",
-          "en": "Lua is dynamically typed: use type() to inspect any value's type. Create variables of different types and check each one."
-        },
-        "code": "local n = 42\nlocal s = \"hello\"\nlocal t = {1, 2, 3}\nlocal f = function() end\nprint(type(n), type(s), type(t), type(f))"
-      },
       {
         "id": "lua-004",
         "concept": {
@@ -2233,34 +543,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "string.format works like printf in C. Use the %s specifier to insert a string and %.4f to format math.pi with exactly four decimal places, calling print for each line."
         },
         "code": "local name = \"World\"\nlocal pi = math.pi\nprint(string.format(\"Hello, %s!\", name))\nprint(string.format(\"Pi = %.4f\", pi))"
-      },
-      {
-        "id": "lua-019",
-        "concept": {
-          "pt": "Array (Tabela Sequencial)",
-          "en": "Array (Sequential Table)"
-        },
-        "difficulty": "easy",
-        "slot": "var-array",
-        "prompt": {
-          "pt": "Tabelas sequenciais funcionam como arrays em Lua, com índice começando em 1. Crie, acesse por índice, adicione elementos e veja o tamanho.",
-          "en": "Sequential tables work as arrays in Lua, with index starting at 1. Create, access by index, add elements and check the length."
-        },
-        "code": "local langs = {\"Lua\", \"Python\", \"Ruby\"}\nprint(langs[1])\ntable.insert(langs, \"Scala\")\nprint(#langs)"
-      },
-      {
-        "id": "lua-020",
-        "concept": {
-          "pt": "Desempacotamento",
-          "en": "Unpacking"
-        },
-        "difficulty": "medium",
-        "slot": "var-destructure",
-        "prompt": {
-          "pt": "table.unpack (ou unpack em Lua 5.1) extrai valores de uma tabela em variáveis separadas. Use pra desempacotar coordenadas.",
-          "en": "table.unpack (or unpack in Lua 5.1) extracts values from a table into separate variables. Use it to unpack coordinates."
-        },
-        "code": "local coords = {10, 20, 30}\nlocal x, y, z = table.unpack(coords)\nprint(x, y, z)\n\nlocal function swap(a, b) return b, a end\nlocal a, b = swap(1, 2)\nprint(a, b)"
       }
     ],
     "bash": [
@@ -2277,62 +559,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Bash variables are declared without spaces around \"=\" and expanded with $. Assign the string \"world\" to NAME and use it inside a message with echo -- double quotes allow variable expansion."
         },
         "code": "NAME=\"world\"\necho \"Hello, $NAME!\""
-      },
-      {
-        "id": "bash-014",
-        "concept": {
-          "pt": "Variável Readonly",
-          "en": "Readonly Variable"
-        },
-        "difficulty": "easy",
-        "slot": "var-const",
-        "prompt": {
-          "pt": "readonly marca uma variável como constante em Bash. Qualquer tentativa de reatribuição gera erro. Use pra proteger configurações.",
-          "en": "readonly marks a variable as constant in Bash. Any reassignment attempt causes an error. Use it to protect configurations."
-        },
-        "code": "readonly MAX_RETRIES=3\nreadonly API_URL=\"https://api.example.com\"\necho \"URL: $API_URL, max: $MAX_RETRIES\""
-      },
-      {
-        "id": "bash-015",
-        "concept": {
-          "pt": "Tipos (declare)",
-          "en": "Types (declare)"
-        },
-        "difficulty": "medium",
-        "slot": "var-types",
-        "prompt": {
-          "pt": "declare no Bash define tipos: -i pra inteiro, -a pra array, -A pra array associativo. Use declare pra criar variáveis tipadas.",
-          "en": "Bash declare defines types: -i for integer, -a for array, -A for associative array. Use declare to create typed variables."
-        },
-        "code": "declare -i count=0\ncount+=5\necho \"count: $count\"\ndeclare -A config\nconfig[host]=\"localhost\"\nconfig[port]=\"8080\"\necho \"${config[host]}:${config[port]}\""
-      },
-      {
-        "id": "bash-016",
-        "concept": {
-          "pt": "Interpolação",
-          "en": "Interpolation"
-        },
-        "difficulty": "easy",
-        "slot": "var-interpolation",
-        "prompt": {
-          "pt": "Bash interpola variáveis dentro de aspas duplas com $ e ${var}. Use ${var} pra separar o nome da variável do texto ao redor.",
-          "en": "Bash interpolates variables inside double quotes with $ and ${var}. Use ${var} to separate the variable name from surrounding text."
-        },
-        "code": "name=\"Bash\"\nversion=5\necho \"Running ${name} v${version}\"\necho \"Path: ${HOME}/.config/${name}\""
-      },
-      {
-        "id": "bash-008",
-        "concept": {
-          "pt": "Vetores",
-          "en": "Arrays"
-        },
-        "difficulty": "medium",
-        "slot": "var-array",
-        "prompt": {
-          "pt": "Arrays no Bash usam parênteses pra declarar e ${array[index]} pra acessar. Declara fruits, pega o primeiro elemento com [0], vê o total com ${#fruits[@]} e adiciona um novo com +=.",
-          "en": "Bash arrays use parentheses for declaration and ${array[index]} for access. Declare fruits, access the first element with [0], get the total count with ${#fruits[@]} and append a new one with +=."
-        },
-        "code": "fruits=(\"apple\" \"banana\" \"cherry\")\necho \"${fruits[0]}\"\necho \"${#fruits[@]}\"\nfruits+=(\"date\")"
       }
     ]
   },
@@ -2369,20 +595,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "cpp": [
       {
-        "id": "cpp-019",
-        "concept": {
-          "pt": "Função Simples",
-          "en": "Simple Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Funções em C++ declaram tipo de retorno, nome e parâmetros. Crie add que recebe dois inteiros e retorna a soma.",
-          "en": "Functions in C++ declare return type, name, and parameters. Create add that takes two ints and returns the sum."
-        },
-        "code": "int add(int a, int b) {\n    return a + b;\n}",
-        "slot": "fn-basic"
-      },
-      {
         "id": "cpp-003",
         "concept": {
           "pt": "Lambda",
@@ -2395,48 +607,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "auto compare = [](const auto& a, const auto& b) {\n    return a.name < b.name;\n};\nstd::sort(users.begin(), users.end(), compare);",
         "slot": "fn-arrow"
-      },
-      {
-        "id": "cpp-020",
-        "concept": {
-          "pt": "Callback com std::function",
-          "en": "Callback with std::function"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "std::function permite passar callbacks tipados em C++. Crie uma função que aceita um callback e o executa com um valor.",
-          "en": "std::function allows passing typed callbacks in C++. Create a function that accepts a callback and executes it with a value."
-        },
-        "code": "void process(int value, std::function<void(int)> callback) {\n    callback(value * 2);\n}\n\nprocess(5, [](int result) {\n    std::cout << \"Result: \" << result << std::endl;\n});",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "cpp-021",
-        "concept": {
-          "pt": "Closure",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Lambdas em C++ capturam variáveis do escopo externo com [&] ou [=]. Crie um contador com captura por referencia que incrementa a cada chamada.",
-          "en": "C++ lambdas capture outer scope variables with [&] or [=]. Create a counter with reference capture that increments on each call."
-        },
-        "code": "int count = 0;\nauto increment = [&count]() {\n    return ++count;\n};\nincrement();\nincrement();",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "cpp-022",
-        "concept": {
-          "pt": "Parâmetros Default",
-          "en": "Default Parameters"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "C++ suporta parâmetros default nativamente -- os ultimos parâmetros podem ter valores padrão. Crie greet com titulo default \"Mr.\".",
-          "en": "C++ supports native default parameters -- trailing parameters can have default values. Create greet with default title \"Mr.\"."
-        },
-        "code": "std::string greet(const std::string& name,\n                   const std::string& title = \"Mr.\") {\n    return \"Hello, \" + title + \" \" + name;\n}",
-        "slot": "fn-default-params"
       }
     ],
     "csharp": [
@@ -2513,20 +683,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "javascript": [
       {
-        "id": "js-021",
-        "concept": {
-          "pt": "Função Básica",
-          "en": "Basic Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Funções encapsulam lógica reutilizável. Declare uma função greet que recebe um nome e retorna uma saudação.",
-          "en": "Functions encapsulate reusable logic. Declare a greet function that takes a name and returns a greeting."
-        },
-        "code": "function greet(name) {\n  return \"Hello, \" + name + \"!\";\n}",
-        "slot": "fn-basic"
-      },
-      {
         "id": "js-001",
         "concept": {
           "pt": "Função Seta",
@@ -2539,137 +695,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "const add = (a, b) => a + b;",
         "slot": "fn-arrow"
-      },
-      {
-        "id": "js-022",
-        "concept": {
-          "pt": "Callback",
-          "en": "Callback"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Callbacks são funções passadas como argumento pra serem chamadas depois. Use setTimeout com uma arrow function pra executar uma ação após 1 segundo.",
-          "en": "Callbacks are functions passed as arguments to be called later. Use setTimeout with an arrow function to execute an action after 1 second."
-        },
-        "code": "setTimeout(() => {\n  console.log(\"Done!\");\n}, 1000);",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "js-007",
-        "concept": {
-          "pt": "Clausura",
-          "en": "Closure"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Closures deixam funções internas acessarem e modificarem variáveis da função de fora, mesmo depois que ela já retornou. Implemente counter como uma factory que retorna {increment, decrement, value} -- as três funções compartilham a mesma variável \"count\" via closure.",
-          "en": "Closures let inner functions access and modify variables from the outer function even after it returns. Implement counter as a factory that returns {increment, decrement, value} -- all three functions share the same \"count\" variable via closure."
-        },
-        "code": "function counter() {\n  let count = 0;\n  return {\n    increment: () => ++count,\n    decrement: () => --count,\n    value: () => count,\n  };\n}",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "js-023",
-        "concept": {
-          "pt": "Parâmetro Padrão",
-          "en": "Default Parameter"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Parâmetros padrão definem valores caso o argumento não seja passado. Crie uma função greet com um parâmetro greeting que tem valor padrão \"Hello\".",
-          "en": "Default parameters define fallback values when no argument is passed. Create a greet function with a greeting parameter that defaults to \"Hello\"."
-        },
-        "code": "function greet(name, greeting = \"Hello\") {\n  return `${greeting}, ${name}!`;\n}",
-        "slot": "fn-default-params"
-      }
-    ],
-    "typescript": [
-      {
-        "id": "ts-020",
-        "concept": {
-          "pt": "Função Tipada",
-          "en": "Typed Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em TypeScript, funções declaram os tipos dos parâmetros e do retorno. Crie uma função add que recebe dois numbers e retorna um number.",
-          "en": "In TypeScript, functions declare parameter and return types. Create an add function that takes two numbers and returns a number."
-        },
-        "code": "function add(a: number, b: number): number {\n  return a + b;\n}",
-        "slot": "fn-basic"
-      },
-      {
-        "id": "ts-021",
-        "concept": {
-          "pt": "Arrow Function Tipada",
-          "en": "Typed Arrow Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Arrow functions em TypeScript também recebem anotações de tipo nos parâmetros e no retorno.",
-          "en": "Arrow functions in TypeScript also receive type annotations on parameters and return type."
-        },
-        "code": "const multiply = (a: number, b: number): number => a * b;",
-        "slot": "fn-arrow"
-      },
-      {
-        "id": "ts-022",
-        "concept": {
-          "pt": "Callback Tipado",
-          "en": "Typed Callback"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Tipar callbacks garante que a função passada tem a assinatura esperada. Defina uma função que aceita um callback tipado como parâmetro.",
-          "en": "Typing callbacks ensures the passed function has the expected signature. Define a function that accepts a typed callback as a parameter."
-        },
-        "code": "function fetchData(callback: (data: string) => void) {\n  callback(\"result\");\n}",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "ts-023",
-        "concept": {
-          "pt": "Closure Tipada",
-          "en": "Typed Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures em TypeScript mantêm o acesso a variáveis externas com tipagem segura. Crie uma factory de contadores.",
-          "en": "Closures in TypeScript maintain access to outer variables with type safety. Create a counter factory."
-        },
-        "code": "function makeCounter(): () => number {\n  let count: number = 0;\n  return () => ++count;\n}",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "ts-024",
-        "concept": {
-          "pt": "Parâmetro Padrão Tipado",
-          "en": "Typed Default Parameter"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Parâmetros com valor padrão no TypeScript já inferem o tipo, mas você pode ser explícito pra maior clareza.",
-          "en": "Default parameters in TypeScript already infer the type, but you can be explicit for clarity."
-        },
-        "code": "function greet(name: string, greeting: string = \"Hello\"): string {\n  return `${greeting}, ${name}!`;\n}",
-        "slot": "fn-default-params"
       }
     ],
     "python": [
-      {
-        "id": "py-020",
-        "concept": {
-          "pt": "Função Básica",
-          "en": "Basic Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "def define uma função em Python. Crie uma função greet que recebe um nome e retorna uma saudação.",
-          "en": "def defines a function in Python. Create a greet function that takes a name and returns a greeting."
-        },
-        "code": "def greet(name):\n    return f\"Hello, {name}!\"",
-        "slot": "fn-basic"
-      },
       {
         "id": "py-003",
         "concept": {
@@ -2683,65 +711,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "sort_by_age = sorted(users, key=lambda u: u['age'])",
         "slot": "fn-arrow"
-      },
-      {
-        "id": "py-021",
-        "concept": {
-          "pt": "Callback",
-          "en": "Callback"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Python, funções são objetos de primeira classe e podem ser passadas como argumento. Crie uma função apply que recebe uma função e um valor.",
-          "en": "In Python, functions are first-class objects and can be passed as arguments. Create an apply function that takes a function and a value."
-        },
-        "code": "def apply(func, value):\n    return func(value)\n\nresult = apply(str.upper, \"hello\")",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "py-022",
-        "concept": {
-          "pt": "Closure",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures capturam variáveis do escopo externo. Crie uma factory que retorna uma função multiplicadora configurável.",
-          "en": "Closures capture variables from the outer scope. Create a factory that returns a configurable multiplier function."
-        },
-        "code": "def multiplier(factor):\n    def multiply(n):\n        return n * factor\n    return multiply\n\ndouble = multiplier(2)",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "py-023",
-        "concept": {
-          "pt": "Parâmetro Padrão",
-          "en": "Default Parameter"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Parâmetros com valor padrão permitem chamar a função sem passar todos os argumentos. Crie greet com um parâmetro greeting com valor padrão.",
-          "en": "Default parameters allow calling the function without all arguments. Create greet with a greeting parameter with a default value."
-        },
-        "code": "def greet(name, greeting=\"Hello\"):\n    return f\"{greeting}, {name}!\"",
-        "slot": "fn-default-params"
       }
     ],
     "java": [
-      {
-        "id": "java-021",
-        "concept": {
-          "pt": "Método Simples",
-          "en": "Simple Method"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Método em Java define o tipo de retorno, nome e parâmetros. Crie um método estatico add que recebe dois inteiros e retorna a soma.",
-          "en": "Methods in Java define return type, name, and parameters. Create a static method add that takes two ints and returns the sum."
-        },
-        "code": "public static int add(int a, int b) {\n    return a + b;\n}",
-        "slot": "fn-basic"
-      },
       {
         "id": "java-005",
         "concept": {
@@ -2755,48 +727,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "Comparator<User> byAge = (a, b) ->\n    Integer.compare(a.getAge(), b.getAge());",
         "slot": "fn-arrow"
-      },
-      {
-        "id": "java-022",
-        "concept": {
-          "pt": "Callback com Interface Funcional",
-          "en": "Callback with Functional Interface"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Java, callbacks sao passados como interfaces funcionais. Crie um método que aceita um Consumer<String> e o executa.",
-          "en": "In Java, callbacks are passed as functional interfaces. Create a method that accepts a Consumer<String> and executes it."
-        },
-        "code": "public void greet(String name, Consumer<String> callback) {\n    String msg = \"Hello, \" + name;\n    callback.accept(msg);\n}",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "java-023",
-        "concept": {
-          "pt": "Closure com Lambda",
-          "en": "Closure with Lambda"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Lambdas em Java capturam variáveis efetivamente finais do escopo externo. Crie um Supplier que captura um prefixo e retorna uma string formatada.",
-          "en": "Java lambdas capture effectively final variables from the outer scope. Create a Supplier that captures a prefix and returns a formatted string."
-        },
-        "code": "String prefix = \"Hello\";\nSupplier<String> greeter = () -> prefix + \", World!\";\nSystem.out.println(greeter.get());",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "java-024",
-        "concept": {
-          "pt": "Parâmetros Default com Overload",
-          "en": "Default Params via Overload"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Java nao tem parâmetros default, mas usa overloading pra simular. Crie duas versoes de greet -- uma com nome e titulo, outra so com nome que chama a primeira.",
-          "en": "Java has no default parameters, but uses overloading to simulate them. Create two versions of greet -- one with name and title, another with just name that calls the first."
-        },
-        "code": "public String greet(String name, String title) {\n    return \"Hello, \" + title + \" \" + name;\n}\n\npublic String greet(String name) {\n    return greet(name, \"Mr.\");\n}",
-        "slot": "fn-default-params"
       }
     ],
     "rust": [
@@ -2813,62 +743,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "fn add(a: i32, b: i32) -> i32 {\n    a + b\n}",
         "slot": "fn-basic"
-      },
-      {
-        "id": "rs-020",
-        "concept": {
-          "pt": "Closure (Função Anônima)",
-          "en": "Closure (Anonymous Function)"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Closures em Rust usam pipes |params| pra parâmetros. Atribua uma closure a uma variável e a invoque.",
-          "en": "Rust closures use pipes |params| for parameters. Assign a closure to a variable and invoke it."
-        },
-        "code": "let square = |n: i32| -> i32 { n * n };\nlet result = square(5);\nprintln!(\"{result}\");",
-        "slot": "fn-arrow"
-      },
-      {
-        "id": "rs-021",
-        "concept": {
-          "pt": "Callback com Closure",
-          "en": "Callback with Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Funções podem receber closures como parâmetro usando traits Fn/FnMut/FnOnce. Crie uma função que aceita uma closure de transformação.",
-          "en": "Functions can take closures as parameters using Fn/FnMut/FnOnce traits. Create a function that accepts a transformation closure."
-        },
-        "code": "fn apply<F: Fn(i32) -> i32>(value: i32, f: F) -> i32 {\n    f(value)\n}\n\nlet doubled = apply(5, |x| x * 2);\nlet squared = apply(5, |x| x * x);\nprintln!(\"{doubled}, {squared}\");",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "rs-008",
-        "concept": {
-          "pt": "Closure com Move",
-          "en": "Closure with Move"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Closure com \"move\" captura o ambiente transferindo o ownership das variáveis. Capture a String \"name\" por move dentro de \"greet\", assim a closure pode ser usada mesmo depois que o escopo original acabar.",
-          "en": "Closures with \"move\" capture the environment by transferring ownership of captured variables. Capture the String \"name\" by move into \"greet\", allowing the closure to be used even after the original scope ends."
-        },
-        "code": "let name = String::from(\"Alice\");\nlet greet = move || {\n    println!(\"Hello, {name}!\");\n};\ngreet();",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "rs-022",
-        "concept": {
-          "pt": "Parâmetros Padrão (Builder)",
-          "en": "Default Parameters (Builder)"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Rust não tem parâmetros padrão, mas o padrão Default + builder simula isso. Implemente Default e um método builder.",
-          "en": "Rust has no default parameters, but the Default + builder pattern simulates it. Implement Default and a builder method."
-        },
-        "code": "#[derive(Default)]\nstruct Config {\n    timeout: u64,\n    retries: u32,\n}\n\nimpl Config {\n    fn with_timeout(mut self, t: u64) -> Self {\n        self.timeout = t;\n        self\n    }\n}\n\nlet cfg = Config::default().with_timeout(5000);",
-        "slot": "fn-default-params"
       }
     ],
     "go": [
@@ -2885,309 +759,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "func add(a, b int) int {\n    return a + b\n}",
         "slot": "fn-basic"
-      },
-      {
-        "id": "go-021",
-        "concept": {
-          "pt": "Função Anônima",
-          "en": "Anonymous Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go suporta funções anônimas que podem ser atribuidas a variáveis. Crie uma função anônima que soma dois inteiros e atribua a variável \"add\".",
-          "en": "Go supports anonymous functions that can be assigned to variables. Create an anonymous function that adds two ints and assign it to the variable \"add\"."
-        },
-        "code": "add := func(a, b int) int {\n    return a + b\n}\nfmt.Println(add(3, 4))",
-        "slot": "fn-arrow"
-      },
-      {
-        "id": "go-010",
-        "concept": {
-          "pt": "Ponteiro",
-          "en": "Pointer"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Ponteiro guarda o endereço de uma variável, permitindo modificar ela de dentro de uma função. Implemente increment recebendo *int e usando *n++ pra incrementar o inteiro no endereço apontado, depois chame com &x.",
-          "en": "Pointers store a variable's address, allowing you to modify it from within a function. Implement increment taking *int and using *n++ to increment the integer at the pointed address, then call it with &x."
-        },
-        "code": "func increment(n *int) {\n    *n++\n}\n\nx := 5\nincrement(&x)",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "go-022",
-        "concept": {
-          "pt": "Closure",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures em Go capturam variáveis do escopo externo. Crie um contador que retorna uma função -- cada chamada incrementa e retorna o valor capturado.",
-          "en": "Closures in Go capture variables from the outer scope. Create a counter that returns a function -- each call increments and returns the captured value."
-        },
-        "code": "func counter() func() int {\n    count := 0\n    return func() int {\n        count++\n        return count\n    }\n}",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "go-023",
-        "concept": {
-          "pt": "Parâmetros Variadicos",
-          "en": "Variadic Parameters"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go usa \"...\" pra parâmetros variadicos, permitindo passar qualquer quantidade de argumentos. Crie sum que aceita multiplos inteiros e retorna a soma.",
-          "en": "Go uses \"...\" for variadic parameters, allowing any number of arguments. Create sum that accepts multiple ints and returns the total."
-        },
-        "code": "func sum(nums ...int) int {\n    total := 0\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}",
-        "slot": "fn-default-params"
-      }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-020",
-        "concept": {
-          "pt": "Função Básica",
-          "en": "Basic Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Funções em Kotlin são declaradas com \"fun\". Crie uma que receba dois inteiros e retorne a soma, usando tanto a forma de bloco quanto a forma de expressão.",
-          "en": "Functions in Kotlin are declared with \"fun\". Create one that takes two integers and returns the sum, using both block form and expression form."
-        },
-        "code": "fun add(a: Int, b: Int): Int {\n    return a + b\n}\n\nfun multiply(a: Int, b: Int) = a * b",
-        "slot": "fn-basic"
-      },
-      {
-        "id": "kotlin-021",
-        "concept": {
-          "pt": "Lambda (Função Anônima)",
-          "en": "Lambda (Anonymous Function)"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Lambdas em Kotlin são blocos { params -> corpo }. Atribua uma lambda a uma variável tipada e a invoque.",
-          "en": "Kotlin lambdas are blocks { params -> body }. Assign a lambda to a typed variable and invoke it."
-        },
-        "code": "val square: (Int) -> Int = { n -> n * n }\nval result = square(5)\nprintln(result)",
-        "slot": "fn-arrow"
-      },
-      {
-        "id": "kotlin-007",
-        "concept": {
-          "pt": "Lambda e Ordem Superior",
-          "en": "Lambda and Higher-Order"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Funções de ordem superior recebem outras funções como parâmetro. Crie customFilter como extension function de List<T> que aceita um predicado lambda (T) -> Boolean, percorre a lista e devolve uma nova só com os elementos que passaram.",
-          "en": "Higher-order functions take other functions as parameters. Implement customFilter as a List<T> extension function that accepts a lambda predicate (T) -> Boolean, iterates the list and returns a new one with elements that pass."
-        },
-        "code": "fun <T> List<T>.customFilter(predicate: (T) -> Boolean): List<T> {\n    val result = mutableListOf<T>()\n    for (item in this) {\n        if (predicate(item)) result.add(item)\n    }\n    return result\n}\n\nval evens = listOf(1, 2, 3, 4, 5).customFilter { it % 2 == 0 }",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "kotlin-022",
-        "concept": {
-          "pt": "Closure",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures capturam variáveis do escopo externo. Crie uma função que retorne um contador como closure, acumulando chamadas.",
-          "en": "Closures capture variables from the outer scope. Create a function that returns a counter as a closure, accumulating calls."
-        },
-        "code": "fun counter(start: Int): () -> Int {\n    var count = start\n    return { count++ }\n}\n\nval next = counter(0)\nprintln(next())\nprintln(next())",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "kotlin-023",
-        "concept": {
-          "pt": "Parâmetros Padrão",
-          "en": "Default Parameters"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Parâmetros com valor padrão evitam sobrecarga de funções. Defina greet com um parâmetro opcional e chame de duas formas.",
-          "en": "Default parameter values avoid function overloading. Define greet with an optional parameter and call it both ways."
-        },
-        "code": "fun greet(name: String, greeting: String = \"Olá\") {\n    println(\"$greeting, $name!\")\n}\n\ngreet(\"Ana\")\ngreet(\"Ana\", \"Bom dia\")",
-        "slot": "fn-default-params"
-      }
-    ],
-    "scala": [
-      {
-        "id": "scala-019",
-        "concept": {
-          "pt": "Função Básica",
-          "en": "Basic Function"
-        },
-        "difficulty": "easy",
-        "slot": "fn-basic",
-        "prompt": {
-          "pt": "Funções em Scala são definidas com def, com tipos explícitos nos parâmetros. Crie uma função add que soma dois Ints e retorna o resultado.",
-          "en": "Scala functions are defined with def, with explicit parameter types. Create an add function that sums two Ints and returns the result."
-        },
-        "code": "def add(a: Int, b: Int): Int = a + b\n\nval result = add(3, 4)\nprintln(s\"Sum: $result\")"
-      },
-      {
-        "id": "scala-020",
-        "concept": {
-          "pt": "Função Anônima",
-          "en": "Anonymous Function"
-        },
-        "difficulty": "easy",
-        "slot": "fn-arrow",
-        "prompt": {
-          "pt": "Funções anônimas (lambdas) em Scala usam a sintaxe \"=>\" ou o placeholder \"_\". Crie lambdas pra dobrar e somar, e aplique numa lista.",
-          "en": "Anonymous functions (lambdas) in Scala use the \"=>\" syntax or the \"_\" placeholder. Create lambdas to double and sum, then apply them to a list."
-        },
-        "code": "val double = (x: Int) => x * 2\nval nums = List(1, 2, 3, 4)\nval result = nums.map(double)\nprintln(result)"
-      },
-      {
-        "id": "scala-021",
-        "concept": {
-          "pt": "Função de Ordem Superior",
-          "en": "Higher-Order Function"
-        },
-        "difficulty": "medium",
-        "slot": "fn-callback",
-        "prompt": {
-          "pt": "Funções de alta ordem recebem ou retornam funções. Crie apply que recebe um valor e uma função, e passe diferentes lambdas como argumento.",
-          "en": "Higher-order functions accept or return functions. Create apply that takes a value and a function, and pass different lambdas as argument."
-        },
-        "code": "def apply(x: Int, f: Int => Int): Int = f(x)\n\nval doubled = apply(5, _ * 2)\nval squared = apply(5, n => n * n)\nprintln(s\"$doubled $squared\")"
-      },
-      {
-        "id": "scala-022",
-        "concept": {
-          "pt": "Clausura",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "slot": "fn-closure",
-        "prompt": {
-          "pt": "Closures capturam variáveis do escopo de fora. Crie uma função que retorna outra função que soma um valor capturado ao argumento.",
-          "en": "Closures capture variables from the outer scope. Create a function that returns another function which adds a captured value to the argument."
-        },
-        "code": "def adder(n: Int): Int => Int = (x: Int) => x + n\n\nval add5 = adder(5)\nval add10 = adder(10)\nprintln(s\"${add5(3)} ${add10(3)}\")"
-      },
-      {
-        "id": "scala-023",
-        "concept": {
-          "pt": "Parâmetros Padrão",
-          "en": "Default Parameters"
-        },
-        "difficulty": "easy",
-        "slot": "fn-default-params",
-        "prompt": {
-          "pt": "Parâmetros com valor padrão evitam sobrecarga de métodos. Defina greet com um parâmetro greeting que tem valor padrão \"Hello\".",
-          "en": "Default parameter values avoid method overloading. Define greet with a greeting parameter that defaults to \"Hello\"."
-        },
-        "code": "def greet(name: String, greeting: String = \"Hello\"): String =\n  s\"$greeting, $name!\"\n\nprintln(greet(\"Alice\"))\nprintln(greet(\"Bob\", \"Hi\"))"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-018",
-        "concept": {
-          "pt": "Função Básica",
-          "en": "Basic Function"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Funções em Swift usam \"func\" com argument labels e return type explícito. Crie uma função com dois parâmetros e retorno.",
-          "en": "Swift functions use \"func\" with argument labels and explicit return type. Create a function with two parameters and a return value."
-        },
-        "code": "func add(_ a: Int, _ b: Int) -> Int {\n    return a + b\n}\n\nlet result = add(3, 5)",
-        "slot": "fn-basic"
-      },
-      {
-        "id": "swift-019",
-        "concept": {
-          "pt": "Closure como Variável",
-          "en": "Closure as Variable"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Closures podem ser atribuídas a variáveis com sintaxe parecida com arrow functions. Defina uma closure tipada e a invoque.",
-          "en": "Closures can be assigned to variables with syntax similar to arrow functions. Define a typed closure and invoke it."
-        },
-        "code": "let square: (Int) -> Int = { n in\n    return n * n\n}\n\nlet result = square(5)\nprint(result)",
-        "slot": "fn-arrow"
-      },
-      {
-        "id": "swift-020",
-        "concept": {
-          "pt": "Callback com Closure",
-          "en": "Callback with Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures são muito usadas como callbacks em Swift. Crie uma função que aceita uma closure como parâmetro pra processar um resultado.",
-          "en": "Closures are commonly used as callbacks in Swift. Create a function that accepts a closure parameter to process a result."
-        },
-        "code": "func fetchData(completion: (String) -> Void) {\n    let data = \"resposta do servidor\"\n    completion(data)\n}\n\nfetchData { result in\n    print(\"Recebido: \\(result)\")\n}",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "swift-008",
-        "concept": {
-          "pt": "Clausura",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures em Swift ficam bem enxutas usando $0, $1 pros parâmetros. Use sorted com { $0 < $1 } pra ordenar um array de inteiros e map com { $0 * 2 } pra dobrar cada elemento -- tudo bem direto.",
-          "en": "Swift closures can be simplified with $0, $1 for parameters. Use sorted with { $0 < $1 } to sort an integer array and map with { $0 * 2 } to double each element -- all in a concise way."
-        },
-        "code": "let numbers = [3, 1, 4, 1, 5, 9]\nlet sorted = numbers.sorted { $0 < $1 }\nlet doubled = numbers.map { $0 * 2 }",
-        "slot": "fn-closure"
-      },
-      {
-        "id": "swift-021",
-        "concept": {
-          "pt": "Parâmetros Padrão",
-          "en": "Default Parameters"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Parâmetros com valor padrão tornam argumentos opcionais. Defina uma função com parâmetro padrão e chame de duas formas.",
-          "en": "Default parameter values make arguments optional. Define a function with a default parameter and call it both ways."
-        },
-        "code": "func greet(_ name: String, greeting: String = \"Olá\") -> String {\n    return \"\\(greeting), \\(name)!\"\n}\n\nprint(greet(\"Ana\"))\nprint(greet(\"Ana\", greeting: \"Bom dia\"))",
-        "slot": "fn-default-params"
       }
     ],
     "ruby": [
-      {
-        "id": "ruby-021",
-        "concept": {
-          "pt": "Função Básica",
-          "en": "Basic Function"
-        },
-        "difficulty": "easy",
-        "slot": "fn-basic",
-        "prompt": {
-          "pt": "Métodos simples em Ruby retornam a última expressão. Defina add com dois parâmetros e chame pra somar dois números.",
-          "en": "Simple Ruby methods return the last expression. Define add with two parameters and call it to sum two numbers."
-        },
-        "code": "def add(a, b)\n  a + b\nend\n\nresult = add(3, 4)\nputs \"Sum: #{result}\""
-      },
-      {
-        "id": "ruby-022",
-        "concept": {
-          "pt": "Lambda (Arrow)",
-          "en": "Lambda (Arrow)"
-        },
-        "difficulty": "medium",
-        "slot": "fn-arrow",
-        "prompt": {
-          "pt": "Lambdas em Ruby usam a sintaxe \"-> {}\" e se comportam como funções anônimas. Crie lambdas e passe-as como argumentos.",
-          "en": "Ruby lambdas use the \"-> {}\" syntax and behave as anonymous functions. Create lambdas and pass them as arguments."
-        },
-        "code": "double = ->(x) { x * 2 }\ngreet = ->(name) { \"Hello, #{name}!\" }\n\nputs double.call(5)\nputs greet.call(\"Ruby\")"
-      },
       {
         "id": "ruby-006",
         "concept": {
@@ -3201,20 +775,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Blocks are Ruby's most fundamental customization mechanism -- any method can accept a block with yield. Implement \"repeat\" using n.times and calling yield on each iteration to execute the provided block."
         },
         "code": "def repeat(n)\n  n.times { yield }\nend\n\nrepeat(3) { puts \"Hello!\" }"
-      },
-      {
-        "id": "ruby-009",
-        "concept": {
-          "pt": "Proc e Lambda",
-          "en": "Proc and Lambda"
-        },
-        "difficulty": "hard",
-        "slot": "fn-closure",
-        "prompt": {
-          "pt": "Lambdas (-> {}) e Procs se comportam diferente no return e na aridade. Defina square como lambda e cube como proc, depois crie transform como lambda que recebe um array e uma função, usando .map(&fn) pra aplicar.",
-          "en": "Lambdas (-> {}) and Procs differ in return behavior and arity. Define square as a lambda and cube as a proc, then implement transform as a lambda that takes an array and a function, calling .map(&fn) to apply it."
-        },
-        "code": "square = ->(x) { x ** 2 }\ncube   = proc { |x| x ** 3 }\n\ntransform = ->(arr, fn) { arr.map(&fn) }\nputs transform.call([1, 2, 3, 4], square)"
       },
       {
         "id": "ruby-001",
@@ -3247,34 +807,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "local function greet(name)\n  return \"Hello, \" .. name .. \"!\"\nend\n\nprint(greet(\"Lua\"))"
       },
       {
-        "id": "lua-021",
-        "concept": {
-          "pt": "Função Anônima",
-          "en": "Anonymous Function"
-        },
-        "difficulty": "easy",
-        "slot": "fn-arrow",
-        "prompt": {
-          "pt": "Funções anônimas em Lua são criadas com \"function(...) ... end\" inline. Atribua a variáveis locais e passe como argumentos.",
-          "en": "Lua anonymous functions are created with inline \"function(...) ... end\". Assign to local variables and pass as arguments."
-        },
-        "code": "local double = function(x) return x * 2 end\nlocal nums = {1, 2, 3}\n\nfor _, v in ipairs(nums) do\n  print(double(v))\nend"
-      },
-      {
-        "id": "lua-022",
-        "concept": {
-          "pt": "Callback",
-          "en": "Callback"
-        },
-        "difficulty": "medium",
-        "slot": "fn-callback",
-        "prompt": {
-          "pt": "Funções de alta ordem recebem outras funções como argumento. Crie apply que recebe uma tabela e uma função, aplicando-a a cada elemento.",
-          "en": "Higher-order functions receive other functions as arguments. Create apply that takes a table and a function, applying it to each element."
-        },
-        "code": "local function apply(tbl, fn)\n  local result = {}\n  for i, v in ipairs(tbl) do\n    result[i] = fn(v)\n  end\n  return result\nend\n\nlocal squared = apply({1, 2, 3}, function(x) return x * x end)"
-      },
-      {
         "id": "lua-006",
         "concept": {
           "pt": "Clausura",
@@ -3287,20 +819,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Lua closures capture local variables from the outer scope (upvalues). Implement counter: return a table with two closures (inc and get) that share and manipulate the same encapsulated \"count\" variable."
         },
         "code": "local function counter(start)\n  local count = start or 0\n  return {\n    inc = function() count = count + 1 end,\n    get = function() return count end,\n  }\nend\n\nlocal c = counter(10)\nc.inc(); c.inc()\nprint(c.get())"
-      },
-      {
-        "id": "lua-023",
-        "concept": {
-          "pt": "Parâmetros Padrão",
-          "en": "Default Parameters"
-        },
-        "difficulty": "easy",
-        "slot": "fn-default-params",
-        "prompt": {
-          "pt": "Lua simula parâmetros padrão com \"param = param or valor\". Crie uma função greet com saudação configurável e valor padrão.",
-          "en": "Lua simulates default parameters with \"param = param or value\". Create a greet function with configurable greeting and default value."
-        },
-        "code": "local function greet(name, greeting)\n  greeting = greeting or \"Hello\"\n  return greeting .. \", \" .. name .. \"!\"\nend\n\nprint(greet(\"Alice\"))\nprint(greet(\"Bob\", \"Hi\"))"
       }
     ],
     "bash": [
@@ -3317,62 +835,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Bash functions group reusable commands and receive arguments via $1, $2... Declare greet(), use \"local\" to create a local-scoped variable from $1, print the greeting and return 0."
         },
         "code": "greet() {\n    local name=\"$1\"\n    echo \"Hello, $name!\"\n    return 0\n}\ngreet \"Alice\""
-      },
-      {
-        "id": "bash-029",
-        "concept": {
-          "pt": "Função Arrow (Alias)",
-          "en": "Arrow Function (Alias)"
-        },
-        "difficulty": "easy",
-        "slot": "fn-arrow",
-        "prompt": {
-          "pt": "Bash não tem arrow functions, mas aliases e funções inline de uma linha servem como equivalente compacto. Crie funções curtas numa única linha.",
-          "en": "Bash has no arrow functions, but aliases and one-liner inline functions serve as a compact equivalent. Create short functions in a single line."
-        },
-        "code": "double() { echo $(( $1 * 2 )); }\nsquare() { echo $(( $1 * $1 )); }\necho \"double 5: $(double 5)\"\necho \"square 4: $(square 4)\""
-      },
-      {
-        "id": "bash-017",
-        "concept": {
-          "pt": "Callback com Função",
-          "en": "Callback with Function"
-        },
-        "difficulty": "medium",
-        "slot": "fn-callback",
-        "prompt": {
-          "pt": "Bash simula callbacks passando nomes de funções como argumentos. A função receptora chama o nome recebido com \"$callback\".",
-          "en": "Bash simulates callbacks by passing function names as arguments. The receiver calls the passed name with \"$callback\"."
-        },
-        "code": "on_success() { echo \"OK: $1\"; }\non_error() { echo \"FAIL: $1\"; }\n\nrun_task() {\n    local callback=\"$2\"\n    $callback \"$1\"\n}\nrun_task \"deploy\" on_success"
-      },
-      {
-        "id": "bash-018",
-        "concept": {
-          "pt": "Clausura (Variável Capturada)",
-          "en": "Closure (Captured Variable)"
-        },
-        "difficulty": "medium",
-        "slot": "fn-closure",
-        "prompt": {
-          "pt": "Bash não tem closures reais, mas funções podem capturar variáveis do escopo pai via subshells e eval. Demonstre o padrão com variável capturada.",
-          "en": "Bash has no real closures, but functions can capture parent scope variables via subshells and eval. Demonstrate the pattern with a captured variable."
-        },
-        "code": "make_greeter() {\n    local greeting=\"$1\"\n    eval \"$2() { echo \"$greeting, \\$1!\"; }\"\n}\nmake_greeter \"Hello\" say_hello\nsay_hello \"World\""
-      },
-      {
-        "id": "bash-019",
-        "concept": {
-          "pt": "Parâmetros Padrão",
-          "en": "Default Parameters"
-        },
-        "difficulty": "easy",
-        "slot": "fn-default-params",
-        "prompt": {
-          "pt": "Bash simula parâmetros padrão com ${1:-valor}. Se o argumento não for passado, o valor padrão é usado automaticamente.",
-          "en": "Bash simulates default parameters with ${1:-value}. If the argument is not passed, the default value is used automatically."
-        },
-        "code": "greet() {\n    local name=\"${1:-World}\"\n    local greeting=\"${2:-Hello}\"\n    echo \"$greeting, $name!\"\n}\ngreet\ngreet \"Alice\" \"Hi\""
       }
     ]
   },
@@ -3409,20 +871,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "cpp": [
       {
-        "id": "cpp-026",
-        "concept": {
-          "pt": "Criacao de Struct",
-          "en": "Struct Creation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Structs em C++ podem ter constructors e inicializacao designada (C++20). Crie User com constructor e instancie com inicializacao designada.",
-          "en": "C++ structs can have constructors and designated initialization (C++20). Create User with a constructor and instantiate with designated init."
-        },
-        "code": "struct User {\n    std::string name;\n    int age;\n};\n\nUser alice{.name = \"Alice\", .age = 30};",
-        "slot": "obj-create"
-      },
-      {
         "id": "cpp-006",
         "concept": {
           "pt": "Struct com Métodos",
@@ -3435,34 +883,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "struct Point {\n    double x, y;\n\n    double distance() const {\n        return std::sqrt(x * x + y * y);\n    }\n};",
         "slot": "obj-methods"
-      },
-      {
-        "id": "cpp-027",
-        "concept": {
-          "pt": "Classe com Interface Virtual",
-          "en": "Virtual Interface Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Interfaces em C++ sao classes com métodos virtuais puros (= 0). Defina Printable com print() e format() virtuais.",
-          "en": "Interfaces in C++ are classes with pure virtual methods (= 0). Define Printable with virtual print() and format()."
-        },
-        "code": "class Printable {\npublic:\n    virtual void print() const = 0;\n    virtual std::string format() const = 0;\n    virtual ~Printable() = default;\n};",
-        "slot": "obj-interface"
-      },
-      {
-        "id": "cpp-028",
-        "concept": {
-          "pt": "Objeto Aninhado",
-          "en": "Nested Object"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Composição em C++ significa um objeto conter outro como membro. Crie Company com um Address embutido como campo.",
-          "en": "Composition in C++ means an object contains another as a member. Create Company with an embedded Address field."
-        },
-        "code": "struct Address {\n    std::string city, state;\n};\n\nstruct Company {\n    std::string name;\n    Address address;\n};",
-        "slot": "obj-nested"
       }
     ],
     "csharp": [
@@ -3523,79 +943,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "var city = user?.Address?.City ?? \"Unknown\";"
       }
     ],
-    "javascript": [
-      {
-        "id": "js-008",
-        "concept": {
-          "pt": "Operador de Espalhamento",
-          "en": "Spread Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O spread operator ({...obj}) copia todas as propriedades de um objeto pra outro. Crie \"merged\" juntando \"defaults\" e \"overrides\": as propriedades de \"overrides\" têm prioridade e sobrescrevem as de \"defaults\".",
-          "en": "The spread operator ({...obj}) copies all properties from one object to another. Create \"merged\" by combining \"defaults\" and \"overrides\": properties with the same name in \"overrides\" should take priority, overwriting those from \"defaults\"."
-        },
-        "code": "const merged = { ...defaults, ...overrides };",
-        "slot": "obj-create"
-      },
-      {
-        "id": "js-028",
-        "concept": {
-          "pt": "Métodos de Objeto",
-          "en": "Object Methods"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Objetos podem ter métodos -- funções definidas como propriedades. Crie um objeto calculator com um método add que soma dois números.",
-          "en": "Objects can have methods -- functions defined as properties. Create a calculator object with an add method that sums two numbers."
-        },
-        "code": "const calculator = {\n  add(a, b) {\n    return a + b;\n  },\n};",
-        "slot": "obj-methods"
-      },
-      {
-        "id": "js-009",
-        "concept": {
-          "pt": "Encadeamento Opcional",
-          "en": "Optional Chaining"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Se você acessar user.address.city e \"address\" for null, o JS estoura um TypeError. Use optional chaining (?.) em cada nível pra acessar de forma segura e o nullish coalescing (??) pra retornar \"Unknown\" quando qualquer parte for null ou undefined.",
-          "en": "When accessing user.address.city, if \"address\" is null JavaScript throws a TypeError. Use optional chaining (?.) at each level for safe access and the nullish coalescing operator (??) to return \"Unknown\" when any part is null or undefined."
-        },
-        "code": "const city = user?.address?.city ?? 'Unknown';",
-        "slot": "obj-nested"
-      }
-    ],
     "typescript": [
-      {
-        "id": "ts-030",
-        "concept": {
-          "pt": "Criação de Objeto",
-          "en": "Object Creation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Crie um objeto que satisfaz uma interface. O TypeScript valida que todas as propriedades obrigatórias estão presentes.",
-          "en": "Create an object that satisfies an interface. TypeScript validates that all required properties are present."
-        },
-        "code": "const user: User = {\n  name: \"Alice\",\n  age: 30,\n  email: \"alice@example.com\",\n};",
-        "slot": "obj-create"
-      },
-      {
-        "id": "ts-031",
-        "concept": {
-          "pt": "Métodos de Objeto",
-          "en": "Object Methods"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Objetos com métodos podem ser tipados via interface. Defina uma interface com métodos e crie um objeto que a implemente.",
-          "en": "Objects with methods can be typed via interface. Define an interface with methods and create an object that implements it."
-        },
-        "code": "interface Calculator {\n  add(a: number, b: number): number;\n}\nconst calc: Calculator = {\n  add: (a, b) => a + b,\n};",
-        "slot": "obj-methods"
-      },
       {
         "id": "ts-001",
         "concept": {
@@ -3609,109 +957,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "interface User {\n  name: string;\n  age: number;\n  email?: string;\n}",
         "slot": "obj-interface"
-      },
-      {
-        "id": "ts-032",
-        "concept": {
-          "pt": "Objeto Aninhado",
-          "en": "Nested Object"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Tipos aninhados descrevem objetos dentro de objetos. Use optional chaining pra acessar propriedades profundas com segurança.",
-          "en": "Nested types describe objects within objects. Use optional chaining to safely access deep properties."
-        },
-        "code": "interface Address {\n  city: string;\n  zip: string;\n}\ninterface Person {\n  name: string;\n  address?: Address;\n}",
-        "slot": "obj-nested"
-      }
-    ],
-    "python": [
-      {
-        "id": "py-028",
-        "concept": {
-          "pt": "Criação de Dicionário",
-          "en": "Dictionary Creation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Dicionários são a estrutura equivalente a objetos em Python. Crie um dicionário com informações de um usuário.",
-          "en": "Dictionaries are Python's equivalent to objects. Create a dictionary with user information."
-        },
-        "code": "user = {\n    \"name\": \"Alice\",\n    \"age\": 30,\n    \"email\": \"alice@example.com\",\n}",
-        "slot": "obj-create"
-      },
-      {
-        "id": "py-029",
-        "concept": {
-          "pt": "Métodos de Dicionário",
-          "en": "Dictionary Methods"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Dicionários têm métodos úteis como get(), keys(), values() e items(). Use get() com valor padrão pra acessar chaves com segurança.",
-          "en": "Dictionaries have useful methods like get(), keys(), values(), and items(). Use get() with a default value to safely access keys."
-        },
-        "code": "email = user.get(\"email\", \"N/A\")\nkeys = list(user.keys())",
-        "slot": "obj-methods"
-      },
-      {
-        "id": "py-030",
-        "concept": {
-          "pt": "Protocolo (Interface)",
-          "en": "Protocol (Interface)"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Protocol (typing) define uma interface estrutural sem herança. Qualquer classe com os métodos certos satisfaz o protocolo automaticamente.",
-          "en": "Protocol (typing) defines a structural interface without inheritance. Any class with the right methods satisfies the protocol automatically."
-        },
-        "code": "from typing import Protocol\n\nclass Drawable(Protocol):\n    def draw(self) -> None: ...",
-        "slot": "obj-interface"
-      },
-      {
-        "id": "py-031",
-        "concept": {
-          "pt": "Dicionário Aninhado",
-          "en": "Nested Dictionary"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Dicionários podem conter outros dicionários. Acesse valores aninhados de forma segura com get() encadeado.",
-          "en": "Dictionaries can contain other dictionaries. Access nested values safely with chained get() calls."
-        },
-        "code": "config = {\n    \"db\": {\"host\": \"localhost\", \"port\": 5432},\n    \"cache\": {\"ttl\": 300},\n}\nhost = config.get(\"db\", {}).get(\"host\", \"unknown\")",
-        "slot": "obj-nested"
       }
     ],
     "java": [
-      {
-        "id": "java-007",
-        "concept": {
-          "pt": "Registro",
-          "en": "Record"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Record (Java 14+) e uma classe imutavel de dados com constructor, getters, equals e toString gerados automaticamente. Declare Point com coordenadas x e y, e adicione um método distance() que calcula a distancia ate a origem.",
-          "en": "Records (Java 14+) are immutable data classes with constructor, getters, equals, and toString generated automatically. Declare Point with x and y coordinates, and add an instance method distance() calculating the distance from the origin."
-        },
-        "code": "public record Point(double x, double y) {\n    public double distance() {\n        return Math.sqrt(x * x + y * y);\n    }\n}",
-        "slot": "obj-create"
-      },
-      {
-        "id": "java-029",
-        "concept": {
-          "pt": "Métodos de Objeto",
-          "en": "Object Methods"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Métodos de instancia operam sobre o estado do objeto. Adicione getters e um método toString ao User.",
-          "en": "Instance methods operate on the object's state. Add getters and a toString method to User."
-        },
-        "code": "public String getName() { return name; }\npublic int getAge() { return age; }\n\n@Override\npublic String toString() {\n    return name + \" (\" + age + \")\";\n}",
-        "slot": "obj-methods"
-      },
       {
         "id": "java-002",
         "concept": {
@@ -3725,37 +973,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "public interface Printable {\n    void print();\n    default String format() {\n        return toString();\n    }\n}",
         "slot": "obj-interface"
-      },
-      {
-        "id": "java-030",
-        "concept": {
-          "pt": "Objeto Aninhado",
-          "en": "Nested Object"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Objetos aninhados em Java sao composição -- uma classe contem outra como campo. Crie Company com um campo Address.",
-          "en": "Nested objects in Java use composition -- one class contains another as a field. Create Company with an Address field."
-        },
-        "code": "public class Company {\n    private String name;\n    private Address address;\n\n    public record Address(String city, String state) {}\n}",
-        "slot": "obj-nested"
       }
     ],
     "rust": [
-      {
-        "id": "rs-028",
-        "concept": {
-          "pt": "Criação de Struct",
-          "en": "Struct Creation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Structs em Rust são criadas com a sintaxe NomeStruct { campo: valor }. Defina e instancie uma struct simples.",
-          "en": "Rust structs are created with NomeStruct { field: value } syntax. Define and instantiate a simple struct."
-        },
-        "code": "struct Car {\n    brand: String,\n    speed: u32,\n}\n\nlet car = Car {\n    brand: String::from(\"Tesla\"),\n    speed: 100,\n};\nprintln!(\"{}: {} km/h\", car.brand, car.speed);",
-        "slot": "obj-create"
-      },
       {
         "id": "rs-006",
         "concept": {
@@ -3769,34 +989,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "struct Rectangle {\n    width: f64,\n    height: f64,\n}\n\nimpl Rectangle {\n    fn area(&self) -> f64 {\n        self.width * self.height\n    }\n}",
         "slot": "obj-methods"
-      },
-      {
-        "id": "rs-029",
-        "concept": {
-          "pt": "Trait (Interface)",
-          "en": "Trait (Interface)"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Traits em Rust definem interfaces com métodos abstratos e implementações padrão. Defina um trait com os dois tipos de método.",
-          "en": "Rust traits define interfaces with abstract methods and default implementations. Define a trait with both types of methods."
-        },
-        "code": "trait Drawable {\n    fn draw(&self);\n    fn description(&self) -> String {\n        String::from(\"Drawable element\")\n    }\n}\n\nstruct Circle { radius: f64 }\nimpl Drawable for Circle {\n    fn draw(&self) { println!(\"Drawing circle r={}\", self.radius); }\n}",
-        "slot": "obj-interface"
-      },
-      {
-        "id": "rs-030",
-        "concept": {
-          "pt": "Struct Aninhada",
-          "en": "Nested Struct"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Structs podem conter outras structs como campos, criando estruturas aninhadas. Componha tipos pra modelar dados complexos.",
-          "en": "Structs can contain other structs as fields, creating nested structures. Compose types to model complex data."
-        },
-        "code": "struct Address {\n    city: String,\n    zip: String,\n}\n\nstruct User {\n    name: String,\n    address: Address,\n}\n\nlet user = User {\n    name: String::from(\"Ana\"),\n    address: Address { city: String::from(\"SP\"), zip: String::from(\"01000\") },\n};",
-        "slot": "obj-nested"
       }
     ],
     "go": [
@@ -3815,20 +1007,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "obj-create"
       },
       {
-        "id": "go-028",
-        "concept": {
-          "pt": "Método em Struct",
-          "en": "Struct Method"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Go, métodos sao funções com um receiver. Adicione um método FullName ao struct Person que concatena FirstName e LastName.",
-          "en": "In Go, methods are functions with a receiver. Add a FullName method to the Person struct that concatenates FirstName and LastName."
-        },
-        "code": "type Person struct {\n    FirstName, LastName string\n}\n\nfunc (p Person) FullName() string {\n    return p.FirstName + \" \" + p.LastName\n}",
-        "slot": "obj-methods"
-      },
-      {
         "id": "go-003",
         "concept": {
           "pt": "Interface",
@@ -3841,136 +1019,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "type Reader interface {\n    Read(p []byte) (n int, err error)\n}",
         "slot": "obj-interface"
-      },
-      {
-        "id": "go-029",
-        "concept": {
-          "pt": "Struct Aninhado",
-          "en": "Nested Struct"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go suporta composição com embedding -- o struct interno \"promove\" seus campos pro externo. Crie Address e Company com Address embutido.",
-          "en": "Go supports composition via embedding -- the inner struct promotes its fields to the outer. Create Address and Company with embedded Address."
-        },
-        "code": "type Address struct {\n    City, State string\n}\n\ntype Company struct {\n    Name string\n    Address\n}",
-        "slot": "obj-nested"
-      }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-029",
-        "concept": {
-          "pt": "Criação de Objeto",
-          "en": "Object Creation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Kotlin não existe \"new\". Crie uma classe simples com propriedades, instancie e acesse seus campos.",
-          "en": "In Kotlin there is no \"new\" keyword. Create a simple class with properties, instantiate it and access its fields."
-        },
-        "code": "class Car(val brand: String, var speed: Int)\n\nval car = Car(\"Tesla\", 0)\ncar.speed = 100\nprintln(\"${car.brand}: ${car.speed} km/h\")",
-        "slot": "obj-create"
-      },
-      {
-        "id": "kotlin-008",
-        "concept": {
-          "pt": "Objeto Companheiro",
-          "en": "Companion Object"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Companion objects fazem o papel de membros estáticos em Kotlin. Monte o padrão Singleton em ApiClient: constructor privado, instância nullable no companion object e getInstance que cria a instância de forma lazy com also.",
-          "en": "Companion objects are Kotlin's equivalent of static members. Implement the Singleton pattern in ApiClient: private constructor, nullable instance in the companion object and getInstance that lazily creates the instance with also."
-        },
-        "code": "class ApiClient private constructor(val baseUrl: String) {\n    companion object {\n        private var instance: ApiClient? = null\n        fun getInstance(url: String): ApiClient =\n            instance ?: ApiClient(url).also { instance = it }\n    }\n}",
-        "slot": "obj-methods"
-      },
-      {
-        "id": "kotlin-030",
-        "concept": {
-          "pt": "Interface",
-          "en": "Interface"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Interfaces em Kotlin podem ter métodos abstratos e implementações padrão. Defina uma interface com ambos e implemente numa classe.",
-          "en": "Kotlin interfaces can have abstract methods and default implementations. Define an interface with both and implement it in a class."
-        },
-        "code": "interface Drawable {\n    fun draw()\n    fun description() = \"Drawable element\"\n}\n\nclass Circle(val r: Double) : Drawable {\n    override fun draw() = println(\"Drawing circle r=$r\")\n}",
-        "slot": "obj-interface"
-      },
-      {
-        "id": "kotlin-031",
-        "concept": {
-          "pt": "Objeto Aninhado",
-          "en": "Nested Object"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Objetos podem ser aninhados dentro de classes em Kotlin. Use um map mutável dentro de uma classe pra criar uma estrutura aninhada de configuração.",
-          "en": "Objects can be nested within classes in Kotlin. Use a mutable map inside a class to create a nested configuration structure."
-        },
-        "code": "class Config(val env: String) {\n    val db = Database()\n    inner class Database {\n        var host = \"localhost\"\n        var port = if (env == \"prod\") 5432 else 5433\n    }\n}",
-        "slot": "obj-nested"
-      }
-    ],
-    "scala": [
-      {
-        "id": "scala-027",
-        "concept": {
-          "pt": "Objeto Companion",
-          "en": "Companion Object"
-        },
-        "difficulty": "medium",
-        "slot": "obj-create",
-        "prompt": {
-          "pt": "Companion objects em Scala são o equivalente a membros estáticos. Crie Circle com um companion object que tem um factory method apply.",
-          "en": "Companion objects in Scala are the equivalent of static members. Create Circle with a companion object that has a factory method apply."
-        },
-        "code": "class Circle(val radius: Double) {\n  def area: Double = math.Pi * radius * radius\n}\n\nobject Circle {\n  def apply(r: Double) = new Circle(r)\n}\n\nval c = Circle(5.0)"
-      },
-      {
-        "id": "scala-028",
-        "concept": {
-          "pt": "Métodos de Objeto",
-          "en": "Object Methods"
-        },
-        "difficulty": "medium",
-        "slot": "obj-methods",
-        "prompt": {
-          "pt": "Objetos em Scala podem ter métodos definidos diretamente. Crie um object MathUtils com métodos utilitários pra cálculos comuns.",
-          "en": "Scala objects can have methods defined directly. Create a MathUtils object with utility methods for common calculations."
-        },
-        "code": "object MathUtils {\n  def square(x: Double): Double = x * x\n  def clamp(v: Double, lo: Double, hi: Double): Double =\n    math.max(lo, math.min(hi, v))\n}\n\nprintln(MathUtils.square(4))"
-      },
-      {
-        "id": "scala-029",
-        "concept": {
-          "pt": "Trait como Interface",
-          "en": "Trait as Interface"
-        },
-        "difficulty": "medium",
-        "slot": "obj-interface",
-        "prompt": {
-          "pt": "Traits em Scala funcionam como interfaces, permitindo que múltiplas classes implementem o mesmo contrato. Defina Drawable e implemente em duas classes.",
-          "en": "Scala traits work as interfaces, letting multiple classes implement the same contract. Define Drawable and implement it in two classes."
-        },
-        "code": "trait Drawable {\n  def draw(): String\n}\n\nclass Square extends Drawable {\n  def draw() = \"[Square]\"\n}\n\nclass Star extends Drawable {\n  def draw() = \"*Star*\"\n}"
-      },
-      {
-        "id": "scala-030",
-        "concept": {
-          "pt": "Objeto Aninhado",
-          "en": "Nested Object"
-        },
-        "difficulty": "medium",
-        "slot": "obj-nested",
-        "prompt": {
-          "pt": "Case classes podem ser aninhadas pra modelar dados compostos. Crie Address dentro de Company pra representar uma estrutura hierárquica.",
-          "en": "Case classes can be nested to model composite data. Create Address inside Company to represent a hierarchical structure."
-        },
-        "code": "case class Address(city: String, zip: String)\ncase class Company(name: String, hq: Address)\n\nval co = Company(\"Acme\", Address(\"SP\", \"01000\"))\nprintln(s\"${co.name} in ${co.hq.city}\")"
       }
     ],
     "swift": [
@@ -3987,48 +1035,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "struct Point {\n    var x: Double\n    var y: Double\n    func distance(to other: Point) -> Double {\n        let dx = x - other.x\n        let dy = y - other.y\n        return (dx * dx + dy * dy).squareRoot()\n    }\n}",
         "slot": "obj-create"
-      },
-      {
-        "id": "swift-026",
-        "concept": {
-          "pt": "Métodos de Struct",
-          "en": "Struct Methods"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Structs podem ter métodos. Use \"mutating\" pra métodos que alteram propriedades do value type.",
-          "en": "Structs can have methods. Use \"mutating\" for methods that change properties of the value type."
-        },
-        "code": "struct Counter {\n    var count = 0\n    mutating func increment() { count += 1 }\n    func display() -> String { \"Count: \\(count)\" }\n}\n\nvar c = Counter()\nc.increment()\nprint(c.display())",
-        "slot": "obj-methods"
-      },
-      {
-        "id": "swift-009",
-        "concept": {
-          "pt": "Protocolo e Extensão",
-          "en": "Protocol and Extension"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Protocols definem interfaces; extensions adicionam funcionalidade sem mexer no tipo original. Implemente Describable em Circle com a computed property \"description\", e depois adicione \"area\" via extension separada.",
-          "en": "Protocols define interfaces; extensions add functionality without modifying the original type. Implement Describable on Circle with the \"description\" computed property, then add the \"area\" property via a separate extension."
-        },
-        "code": "protocol Describable {\n    var description: String { get }\n}\n\nstruct Circle: Describable {\n    var radius: Double\n    var description: String {\n        return \"Circle with radius \\(radius)\"\n    }\n}\n\nextension Circle {\n    var area: Double { .pi * radius * radius }\n}",
-        "slot": "obj-interface"
-      },
-      {
-        "id": "swift-027",
-        "concept": {
-          "pt": "Struct Aninhada",
-          "en": "Nested Struct"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Structs podem ser aninhadas dentro de outras structs ou classes. Use tipos aninhados pra organizar modelos relacionados.",
-          "en": "Structs can be nested inside other structs or classes. Use nested types to organize related models."
-        },
-        "code": "struct Company {\n    let name: String\n    var ceo: Person\n\n    struct Person {\n        let name: String\n        let role: String\n    }\n}\n\nlet co = Company(name: \"Acme\", ceo: .init(name: \"Ana\", role: \"CEO\"))",
-        "slot": "obj-nested"
       }
     ],
     "ruby": [
@@ -4045,48 +1051,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Ruby hashes are dictionaries created with the {key: value} syntax. Declare a person hash with symbols, access a specific field by key and use .each with a two-parameter block to iterate all pairs."
         },
         "code": "person = { name: \"Alice\", age: 30, city: \"SP\" }\nputs person[:name]\nperson.each { |k, v| puts \"#{k}: #{v}\" }"
-      },
-      {
-        "id": "ruby-026",
-        "concept": {
-          "pt": "Métodos de Hash",
-          "en": "Hash Methods"
-        },
-        "difficulty": "medium",
-        "slot": "obj-methods",
-        "prompt": {
-          "pt": "Hashes em Ruby têm métodos ricos pra transformar e acessar dados. Use .merge, .select e .transform_values pra manipular um hash.",
-          "en": "Ruby hashes have rich methods to transform and access data. Use .merge, .select and .transform_values to manipulate a hash."
-        },
-        "code": "prices = { apple: 1.5, banana: 0.8, mango: 3.0 }\nexpensive = prices.select { |_, v| v > 1.0 }\ndoubled = prices.transform_values { |v| v * 2 }\nputs expensive\nputs doubled"
-      },
-      {
-        "id": "ruby-007",
-        "concept": {
-          "pt": "Módulo e Mixin",
-          "en": "Module and Mixin"
-        },
-        "difficulty": "medium",
-        "slot": "obj-interface",
-        "prompt": {
-          "pt": "Modules dão namespacing e reuso de código via include (mixin). Crie Serializable com o método to_json usando instance_variables e inclua em User -- as instâncias de User ganham to_json sem precisar de herança.",
-          "en": "Modules provide namespacing and code reuse via include (mixin). Create Serializable with a to_json method that uses instance_variables and include it in User -- User instances gain to_json without inheritance."
-        },
-        "code": "module Serializable\n  def to_json\n    instance_variables.map { |v|\n      \"\\\"#{v.to_s.delete('@')}\\\": \\\"#{instance_variable_get(v)}\\\"\"\n    }.join(\", \")\n  end\nend\n\nclass User\n  include Serializable\n  attr_accessor :name\nend"
-      },
-      {
-        "id": "ruby-027",
-        "concept": {
-          "pt": "Hash Aninhado",
-          "en": "Nested Hash"
-        },
-        "difficulty": "medium",
-        "slot": "obj-nested",
-        "prompt": {
-          "pt": "Hashes podem ser aninhados pra representar dados complexos. Crie uma estrutura de empresa com endereço aninhado e acesse campos com dig.",
-          "en": "Hashes can be nested to represent complex data. Create a company structure with nested address and access fields with dig."
-        },
-        "code": "company = {\n  name: \"Acme\",\n  address: { city: \"SP\", zip: \"01000\" }\n}\nputs company[:name]\nputs company.dig(:address, :city)"
       }
     ],
     "lua": [
@@ -4103,78 +1067,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Tables are Lua's only data structure -- used as arrays, dictionaries and objects. Create the \"person\" table with key-value fields and access name and age using dot notation."
         },
         "code": "local person = {\n  name = \"Alice\",\n  age  = 30,\n  city = \"Brasilia\",\n}\nprint(person.name, person.age)"
-      },
-      {
-        "id": "lua-009",
-        "concept": {
-          "pt": "Padrão de Módulo",
-          "en": "Module Pattern"
-        },
-        "difficulty": "hard",
-        "slot": "obj-methods",
-        "prompt": {
-          "pt": "O padrão de módulo em Lua usa uma tabela local M pra encapsular estado e expor só a API pública. Defina uma função privada (local) e duas públicas em M, e retorne M no final pra funcionar como módulo.",
-          "en": "Lua's module pattern uses a local table M to encapsulate state and expose only the public API. Define a private (local) function and two public ones in M, then return M at the end for use as a module."
-        },
-        "code": "local M = {}\n\nlocal function private_helper(x)\n  return x * x\nend\n\nfunction M.compute(n)\n  return private_helper(n) + n\nend\n\nfunction M.greet(name)\n  return \"Hello from module, \" .. name\nend\n\nreturn M"
-      },
-      {
-        "id": "lua-027",
-        "concept": {
-          "pt": "Interface com Metatabela",
-          "en": "Interface with Metatable"
-        },
-        "difficulty": "medium",
-        "slot": "obj-interface",
-        "prompt": {
-          "pt": "Lua simula interfaces com tabelas que definem contratos. Crie uma \"interface\" Drawable e verifique se um objeto implementa os métodos exigidos.",
-          "en": "Lua simulates interfaces with tables that define contracts. Create a Drawable \"interface\" and verify that an object implements the required methods."
-        },
-        "code": "local function implements(obj, interface)\n  for _, method in ipairs(interface) do\n    if type(obj[method]) ~= \"function\" then return false end\n  end\n  return true\nend\n\nlocal Drawable = {\"draw\", \"color\"}\nlocal shape = {draw = function() end, color = function() return \"red\" end}\nprint(implements(shape, Drawable))"
-      },
-      {
-        "id": "lua-028",
-        "concept": {
-          "pt": "Tabela Aninhada",
-          "en": "Nested Table"
-        },
-        "difficulty": "medium",
-        "slot": "obj-nested",
-        "prompt": {
-          "pt": "Tabelas podem ser aninhadas pra modelar dados hierárquicos. Crie uma empresa com endereço aninhado e acesse campos encadeando notação ponto.",
-          "en": "Tables can be nested to model hierarchical data. Create a company with nested address and access fields by chaining dot notation."
-        },
-        "code": "local company = {\n  name = \"Acme\",\n  address = { city = \"SP\", zip = \"01000\" },\n}\nprint(company.name)\nprint(company.address.city)"
-      }
-    ],
-    "bash": [
-      {
-        "id": "bash-023",
-        "concept": {
-          "pt": "Array Associativo",
-          "en": "Associative Array"
-        },
-        "difficulty": "medium",
-        "slot": "obj-create",
-        "prompt": {
-          "pt": "Arrays associativos (declare -A) funcionam como objetos/dicionários no Bash. Crie um, adicione campos e itere sobre as chaves.",
-          "en": "Associative arrays (declare -A) work as objects/dictionaries in Bash. Create one, add fields and iterate over keys."
-        },
-        "code": "declare -A person\nperson[name]=\"Alice\"\nperson[age]=30\nperson[city]=\"SP\"\nfor key in \"${!person[@]}\"; do\n    echo \"$key: ${person[$key]}\"\ndone"
-      },
-      {
-        "id": "bash-024",
-        "concept": {
-          "pt": "Funções sobre Dados",
-          "en": "Functions on Data"
-        },
-        "difficulty": "medium",
-        "slot": "obj-methods",
-        "prompt": {
-          "pt": "Bash simula métodos com funções que operam em arrays associativos passados por referência (declare -n). Crie funções que leem e modificam dados.",
-          "en": "Bash simulates methods with functions that operate on associative arrays passed by reference (declare -n). Create functions that read and modify data."
-        },
-        "code": "get_field() {\n    declare -n ref=\"$1\"\n    echo \"${ref[$2]}\"\n}\ndeclare -A user\nuser[name]=\"Alice\"\nuser[role]=\"admin\"\nget_field user name\nget_field user role"
       }
     ]
   },
@@ -4225,34 +1117,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "cpp": [
       {
-        "id": "cpp-023",
-        "concept": {
-          "pt": "For Classico",
-          "en": "Classic For"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for classico em C++ tem inicializador, condicao e incremento. Use pra imprimir de 0 a 4 com std::cout.",
-          "en": "The classic for loop in C++ has initializer, condition, and increment. Use it to print 0 through 4 with std::cout."
-        },
-        "code": "for (int i = 0; i < 5; i++) {\n    std::cout << i << std::endl;\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "cpp-024",
-        "concept": {
-          "pt": "While",
-          "en": "While"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "While em C++ repete enquanto a condicao for verdadeira. Use pra ler linhas de std::cin ate EOF.",
-          "en": "While in C++ repeats while the condition is true. Use it to read lines from std::cin until EOF."
-        },
-        "code": "std::string line;\nwhile (std::getline(std::cin, line)) {\n    std::cout << line << std::endl;\n}",
-        "slot": "loop-while"
-      },
-      {
         "id": "cpp-004",
         "concept": {
           "pt": "For Baseado em Intervalo",
@@ -4265,34 +1129,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "std::vector<int> nums = {1, 2, 3, 4, 5};\nfor (const auto& n : nums) {\n    std::cout << n << \" \";\n}",
         "slot": "loop-foreach"
-      },
-      {
-        "id": "cpp-025",
-        "concept": {
-          "pt": "Filtrar com Algorithm",
-          "en": "Filter with Algorithm"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "C++20 introduziu std::ranges pra operações funcionais em containers. Use ranges::copy_if pra filtrar elementos pares de um vector.",
-          "en": "C++20 introduced std::ranges for functional operations on containers. Use ranges::copy_if to filter even elements from a vector."
-        },
-        "code": "std::vector<int> nums = {1, 2, 3, 4, 5, 6};\nstd::vector<int> evens;\nstd::ranges::copy_if(nums, std::back_inserter(evens),\n    [](int n) { return n % 2 == 0; });",
-        "slot": "loop-filter"
-      },
-      {
-        "id": "cpp-009",
-        "concept": {
-          "pt": "Vinculos Estruturados",
-          "en": "Structured Bindings"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Structured bindings (C++17) desestruturaram pares e tuplas direto. Quando for iterar um std::map, use \"const auto& [name, score]\" pra pegar chave e valor sem .first/.second -- fica muito mais legivel e menos propenso a erro.",
-          "en": "Structured bindings (C++17) destructure pairs and tuples directly. When iterating a std::map, use \"const auto& [name, score]\" to access key and value without .first/.second -- more readable and less error-prone."
-        },
-        "code": "std::map<std::string, int> scores = {{\"Alice\", 95}};\nfor (const auto& [name, score] : scores) {\n    std::cout << name << \": \" << score << \"\\n\";\n}",
-        "slot": "loop-range"
       }
     ],
     "csharp": [
@@ -4369,48 +1205,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "javascript": [
       {
-        "id": "js-024",
-        "concept": {
-          "pt": "For Clássico",
-          "en": "Classic For Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for clássico usa inicialização, condição e incremento pra iterar. Imprima os números de 0 a 4 com um loop for.",
-          "en": "The classic for loop uses initialization, condition, and increment to iterate. Print numbers from 0 to 4 with a for loop."
-        },
-        "code": "for (let i = 0; i < 5; i++) {\n  console.log(i);\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "js-025",
-        "concept": {
-          "pt": "While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O while executa o bloco enquanto a condição for verdadeira. Conte de 1 até que o valor ultrapasse 100, dobrando a cada iteração.",
-          "en": "The while loop runs the block as long as the condition is true. Count from 1 until the value exceeds 100, doubling each iteration."
-        },
-        "code": "let n = 1;\nwhile (n <= 100) {\n  n *= 2;\n}",
-        "slot": "loop-while"
-      },
-      {
-        "id": "js-026",
-        "concept": {
-          "pt": "ForEach",
-          "en": "ForEach"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "forEach executa uma função pra cada elemento do array sem retornar um novo array. Imprima cada fruta da lista.",
-          "en": "forEach runs a function for each array element without returning a new array. Print each fruit from the list."
-        },
-        "code": "const fruits = [\"apple\", \"banana\", \"cherry\"];\nfruits.forEach(fruit => console.log(fruit));",
-        "slot": "loop-foreach"
-      },
-      {
         "id": "js-006",
         "concept": {
           "pt": "Métodos de Array",
@@ -4423,151 +1217,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "const result = users\n  .filter(u => u.active)\n  .map(u => u.name)\n  .sort();",
         "slot": "loop-filter"
-      },
-      {
-        "id": "js-027",
-        "concept": {
-          "pt": "Iteração com Intervalo",
-          "en": "Range Iteration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "JavaScript não tem range nativo, mas Array.from cria uma sequência numérica. Gere um array de 0 a 9 usando Array.from com um callback de mapeamento.",
-          "en": "JavaScript has no native range, but Array.from creates numeric sequences. Generate an array from 0 to 9 using Array.from with a mapping callback."
-        },
-        "code": "const range = Array.from({ length: 10 }, (_, i) => i);",
-        "slot": "loop-range"
-      }
-    ],
-    "typescript": [
-      {
-        "id": "ts-025",
-        "concept": {
-          "pt": "For Clássico",
-          "en": "Classic For Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for clássico funciona igual ao JS, mas variáveis de controle podem ser tipadas. Itere sobre um array de números.",
-          "en": "The classic for loop works like JS, but control variables can be typed. Iterate over a number array."
-        },
-        "code": "for (let i: number = 0; i < items.length; i++) {\n  console.log(items[i]);\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "ts-026",
-        "concept": {
-          "pt": "While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O while executa enquanto a condição é verdadeira. Use-o pra processar uma fila de tarefas até que fique vazia.",
-          "en": "The while loop runs as long as the condition is true. Use it to process a task queue until it is empty."
-        },
-        "code": "const queue: string[] = [\"a\", \"b\", \"c\"];\nwhile (queue.length > 0) {\n  const item = queue.shift()!;\n  console.log(item);\n}",
-        "slot": "loop-while"
-      },
-      {
-        "id": "ts-027",
-        "concept": {
-          "pt": "ForEach Tipado",
-          "en": "Typed ForEach"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "forEach em arrays tipados infere automaticamente o tipo do elemento no callback. Itere sobre um array de strings.",
-          "en": "forEach on typed arrays automatically infers the element type in the callback. Iterate over a string array."
-        },
-        "code": "const names: string[] = [\"Alice\", \"Bob\"];\nnames.forEach((name: string) => console.log(name));",
-        "slot": "loop-foreach"
-      },
-      {
-        "id": "ts-028",
-        "concept": {
-          "pt": "Filter Tipado",
-          "en": "Typed Filter"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "filter em TypeScript preserva o tipo do array. Filtre uma lista tipada de usuários pra manter só os ativos.",
-          "en": "filter in TypeScript preserves the array type. Filter a typed user list to keep only the active ones."
-        },
-        "code": "const active = users.filter(\n  (u: { name: string; active: boolean }) => u.active\n);",
-        "slot": "loop-filter"
-      },
-      {
-        "id": "ts-029",
-        "concept": {
-          "pt": "Iteração com Range",
-          "en": "Range Iteration"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Assim como em JS, TypeScript não tem range nativo. Use Array.from com tipagem pra criar uma sequência numérica.",
-          "en": "Like JS, TypeScript has no native range. Use Array.from with typing to create a numeric sequence."
-        },
-        "code": "const range: number[] = Array.from({ length: 5 }, (_, i) => i);",
-        "slot": "loop-range"
       }
     ],
     "python": [
-      {
-        "id": "py-024",
-        "concept": {
-          "pt": "For com Range",
-          "en": "For with Range"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for com range é o loop mais básico do Python. Itere de 0 a 4 e imprima cada número.",
-          "en": "The for with range is Python's most basic loop. Iterate from 0 to 4 and print each number."
-        },
-        "code": "for i in range(5):\n    print(i)",
-        "slot": "loop-for"
-      },
-      {
-        "id": "py-025",
-        "concept": {
-          "pt": "While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O while executa enquanto a condição for verdadeira. Conte de 1 até ultrapassar 100, dobrando a cada iteração.",
-          "en": "The while loop runs as long as the condition is true. Count from 1 until exceeding 100, doubling each iteration."
-        },
-        "code": "n = 1\nwhile n <= 100:\n    n *= 2",
-        "slot": "loop-while"
-      },
-      {
-        "id": "py-026",
-        "concept": {
-          "pt": "For Each",
-          "en": "For Each"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Python, o for itera diretamente sobre os elementos de uma coleção. Percorra uma lista de frutas e imprima cada uma.",
-          "en": "In Python, for iterates directly over the elements of a collection. Loop through a list of fruits and print each one."
-        },
-        "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits:\n    print(fruit)",
-        "slot": "loop-foreach"
-      },
-      {
-        "id": "py-027",
-        "concept": {
-          "pt": "Filter",
-          "en": "Filter"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "List comprehension com condição é o jeito pythônico de filtrar listas. Filtre apenas os números pares de uma lista.",
-          "en": "List comprehension with a condition is the Pythonic way to filter lists. Filter only the even numbers from a list."
-        },
-        "code": "evens = [x for x in numbers if x % 2 == 0]",
-        "slot": "loop-filter"
-      },
       {
         "id": "py-001",
         "concept": {
@@ -4585,48 +1237,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "java": [
       {
-        "id": "java-025",
-        "concept": {
-          "pt": "For Classico",
-          "en": "Classic For"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for classico em Java tem inicializador, condicao e incremento separados por \";\". Use pra imprimir de 0 a 4.",
-          "en": "The classic for loop in Java has initializer, condition, and increment separated by \";\". Use it to print 0 through 4."
-        },
-        "code": "for (int i = 0; i < 5; i++) {\n    System.out.println(i);\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "java-026",
-        "concept": {
-          "pt": "While",
-          "en": "While"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "While em Java repete enquanto a condicao for verdadeira. Use pra ler linhas de um BufferedReader ate retornar null.",
-          "en": "While in Java repeats while the condition is true. Use it to read lines from a BufferedReader until it returns null."
-        },
-        "code": "String line;\nwhile ((line = reader.readLine()) != null) {\n    System.out.println(line);\n}",
-        "slot": "loop-while"
-      },
-      {
-        "id": "java-027",
-        "concept": {
-          "pt": "For-Each",
-          "en": "For-Each"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "For-each em Java itera sobre qualquer Iterable sem lidar com indice. Percorra uma lista de strings e imprima cada uma.",
-          "en": "For-each in Java iterates over any Iterable without index management. Loop through a list of strings and print each one."
-        },
-        "code": "List<String> names = List.of(\"Alice\", \"Bob\", \"Carol\");\nfor (String name : names) {\n    System.out.println(name);\n}",
-        "slot": "loop-foreach"
-      },
-      {
         "id": "java-004",
         "concept": {
           "pt": "API de Fluxo",
@@ -4639,267 +1249,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "List<String> names = users.stream()\n    .filter(u -> u.getAge() > 18)\n    .map(User::getName)\n    .sorted()\n    .collect(Collectors.toList());",
         "slot": "loop-filter"
-      },
-      {
-        "id": "java-028",
-        "concept": {
-          "pt": "IntStream Range",
-          "en": "IntStream Range"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "IntStream.range gera uma sequencia de inteiros como stream. Use pra gerar numeros de 1 a 10 e colete numa lista.",
-          "en": "IntStream.range generates a sequence of integers as a stream. Use it to generate numbers from 1 to 10 and collect into a list."
-        },
-        "code": "List<Integer> nums = IntStream.rangeClosed(1, 10)\n    .boxed()\n    .collect(Collectors.toList());",
-        "slot": "loop-range"
-      }
-    ],
-    "rust": [
-      {
-        "id": "rs-023",
-        "concept": {
-          "pt": "Loop For",
-          "en": "For Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for em Rust itera sobre qualquer tipo que implemente IntoIterator. Use for com range e com referências a Vec.",
-          "en": "Rust for iterates over any type that implements IntoIterator. Use for with a range and with references to a Vec."
-        },
-        "code": "for i in 1..=5 {\n    print!(\"{i} \");\n}\nlet names = vec![\"Ana\", \"Bruno\"];\nfor name in &names {\n    println!(\"{name}\");\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "rs-024",
-        "concept": {
-          "pt": "Loop While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "While repete enquanto a condição for verdadeira. Conte de 1 até 5 usando while com um contador mutável.",
-          "en": "While repeats as long as the condition is true. Count from 1 to 5 using while with a mutable counter."
-        },
-        "code": "let mut i = 1;\nwhile i <= 5 {\n    println!(\"{i}\");\n    i += 1;\n}",
-        "slot": "loop-while"
-      },
-      {
-        "id": "rs-025",
-        "concept": {
-          "pt": "Iterador ForEach",
-          "en": "Iterator ForEach"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": ".iter().for_each() é a alternativa funcional ao for em Rust. Use pra imprimir cada elemento de um vetor.",
-          "en": ".iter().for_each() is the functional alternative to for in Rust. Use it to print each element of a vector."
-        },
-        "code": "let names = vec![\"Ana\", \"Bruno\", \"Clara\"];\nnames.iter().for_each(|name| {\n    println!(\"Olá, {name}!\");\n});",
-        "slot": "loop-foreach"
-      },
-      {
-        "id": "rs-026",
-        "concept": {
-          "pt": "Filter e Map",
-          "en": "Filter and Map"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Iteradores em Rust suportam filter, map e collect pra transformações funcionais. Filtre os pares e dobre cada um.",
-          "en": "Rust iterators support filter, map and collect for functional transformations. Filter the even numbers and double each one."
-        },
-        "code": "let nums = vec![1, 2, 3, 4, 5, 6];\nlet result: Vec<i32> = nums.iter()\n    .filter(|&&n| n % 2 == 0)\n    .map(|&n| n * 2)\n    .collect();\nprintln!(\"{result:?}\");",
-        "slot": "loop-filter"
-      },
-      {
-        "id": "rs-027",
-        "concept": {
-          "pt": "Range",
-          "en": "Range"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Ranges em Rust podem ser exclusivos (..) ou inclusivos (..=). Converta ranges em vetores e use step_by pra controlar o passo.",
-          "en": "Rust ranges can be exclusive (..) or inclusive (..=). Convert ranges to vectors and use step_by to control the step."
-        },
-        "code": "let ascending: Vec<i32> = (1..=5).collect();\nlet stepped: Vec<i32> = (0..10).step_by(2).collect();\nprintln!(\"{ascending:?}\");\nprintln!(\"{stepped:?}\");",
-        "slot": "loop-range"
-      }
-    ],
-    "go": [
-      {
-        "id": "go-024",
-        "concept": {
-          "pt": "For Classico",
-          "en": "Classic For"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go so tem \"for\" como laco -- nao existe while nem do-while. Use o for classico com inicializador, condicao e pos para imprimir de 0 a 4.",
-          "en": "Go only has \"for\" as a loop -- there is no while or do-while. Use the classic for with init, condition, and post to print 0 through 4."
-        },
-        "code": "for i := 0; i < 5; i++ {\n    fmt.Println(i)\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "go-025",
-        "concept": {
-          "pt": "For como While",
-          "en": "For as While"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Go, \"for\" sem inicializador e pos funciona como while. Use pra ler de um scanner enquanto houver input.",
-          "en": "In Go, \"for\" without init and post works as while. Use it to read from a scanner while there is input."
-        },
-        "code": "scanner := bufio.NewScanner(os.Stdin)\nfor scanner.Scan() {\n    fmt.Println(scanner.Text())\n}",
-        "slot": "loop-while"
-      },
-      {
-        "id": "go-008",
-        "concept": {
-          "pt": "Laço Range",
-          "en": "Range Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Range itera sobre slices, arrays, maps e channels retornando índice e valor. Use \"for i, v := range items\" pra acessar cada par e imprima formatado com Printf.",
-          "en": "Range iterates over slices, arrays, maps, and channels returning index and value. Use \"for i, v := range items\" to access each pair and print them formatted with Printf."
-        },
-        "code": "for i, v := range items {\n    fmt.Printf(\"%d: %s\\n\", i, v)\n}",
-        "slot": "loop-foreach"
-      },
-      {
-        "id": "go-026",
-        "concept": {
-          "pt": "Filtrar Slice",
-          "en": "Filter Slice"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go nao tem filter embutido, mas e facil construir um com range e append. Filtre um slice de inteiros mantendo apenas os pares.",
-          "en": "Go has no built-in filter, but it's easy to build one with range and append. Filter a slice of ints keeping only even numbers."
-        },
-        "code": "var evens []int\nfor _, n := range nums {\n    if n%2 == 0 {\n        evens = append(evens, n)\n    }\n}",
-        "slot": "loop-filter"
-      },
-      {
-        "id": "go-027",
-        "concept": {
-          "pt": "Gerar Sequencia",
-          "en": "Generate Sequence"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Go, crie uma sequencia numerica com um for classico adicionando ao slice. Gere um slice de 1 a n usando append.",
-          "en": "In Go, create a numeric sequence with a classic for appending to a slice. Generate a slice from 1 to n using append."
-        },
-        "code": "func makeRange(n int) []int {\n    s := make([]int, 0, n)\n    for i := 1; i <= n; i++ {\n        s = append(s, i)\n    }\n    return s\n}",
-        "slot": "loop-range"
-      }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-024",
-        "concept": {
-          "pt": "Loop For com Range",
-          "en": "For Loop with Range"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O for em Kotlin itera sobre ranges com \"..\" (inclusivo) e \"until\" (exclusivo). Use as duas formas e step pra controlar o incremento.",
-          "en": "Kotlin for iterates over ranges with \"..\" (inclusive) and \"until\" (exclusive). Use both forms and step to control the increment."
-        },
-        "code": "for (i in 1..5) {\n    print(\"$i \")\n}\nfor (i in 0 until 10 step 2) {\n    print(\"$i \")\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "kotlin-025",
-        "concept": {
-          "pt": "Loop While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "While repete enquanto a condição for verdadeira. Conte de 1 até 5 usando while com um contador.",
-          "en": "While repeats as long as the condition is true. Count from 1 to 5 using while with a counter."
-        },
-        "code": "var i = 1\nwhile (i <= 5) {\n    println(i)\n    i++\n}",
-        "slot": "loop-while"
-      },
-      {
-        "id": "kotlin-026",
-        "concept": {
-          "pt": "ForEach",
-          "en": "ForEach"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "forEach é uma alternativa funcional ao for-in. Use forEach com lambda em uma lista de nomes pra imprimir cada um.",
-          "en": "forEach is a functional alternative to for-in. Use forEach with a lambda on a list of names to print each one."
-        },
-        "code": "val names = listOf(\"Ana\", \"Bruno\", \"Clara\")\nnames.forEach { name ->\n    println(\"Olá, $name!\")\n}",
-        "slot": "loop-foreach"
-      },
-      {
-        "id": "kotlin-027",
-        "concept": {
-          "pt": "Filter e Map",
-          "en": "Filter and Map"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "filter seleciona elementos e map os transforma. Filtre os pares de uma lista e dobre cada um.",
-          "en": "filter selects elements and map transforms them. Filter the even numbers from a list and double each one."
-        },
-        "code": "val nums = listOf(1, 2, 3, 4, 5, 6)\nval result = nums.filter { it % 2 == 0 }.map { it * 2 }\nprintln(result)",
-        "slot": "loop-filter"
-      },
-      {
-        "id": "kotlin-028",
-        "concept": {
-          "pt": "Range e Progressão",
-          "en": "Range and Progression"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Ranges em Kotlin são objetos que representam intervalos. Use downTo pra contar regressivamente e toList() pra materializar o range.",
-          "en": "Kotlin ranges are objects representing intervals. Use downTo to count backwards and toList() to materialize the range."
-        },
-        "code": "val ascending = (1..5).toList()\nval descending = (10 downTo 1 step 3).toList()\nprintln(ascending)\nprintln(descending)",
-        "slot": "loop-range"
       }
     ],
     "scala": [
-      {
-        "id": "scala-024",
-        "concept": {
-          "pt": "Laço For Numérico",
-          "en": "Numeric For Loop"
-        },
-        "difficulty": "easy",
-        "slot": "loop-for",
-        "prompt": {
-          "pt": "O for em Scala com range itera sobre intervalos numéricos. Use \"1 to 5\" pra iterar e acumular a soma em uma var.",
-          "en": "Scala for with range iterates over numeric intervals. Use \"1 to 5\" to iterate and accumulate the sum in a var."
-        },
-        "code": "var sum = 0\nfor (i <- 1 to 5) {\n  sum += i\n}\nprintln(s\"Sum: $sum\")"
-      },
-      {
-        "id": "scala-025",
-        "concept": {
-          "pt": "Laço While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "slot": "loop-while",
-        "prompt": {
-          "pt": "While em Scala repete enquanto a condição for verdadeira. Use while pra contar de 0 até um limite, incrementando a cada iteração.",
-          "en": "While in Scala repeats as long as the condition is true. Use while to count from 0 to a limit, incrementing each iteration."
-        },
-        "code": "var count = 0\nwhile (count < 5) {\n  println(s\"Count: $count\")\n  count += 1\n}"
-      },
       {
         "id": "scala-006",
         "concept": {
@@ -4927,51 +1279,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Scala lists are immutable and support chained functional operations. Apply .map (double each value), .filter (keep only evens) and .reduce (sum everything) on List(1,2,3,4,5)."
         },
         "code": "val nums = List(1, 2, 3, 4, 5)\nval doubled = nums.map(_ * 2)\nval evens = nums.filter(_ % 2 == 0)\nval sum = nums.reduce(_ + _)"
-      },
-      {
-        "id": "scala-026",
-        "concept": {
-          "pt": "Range com Until",
-          "en": "Range with Until"
-        },
-        "difficulty": "easy",
-        "slot": "loop-range",
-        "prompt": {
-          "pt": "Scala tem \"to\" (inclusive) e \"until\" (exclusive) pra criar ranges, com \"by\" pra definir o step. Demonstre os três pra iterar de formas diferentes.",
-          "en": "Scala has \"to\" (inclusive) and \"until\" (exclusive) to create ranges, with \"by\" to set the step. Demonstrate all three for different iteration styles."
-        },
-        "code": "val r1 = (1 to 10).toList\nval r2 = (0 until 5).toList\nval r3 = (0 to 20 by 5).toList\nprintln(s\"$r1 $r2 $r3\")"
       }
     ],
     "swift": [
-      {
-        "id": "swift-022",
-        "concept": {
-          "pt": "Loop For com Range",
-          "en": "For Loop with Range"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Use for-in com range fechado (...) e semi-aberto (..<) pra iterar sobre sequências numéricas em Swift.",
-          "en": "Use for-in with closed range (...) and half-open range (..<) to iterate over numeric sequences in Swift."
-        },
-        "code": "for i in 1...5 {\n    print(i, terminator: \" \")\n}\nfor i in stride(from: 0, to: 10, by: 2) {\n    print(i, terminator: \" \")\n}",
-        "slot": "loop-for"
-      },
-      {
-        "id": "swift-023",
-        "concept": {
-          "pt": "Loop While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "While repete enquanto a condição for verdadeira. Conte de 1 até 5 usando while com um contador.",
-          "en": "While repeats as long as the condition is true. Count from 1 to 5 using while with a counter."
-        },
-        "code": "var i = 1\nwhile i <= 5 {\n    print(i)\n    i += 1\n}",
-        "slot": "loop-while"
-      },
       {
         "id": "swift-004",
         "concept": {
@@ -4985,79 +1295,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "let fruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits {\n    print(fruit)\n}",
         "slot": "loop-foreach"
-      },
-      {
-        "id": "swift-024",
-        "concept": {
-          "pt": "Filter",
-          "en": "Filter"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "filter e map são métodos funcionais de Array em Swift. Filtre os pares e dobre cada um.",
-          "en": "filter and map are functional Array methods in Swift. Filter the even numbers and double each one."
-        },
-        "code": "let nums = [1, 2, 3, 4, 5, 6]\nlet result = nums.filter { $0 % 2 == 0 }.map { $0 * 2 }\nprint(result)",
-        "slot": "loop-filter"
-      },
-      {
-        "id": "swift-025",
-        "concept": {
-          "pt": "Range",
-          "en": "Range"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Ranges em Swift podem ser fechados (...) ou semi-abertos (..<). Converta ranges em arrays e use contains pra checar pertinência.",
-          "en": "Swift ranges can be closed (...) or half-open (..<). Convert ranges to arrays and use contains to check membership."
-        },
-        "code": "let closed = Array(1...5)\nlet half = Array(0..<5)\nlet inRange = (1...100).contains(42)\nprint(closed, half, inRange)",
-        "slot": "loop-range"
       }
     ],
     "ruby": [
-      {
-        "id": "ruby-023",
-        "concept": {
-          "pt": "Laço For",
-          "en": "For Loop"
-        },
-        "difficulty": "easy",
-        "slot": "loop-for",
-        "prompt": {
-          "pt": "Ruby tem for/in pra iterar sobre ranges e arrays. Use for com um range pra somar números de 1 a 10.",
-          "en": "Ruby has for/in to iterate over ranges and arrays. Use for with a range to sum numbers from 1 to 10."
-        },
-        "code": "sum = 0\nfor i in 1..10\n  sum += i\nend\nputs \"Sum: #{sum}\""
-      },
-      {
-        "id": "ruby-024",
-        "concept": {
-          "pt": "Laço While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "slot": "loop-while",
-        "prompt": {
-          "pt": "while em Ruby repete enquanto a condição for verdadeira. Use while pra contar de 0 a 4, incrementando a cada iteração.",
-          "en": "while in Ruby repeats as long as the condition is true. Use while to count from 0 to 4, incrementing each iteration."
-        },
-        "code": "count = 0\nwhile count < 5\n  puts \"Count: #{count}\"\n  count += 1\nend"
-      },
-      {
-        "id": "ruby-008",
-        "concept": {
-          "pt": "Enumerável",
-          "en": "Enumerable"
-        },
-        "difficulty": "medium",
-        "slot": "loop-foreach",
-        "prompt": {
-          "pt": "Ruby incentiva encadear métodos Enumerable de forma fluente. Numa expressão só, filtre palavras com mais de 4 letras, aplique capitalize, ordene em ordem alfabética e junte tudo numa string com \", \" entre elas.",
-          "en": "Ruby encourages fluent chaining of Enumerable methods. In a single expression, filter words longer than 4 characters, transform to capitalize, sort alphabetically and join into a string with \", \" between them."
-        },
-        "code": "words = %w[hello world ruby programming]\nresult = words\n  .select { |w| w.length > 4 }\n  .map(&:capitalize)\n  .sort\n  .join(\", \")"
-      },
       {
         "id": "ruby-003",
         "concept": {
@@ -5071,20 +1311,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Ruby has rich functional Array methods. Use .map with a block to double each number, .select with Symbol#to_proc (&:even?) to filter only evens and .sum to calculate the total -- one per line."
         },
         "code": "nums = [3, 1, 4, 1, 5, 9, 2, 6]\ndoubled = nums.map { |n| n * 2 }\nevens = nums.select(&:even?)\ntotal = nums.sum"
-      },
-      {
-        "id": "ruby-025",
-        "concept": {
-          "pt": "Range e Each",
-          "en": "Range and Each"
-        },
-        "difficulty": "easy",
-        "slot": "loop-range",
-        "prompt": {
-          "pt": "Ranges em Ruby usam \"..\" (inclusive) e \"...\" (exclusive). Combine com .each, .step e .to_a pra diferentes estilos de iteração.",
-          "en": "Ruby ranges use \"..\" (inclusive) and \"...\" (exclusive). Combine with .each, .step and .to_a for different iteration styles."
-        },
-        "code": "(1..5).each { |i| print \"#{i} \" }\nputs\n(0...10).step(3).each { |i| print \"#{i} \" }"
       }
     ],
     "lua": [
@@ -5101,62 +1327,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Lua's numeric for has the syntax \"for i = start, end do\". Use it to accumulate the sum of integers from 1 to 10 in a local variable and print the result at the end."
         },
         "code": "local sum = 0\nfor i = 1, 10 do\n  sum = sum + i\nend\nprint(\"Sum:\", sum)"
-      },
-      {
-        "id": "lua-024",
-        "concept": {
-          "pt": "Laço While",
-          "en": "While Loop"
-        },
-        "difficulty": "easy",
-        "slot": "loop-while",
-        "prompt": {
-          "pt": "O while em Lua repete enquanto a condição for verdadeira. Use pra contar de 0 a 4, incrementando a cada iteração.",
-          "en": "Lua while repeats as long as the condition is true. Use it to count from 0 to 4, incrementing each iteration."
-        },
-        "code": "local count = 0\nwhile count < 5 do\n  print(\"Count: \" .. count)\n  count = count + 1\nend"
-      },
-      {
-        "id": "lua-025",
-        "concept": {
-          "pt": "ipairs e Iteração",
-          "en": "ipairs and Iteration"
-        },
-        "difficulty": "easy",
-        "slot": "loop-foreach",
-        "prompt": {
-          "pt": "ipairs itera sobre a parte sequencial da tabela e pairs sobre todas as chaves. Use ambos pra percorrer arrays e dicionários.",
-          "en": "ipairs iterates over the sequential part of a table and pairs over all keys. Use both to traverse arrays and dictionaries."
-        },
-        "code": "local fruits = {\"apple\", \"banana\", \"cherry\"}\nfor i, v in ipairs(fruits) do\n  print(i, v)\nend\n\nlocal cfg = {host = \"localhost\", port = 8080}\nfor k, v in pairs(cfg) do print(k, v) end"
-      },
-      {
-        "id": "lua-026",
-        "concept": {
-          "pt": "Filtro com Tabela",
-          "en": "Filter with Table"
-        },
-        "difficulty": "medium",
-        "slot": "loop-filter",
-        "prompt": {
-          "pt": "Lua não tem filter nativo, mas é fácil criar com um loop. Implemente filter que retorna uma nova tabela com os elementos que passam no teste.",
-          "en": "Lua has no native filter, but it is easy to create with a loop. Implement filter that returns a new table with elements that pass the test."
-        },
-        "code": "local function filter(tbl, fn)\n  local out = {}\n  for _, v in ipairs(tbl) do\n    if fn(v) then out[#out + 1] = v end\n  end\n  return out\nend\n\nlocal evens = filter({1,2,3,4,5}, function(n) return n % 2 == 0 end)"
-      },
-      {
-        "id": "lua-007",
-        "concept": {
-          "pt": "Iterador",
-          "en": "Iterator"
-        },
-        "difficulty": "medium",
-        "slot": "loop-range",
-        "prompt": {
-          "pt": "Iteradores genéricos em Lua são funções que devolvem o próximo valor a cada chamada. Crie range como factory que retorna uma closure de iteração com step configurável, pra usar direto num for genérico.",
-          "en": "Generic iterators in Lua are functions that return the next value on each call. Implement range as a factory that returns an iteration closure with configurable step, usable directly in a generic for."
-        },
-        "code": "local function range(from, to, step)\n  step = step or 1\n  return function(_, i)\n    i = i + step\n    if i <= to then return i end\n  end, nil, from - step\nend\n\nfor i in range(1, 5) do io.write(i .. \" \") end"
       }
     ],
     "bash": [
@@ -5187,48 +1357,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "While loops repeat as long as the condition is true. Use [ $count -lt 10 ] to loop from 0 to 9: print the counter on each iteration and increment it with bash arithmetic ($((count + 1)))."
         },
         "code": "count=0\nwhile [ $count -lt 10 ]; do\n    echo \"Count: $count\"\n    count=$((count + 1))\ndone"
-      },
-      {
-        "id": "bash-020",
-        "concept": {
-          "pt": "Foreach com For-In",
-          "en": "Foreach with For-In"
-        },
-        "difficulty": "easy",
-        "slot": "loop-foreach",
-        "prompt": {
-          "pt": "for-in no Bash itera sobre listas e expansões. Use pra percorrer os elementos de um array e processar cada um.",
-          "en": "Bash for-in iterates over lists and expansions. Use it to traverse array elements and process each one."
-        },
-        "code": "fruits=(\"apple\" \"banana\" \"cherry\")\nfor fruit in \"${fruits[@]}\"; do\n    echo \"Fruit: $fruit\"\ndone"
-      },
-      {
-        "id": "bash-021",
-        "concept": {
-          "pt": "Filtro com Grep",
-          "en": "Filter with Grep"
-        },
-        "difficulty": "medium",
-        "slot": "loop-filter",
-        "prompt": {
-          "pt": "Bash filtra dados com grep em pipelines. Combine echo, grep e loops pra selecionar elementos que atendem uma condição.",
-          "en": "Bash filters data with grep in pipelines. Combine echo, grep and loops to select elements matching a condition."
-        },
-        "code": "nums=(1 2 3 4 5 6 7 8 9 10)\nevens=()\nfor n in \"${nums[@]}\"; do\n    (( n % 2 == 0 )) && evens+=(\"$n\")\ndone\necho \"Evens: ${evens[*]}\""
-      },
-      {
-        "id": "bash-022",
-        "concept": {
-          "pt": "Sequência e Range",
-          "en": "Sequence and Range"
-        },
-        "difficulty": "easy",
-        "slot": "loop-range",
-        "prompt": {
-          "pt": "Bash gera ranges com seq, {start..end} e {start..end..step}. Use diferentes formas pra iterar sobre intervalos numéricos.",
-          "en": "Bash generates ranges with seq, {start..end} and {start..end..step}. Use different forms to iterate over numeric intervals."
-        },
-        "code": "for i in {1..5}; do\n    echo -n \"$i \"\ndone\necho\nfor i in $(seq 0 2 10); do\n    echo -n \"$i \"\ndone"
       }
     ]
   },
@@ -5305,48 +1433,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "template <typename T>\nT max(T a, T b) {\n    return (a > b) ? a : b;\n}",
         "slot": "type-generic"
-      },
-      {
-        "id": "cpp-036",
-        "concept": {
-          "pt": "Union com Variant",
-          "en": "Union with Variant"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "std::variant (C++17) e uma union type-safe. Crie um Result que pode ser um valor ou uma mensagem de erro.",
-          "en": "std::variant (C++17) is a type-safe union. Create a Result that can be either a value or an error message."
-        },
-        "code": "using Result = std::variant<int, std::string>;\n\nResult divide(int a, int b) {\n    if (b == 0) return std::string(\"division by zero\");\n    return a / b;\n}",
-        "slot": "type-union"
-      },
-      {
-        "id": "cpp-037",
-        "concept": {
-          "pt": "Constraint com Concepts",
-          "en": "Constraint with Concepts"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Concepts (C++20) restringem templates com requisitos semanticos. Crie um concept Addable e use numa função template.",
-          "en": "Concepts (C++20) constrain templates with semantic requirements. Create an Addable concept and use it in a template function."
-        },
-        "code": "template <typename T>\nconcept Addable = requires(T a, T b) {\n    { a + b } -> std::convertible_to<T>;\n};\n\ntemplate <Addable T>\nT sum(T a, T b) {\n    return a + b;\n}",
-        "slot": "type-constraint"
-      },
-      {
-        "id": "cpp-038",
-        "concept": {
-          "pt": "Tipo Utilitario",
-          "en": "Utility Type"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Templates permitem criar tipos utilitarios reutilizaveis em C++. Crie um Pair genérico com dois tipos diferentes.",
-          "en": "Templates allow creating reusable utility types in C++. Create a generic Pair with two different types."
-        },
-        "code": "template <typename A, typename B>\nstruct Pair {\n    A first;\n    B second;\n\n    auto operator<=>(const Pair&) const = default;\n};",
-        "slot": "type-utility"
       }
     ],
     "csharp": [
@@ -5423,20 +1509,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "type-union"
       },
       {
-        "id": "ts-007",
-        "concept": {
-          "pt": "Restrição de Genéricos",
-          "en": "Generic Constraint"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Generic constraints restringem quais tipos são aceitos usando \"extends\". Implemente getProperty com dois type parameters: T (o objeto) e K extends keyof T (uma chave válida de T) -- retornando T[K] com type safety total.",
-          "en": "Generic constraints restrict which types are accepted using \"extends\". Implement getProperty with two type parameters: T (the object) and K extends keyof T (a valid key of T) -- returning T[K] with full type safety."
-        },
-        "code": "function getProperty<T, K extends keyof T>(\n  obj: T,\n  key: K\n): T[K] {\n  return obj[key];\n}",
-        "slot": "type-constraint"
-      },
-      {
         "id": "ts-006",
         "concept": {
           "pt": "Tipos Utilitários",
@@ -5465,93 +1537,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "public <T extends Comparable<T>> T max(T a, T b) {\n    return a.compareTo(b) >= 0 ? a : b;\n}",
         "slot": "type-generic"
-      },
-      {
-        "id": "java-036",
-        "concept": {
-          "pt": "Union com Sealed",
-          "en": "Union with Sealed"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Sealed classes (Java 17+) restringem quais classes podem herdar, simulando union types. Crie Result selado com Success e Failure.",
-          "en": "Sealed classes (Java 17+) restrict which classes can inherit, simulating union types. Create sealed Result with Success and Failure."
-        },
-        "code": "public sealed interface Result<T>\n    permits Success, Failure {\n}\npublic record Success<T>(T value) implements Result<T> {}\npublic record Failure<T>(String error) implements Result<T> {}",
-        "slot": "type-union"
-      },
-      {
-        "id": "java-037",
-        "concept": {
-          "pt": "Constraint com Bounded",
-          "en": "Bounded Type Constraint"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Bounded types em Java restringem genéricos com extends. Crie um método que aceita apenas tipos que implementam Comparable e Serializable.",
-          "en": "Bounded types in Java constrain generics with extends. Create a method accepting only types that implement Comparable and Serializable."
-        },
-        "code": "public <T extends Comparable<T> & Serializable> T clamp(T val, T min, T max) {\n    if (val.compareTo(min) < 0) return min;\n    if (val.compareTo(max) > 0) return max;\n    return val;\n}",
-        "slot": "type-constraint"
-      },
-      {
-        "id": "java-038",
-        "concept": {
-          "pt": "Tipo Utilitario com Wildcard",
-          "en": "Utility Type with Wildcard"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Wildcards em Java permitem flexibilidade em genéricos. Use \"? extends Number\" pra criar um método que soma qualquer lista numerica.",
-          "en": "Wildcards in Java allow flexibility in generics. Use \"? extends Number\" to create a method that sums any numeric list."
-        },
-        "code": "public double sum(List<? extends Number> numbers) {\n    double total = 0;\n    for (Number n : numbers) {\n        total += n.doubleValue();\n    }\n    return total;\n}",
-        "slot": "type-utility"
       }
     ],
     "rust": [
-      {
-        "id": "rs-038",
-        "concept": {
-          "pt": "Genéricos",
-          "en": "Generics"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Genéricos permitem escrever funções e structs que funcionam com qualquer tipo. Crie uma struct Stack genérica com push e pop.",
-          "en": "Generics let you write functions and structs that work with any type. Create a generic Stack struct with push and pop."
-        },
-        "code": "struct Stack<T> {\n    items: Vec<T>,\n}\n\nimpl<T> Stack<T> {\n    fn new() -> Self { Self { items: Vec::new() } }\n    fn push(&mut self, item: T) { self.items.push(item); }\n    fn pop(&mut self) -> Option<T> { self.items.pop() }\n}",
-        "slot": "type-generic"
-      },
-      {
-        "id": "rs-010",
-        "concept": {
-          "pt": "Enumeração Algébrica",
-          "en": "Enum"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Enum em Rust pode carregar dados de tipos diferentes em cada variante. Defina Command com quatro variantes: Quit (sem dados), Echo(String) (tupla), Move { x, y } (struct anônima) e Color(u8, u8, u8) (tupla de três bytes).",
-          "en": "Enums in Rust can carry different data types in each variant. Define Command with four variants: Quit (no data), Echo(String) (tuple), Move { x, y } (anonymous struct), and Color(u8, u8, u8) (three-byte tuple)."
-        },
-        "code": "enum Command {\n    Quit,\n    Echo(String),\n    Move { x: i32, y: i32 },\n    Color(u8, u8, u8),\n}",
-        "slot": "type-union"
-      },
-      {
-        "id": "rs-039",
-        "concept": {
-          "pt": "Constraint de Trait",
-          "en": "Trait Constraint"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Use trait bounds pra restringir tipos genéricos, exigindo que implementem traits específicos como Display + PartialOrd.",
-          "en": "Use trait bounds to constrain generic types, requiring them to implement specific traits like Display + PartialOrd."
-        },
-        "code": "use std::fmt::Display;\n\nfn print_sorted<T: Display + PartialOrd>(mut items: Vec<T>) {\n    items.sort_by(|a, b| a.partial_cmp(b).unwrap());\n    for item in &items {\n        println!(\"{item}\");\n    }\n}",
-        "slot": "type-constraint"
-      },
       {
         "id": "rs-004",
         "concept": {
@@ -5567,79 +1555,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "type-utility"
       }
     ],
-    "go": [
-      {
-        "id": "go-036",
-        "concept": {
-          "pt": "Genérico",
-          "en": "Generic"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go 1.18+ suporta generics com type parameters. Crie uma função Filter genérica que aceita um slice de qualquer tipo e um predicado.",
-          "en": "Go 1.18+ supports generics with type parameters. Create a generic Filter function that accepts a slice of any type and a predicate."
-        },
-        "code": "func Filter[T any](s []T, fn func(T) bool) []T {\n    var result []T\n    for _, v := range s {\n        if fn(v) {\n            result = append(result, v)\n        }\n    }\n    return result\n}",
-        "slot": "type-generic"
-      },
-      {
-        "id": "go-037",
-        "concept": {
-          "pt": "Union com Interface",
-          "en": "Union with Interface"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go 1.18+ permite union types em constraints de interface. Defina Number como constraint que aceita int ou float64 e crie Sum genérico.",
-          "en": "Go 1.18+ allows union types in interface constraints. Define Number as a constraint accepting int or float64 and create a generic Sum."
-        },
-        "code": "type Number interface {\n    int | float64\n}\n\nfunc Sum[T Number](nums []T) T {\n    var total T\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}",
-        "slot": "type-union"
-      },
-      {
-        "id": "go-038",
-        "concept": {
-          "pt": "Constraint de Tipo",
-          "en": "Type Constraint"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Constraints em Go restringem quais tipos um genérico aceita. Use comparable pra garantir que o tipo suporta == e crie Contains genérico.",
-          "en": "Constraints in Go restrict which types a generic accepts. Use comparable to ensure the type supports == and create a generic Contains."
-        },
-        "code": "func Contains[T comparable](s []T, target T) bool {\n    for _, v := range s {\n        if v == target {\n            return true\n        }\n    }\n    return false\n}",
-        "slot": "type-constraint"
-      },
-      {
-        "id": "go-039",
-        "concept": {
-          "pt": "Tipo Utilitario",
-          "en": "Utility Type"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Em Go, tipos utilitarios sao criados com generics e interfaces. Crie um tipo Pair genérico que agrupa dois valores de tipos diferentes.",
-          "en": "In Go, utility types are built with generics and interfaces. Create a generic Pair type that groups two values of different types."
-        },
-        "code": "type Pair[A, B any] struct {\n    First  A\n    Second B\n}\n\nfunc NewPair[A, B any](a A, b B) Pair[A, B] {\n    return Pair[A, B]{First: a, Second: b}\n}",
-        "slot": "type-utility"
-      }
-    ],
     "kotlin": [
-      {
-        "id": "kotlin-010",
-        "concept": {
-          "pt": "Genéricos e Variância",
-          "en": "Generics and Variance"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "\"out T\" torna o genérico covariante: um Repository<User> pode ser tratado como Repository<Any>. Defina a interface Repository<out T> com dois métodos e crie UserRepository mantendo uma lista mutável interna.",
-          "en": "\"out T\" makes a generic covariant: a Repository<User> can be treated as Repository<Any>. Define the Repository<out T> interface with two methods and implement UserRepository keeping an internal mutable list."
-        },
-        "code": "interface Repository<out T> {\n    fun getAll(): List<T>\n    fun getById(id: Int): T?\n}\n\nclass UserRepository : Repository<User> {\n    private val users = mutableListOf<User>()\n    override fun getAll() = users.toList()\n    override fun getById(id: Int) = users.find { it.age == id }\n}",
-        "slot": "type-generic"
-      },
       {
         "id": "kotlin-006",
         "concept": {
@@ -5655,20 +1571,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "type-union"
       },
       {
-        "id": "kotlin-039",
-        "concept": {
-          "pt": "Constraint de Tipo",
-          "en": "Type Constraint"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Use \"where\" pra aplicar múltiplas constraints a um tipo genérico, exigindo que implemente várias interfaces.",
-          "en": "Use \"where\" to apply multiple constraints to a generic type, requiring it to implement multiple interfaces."
-        },
-        "code": "fun <T> sortAndPrint(list: List<T>) where T : Comparable<T>, T : Any {\n    list.sorted().forEach { println(it) }\n}",
-        "slot": "type-constraint"
-      },
-      {
         "id": "kotlin-004",
         "concept": {
           "pt": "Segurança contra Nulo",
@@ -5681,238 +1583,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "val name: String? = null\nval length = name?.length ?: 0\nval upper = name?.uppercase() ?: \"N/A\"\nprintln(\"Length: $length, Upper: $upper\")",
         "slot": "type-utility"
-      }
-    ],
-    "scala": [
-      {
-        "id": "scala-009",
-        "concept": {
-          "pt": "Classe de Tipo (Given)",
-          "en": "Type Class (Given)"
-        },
-        "difficulty": "hard",
-        "slot": "type-generic",
-        "prompt": {
-          "pt": "Type classes em Scala 3 usam \"given\" pra fornecer instâncias implícitas e \"using\" pra recebê-las. Defina Show[A] com o método show, crie uma instância given pra Int e monte print usando \"using s: Show[A]\".",
-          "en": "Scala 3 type classes use \"given\" to provide implicit instances and \"using\" to receive them. Define Show[A] with the show method, provide a given instance for Int and implement print using \"using s: Show[A]\"."
-        },
-        "code": "trait Show[A]:\n  def show(a: A): String\n\ngiven Show[Int]:\n  def show(n: Int) = s\"Int($n)\"\n\ndef print[A](a: A)(using s: Show[A]): Unit =\n  println(s.show(a))"
-      },
-      {
-        "id": "scala-036",
-        "concept": {
-          "pt": "Tipo Union",
-          "en": "Union Type"
-        },
-        "difficulty": "hard",
-        "slot": "type-union",
-        "prompt": {
-          "pt": "Scala 3 tem union types com \"|\" pra representar que um valor pode ser de múltiplos tipos. Use um tipo union com pattern matching pra tratar cada caso.",
-          "en": "Scala 3 has union types with \"|\" to represent that a value can be one of multiple types. Use a union type with pattern matching to handle each case."
-        },
-        "code": "type StringOrInt = String | Int\n\ndef show(value: StringOrInt): String = value match {\n  case s: String => s\"String: $s\"\n  case n: Int    => s\"Int: $n\"\n}"
-      },
-      {
-        "id": "scala-037",
-        "concept": {
-          "pt": "Tipo com Constraint",
-          "en": "Type Constraint"
-        },
-        "difficulty": "hard",
-        "slot": "type-constraint",
-        "prompt": {
-          "pt": "Upper type bounds (<:) restringem parâmetros genéricos a subtipos. Crie uma função que aceita apenas subtipos de Comparable.",
-          "en": "Upper type bounds (<:) constrain generic parameters to subtypes. Create a function that accepts only subtypes of Comparable."
-        },
-        "code": "def maxOf[T <: Comparable[T]](a: T, b: T): T =\n  if (a.compareTo(b) >= 0) a else b\n\nval bigger = maxOf(\"apple\", \"banana\")\nprintln(bigger)"
-      },
-      {
-        "id": "scala-038",
-        "concept": {
-          "pt": "Tipo Utilitário",
-          "en": "Utility Type"
-        },
-        "difficulty": "hard",
-        "slot": "type-utility",
-        "prompt": {
-          "pt": "Type aliases e opaque types organizam tipos complexos. Crie aliases pra simplificar assinaturas e melhorar a legibilidade.",
-          "en": "Type aliases and opaque types organize complex types. Create aliases to simplify signatures and improve readability."
-        },
-        "code": "type UserId = Int\ntype UserMap = Map[UserId, String]\n\nval users: UserMap = Map(\n  1 -> \"Alice\", 2 -> \"Bob\"\n)\ndef find(id: UserId): Option[String] = users.get(id)"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-035",
-        "concept": {
-          "pt": "Genéricos",
-          "en": "Generics"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Genéricos permitem escrever funções e tipos que funcionam com qualquer tipo. Crie uma struct Stack genérica com push e pop.",
-          "en": "Generics let you write functions and types that work with any type. Create a generic Stack struct with push and pop."
-        },
-        "code": "struct Stack<Element> {\n    private var items: [Element] = []\n    mutating func push(_ item: Element) { items.append(item) }\n    mutating func pop() -> Element? { items.popLast() }\n    var isEmpty: Bool { items.isEmpty }\n}",
-        "slot": "type-generic"
-      },
-      {
-        "id": "swift-036",
-        "concept": {
-          "pt": "Tipo Union com Enum",
-          "en": "Union Type with Enum"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Enums com valores associados funcionam como union types em Swift. Modele um valor JSON com diferentes tipos possíveis.",
-          "en": "Enums with associated values work as union types in Swift. Model a JSON value with different possible types."
-        },
-        "code": "enum JsonValue {\n    case string(String)\n    case number(Double)\n    case bool(Bool)\n    case null\n}\n\nlet val1: JsonValue = .string(\"hello\")\nlet val2: JsonValue = .number(42)",
-        "slot": "type-union"
-      },
-      {
-        "id": "swift-037",
-        "concept": {
-          "pt": "Constraint de Tipo",
-          "en": "Type Constraint"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Use \"where\" ou \": Protocol\" pra restringir tipos genéricos. Crie uma função que só aceita tipos Comparable.",
-          "en": "Use \"where\" or \": Protocol\" to constrain generic types. Create a function that only accepts Comparable types."
-        },
-        "code": "func findMin<T: Comparable>(_ array: [T]) -> T? {\n    guard var best = array.first else { return nil }\n    for item in array where item < best {\n        best = item\n    }\n    return best\n}",
-        "slot": "type-constraint"
-      },
-      {
-        "id": "swift-038",
-        "concept": {
-          "pt": "Tipo Utilitário (Typealias)",
-          "en": "Utility Type (Typealias)"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "typealias cria nomes alternativos pra tipos existentes, facilitando a leitura. Crie aliases pra tipos complexos.",
-          "en": "typealias creates alternative names for existing types, improving readability. Create aliases for complex types."
-        },
-        "code": "typealias Handler = (String, Int) -> Bool\ntypealias UserDict = [String: Any]\n\nlet validate: Handler = { name, age in\n    !name.isEmpty && age > 0\n}",
-        "slot": "type-utility"
-      }
-    ],
-    "ruby": [
-      {
-        "id": "ruby-038",
-        "concept": {
-          "pt": "Genérico com Duck Typing",
-          "en": "Generic with Duck Typing"
-        },
-        "difficulty": "medium",
-        "slot": "type-generic",
-        "prompt": {
-          "pt": "Ruby usa duck typing ao invés de generics formais: se o objeto responde ao método, funciona. Crie um método genérico que aceita qualquer coisa que responda a .to_s.",
-          "en": "Ruby uses duck typing instead of formal generics: if the object responds to the method, it works. Create a generic method that accepts anything responding to .to_s."
-        },
-        "code": "def wrap(value)\n  \"[#{value.to_s}]\"\nend\n\nputs wrap(42)\nputs wrap(\"hello\")\nputs wrap([1, 2, 3])"
-      },
-      {
-        "id": "ruby-039",
-        "concept": {
-          "pt": "Union com Validação",
-          "en": "Union with Validation"
-        },
-        "difficulty": "medium",
-        "slot": "type-union",
-        "prompt": {
-          "pt": "Ruby simula tipos union com case/when e .is_a? pra verificar o tipo em runtime e tratar cada caso.",
-          "en": "Ruby simulates union types with case/when and .is_a? to check the type at runtime and handle each case."
-        },
-        "code": "def stringify(val)\n  case val\n  when String  then val\n  when Integer then val.to_s\n  when Array   then val.join(\", \")\n  else raise TypeError\n  end\nend\n\nputs stringify([1, 2, 3])"
-      },
-      {
-        "id": "ruby-040",
-        "concept": {
-          "pt": "Constraint com respond_to?",
-          "en": "Constraint with respond_to?"
-        },
-        "difficulty": "hard",
-        "slot": "type-constraint",
-        "prompt": {
-          "pt": "respond_to? verifica se um objeto suporta um método, funcionando como constraint de tipo. Use pra validar capacidades antes de operar.",
-          "en": "respond_to? checks if an object supports a method, acting as a type constraint. Use it to validate capabilities before operating."
-        },
-        "code": "def serialize(obj)\n  unless obj.respond_to?(:to_json) || obj.respond_to?(:to_s)\n    raise ArgumentError, \"not serializable\"\n  end\n  obj.respond_to?(:to_json) ? obj.to_json : obj.to_s\nend"
-      },
-      {
-        "id": "ruby-041",
-        "concept": {
-          "pt": "Tipo Utilitário com Struct",
-          "en": "Utility Type with Struct"
-        },
-        "difficulty": "medium",
-        "slot": "type-utility",
-        "prompt": {
-          "pt": "Struct cria classes leves com campos nomeados, como utility types. Use Struct pra definir tipos de dados simples de forma concisa.",
-          "en": "Struct creates lightweight classes with named fields, like utility types. Use Struct to define simple data types concisely."
-        },
-        "code": "Point = Struct.new(:x, :y) do\n  def distance_to(other)\n    Math.sqrt((x - other.x)**2 + (y - other.y)**2)\n  end\nend\n\np1 = Point.new(0, 0)\np2 = Point.new(3, 4)\nputs p1.distance_to(p2)"
-      }
-    ],
-    "lua": [
-      {
-        "id": "lua-035",
-        "concept": {
-          "pt": "Genérico com Função",
-          "en": "Generic with Function"
-        },
-        "difficulty": "medium",
-        "slot": "type-generic",
-        "prompt": {
-          "pt": "Lua é dinamicamente tipada, mas funções podem atuar genericamente sobre qualquer tipo. Crie map que transforma qualquer tabela usando uma função.",
-          "en": "Lua is dynamically typed, but functions can act generically on any type. Create map that transforms any table using a function."
-        },
-        "code": "local function map(tbl, fn)\n  local out = {}\n  for i, v in ipairs(tbl) do\n    out[i] = fn(v)\n  end\n  return out\nend\n\nlocal strs = map({1, 2, 3}, tostring)"
-      },
-      {
-        "id": "lua-036",
-        "concept": {
-          "pt": "Union com Type Check",
-          "en": "Union with Type Check"
-        },
-        "difficulty": "medium",
-        "slot": "type-union",
-        "prompt": {
-          "pt": "Lua simula tipos union verificando type() em runtime. Crie uma função que aceita string ou number e trata cada caso.",
-          "en": "Lua simulates union types by checking type() at runtime. Create a function that accepts string or number and handles each case."
-        },
-        "code": "local function stringify(val)\n  local t = type(val)\n  if t == \"string\" then return val\n  elseif t == \"number\" then return tostring(val)\n  elseif t == \"table\" then return table.concat(val, \", \")\n  else error(\"unsupported type: \" .. t)\n  end\nend"
-      },
-      {
-        "id": "lua-037",
-        "concept": {
-          "pt": "Constraint com Assert",
-          "en": "Constraint with Assert"
-        },
-        "difficulty": "hard",
-        "slot": "type-constraint",
-        "prompt": {
-          "pt": "assert valida pré-condições em Lua, funcionando como type constraint. Use assert com type() pra garantir tipos corretos nos parâmetros.",
-          "en": "assert validates preconditions in Lua, acting as a type constraint. Use assert with type() to ensure correct parameter types."
-        },
-        "code": "local function add_nums(a, b)\n  assert(type(a) == \"number\", \"a must be number\")\n  assert(type(b) == \"number\", \"b must be number\")\n  return a + b\nend\n\nprint(add_nums(3, 4))"
-      },
-      {
-        "id": "lua-038",
-        "concept": {
-          "pt": "Tipo Utilitário",
-          "en": "Utility Type"
-        },
-        "difficulty": "hard",
-        "slot": "type-utility",
-        "prompt": {
-          "pt": "Tabelas com metatables podem criar tipos utilitários como readonly. Use __newindex pra criar uma tabela somente leitura.",
-          "en": "Tables with metatables can create utility types like readonly. Use __newindex to create a read-only table."
-        },
-        "code": "local function readonly(tbl)\n  return setmetatable({}, {\n    __index = tbl,\n    __newindex = function()\n      error(\"attempt to modify read-only table\")\n    end,\n  })\nend\n\nlocal cfg = readonly({host = \"localhost\", port = 8080})\nprint(cfg.host)"
       }
     ]
   },
@@ -5959,64 +1629,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Practice centralized cleanup in C and pay attention to the syntax used in the example."
         },
         "code": "FILE *file = fopen(path, \"r\");\nif (!file) goto cleanup;\n/* use file */\ncleanup:\nif (file) fclose(file);"
-      }
-    ],
-    "cpp": [
-      {
-        "id": "cpp-033",
-        "concept": {
-          "pt": "Try-Catch",
-          "en": "Try-Catch"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Try-catch em C++ captura exceções por tipo. Capture std::exception por referencia constante e acesse a mensagem com .what().",
-          "en": "Try-catch in C++ catches exceptions by type. Catch std::exception by const reference and access the message with .what()."
-        },
-        "code": "try {\n    auto result = riskyOperation();\n} catch (const std::exception& e) {\n    std::cerr << \"Error: \" << e.what() << std::endl;\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "cpp-034",
-        "concept": {
-          "pt": "Exceção Customizada",
-          "en": "Custom Exception"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Exceções customizadas em C++ herdam de std::exception e sobrescrevem what(). Crie ValidationError com campo e mensagem.",
-          "en": "Custom exceptions in C++ inherit from std::exception and override what(). Create ValidationError with field and message."
-        },
-        "code": "class ValidationError : public std::runtime_error {\n    std::string field_;\npublic:\n    ValidationError(std::string field, const std::string& msg)\n        : std::runtime_error(msg), field_(std::move(field)) {}\n    const std::string& field() const { return field_; }\n};",
-        "slot": "err-custom"
-      },
-      {
-        "id": "cpp-010",
-        "concept": {
-          "pt": "Opcional",
-          "en": "Optional"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "std::optional<T> representa um valor que pode ou nao existir, sem precisar de ponteiro nulo. Monte find(id): use um if com inicializador (if (auto it = db.find(id); it != db.end())) e retorne nullopt quando nao achar.",
-          "en": "std::optional<T> represents a value that may or may not be present, without using null pointers. Implement find(id): use an if with initializer (if (auto it = db.find(id); it != db.end())) and return nullopt when not found."
-        },
-        "code": "std::optional<User> find(int id) {\n    if (auto it = db.find(id); it != db.end()) {\n        return it->second;\n    }\n    return std::nullopt;\n}",
-        "slot": "err-result"
-      },
-      {
-        "id": "cpp-035",
-        "concept": {
-          "pt": "RAII como Finally",
-          "en": "RAII as Finally"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "C++ nao tem finally, mas RAII garante cleanup no destrutor. Crie um guard que executa uma função ao sair do escopo.",
-          "en": "C++ has no finally, but RAII ensures cleanup in the destructor. Create a guard that runs a function when leaving scope."
-        },
-        "code": "class ScopeGuard {\n    std::function<void()> cleanup_;\npublic:\n    ScopeGuard(std::function<void()> fn)\n        : cleanup_(std::move(fn)) {}\n    ~ScopeGuard() { cleanup_(); }\n};",
-        "slot": "err-finally"
       }
     ],
     "csharp": [
@@ -6077,151 +1689,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "Stream? stream = null;\ntry\n{\n    stream = File.OpenRead(path);\n}\nfinally\n{\n    stream?.Dispose();\n}"
       }
     ],
-    "javascript": [
-      {
-        "id": "js-032",
-        "concept": {
-          "pt": "Try/Catch",
-          "en": "Try/Catch"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "try/catch captura erros em tempo de execução sem quebrar o programa. Tente parsear um JSON e capture o erro caso a string seja inválida.",
-          "en": "try/catch catches runtime errors without crashing the program. Try to parse JSON and catch the error if the string is invalid."
-        },
-        "code": "try {\n  const data = JSON.parse(input);\n} catch (err) {\n  console.error(\"Invalid JSON:\", err.message);\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "js-033",
-        "concept": {
-          "pt": "Erro Customizado",
-          "en": "Custom Error"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Você pode estender Error pra criar tipos de erro personalizados com nomes e mensagens específicas. Crie ValidationError com um campo extra.",
-          "en": "You can extend Error to create custom error types with specific names and messages. Create ValidationError with an extra field."
-        },
-        "code": "class ValidationError extends Error {\n  constructor(field, message) {\n    super(message);\n    this.field = field;\n    this.name = \"ValidationError\";\n  }\n}",
-        "slot": "err-custom"
-      },
-      {
-        "id": "js-034",
-        "concept": {
-          "pt": "Finally",
-          "en": "Finally Block"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "O bloco finally sempre executa, tenha dado erro ou não. Use-o pra limpar recursos como conexões ou timers.",
-          "en": "The finally block always runs, whether an error occurred or not. Use it to clean up resources like connections or timers."
-        },
-        "code": "try {\n  db.connect();\n  db.query(sql);\n} catch (err) {\n  console.error(err);\n} finally {\n  db.disconnect();\n}",
-        "slot": "err-finally"
-      }
-    ],
-    "typescript": [
-      {
-        "id": "ts-037",
-        "concept": {
-          "pt": "Try/Catch Tipado",
-          "en": "Typed Try/Catch"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "try/catch no TypeScript captura erros como unknown por padrão. Use narrowing pra acessar a mensagem com segurança.",
-          "en": "try/catch in TypeScript catches errors as unknown by default. Use narrowing to safely access the message."
-        },
-        "code": "try {\n  const data = JSON.parse(input);\n} catch (err: unknown) {\n  if (err instanceof Error) {\n    console.error(err.message);\n  }\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "ts-038",
-        "concept": {
-          "pt": "Erro Customizado",
-          "en": "Custom Error"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Estenda Error com tipagem forte pra criar erros de domínio. Adicione propriedades tipadas pra informações extras.",
-          "en": "Extend Error with strong typing to create domain errors. Add typed properties for extra information."
-        },
-        "code": "class HttpError extends Error {\n  constructor(public status: number, message: string) {\n    super(message);\n    this.name = \"HttpError\";\n  }\n}",
-        "slot": "err-custom"
-      },
-      {
-        "id": "ts-039",
-        "concept": {
-          "pt": "Tipo Result",
-          "en": "Result Type"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "O padrão Result usa union types pra representar sucesso ou falha sem exceções. Defina um tipo discriminado com ok e err.",
-          "en": "The Result pattern uses union types to represent success or failure without exceptions. Define a discriminated type with ok and err."
-        },
-        "code": "type Result<T, E = Error> =\n  | { ok: true; value: T }\n  | { ok: false; error: E };",
-        "slot": "err-result"
-      },
-      {
-        "id": "ts-040",
-        "concept": {
-          "pt": "Finally",
-          "en": "Finally Block"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "O bloco finally sempre executa independente de erro. Use pra garantir a liberação de recursos.",
-          "en": "The finally block always runs regardless of errors. Use it to ensure resource cleanup."
-        },
-        "code": "try {\n  const conn = await db.connect();\n  await conn.query(sql);\n} catch (err: unknown) {\n  console.error(err);\n} finally {\n  await db.disconnect();\n}",
-        "slot": "err-finally"
-      }
-    ],
     "python": [
-      {
-        "id": "py-035",
-        "concept": {
-          "pt": "Try/Except",
-          "en": "Try/Except"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "try/except captura exceções sem quebrar o programa. Tente converter uma string pra inteiro e capture ValueError se falhar.",
-          "en": "try/except catches exceptions without crashing the program. Try to convert a string to int and catch ValueError if it fails."
-        },
-        "code": "try:\n    value = int(user_input)\nexcept ValueError:\n    print(\"Invalid number\")",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "py-036",
-        "concept": {
-          "pt": "Exceção Customizada",
-          "en": "Custom Exception"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Estenda Exception pra criar exceções de domínio com informações extras. Crie ValidationError com um campo indicando qual campo falhou.",
-          "en": "Extend Exception to create domain exceptions with extra info. Create ValidationError with a field indicating which field failed."
-        },
-        "code": "class ValidationError(Exception):\n    def __init__(self, field, message):\n        super().__init__(message)\n        self.field = field",
-        "slot": "err-custom"
-      },
-      {
-        "id": "py-037",
-        "concept": {
-          "pt": "Resultado com Tupla",
-          "en": "Result with Tuple"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Python não tem tipo Result nativo, mas tuplas (sucesso, valor/erro) são um padrão comum pra retornar resultados sem exceções.",
-          "en": "Python has no native Result type, but tuples (success, value/error) are a common pattern for returning results without exceptions."
-        },
-        "code": "def safe_divide(a, b):\n    if b == 0:\n        return (False, \"Division by zero\")\n    return (True, a / b)",
-        "slot": "err-result"
-      },
       {
         "id": "py-005",
         "concept": {
@@ -6239,34 +1707,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "java": [
       {
-        "id": "java-009",
-        "concept": {
-          "pt": "Try com Recursos",
-          "en": "Try-With-Resources"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Try-with-resources garante o fechamento automatico de qualquer Closeable ao sair do bloco. Declare o BufferedReader na clausula try(...) -- ele fecha sozinho, mesmo se rolar uma exceção durante a leitura.",
-          "en": "Try-with-resources ensures automatic closing of any Closeable when exiting the block. Declare the BufferedReader in the try(...) clause -- it will be closed automatically, even if an exception occurs during reading."
-        },
-        "code": "try (var reader = new BufferedReader(\n        new FileReader(\"data.txt\"))) {\n    String line = reader.readLine();\n    System.out.println(line);\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "java-034",
-        "concept": {
-          "pt": "Exceção Customizada",
-          "en": "Custom Exception"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Exceções customizadas em Java estendem Exception ou RuntimeException. Crie ValidationException com um campo field.",
-          "en": "Custom exceptions in Java extend Exception or RuntimeException. Create ValidationException with a field property."
-        },
-        "code": "public class ValidationException extends RuntimeException {\n    private final String field;\n\n    public ValidationException(String field, String message) {\n        super(message);\n        this.field = field;\n    }\n}",
-        "slot": "err-custom"
-      },
-      {
         "id": "java-006",
         "concept": {
           "pt": "Opcional",
@@ -6279,51 +1719,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "Optional<User> user = findById(id);\nString name = user\n    .map(User::getName)\n    .orElse(\"Unknown\");",
         "slot": "err-result"
-      },
-      {
-        "id": "java-035",
-        "concept": {
-          "pt": "Finally",
-          "en": "Finally"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O bloco finally em Java sempre executa, mesmo com exceção. Use try-catch-finally pra garantir que o recurso e liberado.",
-          "en": "The finally block in Java always executes, even with an exception. Use try-catch-finally to ensure the resource is released."
-        },
-        "code": "Connection conn = null;\ntry {\n    conn = getConnection();\n    conn.execute(query);\n} catch (SQLException e) {\n    log.error(\"Query failed\", e);\n} finally {\n    if (conn != null) conn.close();\n}",
-        "slot": "err-finally"
       }
     ],
     "rust": [
-      {
-        "id": "rs-035",
-        "concept": {
-          "pt": "Tratamento com Match",
-          "en": "Error Handling with Match"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Use match pra tratar Result explicitamente, executando lógica diferente pra Ok e Err.",
-          "en": "Use match to handle Result explicitly, executing different logic for Ok and Err."
-        },
-        "code": "fn parse(input: &str) -> Result<i32, String> {\n    input.parse().map_err(|_| format!(\"inválido: {input}\"))\n}\n\nmatch parse(\"42\") {\n    Ok(n) => println!(\"número: {n}\"),\n    Err(e) => println!(\"erro: {e}\"),\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "rs-036",
-        "concept": {
-          "pt": "Erro Personalizado",
-          "en": "Custom Error"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Crie um enum de erro personalizado implementando Display e Error. Defina variantes com dados descritivos.",
-          "en": "Create a custom error enum implementing Display and Error. Define variants with descriptive data."
-        },
-        "code": "use std::fmt;\n\n#[derive(Debug)]\nenum AppError {\n    NotFound(String),\n    Unauthorized,\n}\n\nimpl fmt::Display for AppError {\n    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {\n        match self {\n            Self::NotFound(id) => write!(f, \"não encontrado: {id}\"),\n            Self::Unauthorized => write!(f, \"não autorizado\"),\n        }\n    }\n}",
-        "slot": "err-custom"
-      },
       {
         "id": "rs-005",
         "concept": {
@@ -6337,65 +1735,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "fn parse_number(s: &str) -> Result<i32, String> {\n    s.parse::<i32>()\n        .map_err(|e| format!(\"Parse error: {e}\"))\n}",
         "slot": "err-result"
-      },
-      {
-        "id": "rs-037",
-        "concept": {
-          "pt": "Operador ? (Finally)",
-          "en": "The ? Operator (Finally)"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "O operador \"?\" propaga erros automaticamente, retornando Err cedo se a operação falhar. Use pra encadear operações falíveis.",
-          "en": "The \"?\" operator propagates errors automatically, returning Err early if the operation fails. Use it to chain fallible operations."
-        },
-        "code": "use std::fs;\n\nfn read_config(path: &str) -> Result<String, std::io::Error> {\n    let content = fs::read_to_string(path)?;\n    Ok(content.trim().to_string())\n}",
-        "slot": "err-finally"
       }
     ],
     "go": [
-      {
-        "id": "go-007",
-        "concept": {
-          "pt": "Tratamento de Erros",
-          "en": "Error Handling"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Go, erro é um valor retornado -- a convenção é checar if err != nil na hora. Capture o erro de doSomething() e use fmt.Errorf com %w pra wrappear o erro original, preservando o contexto da falha.",
-          "en": "In Go, errors are returned values -- the convention is to check if err != nil immediately. Capture the error from doSomething() and use fmt.Errorf with %w to wrap the original error, preserving failure context."
-        },
-        "code": "result, err := doSomething()\nif err != nil {\n    return fmt.Errorf(\"failed: %w\", err)\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "go-034",
-        "concept": {
-          "pt": "Erro Customizado",
-          "en": "Custom Error"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Go, qualquer tipo que implemente Error() string satisfaz a interface error. Crie um tipo ValidationError com campo Field e Message.",
-          "en": "In Go, any type implementing Error() string satisfies the error interface. Create a ValidationError type with Field and Message fields."
-        },
-        "code": "type ValidationError struct {\n    Field   string\n    Message string\n}\n\nfunc (e *ValidationError) Error() string {\n    return e.Field + \": \" + e.Message\n}",
-        "slot": "err-custom"
-      },
-      {
-        "id": "go-035",
-        "concept": {
-          "pt": "Resultado com ok",
-          "en": "Result with ok"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go usa o padrão \"valor, ok\" pra indicar sucesso ou falha sem erro explicito. Use esse padrão pra buscar num map e tratar a ausencia.",
-          "en": "Go uses the \"value, ok\" pattern to indicate success or failure without an explicit error. Use this pattern to look up a map and handle absence."
-        },
-        "code": "func lookup(users map[string]User, key string) (User, bool) {\n    u, ok := users[key]\n    return u, ok\n}",
-        "slot": "err-result"
-      },
       {
         "id": "go-006",
         "concept": {
@@ -6410,415 +1752,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "func readFile(path string) ([]byte, error) {\n    f, err := os.Open(path)\n    if err != nil {\n        return nil, err\n    }\n    defer f.Close()\n    return io.ReadAll(f)\n}",
         "slot": "err-finally"
       }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-035",
-        "concept": {
-          "pt": "Try-Catch",
-          "en": "Try-Catch"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "try-catch captura exceções em Kotlin e pode ser usado como expressão. Tente converter uma string em número e trate a exceção.",
-          "en": "try-catch catches exceptions in Kotlin and can be used as an expression. Try converting a string to a number and handle the exception."
-        },
-        "code": "val input = \"abc\"\nval number = try {\n    input.toInt()\n} catch (e: NumberFormatException) {\n    -1\n}\nprintln(number)",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "kotlin-036",
-        "concept": {
-          "pt": "Exceção Personalizada",
-          "en": "Custom Exception"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Crie uma exceção personalizada estendendo Exception e lance-a com throw numa função de validação.",
-          "en": "Create a custom exception extending Exception and throw it in a validation function."
-        },
-        "code": "class ValidationError(msg: String) : Exception(msg)\n\nfun validateAge(age: Int): Int {\n    if (age < 0) throw ValidationError(\"Idade negativa\")\n    return age\n}",
-        "slot": "err-custom"
-      },
-      {
-        "id": "kotlin-037",
-        "concept": {
-          "pt": "Resultado com Sealed Class",
-          "en": "Result with Sealed Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Use sealed class pra modelar sucesso/falha sem exceções, similar ao Result de Rust. Crie uma função que retorne Success ou Failure.",
-          "en": "Use sealed class to model success/failure without exceptions, similar to Rust Result. Create a function that returns Success or Failure."
-        },
-        "code": "sealed class Outcome<out T> {\n    data class Success<T>(val value: T) : Outcome<T>()\n    data class Failure(val error: String) : Outcome<Nothing>()\n}\n\nfun divide(a: Int, b: Int): Outcome<Double> =\n    if (b != 0) Outcome.Success(a.toDouble() / b)\n    else Outcome.Failure(\"Divisão por zero\")",
-        "slot": "err-result"
-      },
-      {
-        "id": "kotlin-038",
-        "concept": {
-          "pt": "Finally",
-          "en": "Finally"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O bloco \"finally\" sempre executa, independente de exceção. Use try-catch-finally pra garantir limpeza de recurso.",
-          "en": "The \"finally\" block always runs regardless of exceptions. Use try-catch-finally to guarantee resource cleanup."
-        },
-        "code": "fun readFile(path: String): String {\n    val reader = java.io.File(path).bufferedReader()\n    try {\n        return reader.readText()\n    } catch (e: Exception) {\n        return \"Erro: ${e.message}\"\n    } finally {\n        reader.close()\n    }\n}",
-        "slot": "err-finally"
-      }
-    ],
-    "scala": [
-      {
-        "id": "scala-033",
-        "concept": {
-          "pt": "Try/Catch",
-          "en": "Try/Catch"
-        },
-        "difficulty": "medium",
-        "slot": "err-try-catch",
-        "prompt": {
-          "pt": "try/catch em Scala usa pattern matching nos blocos catch. Capture exceções específicas com \"case e: TipoExceção =>\".",
-          "en": "try/catch in Scala uses pattern matching in catch blocks. Capture specific exceptions with \"case e: ExceptionType =>\"."
-        },
-        "code": "import scala.util.{Try, Success, Failure}\n\nval result = Try(\"42x\".toInt) match {\n  case Success(n) => s\"Parsed: $n\"\n  case Failure(e) => s\"Error: ${e.getMessage}\"\n}"
-      },
-      {
-        "id": "scala-034",
-        "concept": {
-          "pt": "Exceção Personalizada",
-          "en": "Custom Exception"
-        },
-        "difficulty": "medium",
-        "slot": "err-custom",
-        "prompt": {
-          "pt": "Exceções customizadas estendem Exception. Crie ValidationError e lance-a quando uma validação falhar.",
-          "en": "Custom exceptions extend Exception. Create ValidationError and throw it when a validation fails."
-        },
-        "code": "class ValidationError(msg: String)\n  extends Exception(msg)\n\ndef validate(age: Int): Int =\n  if (age < 0) throw new ValidationError(\"negative age\")\n  else age"
-      },
-      {
-        "id": "scala-007",
-        "concept": {
-          "pt": "Mônada Option",
-          "en": "Option Monad"
-        },
-        "difficulty": "medium",
-        "slot": "err-result",
-        "prompt": {
-          "pt": "Option[A] é o jeito funcional de lidar com valores que podem não existir (Some ou None). Busque um usuário num Map, transforme com .map(_.toUpperCase) e devolva \"Not found\" via .getOrElse se a chave não existir.",
-          "en": "Option[A] is a functional type for values that may not exist (Some or None). Look up a user in a Map, transform the result with .map(_.toUpperCase) and return \"Not found\" with .getOrElse if the key doesn't exist."
-        },
-        "code": "def findUser(id: Int): Option[String] =\n  Map(1 -> \"Alice\", 2 -> \"Bob\").get(id)\n\nval result = findUser(1)\n  .map(_.toUpperCase)\n  .getOrElse(\"Not found\")"
-      },
-      {
-        "id": "scala-035",
-        "concept": {
-          "pt": "Finally",
-          "en": "Finally"
-        },
-        "difficulty": "medium",
-        "slot": "err-finally",
-        "prompt": {
-          "pt": "O bloco finally garante execução independente de exceções. Use try/catch/finally pra abrir, usar e fechar um recurso.",
-          "en": "The finally block guarantees execution regardless of exceptions. Use try/catch/finally to open, use and close a resource."
-        },
-        "code": "var resource: String = null\ntry {\n  resource = \"open\"\n  println(resource.toUpperCase)\n} catch {\n  case e: Exception => println(e.getMessage)\n} finally {\n  resource = null\n  println(\"Cleaned up\")\n}"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-032",
-        "concept": {
-          "pt": "Do-Catch",
-          "en": "Do-Catch"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Do-catch é o try-catch do Swift. Use \"try\" dentro de \"do\" e capture o erro no bloco \"catch\".",
-          "en": "Do-catch is Swift's try-catch. Use \"try\" inside \"do\" and capture the error in the \"catch\" block."
-        },
-        "code": "enum FileError: Error {\n    case notFound\n}\n\nfunc readFile(_ name: String) throws -> String {\n    throw FileError.notFound\n}\n\ndo {\n    let content = try readFile(\"data.txt\")\n    print(content)\n} catch {\n    print(\"Erro: \\(error)\")\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "swift-033",
-        "concept": {
-          "pt": "Erro Personalizado",
-          "en": "Custom Error"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Crie um enum que implementa Error com diferentes casos e dados associados pra erros descritivos.",
-          "en": "Create an enum that implements Error with different cases and associated data for descriptive errors."
-        },
-        "code": "enum ApiError: Error, CustomStringConvertible {\n    case unauthorized\n    case serverError(code: Int)\n\n    var description: String {\n        switch self {\n        case .unauthorized: return \"Não autorizado\"\n        case .serverError(let c): return \"Erro \\(c)\"\n        }\n    }\n}",
-        "slot": "err-custom"
-      },
-      {
-        "id": "swift-007",
-        "concept": {
-          "pt": "Enumeração com Valores Associados",
-          "en": "Enum with Associated Values"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Enums com associated values guardam dados diferentes em cada variante. Defina Result<T> com .success(T) (trazendo o valor de sucesso) e .failure(Error) (trazendo o erro), e depois crie uma instância de sucesso.",
-          "en": "Enums with associated values carry different data in each variant. Define Result<T> with .success(T) (carrying the successful value) and .failure(Error) (carrying the error), then create a success instance."
-        },
-        "code": "enum Result<T> {\n    case success(T)\n    case failure(Error)\n}\n\nlet result: Result<Int> = .success(42)",
-        "slot": "err-result"
-      },
-      {
-        "id": "swift-034",
-        "concept": {
-          "pt": "Defer (Finally)",
-          "en": "Defer (Finally)"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "\"defer\" garante que um bloco de código execute ao sair do escopo, como finally. Use pra garantir limpeza de recurso.",
-          "en": "\"defer\" ensures a code block executes when leaving the scope, like finally. Use it to guarantee resource cleanup."
-        },
-        "code": "func processFile(_ name: String) {\n    print(\"abrindo \\(name)\")\n    defer { print(\"fechando \\(name)\") }\n    print(\"processando...\")\n}\n\nprocessFile(\"data.txt\")",
-        "slot": "err-finally"
-      }
-    ],
-    "ruby": [
-      {
-        "id": "ruby-031",
-        "concept": {
-          "pt": "Try/Catch (begin/rescue)",
-          "en": "Try/Catch (begin/rescue)"
-        },
-        "difficulty": "medium",
-        "slot": "err-try-catch",
-        "prompt": {
-          "pt": "begin/rescue em Ruby captura exceções, equivalente a try/catch. Use rescue pra capturar um erro específico e tratar com uma mensagem.",
-          "en": "begin/rescue in Ruby catches exceptions, equivalent to try/catch. Use rescue to catch a specific error and handle it with a message."
-        },
-        "code": "begin\n  result = 10 / 0\nrescue ZeroDivisionError => e\n  puts \"Error: #{e.message}\"\nend"
-      },
-      {
-        "id": "ruby-032",
-        "concept": {
-          "pt": "Exceção Personalizada",
-          "en": "Custom Exception"
-        },
-        "difficulty": "medium",
-        "slot": "err-custom",
-        "prompt": {
-          "pt": "Exceções customizadas herdam de StandardError. Crie ValidationError e lance-a com raise quando uma validação falhar.",
-          "en": "Custom exceptions inherit from StandardError. Create ValidationError and raise it when a validation fails."
-        },
-        "code": "class ValidationError < StandardError; end\n\ndef validate_age(age)\n  raise ValidationError, \"negative age\" if age < 0\n  age\nend\n\nbegin\n  validate_age(-1)\nrescue ValidationError => e\n  puts e.message\nend"
-      },
-      {
-        "id": "ruby-033",
-        "concept": {
-          "pt": "Result Pattern",
-          "en": "Result Pattern"
-        },
-        "difficulty": "hard",
-        "slot": "err-result",
-        "prompt": {
-          "pt": "Ruby pode simular o pattern Result com arrays [ok, valor]. Crie um método que retorna sucesso ou falha como tupla e desempacote o resultado.",
-          "en": "Ruby can simulate the Result pattern with arrays [ok, value]. Create a method that returns success or failure as a tuple and unpack the result."
-        },
-        "code": "def parse_int(str)\n  [:ok, Integer(str)]\nrescue ArgumentError\n  [:error, \"invalid: #{str}\"]\nend\n\nstatus, value = parse_int(\"42\")\nputs \"#{status}: #{value}\""
-      },
-      {
-        "id": "ruby-034",
-        "concept": {
-          "pt": "Ensure (Finally)",
-          "en": "Ensure (Finally)"
-        },
-        "difficulty": "medium",
-        "slot": "err-finally",
-        "prompt": {
-          "pt": "ensure em Ruby garante execução do bloco independente de exceções, como finally em outras linguagens. Use pra limpar recursos.",
-          "en": "ensure in Ruby guarantees block execution regardless of exceptions, like finally in other languages. Use it to clean up resources."
-        },
-        "code": "resource = \"open\"\nbegin\n  raise \"oops\"\nrescue => e\n  puts \"Caught: #{e.message}\"\nensure\n  resource = nil\n  puts \"Cleaned up\"\nend"
-      }
-    ],
-    "lua": [
-      {
-        "id": "lua-010",
-        "concept": {
-          "pt": "pcall e Tratamento de Erros",
-          "en": "pcall and Error Handling"
-        },
-        "difficulty": "hard",
-        "slot": "err-try-catch",
-        "prompt": {
-          "pt": "pcall roda uma função em modo protegido: captura erros de error() sem derrubar o programa. Crie risky que valida o tipo e lança um erro descritivo, depois use pcall e cheque ok/result pra tratar sucesso e falha.",
-          "en": "pcall calls a function in protected mode: it catches errors thrown by error() without crashing the program. Define risky that validates the type and throws a descriptive error, then use pcall and check ok/result to handle success and failure."
-        },
-        "code": "local function risky(x)\n  if type(x) ~= \"number\" then\n    error(\"expected number, got \" .. type(x))\n  end\n  return math.sqrt(x)\nend\n\nlocal ok, result = pcall(risky, \"oops\")\nif not ok then\n  print(\"Error:\", result)\nelse\n  print(\"Result:\", result)\nend"
-      },
-      {
-        "id": "lua-032",
-        "concept": {
-          "pt": "Erro Personalizado",
-          "en": "Custom Error"
-        },
-        "difficulty": "medium",
-        "slot": "err-custom",
-        "prompt": {
-          "pt": "Erros customizados em Lua usam tabelas como objetos de erro. Crie um erro estruturado com tipo e mensagem e lance com error().",
-          "en": "Custom errors in Lua use tables as error objects. Create a structured error with type and message and throw with error()."
-        },
-        "code": "local function validate(age)\n  if age < 0 then\n    error({type = \"ValidationError\", msg = \"negative age\"})\n  end\n  return age\nend\n\nlocal ok, err = pcall(validate, -1)\nif not ok then print(err.type .. \": \" .. err.msg) end"
-      },
-      {
-        "id": "lua-033",
-        "concept": {
-          "pt": "Result Pattern com pcall",
-          "en": "Result Pattern with pcall"
-        },
-        "difficulty": "hard",
-        "slot": "err-result",
-        "prompt": {
-          "pt": "pcall retorna um booleano ok e o resultado ou erro, funcionando como um Result. Use pcall pra criar um padrão Result explícito.",
-          "en": "pcall returns a boolean ok and the result or error, working as a Result. Use pcall to create an explicit Result pattern."
-        },
-        "code": "local function parse_int(str)\n  local n = tonumber(str)\n  if not n then error(\"invalid: \" .. str) end\n  return math.floor(n)\nend\n\nlocal ok, val = pcall(parse_int, \"42\")\nif ok then print(\"Ok:\", val) else print(\"Err:\", val) end"
-      },
-      {
-        "id": "lua-034",
-        "concept": {
-          "pt": "Finally com xpcall",
-          "en": "Finally with xpcall"
-        },
-        "difficulty": "medium",
-        "slot": "err-finally",
-        "prompt": {
-          "pt": "Lua não tem finally, mas xpcall com handler e cleanup manual simulam o mesmo efeito. Execute cleanup independente do resultado.",
-          "en": "Lua has no finally, but xpcall with handler and manual cleanup simulate the same effect. Execute cleanup regardless of the result."
-        },
-        "code": "local resource = \"open\"\nlocal ok, result = xpcall(function()\n  error(\"oops\")\nend, function(err)\n  return \"Caught: \" .. err\nend)\nresource = nil\nprint(result)\nprint(\"Cleaned up, resource:\", resource)"
-      }
-    ],
-    "bash": [
-      {
-        "id": "bash-025",
-        "concept": {
-          "pt": "Trap e Tratamento de Erros",
-          "en": "Trap and Error Handling"
-        },
-        "difficulty": "medium",
-        "slot": "err-try-catch",
-        "prompt": {
-          "pt": "Bash simula try/catch com trap e set -e. Use trap pra capturar erros e executar cleanup quando um comando falha.",
-          "en": "Bash simulates try/catch with trap and set -e. Use trap to catch errors and run cleanup when a command fails."
-        },
-        "code": "cleanup() { echo \"Cleaning up...\"; }\ntrap cleanup EXIT\n\nset -e\necho \"Step 1\"\necho \"Step 2\"\necho \"All done\""
-      },
-      {
-        "id": "bash-026",
-        "concept": {
-          "pt": "Código de Erro Customizado",
-          "en": "Custom Error Code"
-        },
-        "difficulty": "medium",
-        "slot": "err-custom",
-        "prompt": {
-          "pt": "Bash usa códigos de saída (0-255) pra sinalizar erros. Crie funções que retornam códigos específicos e verifique com $?.",
-          "en": "Bash uses exit codes (0-255) to signal errors. Create functions that return specific codes and check with $?."
-        },
-        "code": "validate_age() {\n    [[ \"$1\" -lt 0 ]] && { echo \"negative age\"; return 2; }\n    [[ \"$1\" -gt 150 ]] && { echo \"too old\"; return 3; }\n    echo \"valid: $1\"; return 0\n}\nvalidate_age -1\necho \"Exit code: $?\""
-      },
-      {
-        "id": "bash-027",
-        "concept": {
-          "pt": "Result com Return",
-          "en": "Result with Return"
-        },
-        "difficulty": "medium",
-        "slot": "err-result",
-        "prompt": {
-          "pt": "Bash simula o padrão Result combinando stdout pra o valor e o código de retorno pra sucesso/erro. Capture ambos pra tratar o resultado.",
-          "en": "Bash simulates the Result pattern combining stdout for the value and the return code for success/error. Capture both to handle the result."
-        },
-        "code": "parse_int() {\n    if [[ \"$1\" =~ ^[0-9]+$ ]]; then\n        echo \"$1\"; return 0\n    else\n        echo \"invalid: $1\"; return 1\n    fi\n}\nval=$(parse_int \"42\") && echo \"Ok: $val\" || echo \"Err: $val\""
-      },
-      {
-        "id": "bash-028",
-        "concept": {
-          "pt": "Trap Finally",
-          "en": "Trap Finally"
-        },
-        "difficulty": "medium",
-        "slot": "err-finally",
-        "prompt": {
-          "pt": "trap EXIT funciona como finally: executa sempre, mesmo com erros. Use pra garantir que recursos temporários sejam limpos.",
-          "en": "trap EXIT works like finally: it always runs, even on errors. Use it to ensure temporary resources are cleaned up."
-        },
-        "code": "tmpfile=$(mktemp)\ntrap \"rm -f $tmpfile; echo 'Cleaned up'\" EXIT\n\necho \"data\" > \"$tmpfile\"\ncat \"$tmpfile\""
-      }
     ]
   },
   "classes": {
-    "cpp": [
-      {
-        "id": "cpp-029",
-        "concept": {
-          "pt": "Classe Basica",
-          "en": "Basic Class"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Classes em C++ encapsulam estado com campos privados e construtores. Defina User com campos private e constructor publico.",
-          "en": "C++ classes encapsulate state with private fields and constructors. Define User with private fields and a public constructor."
-        },
-        "code": "class User {\n    std::string name_;\n    int age_;\npublic:\n    User(std::string name, int age)\n        : name_(std::move(name)), age_(age) {}\n    const std::string& name() const { return name_; }\n};",
-        "slot": "class-basic"
-      },
-      {
-        "id": "cpp-030",
-        "concept": {
-          "pt": "Heranca",
-          "en": "Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Heranca em C++ usa \":\" com especificador de acesso. Crie Employee que herda publicamente de Person e adiciona role.",
-          "en": "Inheritance in C++ uses \":\" with an access specifier. Create Employee that publicly inherits from Person and adds role."
-        },
-        "code": "class Person {\nprotected:\n    std::string name_;\npublic:\n    Person(std::string name) : name_(std::move(name)) {}\n};\n\nclass Employee : public Person {\n    std::string role_;\npublic:\n    Employee(std::string name, std::string role)\n        : Person(std::move(name)), role_(std::move(role)) {}\n};",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "cpp-031",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Override em C++ redefine um método virtual da classe base. Use a keyword \"override\" pra garantir que a assinatura bate.",
-          "en": "Override in C++ redefines a virtual method from the base class. Use the \"override\" keyword to ensure the signature matches."
-        },
-        "code": "class Animal {\npublic:\n    virtual std::string speak() const { return \"...\"; }\n    virtual ~Animal() = default;\n};\n\nclass Dog : public Animal {\npublic:\n    std::string speak() const override { return \"Woof!\"; }\n};",
-        "slot": "class-override"
-      },
-      {
-        "id": "cpp-032",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classes abstratas em C++ tem pelo menos um método virtual puro (= 0). Defina Shape com area() puro e implemente Circle.",
-          "en": "Abstract classes in C++ have at least one pure virtual method (= 0). Define Shape with pure area() and implement Circle."
-        },
-        "code": "class Shape {\npublic:\n    virtual double area() const = 0;\n    virtual ~Shape() = default;\n};\n\nclass Circle : public Shape {\n    double radius_;\npublic:\n    Circle(double r) : radius_(r) {}\n    double area() const override {\n        return 3.14159 * radius_ * radius_;\n    }\n};",
-        "slot": "class-abstract"
-      }
-    ],
     "csharp": [
       {
         "id": "cs-033",
@@ -6877,122 +1813,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "code": "public abstract class Shape\n{\n    public abstract double Area();\n}"
       }
     ],
-    "javascript": [
-      {
-        "id": "js-010",
-        "concept": {
-          "pt": "Classe",
-          "en": "Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classes em JS encapsulam estado e comportamento no estilo orientado a objetos. Defina Animal com um constructor que seta this.name e um método speak que retorna uma mensagem usando template literal com o nome do bicho.",
-          "en": "Classes in JavaScript encapsulate state and behavior in an object-oriented style. Define Animal with a constructor that initializes this.name and a speak method that returns a message using a template literal with the animal's name."
-        },
-        "code": "class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n  speak() {\n    return `${this.name} makes a noise.`;\n  }\n}",
-        "slot": "class-basic"
-      },
-      {
-        "id": "js-029",
-        "concept": {
-          "pt": "Herança de Classe",
-          "en": "Class Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "extends permite que uma classe herde propriedades e métodos de outra. Crie Dog estendendo Animal e chame super() no constructor.",
-          "en": "extends lets a class inherit properties and methods from another. Create Dog extending Animal and call super() in the constructor."
-        },
-        "code": "class Dog extends Animal {\n  constructor(name) {\n    super(name);\n  }\n  speak() {\n    return `${this.name} barks.`;\n  }\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "js-030",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Uma classe filha pode sobrescrever métodos da classe pai pra alterar o comportamento. Sobrescreva toString() na classe Product pra retornar uma representação personalizada.",
-          "en": "A child class can override parent methods to change behavior. Override toString() in the Product class to return a custom representation."
-        },
-        "code": "class Product {\n  constructor(name, price) {\n    this.name = name;\n    this.price = price;\n  }\n  toString() {\n    return `${this.name}: $${this.price}`;\n  }\n}",
-        "slot": "class-override"
-      },
-      {
-        "id": "js-031",
-        "concept": {
-          "pt": "Classe Abstrata (simulada)",
-          "en": "Abstract Class (simulated)"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "JavaScript não tem classes abstratas nativas, mas podemos simular lançando erro em métodos que devem ser implementados pelas subclasses.",
-          "en": "JavaScript has no native abstract classes, but we can simulate them by throwing errors in methods that subclasses must implement."
-        },
-        "code": "class Shape {\n  area() {\n    throw new Error(\"Not implemented\");\n  }\n}",
-        "slot": "class-abstract"
-      }
-    ],
-    "typescript": [
-      {
-        "id": "ts-033",
-        "concept": {
-          "pt": "Classe Tipada",
-          "en": "Typed Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classes em TypeScript declaram tipos nas propriedades e nos métodos. Crie uma classe Animal com propriedades tipadas e um método.",
-          "en": "TypeScript classes declare types on properties and methods. Create an Animal class with typed properties and a method."
-        },
-        "code": "class Animal {\n  constructor(public name: string) {}\n  speak(): string {\n    return `${this.name} makes a noise.`;\n  }\n}",
-        "slot": "class-basic"
-      },
-      {
-        "id": "ts-034",
-        "concept": {
-          "pt": "Herança de Classe",
-          "en": "Class Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "extends permite herdar de outra classe, e super() chama o construtor pai. TypeScript garante a tipagem em toda a cadeia.",
-          "en": "extends inherits from another class, and super() calls the parent constructor. TypeScript ensures typing across the chain."
-        },
-        "code": "class Dog extends Animal {\n  constructor(name: string, public breed: string) {\n    super(name);\n  }\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "ts-035",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Uma classe filha pode sobrescrever métodos da classe pai. O TypeScript verifica que a assinatura é compatível.",
-          "en": "A child class can override parent methods. TypeScript checks that the signature is compatible."
-        },
-        "code": "class Cat extends Animal {\n  override speak(): string {\n    return `${this.name} meows.`;\n  }\n}",
-        "slot": "class-override"
-      },
-      {
-        "id": "ts-036",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Classes abstratas não podem ser instanciadas diretamente -- servem como base que define métodos que as subclasses devem implementar.",
-          "en": "Abstract classes cannot be instantiated directly -- they serve as a base that defines methods subclasses must implement."
-        },
-        "code": "abstract class Shape {\n  abstract area(): number;\n  describe(): string {\n    return `Area: ${this.area()}`;\n  }\n}",
-        "slot": "class-abstract"
-      }
-    ],
     "python": [
       {
         "id": "py-006",
@@ -7007,48 +1827,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "@dataclass\nclass Point:\n    x: float\n    y: float\n    z: float = 0.0\n\n    def distance(self) -> float:\n        return (self.x**2 + self.y**2 + self.z**2) ** 0.5",
         "slot": "class-basic"
-      },
-      {
-        "id": "py-032",
-        "concept": {
-          "pt": "Herança",
-          "en": "Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Herança permite que uma classe reutilize código de outra. Crie Dog herdando de Animal e chame super().__init__() no construtor.",
-          "en": "Inheritance lets a class reuse code from another. Create Dog inheriting from Animal and call super().__init__() in the constructor."
-        },
-        "code": "class Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)\n        self.breed = breed",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "py-033",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Uma classe filha pode sobrescrever métodos da classe pai. Sobrescreva __str__ na classe Product pra retornar uma representação personalizada.",
-          "en": "A child class can override parent methods. Override __str__ in the Product class to return a custom representation."
-        },
-        "code": "class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def __str__(self):\n        return f\"{self.name}: ${self.price}\"",
-        "slot": "class-override"
-      },
-      {
-        "id": "py-034",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "ABC (Abstract Base Class) define métodos abstratos que as subclasses devem implementar. Use @abstractmethod pra forçar a implementação.",
-          "en": "ABC (Abstract Base Class) defines abstract methods that subclasses must implement. Use @abstractmethod to enforce implementation."
-        },
-        "code": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self) -> float:\n        pass",
-        "slot": "class-abstract"
       }
     ],
     "java": [
@@ -7065,164 +1843,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "public class User {\n    private String name;\n    private int age;\n\n    public User(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n}",
         "slot": "class-basic"
-      },
-      {
-        "id": "java-031",
-        "concept": {
-          "pt": "Heranca",
-          "en": "Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Heranca em Java usa \"extends\" pra reutilizar codigo da classe pai. Crie Employee que estende Person e adiciona o campo role.",
-          "en": "Inheritance in Java uses \"extends\" to reuse code from the parent class. Create Employee extending Person and adding the role field."
-        },
-        "code": "public class Employee extends Person {\n    private String role;\n\n    public Employee(String name, int age, String role) {\n        super(name, age);\n        this.role = role;\n    }\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "java-032",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Override em Java redefine o comportamento do método da classe pai. Sobrescreva toString em Employee pra incluir o cargo.",
-          "en": "Override in Java redefines the behavior of the parent class method. Override toString in Employee to include the role."
-        },
-        "code": "@Override\npublic String toString() {\n    return getName() + \" - \" + role;\n}",
-        "slot": "class-override"
-      },
-      {
-        "id": "java-033",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classe abstrata em Java define métodos que as subclasses devem implementar. Crie Shape abstrata com area() e implemente Circle.",
-          "en": "Abstract classes in Java define methods that subclasses must implement. Create abstract Shape with area() and implement Circle."
-        },
-        "code": "public abstract class Shape {\n    public abstract double area();\n}\n\npublic class Circle extends Shape {\n    private double radius;\n    public double area() {\n        return Math.PI * radius * radius;\n    }\n}",
-        "slot": "class-abstract"
-      }
-    ],
-    "rust": [
-      {
-        "id": "rs-031",
-        "concept": {
-          "pt": "Struct com New",
-          "en": "Struct with New"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Rust, o construtor convencional é um associated function chamado \"new\". Implemente new e um método pra uma struct básica.",
-          "en": "In Rust, the conventional constructor is an associated function called \"new\". Implement new and a method for a basic struct."
-        },
-        "code": "struct Player {\n    name: String,\n    score: u32,\n}\n\nimpl Player {\n    fn new(name: &str) -> Self {\n        Self { name: name.to_string(), score: 0 }\n    }\n    fn add_score(&mut self, pts: u32) { self.score += pts; }\n}",
-        "slot": "class-basic"
-      },
-      {
-        "id": "rs-032",
-        "concept": {
-          "pt": "Trait como Herança",
-          "en": "Trait as Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Rust usa composição de traits no lugar de herança de classe. Defina um trait base e implemente em structs diferentes.",
-          "en": "Rust uses trait composition instead of class inheritance. Define a base trait and implement it on different structs."
-        },
-        "code": "trait Animal {\n    fn name(&self) -> &str;\n    fn sound(&self) -> &str;\n}\n\nstruct Dog { name: String }\nimpl Animal for Dog {\n    fn name(&self) -> &str { &self.name }\n    fn sound(&self) -> &str { \"Woof!\" }\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "rs-033",
-        "concept": {
-          "pt": "Override via Trait",
-          "en": "Override via Trait"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Traits com implementação padrão permitem \"override\" ao reimplementar o método. Sobrescreva o comportamento padrão num tipo específico.",
-          "en": "Traits with default implementation allow \"override\" by reimplementing the method. Override the default behavior on a specific type."
-        },
-        "code": "trait Shape {\n    fn area(&self) -> f64 { 0.0 }\n    fn name(&self) -> &str;\n}\n\nstruct Square { side: f64 }\nimpl Shape for Square {\n    fn area(&self) -> f64 { self.side * self.side }\n    fn name(&self) -> &str { \"Square\" }\n}",
-        "slot": "class-override"
-      },
-      {
-        "id": "rs-034",
-        "concept": {
-          "pt": "Trait Abstrato",
-          "en": "Abstract Trait"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Traits com métodos sem implementação padrão funcionam como classes abstratas. Defina um trait com parte abstrata e parte concreta.",
-          "en": "Traits with methods without default implementation work as abstract classes. Define a trait with abstract and concrete parts."
-        },
-        "code": "trait Logger {\n    fn write(&self, msg: &str);\n    fn log(&self, msg: &str) {\n        self.write(&format!(\"[LOG] {msg}\"));\n    }\n}\n\nstruct Console;\nimpl Logger for Console {\n    fn write(&self, msg: &str) { println!(\"{msg}\"); }\n}",
-        "slot": "class-abstract"
-      }
-    ],
-    "go": [
-      {
-        "id": "go-030",
-        "concept": {
-          "pt": "Struct com Constructor",
-          "en": "Struct Constructor"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Go nao tem classes, mas a convencao e criar funções New* que funcionam como construtores. Crie NewUser que valida os campos e retorna *User.",
-          "en": "Go has no classes, but the convention is New* functions as constructors. Create NewUser that validates fields and returns *User."
-        },
-        "code": "func NewUser(name string, age int) *User {\n    return &User{\n        Name: name,\n        Age:  age,\n    }\n}",
-        "slot": "class-basic"
-      },
-      {
-        "id": "go-031",
-        "concept": {
-          "pt": "Composição (Heranca)",
-          "en": "Composition (Inheritance)"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go usa composição em vez de heranca. Embuta Animal dentro de Dog pra \"herdar\" seus campos e métodos de forma implicita.",
-          "en": "Go uses composition instead of inheritance. Embed Animal inside Dog to \"inherit\" its fields and methods implicitly."
-        },
-        "code": "type Animal struct {\n    Name string\n}\n\nfunc (a Animal) Speak() string {\n    return a.Name + \" speaks\"\n}\n\ntype Dog struct {\n    Animal\n    Breed string\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "go-032",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Go, o struct externo pode redefinir um método do struct embutido, \"sobrescrevendo\" o comportamento. Faca Dog redefinir Speak de Animal.",
-          "en": "In Go, the outer struct can redefine a method from the embedded struct, \"overriding\" the behavior. Make Dog override Animal's Speak."
-        },
-        "code": "func (d Dog) Speak() string {\n    return d.Name + \" barks\"\n}\n\ndog := Dog{Animal: Animal{Name: \"Rex\"}, Breed: \"Labrador\"}\nfmt.Println(dog.Speak())",
-        "slot": "class-override"
-      },
-      {
-        "id": "go-033",
-        "concept": {
-          "pt": "Interface como Abstrato",
-          "en": "Interface as Abstract"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Go nao tem classes abstratas, mas interfaces servem o mesmo proposito. Defina Shape com Area() e implemente com Circle.",
-          "en": "Go has no abstract classes, but interfaces serve the same purpose. Define Shape with Area() and implement it with Circle."
-        },
-        "code": "type Shape interface {\n    Area() float64\n}\n\ntype Circle struct {\n    Radius float64\n}\n\nfunc (c Circle) Area() float64 {\n    return 3.14159 * c.Radius * c.Radius\n}",
-        "slot": "class-abstract"
       }
     ],
     "kotlin": [
@@ -7239,48 +1859,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "data class User(\n    val name: String,\n    val age: Int,\n    val email: String,\n)\n\nval alice = User(\"Alice\", 30, \"alice@example.com\")",
         "slot": "class-basic"
-      },
-      {
-        "id": "kotlin-032",
-        "concept": {
-          "pt": "Herança de Classe",
-          "en": "Class Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classes em Kotlin são final por padrão. Use \"open\" pra permitir herança e \"override\" pra sobrescrever métodos.",
-          "en": "Kotlin classes are final by default. Use \"open\" to allow inheritance and \"override\" to override methods."
-        },
-        "code": "open class Animal(val name: String) {\n    open fun sound() = \"...\"\n}\n\nclass Dog(name: String) : Animal(name) {\n    override fun sound() = \"Woof!\"\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "kotlin-033",
-        "concept": {
-          "pt": "Sobrescrita de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Override permite especializar comportamento herdado. Sobrescreva toString() e um método \"open\" da classe base numa subclasse.",
-          "en": "Override lets you specialize inherited behavior. Override toString() and an \"open\" method from the base class in a subclass."
-        },
-        "code": "open class Shape(val name: String) {\n    open fun area(): Double = 0.0\n    override fun toString() = name\n}\n\nclass Square(val side: Double) : Shape(\"Square\") {\n    override fun area() = side * side\n}",
-        "slot": "class-override"
-      },
-      {
-        "id": "kotlin-034",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classes abstratas podem ter membros abstratos (sem corpo) e concretos. Defina uma classe abstrata com um método abstrato e um concreto.",
-          "en": "Abstract classes can have abstract members (no body) and concrete ones. Define an abstract class with one abstract and one concrete method."
-        },
-        "code": "abstract class Logger {\n    abstract fun write(msg: String)\n    fun log(msg: String) {\n        write(\"[LOG] $msg\")\n    }\n}\n\nclass ConsoleLogger : Logger() {\n    override fun write(msg: String) = println(msg)\n}",
-        "slot": "class-abstract"
       }
     ],
     "scala": [
@@ -7297,106 +1875,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Case classes are Scala's POJOs: immutable with auto-generated equals, toString and copy. Define Person with name and age, create alice, then use .copy to create \"older\" with the same person but one year older."
         },
         "code": "case class Person(name: String, age: Int)\n\nval alice = Person(\"Alice\", 30)\nval older = alice.copy(age = 31)"
-      },
-      {
-        "id": "scala-031",
-        "concept": {
-          "pt": "Herança de Classe",
-          "en": "Class Inheritance"
-        },
-        "difficulty": "medium",
-        "slot": "class-inherit",
-        "prompt": {
-          "pt": "Classes em Scala herdam com extends e chamam o construtor pai diretamente. Crie Animal como superclasse e Dog estendendo-a.",
-          "en": "Scala classes inherit with extends and call the parent constructor directly. Create Animal as a superclass and Dog extending it."
-        },
-        "code": "class Animal(val name: String) {\n  def speak(): String = s\"$name makes a sound\"\n}\n\nclass Dog(name: String) extends Animal(name) {\n  override def speak() = s\"$name barks!\"\n}"
-      },
-      {
-        "id": "scala-032",
-        "concept": {
-          "pt": "Override de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "slot": "class-override",
-        "prompt": {
-          "pt": "Scala exige a keyword \"override\" pra sobrescrever métodos. Sobrescreva toString e um método de trait em classes concretas.",
-          "en": "Scala requires the \"override\" keyword to override methods. Override toString and a trait method in concrete classes."
-        },
-        "code": "trait Shape {\n  def area: Double\n}\n\nclass Rect(val w: Double, val h: Double) extends Shape {\n  override def area: Double = w * h\n  override def toString = s\"Rect(${w}x${h})\"\n}"
-      },
-      {
-        "id": "scala-008",
-        "concept": {
-          "pt": "Trait",
-          "en": "Trait"
-        },
-        "difficulty": "medium",
-        "slot": "class-abstract",
-        "prompt": {
-          "pt": "Traits funcionam como interfaces com implementação parcial -- podem ter métodos abstratos e concretos. Declare Greeter com o método abstrato greet(name: String): String e crie FormalGreeter estendendo esse trait.",
-          "en": "Traits are like interfaces with partial implementation -- they can have both abstract and concrete methods. Declare Greeter with the abstract method greet(name: String): String and implement FormalGreeter extending the trait."
-        },
-        "code": "trait Greeter {\n  def greet(name: String): String\n}\n\nclass FormalGreeter extends Greeter {\n  def greet(name: String) = s\"Good day, $name.\"\n}"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-028",
-        "concept": {
-          "pt": "Herança de Classe",
-          "en": "Class Inheritance"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Classes em Swift suportam herança. Use \"override\" pra sobrescrever métodos da classe base.",
-          "en": "Swift classes support inheritance. Use \"override\" to override methods from the base class."
-        },
-        "code": "class Animal {\n    let name: String\n    init(name: String) { self.name = name }\n    func sound() -> String { \"...\" }\n}\n\nclass Dog: Animal {\n    override func sound() -> String { \"Woof!\" }\n}",
-        "slot": "class-basic"
-      },
-      {
-        "id": "swift-029",
-        "concept": {
-          "pt": "Herança com Super",
-          "en": "Inheritance with Super"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Use \"super\" pra chamar a implementação da classe base e estender comportamento na subclasse.",
-          "en": "Use \"super\" to call the base class implementation and extend behavior in the subclass."
-        },
-        "code": "class Vehicle {\n    var speed = 0\n    func describe() -> String { \"\\(speed) km/h\" }\n}\n\nclass Car: Vehicle {\n    var gear = 1\n    override func describe() -> String {\n        \"\\(super.describe()) in gear \\(gear)\"\n    }\n}",
-        "slot": "class-inherit"
-      },
-      {
-        "id": "swift-030",
-        "concept": {
-          "pt": "Override de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Override permite especializar computed properties e métodos herdados. Sobrescreva uma computed property da classe base.",
-          "en": "Override lets you specialize inherited computed properties and methods. Override a computed property from the base class."
-        },
-        "code": "class Shape {\n    func area() -> Double { 0 }\n    var description: String { \"Shape\" }\n}\n\nclass Circle: Shape {\n    let radius: Double\n    init(radius: Double) { self.radius = radius }\n    override func area() -> Double { .pi * radius * radius }\n    override var description: String { \"Circle r=\\(radius)\" }\n}",
-        "slot": "class-override"
-      },
-      {
-        "id": "swift-031",
-        "concept": {
-          "pt": "Protocolo como Classe Abstrata",
-          "en": "Protocol as Abstract Class"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Swift não tem classes abstratas, mas protocolos com extensões padrão servem pro mesmo propósito. Defina um protocolo com implementação padrão parcial.",
-          "en": "Swift has no abstract classes, but protocols with default extensions serve the same purpose. Define a protocol with partial default implementation."
-        },
-        "code": "protocol Logger {\n    func write(_ msg: String)\n}\n\nextension Logger {\n    func log(_ msg: String) {\n        write(\"[LOG] \\(msg)\")\n    }\n}\n\nstruct ConsoleLogger: Logger {\n    func write(_ msg: String) { print(msg) }\n}",
-        "slot": "class-abstract"
       }
     ],
     "ruby": [
@@ -7413,48 +1891,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "attr_accessor auto-generates getters and setters for instance variables. Define Animal with @name and @sound initialized by the constructor, and the speak method that combines both with string interpolation."
         },
         "code": "class Animal\n  attr_accessor :name, :sound\n\n  def initialize(name, sound)\n    @name = name\n    @sound = sound\n  end\n\n  def speak\n    \"#{@name} says #{@sound}!\"\n  end\nend"
-      },
-      {
-        "id": "ruby-028",
-        "concept": {
-          "pt": "Herança de Classe",
-          "en": "Class Inheritance"
-        },
-        "difficulty": "medium",
-        "slot": "class-inherit",
-        "prompt": {
-          "pt": "Herança em Ruby usa \"<\" e super chama o método pai. Crie Animal como superclasse e Dog que sobrescreve speak chamando super.",
-          "en": "Ruby inheritance uses \"<\" and super calls the parent method. Create Animal as superclass and Dog that overrides speak calling super."
-        },
-        "code": "class Animal\n  def speak\n    \"...\"\n  end\nend\n\nclass Dog < Animal\n  def speak\n    \"Woof!\"\n  end\nend\n\nputs Dog.new.speak"
-      },
-      {
-        "id": "ruby-029",
-        "concept": {
-          "pt": "Override de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "slot": "class-override",
-        "prompt": {
-          "pt": "Ruby permite sobrescrever qualquer método, incluindo to_s. Sobrescreva to_s e um método herdado pra customizar o comportamento.",
-          "en": "Ruby allows overriding any method, including to_s. Override to_s and an inherited method to customize behavior."
-        },
-        "code": "class Shape\n  def area\n    0\n  end\nend\n\nclass Circle < Shape\n  def initialize(r)\n    @r = r\n  end\n  def area\n    Math::PI * @r ** 2\n  end\n  def to_s\n    \"Circle(r=#{@r})\"\n  end\nend"
-      },
-      {
-        "id": "ruby-030",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "hard",
-        "slot": "class-abstract",
-        "prompt": {
-          "pt": "Ruby simula classes abstratas levantando NotImplementedError nos métodos que subclasses devem implementar.",
-          "en": "Ruby simulates abstract classes by raising NotImplementedError in methods that subclasses must implement."
-        },
-        "code": "class Formatter\n  def format(data)\n    raise NotImplementedError\n  end\nend\n\nclass JsonFormatter < Formatter\n  def format(data)\n    \"{ data: \\\"#{data}\\\" }\"\n  end\nend\n\nputs JsonFormatter.new.format(\"hi\")"
       }
     ],
     "lua": [
@@ -7471,48 +1907,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Metatables let you overload operators and add methods to tables. Create Vector with __index pointing to itself, a new constructor using setmetatable and the :length method that computes the Euclidean norm."
         },
         "code": "local Vector = {}\nVector.__index = Vector\n\nfunction Vector.new(x, y)\n  return setmetatable({ x = x, y = y }, Vector)\nend\n\nfunction Vector:length()\n  return math.sqrt(self.x^2 + self.y^2)\nend"
-      },
-      {
-        "id": "lua-029",
-        "concept": {
-          "pt": "Herança com Metatabela",
-          "en": "Inheritance with Metatable"
-        },
-        "difficulty": "medium",
-        "slot": "class-inherit",
-        "prompt": {
-          "pt": "Herança em Lua usa cadeia de metatables: o __index de Dog aponta pra Animal. Crie Animal como \"classe\" base e Dog herdando seus métodos.",
-          "en": "Lua inheritance uses metatable chains: Dog's __index points to Animal. Create Animal as a base \"class\" and Dog inheriting its methods."
-        },
-        "code": "local Animal = {}\nAnimal.__index = Animal\nfunction Animal.new(name) return setmetatable({name=name}, Animal) end\nfunction Animal:speak() return self.name .. \" ...\" end\n\nlocal Dog = setmetatable({}, {__index = Animal})\nDog.__index = Dog\nfunction Dog.new(name) return setmetatable(Animal.new(name), Dog) end\nfunction Dog:speak() return self.name .. \" barks!\" end"
-      },
-      {
-        "id": "lua-030",
-        "concept": {
-          "pt": "Override de Método",
-          "en": "Method Override"
-        },
-        "difficulty": "medium",
-        "slot": "class-override",
-        "prompt": {
-          "pt": "Sobrescrever métodos em Lua é simplesmente redefinir a função na tabela filha. O __index faz o fallback pra métodos não sobrescritos.",
-          "en": "Overriding methods in Lua is simply redefining the function in the child table. __index falls back for non-overridden methods."
-        },
-        "code": "local Shape = {}\nShape.__index = Shape\nfunction Shape:area() return 0 end\nfunction Shape:name() return \"Shape\" end\n\nlocal Rect = setmetatable({}, {__index = Shape})\nRect.__index = Rect\nfunction Rect.new(w, h) return setmetatable({w=w, h=h}, Rect) end\nfunction Rect:area() return self.w * self.h end"
-      },
-      {
-        "id": "lua-031",
-        "concept": {
-          "pt": "Classe Abstrata",
-          "en": "Abstract Class"
-        },
-        "difficulty": "hard",
-        "slot": "class-abstract",
-        "prompt": {
-          "pt": "Lua simula classes abstratas com métodos que lançam error() se não forem sobrescritos. Crie uma \"classe\" base que exige implementação.",
-          "en": "Lua simulates abstract classes with methods that throw error() if not overridden. Create a base \"class\" that requires implementation."
-        },
-        "code": "local Formatter = {}\nFormatter.__index = Formatter\nfunction Formatter:format()\n  error(\"format() must be implemented\")\nend\n\nlocal Json = setmetatable({}, {__index = Formatter})\nJson.__index = Json\nfunction Json:format(data)\n  return \"{ data: \" .. tostring(data) .. \" }\"\nend"
       }
     ]
   },
@@ -7563,20 +1957,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ],
     "cpp": [
       {
-        "id": "cpp-039",
-        "concept": {
-          "pt": "Threads",
-          "en": "Threads"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "C++ usa std::thread e std::async pra concorrencia. Lance uma tarefa assincrona com std::async e pegue o resultado com .get().",
-          "en": "C++ uses std::thread and std::async for concurrency. Launch an async task with std::async and get the result with .get()."
-        },
-        "code": "auto future = std::async(std::launch::async, []() {\n    return heavyComputation();\n});\nauto result = future.get();",
-        "slot": "adv-async"
-      },
-      {
         "id": "cpp-002",
         "concept": {
           "pt": "Ponteiro Inteligente",
@@ -7589,34 +1969,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "auto ptr = std::make_unique<User>(\"Alice\", 30);\nauto shared = std::make_shared<User>(\"Bob\", 25);",
         "slot": "adv-pattern"
-      },
-      {
-        "id": "cpp-040",
-        "concept": {
-          "pt": "Macro e Constexpr",
-          "en": "Macro and Constexpr"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "C++ moderno prefere constexpr a macros pra computacao em compile-time. Crie uma função constexpr que calcula fatorial em tempo de compilacao.",
-          "en": "Modern C++ prefers constexpr over macros for compile-time computation. Create a constexpr function that computes factorial at compile time."
-        },
-        "code": "constexpr int factorial(int n) {\n    return (n <= 1) ? 1 : n * factorial(n - 1);\n}\n\nconstexpr int result = factorial(10);",
-        "slot": "adv-macro"
-      },
-      {
-        "id": "cpp-041",
-        "concept": {
-          "pt": "Concorrencia com Mutex",
-          "en": "Concurrency with Mutex"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "std::mutex protege dados compartilhados entre threads. Use lock_guard pra garantir que o mutex e liberado automaticamente.",
-          "en": "std::mutex protects shared data between threads. Use lock_guard to ensure the mutex is automatically released."
-        },
-        "code": "std::mutex mtx;\nint counter = 0;\n\nvoid increment() {\n    std::lock_guard<std::mutex> lock(mtx);\n    counter++;\n}",
-        "slot": "adv-concurrent"
       }
     ],
     "csharp": [
@@ -7677,95 +2029,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "async function getUser(id) {\n  try {\n    const res = await fetch(`/api/users/${id}`);\n    return await res.json();\n  } catch (err) {\n    console.error(err);\n  }\n}",
         "slot": "adv-async"
-      },
-      {
-        "id": "js-035",
-        "concept": {
-          "pt": "Pattern Matching (objeto)",
-          "en": "Pattern Matching (object)"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "JavaScript não tem pattern matching nativo, mas objetos como lookup tables são o padrão idiomático. Use um objeto pra mapear ações a handlers.",
-          "en": "JavaScript has no native pattern matching, but objects as lookup tables are the idiomatic pattern. Use an object to map actions to handlers."
-        },
-        "code": "const handlers = {\n  click: () => console.log(\"clicked\"),\n  hover: () => console.log(\"hovered\"),\n};\nconst action = \"click\";\nhandlers[action]?.();",
-        "slot": "adv-pattern"
-      },
-      {
-        "id": "js-036",
-        "concept": {
-          "pt": "Concorrência com Promise.all",
-          "en": "Concurrency with Promise.all"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Promise.all executa várias promessas em paralelo e espera todas terminarem. Use pra buscar dados de múltiplas APIs simultaneamente.",
-          "en": "Promise.all runs multiple promises in parallel and waits for all to finish. Use it to fetch data from multiple APIs simultaneously."
-        },
-        "code": "const [users, posts] = await Promise.all([\n  fetch(\"/api/users\").then(r => r.json()),\n  fetch(\"/api/posts\").then(r => r.json()),\n]);",
-        "slot": "adv-concurrent"
-      }
-    ],
-    "typescript": [
-      {
-        "id": "ts-041",
-        "concept": {
-          "pt": "Async/Await Tipado",
-          "en": "Typed Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Funções async em TypeScript retornam Promise<T>. Anote o tipo de retorno pra deixar claro o que a promessa resolve.",
-          "en": "Async functions in TypeScript return Promise<T>. Annotate the return type to clarify what the promise resolves to."
-        },
-        "code": "async function fetchUser(id: number): Promise<User> {\n  const res = await fetch(`/api/users/${id}`);\n  return res.json() as Promise<User>;\n}",
-        "slot": "adv-async"
-      },
-      {
-        "id": "ts-042",
-        "concept": {
-          "pt": "Discriminated Union",
-          "en": "Discriminated Union"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Discriminated unions usam um campo literal comum pra diferenciar variantes. O TypeScript refina o tipo automaticamente no switch.",
-          "en": "Discriminated unions use a common literal field to differentiate variants. TypeScript narrows the type automatically in switch."
-        },
-        "code": "type Shape =\n  | { kind: \"circle\"; radius: number }\n  | { kind: \"square\"; side: number };\n\nfunction area(s: Shape): number {\n  switch (s.kind) {\n    case \"circle\": return Math.PI * s.radius ** 2;\n    case \"square\": return s.side ** 2;\n  }\n}",
-        "slot": "adv-pattern"
-      },
-      {
-        "id": "ts-043",
-        "concept": {
-          "pt": "Concorrência Tipada",
-          "en": "Typed Concurrency"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Promise.all em TypeScript infere uma tupla de tipos. Desestruture o resultado com tipagem forte pra cada promessa.",
-          "en": "Promise.all in TypeScript infers a tuple of types. Destructure the result with strong typing for each promise."
-        },
-        "code": "const [users, posts]: [User[], Post[]] = await Promise.all([\n  fetchUsers(),\n  fetchPosts(),\n]);",
-        "slot": "adv-concurrent"
       }
     ],
     "python": [
-      {
-        "id": "py-038",
-        "concept": {
-          "pt": "Async/Await",
-          "en": "Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "async/await permite código assíncrono em Python com asyncio. Defina uma função async que busca dados com aiohttp ou similar.",
-          "en": "async/await enables asynchronous code in Python with asyncio. Define an async function that fetches data with aiohttp or similar."
-        },
-        "code": "async def fetch_data(url: str) -> dict:\n    async with aiohttp.ClientSession() as session:\n        async with session.get(url) as resp:\n            return await resp.json()",
-        "slot": "adv-async"
-      },
       {
         "id": "py-004",
         "concept": {
@@ -7779,153 +2045,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "def timer(func):\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        print(f\"Took {time.time() - start:.2f}s\")\n        return result\n    return wrapper",
         "slot": "adv-pattern"
-      },
-      {
-        "id": "py-039",
-        "concept": {
-          "pt": "Concorrência com gather",
-          "en": "Concurrency with gather"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "asyncio.gather executa várias coroutines em paralelo. Use-o pra buscar dados de múltiplas URLs simultaneamente.",
-          "en": "asyncio.gather runs multiple coroutines in parallel. Use it to fetch data from multiple URLs simultaneously."
-        },
-        "code": "async def fetch_all(urls: list[str]):\n    tasks = [fetch_data(url) for url in urls]\n    return await asyncio.gather(*tasks)",
-        "slot": "adv-concurrent"
-      }
-    ],
-    "java": [
-      {
-        "id": "java-039",
-        "concept": {
-          "pt": "Async com CompletableFuture",
-          "en": "Async with CompletableFuture"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "CompletableFuture e o mecanismo async do Java. Encadeie operações assincronas com supplyAsync, thenApply e thenAccept.",
-          "en": "CompletableFuture is Java's async mechanism. Chain async operations with supplyAsync, thenApply, and thenAccept."
-        },
-        "code": "CompletableFuture.supplyAsync(() -> fetchUser(id))\n    .thenApply(User::getName)\n    .thenAccept(System.out::println)\n    .exceptionally(e -> { log.error(e); return null; });",
-        "slot": "adv-async"
-      },
-      {
-        "id": "java-010",
-        "concept": {
-          "pt": "Casamento de Padrões",
-          "en": "Pattern Matching"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Pattern matching com instanceof (Java 16+) checa o tipo e faz o cast numa expressao so. Verifique se \"obj\" e String, atribua a \"s\" na mesma linha e combine com && pra testar o tamanho -- sem cast separado.",
-          "en": "Pattern matching with instanceof (Java 16+) checks the type and casts in a single expression. Check if \"obj\" is a String, assign it to \"s\" on the same line, and combine with && to test length -- no separate cast needed."
-        },
-        "code": "if (obj instanceof String s && s.length() > 5) {\n    System.out.println(s.toUpperCase());\n}",
-        "slot": "adv-pattern"
-      },
-      {
-        "id": "java-040",
-        "concept": {
-          "pt": "Anotacao Customizada",
-          "en": "Custom Annotation"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Anotacoes em Java sao metadados declarativos. Crie uma anotacao @Validate retida em runtime com um campo message.",
-          "en": "Java annotations are declarative metadata. Create a @Validate annotation retained at runtime with a message field."
-        },
-        "code": "@Retention(RetentionPolicy.RUNTIME)\n@Target(ElementType.FIELD)\npublic @interface Validate {\n    String message() default \"invalid\";\n}",
-        "slot": "adv-macro"
-      },
-      {
-        "id": "java-041",
-        "concept": {
-          "pt": "Threads Virtuais",
-          "en": "Virtual Threads"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Virtual threads (Java 21+) sao threads leves gerenciadas pela JVM. Lance milhares delas com Executors.newVirtualThreadPerTaskExecutor.",
-          "en": "Virtual threads (Java 21+) are lightweight JVM-managed threads. Launch thousands with Executors.newVirtualThreadPerTaskExecutor."
-        },
-        "code": "try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {\n    for (String url : urls) {\n        executor.submit(() -> fetch(url));\n    }\n}",
-        "slot": "adv-concurrent"
-      }
-    ],
-    "rust": [
-      {
-        "id": "rs-040",
-        "concept": {
-          "pt": "Async/Await",
-          "en": "Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Rust suporta async/await com futures. Use async fn e .await pra operações assíncronas com tokio.",
-          "en": "Rust supports async/await with futures. Use async fn and .await for asynchronous operations with tokio."
-        },
-        "code": "async fn fetch_data(url: &str) -> Result<String, reqwest::Error> {\n    let body = reqwest::get(url).await?.text().await?;\n    Ok(body)\n}",
-        "slot": "adv-async"
-      },
-      {
-        "id": "rs-041",
-        "concept": {
-          "pt": "Pattern Matching Avançado",
-          "en": "Advanced Pattern Matching"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Match em Rust suporta guards, bindings, ranges e desestruturação aninhada. Use vários estilos de pattern num mesmo match.",
-          "en": "Rust match supports guards, bindings, ranges and nested destructuring. Use various pattern styles in a single match."
-        },
-        "code": "let value = (2, \"hello\");\nmatch value {\n    (0, _) => println!(\"zero\"),\n    (n, s) if n > 0 && s.len() > 3 => println!(\"{s} x{n}\"),\n    (1..=5, s) => println!(\"small: {s}\"),\n    _ => println!(\"other\"),\n}",
-        "slot": "adv-pattern"
-      },
-      {
-        "id": "rs-042",
-        "concept": {
-          "pt": "Macro Declarativa",
-          "en": "Declarative Macro"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Macros declarativas (macro_rules!) geram código em tempo de compilação. Crie uma macro que simplifica a criação de um HashMap.",
-          "en": "Declarative macros (macro_rules!) generate code at compile time. Create a macro that simplifies HashMap creation."
-        },
-        "code": "macro_rules! map {\n    ($($key:expr => $val:expr),* $(,)?) => {{\n        let mut m = std::collections::HashMap::new();\n        $(m.insert($key, $val);)*\n        m\n    }};\n}\n\nlet scores = map!(\"Ana\" => 10, \"Bruno\" => 8);",
-        "slot": "adv-macro"
-      },
-      {
-        "id": "rs-043",
-        "concept": {
-          "pt": "Concorrência com Tokio",
-          "en": "Concurrency with Tokio"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "tokio::spawn dispara tasks concorrentes e tokio::join! espera múltiplas ao mesmo tempo. Use pra executar duas operações em paralelo.",
-          "en": "tokio::spawn launches concurrent tasks and tokio::join! awaits multiple at once. Use them to run two operations in parallel."
-        },
-        "code": "use tokio;\n\nasync fn load_name() -> String { \"Alice\".into() }\nasync fn load_age() -> u32 { 30 }\n\n#[tokio::main]\nasync fn main() {\n    let (name, age) = tokio::join!(load_name(), load_age());\n    println!(\"{name}, {age}\");\n}",
-        "slot": "adv-concurrent"
       }
     ],
     "go": [
-      {
-        "id": "go-040",
-        "concept": {
-          "pt": "Async com Goroutine",
-          "en": "Async with Goroutine"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Go usa goroutines e channels pra concorrencia assincrona. Lance multiplas goroutines com WaitGroup pra esperar todas terminarem.",
-          "en": "Go uses goroutines and channels for async concurrency. Launch multiple goroutines with WaitGroup to wait for all to finish."
-        },
-        "code": "var wg sync.WaitGroup\nfor _, url := range urls {\n    wg.Add(1)\n    go func(u string) {\n        defer wg.Done()\n        fetch(u)\n    }(url)\n}\nwg.Wait()",
-        "slot": "adv-async"
-      },
       {
         "id": "go-005",
         "concept": {
@@ -7939,20 +2061,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "ch := make(chan string, 1)\nch <- \"hello\"\nmsg := <-ch\nfmt.Println(msg)",
         "slot": "adv-pattern"
-      },
-      {
-        "id": "go-041",
-        "concept": {
-          "pt": "Select com Channels",
-          "en": "Select with Channels"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Select em Go e como um switch pra operações de channel -- espera o primeiro channel que estiver pronto. Use com time.After pra timeout.",
-          "en": "Select in Go is like a switch for channel operations -- waits for the first ready channel. Use it with time.After for a timeout."
-        },
-        "code": "select {\ncase msg := <-ch:\n    fmt.Println(\"received:\", msg)\ncase <-time.After(5 * time.Second):\n    fmt.Println(\"timeout\")\n}",
-        "slot": "adv-macro"
       },
       {
         "id": "go-004",
@@ -7969,311 +2077,7 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "adv-concurrent"
       }
     ],
-    "kotlin": [
-      {
-        "id": "kotlin-040",
-        "concept": {
-          "pt": "Async/Await",
-          "en": "Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "suspend functions são a base de async/await em Kotlin. Use withContext pra trocar de dispatcher e simular uma operação assíncrona.",
-          "en": "Suspend functions are the foundation of async/await in Kotlin. Use withContext to switch dispatchers and simulate an async operation."
-        },
-        "code": "import kotlinx.coroutines.*\n\nsuspend fun loadData(): String = withContext(Dispatchers.IO) {\n    delay(500)\n    \"dados carregados\"\n}\n\nfun main() = runBlocking {\n    val data = loadData()\n    println(data)\n}",
-        "slot": "adv-async"
-      },
-      {
-        "id": "kotlin-041",
-        "concept": {
-          "pt": "Pattern Matching com When",
-          "en": "Pattern Matching with When"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "When em Kotlin pode fazer pattern matching avançado com ranges, tipos e condições. Use vários estilos de branch numa mesma expressão when.",
-          "en": "When in Kotlin can do advanced pattern matching with ranges, types and conditions. Use various branch styles in a single when expression."
-        },
-        "code": "fun classify(value: Any): String = when (value) {\n    is String -> \"texto: $value\"\n    in 1..10 -> \"número pequeno\"\n    is Int -> \"inteiro: $value\"\n    else -> \"desconhecido\"\n}",
-        "slot": "adv-pattern"
-      },
-      {
-        "id": "kotlin-042",
-        "concept": {
-          "pt": "Delegação de Propriedade",
-          "en": "Property Delegation"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Delegação com \"by\" permite reutilizar lógica de propriedade. Use lazy pra inicialização preguiçosa e observable pra reagir a mudanças.",
-          "en": "Delegation with \"by\" allows property logic reuse. Use lazy for lazy initialization and observable to react to changes."
-        },
-        "code": "import kotlin.properties.Delegates\n\nval config: String by lazy {\n    println(\"carregando...\")\n    \"valor pesado\"\n}\n\nvar name: String by Delegates.observable(\"inicial\") { _, old, new ->\n    println(\"$old -> $new\")\n}",
-        "slot": "adv-macro"
-      },
-      {
-        "id": "kotlin-009",
-        "concept": {
-          "pt": "Corrotina",
-          "en": "Coroutine"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Coroutines são o jeito nativo do Kotlin de fazer concorrência. Use runBlocking como raiz, async pra disparar cada busca em paralelo e awaitAll() pra esperar todos os resultados antes de imprimir.",
-          "en": "Coroutines are Kotlin's native concurrency mechanism. Use runBlocking as the root, async to launch each fetch in parallel and awaitAll() to wait for all results before printing."
-        },
-        "code": "import kotlinx.coroutines.*\n\nsuspend fun fetchUser(id: Int): String {\n    delay(100)\n    return \"User-$id\"\n}\n\nfun main() = runBlocking {\n    val users = (1..5).map { id ->\n        async { fetchUser(id) }\n    }.awaitAll()\n    println(users)\n}",
-        "slot": "adv-concurrent"
-      }
-    ],
-    "scala": [
-      {
-        "id": "scala-010",
-        "concept": {
-          "pt": "Futuro",
-          "en": "Future"
-        },
-        "difficulty": "hard",
-        "slot": "adv-async",
-        "prompt": {
-          "pt": "Futures representam computações assíncronas que podem falhar. Encadeie duas Futures com for comprehension: primeiro fetchData, depois Future(data.trim) -- o resultado vem junto no yield de forma declarativa.",
-          "en": "Futures represent async computations that can fail. Chain two Futures with a for comprehension: first fetchData, then Future(data.trim) -- the result is combined with yield in a declarative way."
-        },
-        "code": "import scala.concurrent.Future\nimport scala.concurrent.ExecutionContext.Implicits.global\n\ndef fetchData(url: String): Future[String] =\n  Future { /* HTTP call */ url }\n\nval result = for {\n  data <- fetchData(\"https://api.example.com\")\n  parsed <- Future(data.trim)\n} yield parsed"
-      },
-      {
-        "id": "scala-039",
-        "concept": {
-          "pt": "Casamento Avançado",
-          "en": "Advanced Pattern Matching"
-        },
-        "difficulty": "hard",
-        "slot": "adv-pattern",
-        "prompt": {
-          "pt": "Pattern matching em sealed traits cobre todos os casos de forma exaustiva. Use uma sealed trait com case objects/classes e faça match com extração.",
-          "en": "Pattern matching on sealed traits covers all cases exhaustively. Use a sealed trait with case objects/classes and match with extraction."
-        },
-        "code": "sealed trait Expr\ncase class Num(n: Double) extends Expr\ncase class Add(a: Expr, b: Expr) extends Expr\n\ndef eval(e: Expr): Double = e match {\n  case Num(n)    => n\n  case Add(a, b) => eval(a) + eval(b)\n}"
-      },
-      {
-        "id": "scala-040",
-        "concept": {
-          "pt": "Macro Inline",
-          "en": "Inline Macro"
-        },
-        "difficulty": "hard",
-        "slot": "adv-macro",
-        "prompt": {
-          "pt": "Scala 3 usa \"inline\" pra avaliação em tempo de compilação. Use inline def e inline if pra criar código que o compilador expande e otimiza.",
-          "en": "Scala 3 uses \"inline\" for compile-time evaluation. Use inline def and inline if to create code that the compiler expands and optimizes."
-        },
-        "code": "inline def power(x: Double, inline n: Int): Double =\n  inline if (n == 0) 1.0\n  else x * power(x, n - 1)\n\nval r = power(2.0, 3)"
-      },
-      {
-        "id": "scala-041",
-        "concept": {
-          "pt": "Concorrência com Future",
-          "en": "Concurrency with Future"
-        },
-        "difficulty": "hard",
-        "slot": "adv-concurrent",
-        "prompt": {
-          "pt": "Future.sequence transforma uma lista de Futures em um Future de lista, executando tudo em paralelo. Combine múltiplas chamadas assíncronas e aguarde todas.",
-          "en": "Future.sequence transforms a list of Futures into a Future of a list, running everything in parallel. Combine multiple async calls and await all."
-        },
-        "code": "import scala.concurrent.Future\nimport scala.concurrent.ExecutionContext.Implicits.global\n\nval tasks = List(1, 2, 3).map(n => Future(n * 10))\nval all = Future.sequence(tasks)\nall.foreach(println)"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-010",
-        "concept": {
-          "pt": "Async/Await",
-          "en": "Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "\"async throws\" junta assincronia e tratamento de erro em Swift. Monte fetchUser usando try await pra aguardar URLSession.shared.data(from:) e JSONDecoder().decode pra desserializar o JSON em User.",
-          "en": "\"async throws\" combines asynchrony and error handling in Swift. Implement fetchUser using try await to wait for URLSession.shared.data(from:) and JSONDecoder().decode to deserialize the JSON into User."
-        },
-        "code": "func fetchUser(id: Int) async throws -> User {\n    let url = URL(string: \"https://api.example.com/users/\\(id)\")!\n    let (data, _) = try await URLSession.shared.data(from: url)\n    return try JSONDecoder().decode(User.self, from: data)\n}",
-        "slot": "adv-async"
-      },
-      {
-        "id": "swift-039",
-        "concept": {
-          "pt": "Pattern Matching",
-          "en": "Pattern Matching"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Switch em Swift suporta pattern matching avançado com tuplas, binding e where. Use vários padrões num mesmo switch.",
-          "en": "Swift switch supports advanced pattern matching with tuples, binding and where. Use various patterns in a single switch."
-        },
-        "code": "let point = (2, 0)\nswitch point {\ncase (0, 0):         print(\"origem\")\ncase (let x, 0):     print(\"eixo x: \\(x)\")\ncase (0, let y):     print(\"eixo y: \\(y)\")\ncase let (x, y) where x == y: print(\"diagonal\")\ndefault:             print(\"(\\(point.0), \\(point.1))\")\n}",
-        "slot": "adv-pattern"
-      },
-      {
-        "id": "swift-040",
-        "concept": {
-          "pt": "Property Wrapper",
-          "en": "Property Wrapper"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Property wrappers encapsulam lógica de acesso a propriedades, funcionando como macros de atributo. Crie um wrapper que limita valores a um range.",
-          "en": "Property wrappers encapsulate property access logic, working like attribute macros. Create a wrapper that clamps values to a range."
-        },
-        "code": "@propertyWrapper\nstruct Clamped {\n    var wrappedValue: Int {\n        didSet { wrappedValue = min(max(wrappedValue, 0), 100) }\n    }\n    init(wrappedValue: Int) {\n        self.wrappedValue = min(max(wrappedValue, 0), 100)\n    }\n}",
-        "slot": "adv-macro"
-      },
-      {
-        "id": "swift-041",
-        "concept": {
-          "pt": "Concorrência com Task",
-          "en": "Concurrency with Task"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Task e async let permitem concorrência estruturada em Swift. Use async let pra disparar duas operações em paralelo.",
-          "en": "Task and async let enable structured concurrency in Swift. Use async let to launch two operations in parallel."
-        },
-        "code": "func fetchName() async -> String { \"Alice\" }\nfunc fetchAge() async -> Int { 30 }\n\nfunc loadProfile() async {\n    async let name = fetchName()\n    async let age = fetchAge()\n    print(\"\\(await name), \\(await age)\")\n}",
-        "slot": "adv-concurrent"
-      }
-    ],
-    "ruby": [
-      {
-        "id": "ruby-035",
-        "concept": {
-          "pt": "Async com Thread",
-          "en": "Async with Thread"
-        },
-        "difficulty": "hard",
-        "slot": "adv-async",
-        "prompt": {
-          "pt": "Threads em Ruby rodam código concorrente. Crie threads que executam tarefas em paralelo e aguarde todas com .join.",
-          "en": "Ruby threads run concurrent code. Create threads that execute tasks in parallel and wait for all with .join."
-        },
-        "code": "threads = (1..3).map do |i|\n  Thread.new { sleep(0.1); \"Task #{i} done\" }\nend\n\nresults = threads.map(&:join).map(&:value)\nputs results"
-      },
-      {
-        "id": "ruby-010",
-        "concept": {
-          "pt": "Método Ausente",
-          "en": "Method Missing"
-        },
-        "difficulty": "hard",
-        "slot": "adv-pattern",
-        "prompt": {
-          "pt": "method_missing intercepta chamadas a métodos que não existem, abrindo espaço pra DSLs dinâmicas. Monte FlexObject: nomes que terminam em \"=\" salvam o valor em @data, os demais leem -- criando getters/setters sob demanda.",
-          "en": "method_missing intercepts any call to an undefined method, enabling dynamic DSLs. Implement FlexObject: names ending in \"=\" store the value in @data, others retrieve it -- creating arbitrary getters/setters."
-        },
-        "code": "class FlexObject\n  def initialize\n    @data = {}\n  end\n\n  def method_missing(name, *args)\n    key = name.to_s\n    if key.end_with?(\"=\")\n      @data[key.chomp(\"=\")] = args.first\n    else\n      @data[key]\n    end\n  end\nend"
-      },
-      {
-        "id": "ruby-036",
-        "concept": {
-          "pt": "Macro (define_method)",
-          "en": "Macro (define_method)"
-        },
-        "difficulty": "hard",
-        "slot": "adv-macro",
-        "prompt": {
-          "pt": "define_method cria métodos dinamicamente em tempo de execução, funcionando como uma macro. Gere getters pra uma lista de atributos automaticamente.",
-          "en": "define_method creates methods dynamically at runtime, acting like a macro. Generate getters for a list of attributes automatically."
-        },
-        "code": "class Config\n  FIELDS = [:host, :port, :env]\n\n  FIELDS.each do |f|\n    define_method(f) { instance_variable_get(\"@#{f}\") }\n    define_method(\"#{f}=\") { |v| instance_variable_set(\"@#{f}\", v) }\n  end\nend"
-      },
-      {
-        "id": "ruby-037",
-        "concept": {
-          "pt": "Concorrência com Queue",
-          "en": "Concurrency with Queue"
-        },
-        "difficulty": "hard",
-        "slot": "adv-concurrent",
-        "prompt": {
-          "pt": "Queue do Ruby é thread-safe pra comunicação entre threads. Crie um produtor e consumidor que trocam dados via Queue.",
-          "en": "Ruby Queue is thread-safe for inter-thread communication. Create a producer and consumer that exchange data via Queue."
-        },
-        "code": "q = Queue.new\n\nproducer = Thread.new do\n  3.times { |i| q << \"item-#{i}\" }\n  q << :done\nend\n\nconsumer = Thread.new do\n  loop { val = q.pop; break if val == :done; puts val }\nend\n\n[producer, consumer].each(&:join)"
-      }
-    ],
-    "lua": [
-      {
-        "id": "lua-039",
-        "concept": {
-          "pt": "Async com Coroutine",
-          "en": "Async with Coroutine"
-        },
-        "difficulty": "hard",
-        "slot": "adv-async",
-        "prompt": {
-          "pt": "Coroutines simulam async/await em Lua. Crie um scheduler simples que resume coroutines até todas completarem.",
-          "en": "Coroutines simulate async/await in Lua. Create a simple scheduler that resumes coroutines until all complete."
-        },
-        "code": "local function task(name, n)\n  for i = 1, n do\n    coroutine.yield(name .. \" step \" .. i)\n  end\nend\n\nlocal tasks = {\n  coroutine.create(function() task(\"A\", 2) end),\n  coroutine.create(function() task(\"B\", 3) end),\n}"
-      },
-      {
-        "id": "lua-040",
-        "concept": {
-          "pt": "Pattern Matching",
-          "en": "Pattern Matching"
-        },
-        "difficulty": "hard",
-        "slot": "adv-pattern",
-        "prompt": {
-          "pt": "Lua tem padrões de string com string.match e string.gmatch pra extrair dados. Use padrões pra parsear formatos estruturados.",
-          "en": "Lua has string patterns with string.match and string.gmatch to extract data. Use patterns to parse structured formats."
-        },
-        "code": "local date = \"2026-03-28\"\nlocal y, m, d = string.match(date, \"(%d+)-(%d+)-(%d+)\")\nprint(y, m, d)\n\nlocal csv = \"Alice,30,SP\"\nfor field in string.gmatch(csv, \"([^,]+)\") do\n  print(field)\nend"
-      },
-      {
-        "id": "lua-041",
-        "concept": {
-          "pt": "Macro (Metaprogramação)",
-          "en": "Macro (Metaprogramming)"
-        },
-        "difficulty": "hard",
-        "slot": "adv-macro",
-        "prompt": {
-          "pt": "Lua permite metaprogramação via metatables e load(). Use load() pra compilar e executar código gerado dinamicamente.",
-          "en": "Lua enables metaprogramming via metatables and load(). Use load() to compile and execute dynamically generated code."
-        },
-        "code": "local function make_getter(field)\n  local code = \"return function(t) return t.\" .. field .. \" end\"\n  return load(code)()\nend\n\nlocal get_name = make_getter(\"name\")\nlocal obj = {name = \"Lua\", version = 5.4}\nprint(get_name(obj))"
-      },
-      {
-        "id": "lua-008",
-        "concept": {
-          "pt": "Corrotina",
-          "en": "Coroutine"
-        },
-        "difficulty": "medium",
-        "slot": "adv-concurrent",
-        "prompt": {
-          "pt": "Coroutines deixam você pausar e retomar a execução de forma cooperativa. Crie um produtor que dá yield pra cada item, instancie com coroutine.create e consuma cada valor chamando coroutine.resume num loop.",
-          "en": "Coroutines let you pause and resume execution cooperatively. Create a producer that uses yield for each item, create the coroutine with coroutine.create and consume each value with coroutine.resume in a loop."
-        },
-        "code": "local function producer()\n  local items = {\"a\", \"b\", \"c\"}\n  for _, v in ipairs(items) do\n    coroutine.yield(v)\n  end\nend\n\nlocal co = coroutine.create(producer)\nwhile true do\n  local ok, val = coroutine.resume(co)\n  if not ok or val == nil then break end\n  print(val)\nend"
-      }
-    ],
     "bash": [
-      {
-        "id": "bash-030",
-        "concept": {
-          "pt": "Async com Background",
-          "en": "Async with Background"
-        },
-        "difficulty": "hard",
-        "slot": "adv-async",
-        "prompt": {
-          "pt": "Bash roda processos em background com & e espera com wait. Use pra executar tarefas em paralelo e coletar os resultados.",
-          "en": "Bash runs background processes with & and waits with wait. Use it to execute tasks in parallel and collect results."
-        },
-        "code": "task() { sleep 0.1; echo \"Task $1 done\"; }\n\ntask 1 &\ntask 2 &\ntask 3 &\nwait\necho \"All tasks complete\""
-      },
       {
         "id": "bash-006",
         "concept": {
@@ -8287,34 +2091,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Pipes (|) connect one command's output to the next command's input, creating pipelines. Chain cat, grep \"404\", awk to extract the URL, sort, uniq -c to count and sort -rn | head -10 for the most frequent."
         },
         "code": "cat access.log | grep \"404\" | awk '{print $7}' | sort | uniq -c | sort -rn | head -10"
-      },
-      {
-        "id": "bash-032",
-        "concept": {
-          "pt": "Macro com Eval",
-          "en": "Macro with Eval"
-        },
-        "difficulty": "hard",
-        "slot": "adv-macro",
-        "prompt": {
-          "pt": "eval em Bash executa strings como código, funcionando como uma macro. Use pra gerar e executar comandos dinamicamente.",
-          "en": "Bash eval executes strings as code, acting like a macro. Use it to generate and execute commands dynamically."
-        },
-        "code": "make_var() {\n    eval \"$1=\\\"$2\\\"\"\n}\nmake_var greeting \"Hello, World\"\necho \"$greeting\"\n\ncmd=\"echo 'dynamic command'\"\neval \"$cmd\""
-      },
-      {
-        "id": "bash-031",
-        "concept": {
-          "pt": "Concorrência com Named Pipes",
-          "en": "Concurrency with Named Pipes"
-        },
-        "difficulty": "hard",
-        "slot": "adv-concurrent",
-        "prompt": {
-          "pt": "Named pipes (mkfifo) permitem comunicação entre processos no Bash. Crie um pipe pra enviar dados entre um produtor e consumidor.",
-          "en": "Named pipes (mkfifo) enable inter-process communication in Bash. Create a pipe to send data between a producer and consumer."
-        },
-        "code": "pipe=$(mktemp -u)\nmkfifo \"$pipe\"\ntrap \"rm -f $pipe\" EXIT\n\necho \"hello from producer\" > \"$pipe\" &\ncat < \"$pipe\"\nwait"
       }
     ]
   },
@@ -8361,20 +2137,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "const result = users\n  .filter(u => u.active)\n  .map(u => u.name)\n  .sort();",
         "slot": "loop-filter"
-      },
-      {
-        "id": "js-009",
-        "concept": {
-          "pt": "Encadeamento Opcional",
-          "en": "Optional Chaining"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Se você acessar user.address.city e \"address\" for null, o JS estoura um TypeError. Use optional chaining (?.) em cada nível pra acessar de forma segura e o nullish coalescing (??) pra retornar \"Unknown\" quando qualquer parte for null ou undefined.",
-          "en": "When accessing user.address.city, if \"address\" is null JavaScript throws a TypeError. Use optional chaining (?.) at each level for safe access and the nullish coalescing operator (??) to return \"Unknown\" when any part is null or undefined."
-        },
-        "code": "const city = user?.address?.city ?? 'Unknown';",
-        "slot": "obj-nested"
       }
     ],
     "typescript": [
@@ -8599,20 +2361,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "with open('data.json', 'r') as f:\n    data = json.load(f)",
         "slot": "err-finally"
-      },
-      {
-        "id": "py-007",
-        "concept": {
-          "pt": "String Formatada",
-          "en": "F-String"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "F-string (Python 3.6+) é o jeito moderno de formatar strings: mais rápido e legível que .format() ou %. Monte a mensagem de saudação colocando \"name\" e \"age\" direto na string com a sintaxe f\"... {variável} ...\".",
-          "en": "F-strings (Python 3.6+) are the modern way to format strings: faster and more readable than .format() or %. Build the greeting message by embedding \"name\" and \"age\" directly in the string using the f\"... {variable} ...\" syntax."
-        },
-        "code": "greeting = f\"Hello, {name}! You are {age} years old.\"",
-        "slot": "var-interpolation"
       }
     ],
     "ruby": [
@@ -8657,20 +2405,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Blocks are Ruby's most fundamental customization mechanism -- any method can accept a block with yield. Implement \"repeat\" using n.times and calling yield on each iteration to execute the provided block."
         },
         "code": "def repeat(n)\n  n.times { yield }\nend\n\nrepeat(3) { puts \"Hello!\" }"
-      },
-      {
-        "id": "ruby-009",
-        "concept": {
-          "pt": "Proc e Lambda",
-          "en": "Proc and Lambda"
-        },
-        "difficulty": "hard",
-        "slot": "fn-closure",
-        "prompt": {
-          "pt": "Lambdas (-> {}) e Procs se comportam diferente no return e na aridade. Defina square como lambda e cube como proc, depois crie transform como lambda que recebe um array e uma função, usando .map(&fn) pra aplicar.",
-          "en": "Lambdas (-> {}) and Procs differ in return behavior and arity. Define square as a lambda and cube as a proc, then implement transform as a lambda that takes an array and a function, calling .map(&fn) to apply it."
-        },
-        "code": "square = ->(x) { x ** 2 }\ncube   = proc { |x| x ** 3 }\n\ntransform = ->(arr, fn) { arr.map(&fn) }\nputs transform.call([1, 2, 3, 4], square)"
       }
     ],
     "lua": [
@@ -8787,19 +2521,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Pipes (|) connect one command's output to the next command's input, creating pipelines. Chain cat, grep \"404\", awk to extract the URL, sort, uniq -c to count and sort -rn | head -10 for the most frequent."
         },
         "code": "cat access.log | grep \"404\" | awk '{print $7}' | sort | uniq -c | sort -rn | head -10"
-      },
-      {
-        "id": "bash-007",
-        "concept": {
-          "pt": "Redirecionamento",
-          "en": "Redirection"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Redirecionamento controla pra onde vão stdout e stderr. Usa \">\" pra criar/sobrescrever arquivo, \"2>&1\" pra mandar stderr pro mesmo lugar que stdout, e \">>\" pra appendar sem apagar o que já tem.",
-          "en": "Redirection controls where stdout and stderr go. Use \">\" to create/overwrite a file, \"2>&1\" to redirect stderr to the same destination as stdout, and \">>\" to append without erasing existing content."
-        },
-        "code": "command > output.txt 2>&1\ncat input.txt | sort >> sorted.txt"
       }
     ]
   },
@@ -9005,20 +2726,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "const result = users\n  .filter(u => u.active)\n  .map(u => u.name)\n  .sort();",
         "slot": "loop-filter"
-      },
-      {
-        "id": "js-007",
-        "concept": {
-          "pt": "Clausura",
-          "en": "Closure"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Closures deixam funções internas acessarem e modificarem variáveis da função de fora, mesmo depois que ela já retornou. Implemente counter como uma factory que retorna {increment, decrement, value} -- as três funções compartilham a mesma variável \"count\" via closure.",
-          "en": "Closures let inner functions access and modify variables from the outer function even after it returns. Implement counter as a factory that returns {increment, decrement, value} -- all three functions share the same \"count\" variable via closure."
-        },
-        "code": "function counter() {\n  let count = 0;\n  return {\n    increment: () => ++count,\n    decrement: () => --count,\n    value: () => count,\n  };\n}",
-        "slot": "fn-closure"
       }
     ],
     "python": [
@@ -9035,19 +2742,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "sort_by_age = sorted(users, key=lambda u: u['age'])",
         "slot": "fn-arrow"
-      },
-      {
-        "id": "py-010",
-        "concept": {
-          "pt": "Gerador",
-          "en": "Generator"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Generator produz valores sob demanda com yield, sem guardar a sequência inteira na memória. Implemente fibonacci() como um generator infinito: a cada iteração, dê yield no valor atual e avance a sequência.",
-          "en": "Generators produce values on demand with yield, without storing the entire sequence in memory. Implement fibonacci() as an infinite generator: on each iteration, yield the current value and advance the sequence."
-        },
-        "code": "def fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b"
       }
     ],
     "rust": [
@@ -9092,50 +2786,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "fn parse_number(s: &str) -> Result<i32, String> {\n    s.parse::<i32>()\n        .map_err(|e| format!(\"Parse error: {e}\"))\n}",
         "slot": "err-result"
-      },
-      {
-        "id": "rs-008",
-        "concept": {
-          "pt": "Closure com Move",
-          "en": "Closure with Move"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Closure com \"move\" captura o ambiente transferindo o ownership das variáveis. Capture a String \"name\" por move dentro de \"greet\", assim a closure pode ser usada mesmo depois que o escopo original acabar.",
-          "en": "Closures with \"move\" capture the environment by transferring ownership of captured variables. Capture the String \"name\" by move into \"greet\", allowing the closure to be used even after the original scope ends."
-        },
-        "code": "let name = String::from(\"Alice\");\nlet greet = move || {\n    println!(\"Hello, {name}!\");\n};\ngreet();",
-        "slot": "fn-closure"
-      }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-007",
-        "concept": {
-          "pt": "Lambda e Ordem Superior",
-          "en": "Lambda and Higher-Order"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Funções de ordem superior recebem outras funções como parâmetro. Crie customFilter como extension function de List<T> que aceita um predicado lambda (T) -> Boolean, percorre a lista e devolve uma nova só com os elementos que passaram.",
-          "en": "Higher-order functions take other functions as parameters. Implement customFilter as a List<T> extension function that accepts a lambda predicate (T) -> Boolean, iterates the list and returns a new one with elements that pass."
-        },
-        "code": "fun <T> List<T>.customFilter(predicate: (T) -> Boolean): List<T> {\n    val result = mutableListOf<T>()\n    for (item in this) {\n        if (predicate(item)) result.add(item)\n    }\n    return result\n}\n\nval evens = listOf(1, 2, 3, 4, 5).customFilter { it % 2 == 0 }",
-        "slot": "fn-callback"
-      },
-      {
-        "id": "kotlin-010",
-        "concept": {
-          "pt": "Genéricos e Variância",
-          "en": "Generics and Variance"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "\"out T\" torna o genérico covariante: um Repository<User> pode ser tratado como Repository<Any>. Defina a interface Repository<out T> com dois métodos e crie UserRepository mantendo uma lista mutável interna.",
-          "en": "\"out T\" makes a generic covariant: a Repository<User> can be treated as Repository<Any>. Define the Repository<out T> interface with two methods and implement UserRepository keeping an internal mutable list."
-        },
-        "code": "interface Repository<out T> {\n    fun getAll(): List<T>\n    fun getById(id: Int): T?\n}\n\nclass UserRepository : Repository<User> {\n    private val users = mutableListOf<User>()\n    override fun getAll() = users.toList()\n    override fun getById(id: Int) = users.find { it.age == id }\n}",
-        "slot": "type-generic"
       }
     ],
     "scala": [
@@ -9166,64 +2816,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "For comprehensions are syntactic sugar over map/flatMap/withFilter in Scala. Combine two lists (x and y) with a guard \"if x + y > 12\" to yield only the products of pairs whose sum exceeds 12."
         },
         "code": "val result = for {\n  x <- List(1, 2, 3)\n  y <- List(10, 20)\n  if x + y > 12\n} yield x * y"
-      },
-      {
-        "id": "scala-007",
-        "concept": {
-          "pt": "Mônada Option",
-          "en": "Option Monad"
-        },
-        "difficulty": "medium",
-        "slot": "err-result",
-        "prompt": {
-          "pt": "Option[A] é o jeito funcional de lidar com valores que podem não existir (Some ou None). Busque um usuário num Map, transforme com .map(_.toUpperCase) e devolva \"Not found\" via .getOrElse se a chave não existir.",
-          "en": "Option[A] is a functional type for values that may not exist (Some or None). Look up a user in a Map, transform the result with .map(_.toUpperCase) and return \"Not found\" with .getOrElse if the key doesn't exist."
-        },
-        "code": "def findUser(id: Int): Option[String] =\n  Map(1 -> \"Alice\", 2 -> \"Bob\").get(id)\n\nval result = findUser(1)\n  .map(_.toUpperCase)\n  .getOrElse(\"Not found\")"
-      },
-      {
-        "id": "scala-009",
-        "concept": {
-          "pt": "Classe de Tipo (Given)",
-          "en": "Type Class (Given)"
-        },
-        "difficulty": "hard",
-        "slot": "type-generic",
-        "prompt": {
-          "pt": "Type classes em Scala 3 usam \"given\" pra fornecer instâncias implícitas e \"using\" pra recebê-las. Defina Show[A] com o método show, crie uma instância given pra Int e monte print usando \"using s: Show[A]\".",
-          "en": "Scala 3 type classes use \"given\" to provide implicit instances and \"using\" to receive them. Define Show[A] with the show method, provide a given instance for Int and implement print using \"using s: Show[A]\"."
-        },
-        "code": "trait Show[A]:\n  def show(a: A): String\n\ngiven Show[Int]:\n  def show(n: Int) = s\"Int($n)\"\n\ndef print[A](a: A)(using s: Show[A]): Unit =\n  println(s.show(a))"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-007",
-        "concept": {
-          "pt": "Enumeração com Valores Associados",
-          "en": "Enum with Associated Values"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Enums com associated values guardam dados diferentes em cada variante. Defina Result<T> com .success(T) (trazendo o valor de sucesso) e .failure(Error) (trazendo o erro), e depois crie uma instância de sucesso.",
-          "en": "Enums with associated values carry different data in each variant. Define Result<T> with .success(T) (carrying the successful value) and .failure(Error) (carrying the error), then create a success instance."
-        },
-        "code": "enum Result<T> {\n    case success(T)\n    case failure(Error)\n}\n\nlet result: Result<Int> = .success(42)",
-        "slot": "err-result"
-      },
-      {
-        "id": "swift-008",
-        "concept": {
-          "pt": "Clausura",
-          "en": "Closure"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Closures em Swift ficam bem enxutas usando $0, $1 pros parâmetros. Use sorted com { $0 < $1 } pra ordenar um array de inteiros e map com { $0 * 2 } pra dobrar cada elemento -- tudo bem direto.",
-          "en": "Swift closures can be simplified with $0, $1 for parameters. Use sorted with { $0 < $1 } to sort an integer array and map with { $0 * 2 } to double each element -- all in a concise way."
-        },
-        "code": "let numbers = [3, 1, 4, 1, 5, 9]\nlet sorted = numbers.sorted { $0 < $1 }\nlet doubled = numbers.map { $0 * 2 }",
-        "slot": "fn-closure"
       }
     ]
   },
@@ -9257,21 +2849,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         "slot": "adv-async"
       }
     ],
-    "python": [
-      {
-        "id": "py-008",
-        "concept": {
-          "pt": "Operador Morsa",
-          "en": "Walrus Operator"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "O walrus operator (:=) atribui e avalia numa expressão só, evitando cálculo duplicado. Use pra calcular len(data) uma vez só: atribua o resultado a \"n\" e teste se é maior que 10 no mesmo if -- sem precisar de linha separada.",
-          "en": "The walrus operator (:=) assigns and evaluates in a single expression, avoiding duplicate computation. Use it to calculate len(data) just once: assign the result to \"n\" and test if it's greater than 10 in the same if -- no separate line needed."
-        },
-        "code": "if (n := len(data)) > 10:\n    print(f\"List is too long ({n} elements)\")"
-      }
-    ],
     "java": [
       {
         "id": "java-004",
@@ -9286,36 +2863,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "List<String> names = users.stream()\n    .filter(u -> u.getAge() > 18)\n    .map(User::getName)\n    .sorted()\n    .collect(Collectors.toList());",
         "slot": "loop-filter"
-      },
-      {
-        "id": "java-008",
-        "concept": {
-          "pt": "Expressao Switch",
-          "en": "Switch Expression"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Switch expression (Java 14+) retorna um valor e usa -> eliminando break e fall-through. Mapeie os valores do enum \"day\" pra strings usando a sintaxe nova, agrupando cases com virgula quando dao no mesmo resultado.",
-          "en": "Switch expressions (Java 14+) return a value and use -> eliminating break and fall-through. Map enum \"day\" values to strings using the new syntax, grouping cases with commas when they map to the same result."
-        },
-        "code": "String label = switch (day) {\n    case MONDAY, FRIDAY -> \"Work\";\n    case SATURDAY, SUNDAY -> \"Rest\";\n    default -> \"Midweek\";\n};",
-        "slot": "cond-switch"
-      }
-    ],
-    "rust": [
-      {
-        "id": "rs-008",
-        "concept": {
-          "pt": "Closure com Move",
-          "en": "Closure with Move"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Closure com \"move\" captura o ambiente transferindo o ownership das variáveis. Capture a String \"name\" por move dentro de \"greet\", assim a closure pode ser usada mesmo depois que o escopo original acabar.",
-          "en": "Closures with \"move\" capture the environment by transferring ownership of captured variables. Capture the String \"name\" by move into \"greet\", allowing the closure to be used even after the original scope ends."
-        },
-        "code": "let name = String::from(\"Alice\");\nlet greet = move || {\n    println!(\"Hello, {name}!\");\n};\ngreet();",
-        "slot": "fn-closure"
       }
     ],
     "go": [
@@ -9346,52 +2893,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "ch := make(chan string, 1)\nch <- \"hello\"\nmsg := <-ch\nfmt.Println(msg)",
         "slot": "adv-pattern"
-      },
-      {
-        "id": "go-007",
-        "concept": {
-          "pt": "Tratamento de Erros",
-          "en": "Error Handling"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Go, erro é um valor retornado -- a convenção é checar if err != nil na hora. Capture o erro de doSomething() e use fmt.Errorf com %w pra wrappear o erro original, preservando o contexto da falha.",
-          "en": "In Go, errors are returned values -- the convention is to check if err != nil immediately. Capture the error from doSomething() and use fmt.Errorf with %w to wrap the original error, preserving failure context."
-        },
-        "code": "result, err := doSomething()\nif err != nil {\n    return fmt.Errorf(\"failed: %w\", err)\n}",
-        "slot": "err-try-catch"
-      }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-009",
-        "concept": {
-          "pt": "Corrotina",
-          "en": "Coroutine"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Coroutines são o jeito nativo do Kotlin de fazer concorrência. Use runBlocking como raiz, async pra disparar cada busca em paralelo e awaitAll() pra esperar todos os resultados antes de imprimir.",
-          "en": "Coroutines are Kotlin's native concurrency mechanism. Use runBlocking as the root, async to launch each fetch in parallel and awaitAll() to wait for all results before printing."
-        },
-        "code": "import kotlinx.coroutines.*\n\nsuspend fun fetchUser(id: Int): String {\n    delay(100)\n    return \"User-$id\"\n}\n\nfun main() = runBlocking {\n    val users = (1..5).map { id ->\n        async { fetchUser(id) }\n    }.awaitAll()\n    println(users)\n}",
-        "slot": "adv-concurrent"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-010",
-        "concept": {
-          "pt": "Async/Await",
-          "en": "Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "\"async throws\" junta assincronia e tratamento de erro em Swift. Monte fetchUser usando try await pra aguardar URLSession.shared.data(from:) e JSONDecoder().decode pra desserializar o JSON em User.",
-          "en": "\"async throws\" combines asynchrony and error handling in Swift. Implement fetchUser using try await to wait for URLSession.shared.data(from:) and JSONDecoder().decode to deserialize the JSON into User."
-        },
-        "code": "func fetchUser(id: Int) async throws -> User {\n    let url = URL(string: \"https://api.example.com/users/\\(id)\")!\n    let (data, _) = try await URLSession.shared.data(from: url)\n    return try JSONDecoder().decode(User.self, from: data)\n}",
-        "slot": "adv-async"
       }
     ]
   },
@@ -9410,19 +2911,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Pipes (|) connect one command's output to the next command's input, creating pipelines. Chain cat, grep \"404\", awk to extract the URL, sort, uniq -c to count and sort -rn | head -10 for the most frequent."
         },
         "code": "cat access.log | grep \"404\" | awk '{print $7}' | sort | uniq -c | sort -rn | head -10"
-      },
-      {
-        "id": "bash-007",
-        "concept": {
-          "pt": "Redirecionamento",
-          "en": "Redirection"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Redirecionamento controla pra onde vão stdout e stderr. Usa \">\" pra criar/sobrescrever arquivo, \"2>&1\" pra mandar stderr pro mesmo lugar que stdout, e \">>\" pra appendar sem apagar o que já tem.",
-          "en": "Redirection controls where stdout and stderr go. Use \">\" to create/overwrite a file, \"2>&1\" to redirect stderr to the same destination as stdout, and \">>\" to append without erasing existing content."
-        },
-        "code": "command > output.txt 2>&1\ncat input.txt | sort >> sorted.txt"
       }
     ],
     "docker": [
@@ -9585,32 +3073,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Find the nginx process, kill it by PID, restart the service, and follow its logs in real time."
         },
         "code": "ps aux | grep nginx\nkill -9 1234\nsystemctl restart nginx\njournalctl -u nginx -f"
-      },
-      {
-        "id": "linux-007",
-        "concept": {
-          "pt": "Compactação",
-          "en": "Archives"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Compacta um diretório em .tar.gz, extrai em outro lugar e cria um .zip ignorando os source maps.",
-          "en": "Compress a directory into .tar.gz, extract it elsewhere, and create a .zip excluding source maps."
-        },
-        "code": "tar -czf backup.tar.gz /var/www\ntar -xzf backup.tar.gz -C /restore\nzip -r dist.zip dist/ -x \"*.map\""
-      },
-      {
-        "id": "linux-008",
-        "concept": {
-          "pt": "Rede",
-          "en": "Network"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Manda um POST com JSON pra uma API e baixa um arquivo de uma URL remota.",
-          "en": "Send a JSON POST request to an API and download a file from a remote URL."
-        },
-        "code": "curl -X POST https://api.example.com/data   -H \"Content-Type: application/json\"   -d '{\"key\": \"value\"}'\nwget -O file.zip https://example.com/file.zip"
       }
     ],
     "kubernetes": [
@@ -10126,36 +3588,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Object destructuring extracts properties by name in a single assignment. From the \"user\" object, extract \"name\" and \"age\" -- and set 0 as the default value for \"age\" in case the property doesn't exist on the object."
         },
         "code": "const { name, age = 0 } = user;"
-      },
-      {
-        "id": "js-008",
-        "concept": {
-          "pt": "Operador de Espalhamento",
-          "en": "Spread Operator"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O spread operator ({...obj}) copia todas as propriedades de um objeto pra outro. Crie \"merged\" juntando \"defaults\" e \"overrides\": as propriedades de \"overrides\" têm prioridade e sobrescrevem as de \"defaults\".",
-          "en": "The spread operator ({...obj}) copies all properties from one object to another. Create \"merged\" by combining \"defaults\" and \"overrides\": properties with the same name in \"overrides\" should take priority, overwriting those from \"defaults\"."
-        },
-        "code": "const merged = { ...defaults, ...overrides };",
-        "slot": "obj-create"
-      }
-    ],
-    "python": [
-      {
-        "id": "py-007",
-        "concept": {
-          "pt": "String Formatada",
-          "en": "F-String"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "F-string (Python 3.6+) é o jeito moderno de formatar strings: mais rápido e legível que .format() ou %. Monte a mensagem de saudação colocando \"name\" e \"age\" direto na string com a sintaxe f\"... {variável} ...\".",
-          "en": "F-strings (Python 3.6+) are the modern way to format strings: faster and more readable than .format() or %. Build the greeting message by embedding \"name\" and \"age\" directly in the string using the f\"... {variable} ...\" syntax."
-        },
-        "code": "greeting = f\"Hello, {name}! You are {age} years old.\"",
-        "slot": "var-interpolation"
       }
     ],
     "kotlin": [
@@ -10252,21 +3684,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Bash variables are declared without spaces around \"=\" and expanded with $. Assign the string \"world\" to NAME and use it inside a message with echo -- double quotes allow variable expansion."
         },
         "code": "NAME=\"world\"\necho \"Hello, $NAME!\""
-      }
-    ],
-    "linux": [
-      {
-        "id": "linux-009",
-        "concept": {
-          "pt": "Processamento de Texto",
-          "en": "Text Processing"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Soma uma coluna numérica com awk, troca uma variável de ambiente com sed e lista os usuários do sistema.",
-          "en": "Sum a numeric column with awk, replace an env variable with sed, and list unique system users."
-        },
-        "code": "awk '{sum += $3} END {print sum}' access.log\nsed -i 's/localhost/production.db/g' .env\ncut -d: -f1 /etc/passwd | sort | uniq"
       }
     ]
   },
@@ -11373,252 +4790,9 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
       }
     ]
   },
-  "angular-pleno": {
-    "angular": [
-      {
-        "id": "angular-021",
-        "concept": {
-          "pt": "Signal de Estado",
-          "en": "State Signal"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "signal() cria estado reativo local. Modele uma lista de filtros com update e set.",
-          "en": "signal() creates local reactive state. Model a filter list with update and set."
-        },
-        "code": "import { Component, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-filter-panel',\n  template: `\n    <button (click)=\"toggle('active')\">Active</button>\n    <button (click)=\"clear()\">Clear</button>\n    <pre>{{ filters() | json }}</pre>\n  `,\n})\nexport class FilterPanelComponent {\n  filters = signal<string[]>([]);\n\n  toggle(filter: string) {\n    this.filters.update(items =>\n      items.includes(filter)\n        ? items.filter(item => item !== filter)\n        : [...items, filter]\n    );\n  }\n\n  clear() {\n    this.filters.set([]);\n  }\n}"
-      },
-      {
-        "id": "angular-022",
-        "concept": {
-          "pt": "Computed Signal",
-          "en": "Computed Signal"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "computed() deriva estado memoizado de signals. Calcule total, itens pagos e pendentes.",
-          "en": "computed() derives memoized state from signals. Calculate total, paid items, and pending items."
-        },
-        "code": "import { Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-invoice-summary',\n  template: `\n    <p>Total: {{ total() }}</p>\n    <p>Paid: {{ paidCount() }}</p>\n    <p>Pending: {{ pendingCount() }}</p>\n  `,\n})\nexport class InvoiceSummaryComponent {\n  invoices = signal([\n    { id: 1, total: 200, paid: true },\n    { id: 2, total: 140, paid: false },\n  ]);\n\n  total = computed(() =>\n    this.invoices().reduce((sum, item) => sum + item.total, 0)\n  );\n  paidCount = computed(() => this.invoices().filter(i => i.paid).length);\n  pendingCount = computed(() => this.invoices().length - this.paidCount());\n}"
-      },
-      {
-        "id": "angular-023",
-        "concept": {
-          "pt": "Effect",
-          "en": "Effect"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "effect() reage a mudancas de signals para sincronizar APIs externas. Salve preferencia de tema no localStorage.",
-          "en": "effect() reacts to signal changes to synchronize external APIs. Save a theme preference in localStorage."
-        },
-        "code": "import { Component, effect, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-theme-toggle',\n  template: `\n    <button (click)=\"toggle()\">Theme: {{ theme() }}</button>\n  `,\n})\nexport class ThemeToggleComponent {\n  theme = signal<'light' | 'dark'>('dark');\n\n  constructor() {\n    effect(() => {\n      localStorage.setItem('theme', this.theme());\n      document.documentElement.dataset.theme = this.theme();\n    });\n  }\n\n  toggle() {\n    this.theme.update(value => value === 'dark' ? 'light' : 'dark');\n  }\n}"
-      },
-      {
-        "id": "angular-024",
-        "concept": {
-          "pt": "Signal Inputs",
-          "en": "Signal Inputs"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Signal inputs podem ser usados em computed. Crie um item de carrinho com subtotal derivado.",
-          "en": "Signal inputs can be used in computed. Create a cart item with a derived subtotal."
-        },
-        "code": "import { Component, computed, input } from '@angular/core';\n\n@Component({\n  selector: 'app-cart-line',\n  template: `\n    <span>{{ name() }}</span>\n    <strong>{{ subtotal() | currency:'USD' }}</strong>\n  `,\n})\nexport class CartLineComponent {\n  name = input.required<string>();\n  unitPrice = input.required<number>();\n  quantity = input(1);\n\n  subtotal = computed(() => this.unitPrice() * this.quantity());\n}"
-      },
-      {
-        "id": "angular-025",
-        "concept": {
-          "pt": "Composição de Componentes",
-          "en": "Component Composition"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Componentes standalone importam outros componentes diretamente. Monte um painel com header e lista.",
-          "en": "Standalone components import other components directly. Build a panel with a header and list."
-        },
-        "code": "import { Component } from '@angular/core';\nimport { PanelHeaderComponent } from './panel-header.component';\nimport { TaskListComponent } from './task-list.component';\n\n@Component({\n  selector: 'app-task-panel',\n  imports: [PanelHeaderComponent, TaskListComponent],\n  template: `\n    <section>\n      <app-panel-header title=\"Tasks\" />\n      <app-task-list [items]=\"tasks\" />\n    </section>\n  `,\n})\nexport class TaskPanelComponent {\n  tasks = [\n    { id: 1, title: 'Review PR' },\n    { id: 2, title: 'Ship release' },\n  ];\n}"
-      },
-      {
-        "id": "angular-026",
-        "concept": {
-          "pt": "Reactive Forms Tipados",
-          "en": "Typed Reactive Forms"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "NonNullableFormBuilder cria formularios tipados. Modele um form de perfil com validadores.",
-          "en": "NonNullableFormBuilder creates typed forms. Model a profile form with validators."
-        },
-        "code": "import { Component, inject } from '@angular/core';\nimport { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-profile-form',\n  imports: [ReactiveFormsModule],\n  template: `\n    <form [formGroup]=\"form\">\n      <input formControlName=\"name\" />\n      <input formControlName=\"email\" />\n    </form>\n  `,\n})\nexport class ProfileFormComponent {\n  private fb = inject(NonNullableFormBuilder);\n\n  form = this.fb.group({\n    name: ['', [Validators.required, Validators.minLength(2)]],\n    email: ['', [Validators.required, Validators.email]],\n  });\n}"
-      }
-    ]
-  },
-  "angular-senior": {
-    "angular": [
-      {
-        "id": "angular-041",
-        "concept": {
-          "pt": "Estado Derivado com Signals",
-          "en": "Derived Signal State"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Combine signals e computed para filtros complexos sem duplicar estado. Modele uma tabela filtravel.",
-          "en": "Combine signals and computed for complex filters without duplicating state. Model a filterable table."
-        },
-        "code": "import { computed, signal } from '@angular/core';\n\ninterface Ticket {\n  id: number;\n  status: 'open' | 'closed';\n  priority: 'low' | 'high';\n}\n\nexport class TicketState {\n  tickets = signal<Ticket[]>([]);\n  status = signal<'all' | Ticket['status']>('all');\n  highOnly = signal(false);\n\n  visibleTickets = computed(() => {\n    const status = this.status();\n    const highOnly = this.highOnly();\n\n    return this.tickets().filter(ticket => {\n      const statusMatch = status === 'all' || ticket.status === status;\n      const priorityMatch = !highOnly || ticket.priority === 'high';\n      return statusMatch && priorityMatch;\n    });\n  });\n}"
-      },
-      {
-        "id": "angular-042",
-        "concept": {
-          "pt": "Recurso Assincrono",
-          "en": "Async Resource"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "resource conecta signals a carregamento assincrono. Carregue detalhes quando o id mudar.",
-          "en": "resource connects signals to async loading. Load details when the id changes."
-        },
-        "code": "import { Component, resource, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-user-resource',\n  template: `\n    @if (user.isLoading()) {\n      <p>Loading...</p>\n    } @else if (user.value(); as data) {\n      <h1>{{ data.name }}</h1>\n    }\n  `,\n})\nexport class UserResourceComponent {\n  userId = signal(1);\n\n  user = resource({\n    request: () => ({ id: this.userId() }),\n    loader: ({ request }) =>\n      fetch(`/api/users/${request.id}`).then(res => res.json()),\n  });\n}"
-      },
-      {
-        "id": "angular-043",
-        "concept": {
-          "pt": "Performance em Listas",
-          "en": "List Performance"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Listas grandes precisam de track estavel e renderizacao minima. Renderize logs por id.",
-          "en": "Large lists need stable tracking and minimal rendering. Render logs by id."
-        },
-        "code": "import { Component, signal } from '@angular/core';\n\ninterface LogRow {\n  id: string;\n  message: string;\n  level: 'info' | 'warn' | 'error';\n}\n\n@Component({\n  selector: 'app-log-table',\n  template: `\n    <table>\n      @for (row of rows(); track row.id) {\n        <tr [class.error]=\"row.level === 'error'\">\n          <td>{{ row.level }}</td>\n          <td>{{ row.message }}</td>\n        </tr>\n      }\n    </table>\n  `,\n})\nexport class LogTableComponent {\n  rows = signal<LogRow[]>([]);\n}"
-      },
-      {
-        "id": "angular-044",
-        "concept": {
-          "pt": "Deferred Loading",
-          "en": "Deferred Loading"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "@defer atrasa UI pesada ate uma condicao. Carregue um grafico quando entrar no viewport.",
-          "en": "@defer delays heavy UI until a condition. Load a chart when it enters the viewport."
-        },
-        "code": "import { Component } from '@angular/core';\nimport { SalesChartComponent } from './sales-chart.component';\n\n@Component({\n  selector: 'app-analytics-page',\n  imports: [SalesChartComponent],\n  template: `\n    <h1>Analytics</h1>\n\n    @defer (on viewport) {\n      <app-sales-chart />\n    } @placeholder {\n      <div class=\"chart-skeleton\">Chart loading...</div>\n    } @loading {\n      <p>Preparing chart...</p>\n    }\n  `,\n})\nexport class AnalyticsPage {}"
-      },
-      {
-        "id": "angular-045",
-        "concept": {
-          "pt": "Change Detection",
-          "en": "Change Detection"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "ChangeDetectionStrategy.OnPush reduz verificacoes desnecessarias. Combine OnPush com inputs imutaveis.",
-          "en": "ChangeDetectionStrategy.OnPush reduces unnecessary checks. Combine OnPush with immutable inputs."
-        },
-        "code": "import { ChangeDetectionStrategy, Component, input } from '@angular/core';\n\ninterface Activity {\n  id: number;\n  label: string;\n}\n\n@Component({\n  selector: 'app-activity-feed',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    @for (activity of activities(); track activity.id) {\n      <p>{{ activity.label }}</p>\n    }\n  `,\n})\nexport class ActivityFeedComponent {\n  activities = input.required<readonly Activity[]>();\n}"
-      },
-      {
-        "id": "angular-046",
-        "concept": {
-          "pt": "SSR e Hydration",
-          "en": "SSR and Hydration"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Codigo SSR-safe evita acessar window antes do browser. Use PLATFORM_ID para proteger APIs do DOM.",
-          "en": "SSR-safe code avoids accessing window before the browser. Use PLATFORM_ID to guard DOM APIs."
-        },
-        "code": "import { Component, PLATFORM_ID, inject, signal } from '@angular/core';\nimport { isPlatformBrowser } from '@angular/common';\n\n@Component({\n  selector: 'app-viewport-size',\n  template: '<p>{{ width() }}px</p>',\n})\nexport class ViewportSizeComponent {\n  private platformId = inject(PLATFORM_ID);\n  width = signal(0);\n\n  ngOnInit() {\n    if (isPlatformBrowser(this.platformId)) {\n      this.width.set(window.innerWidth);\n    }\n  }\n}"
-      }
-    ]
-  },
-  "dom": {
-    "javascript": [
-      {
-        "id": "js-037",
-        "concept": {
-          "pt": "querySelector e querySelectorAll",
-          "en": "querySelector and querySelectorAll"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "querySelector retorna o primeiro elemento que bate com o seletor CSS, e querySelectorAll retorna todos. Selecione um botão pelo id e todos os itens de uma lista.",
-          "en": "querySelector returns the first element matching a CSS selector, and querySelectorAll returns all of them. Select a button by id and all items in a list."
-        },
-        "code": "const btn = document.querySelector('#submit-btn');\nconst items = document.querySelectorAll('.list-item');\n\nitems.forEach(item => {\n  console.log(item.textContent);\n});"
-      },
-      {
-        "id": "js-038",
-        "concept": {
-          "pt": "addEventListener",
-          "en": "addEventListener"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "addEventListener registra um callback que executa quando um evento ocorre no elemento. Adicione listeners de click e keydown num formulário.",
-          "en": "addEventListener registers a callback that runs when an event occurs on the element. Add click and keydown listeners to a form."
-        },
-        "code": "const form = document.querySelector('#my-form');\n\nform.addEventListener('submit', (e) => {\n  e.preventDefault();\n  const data = new FormData(form);\n  console.log(Object.fromEntries(data));\n});\n\ndocument.addEventListener('keydown', (e) => {\n  if (e.key === 'Escape') form.reset();\n});"
-      },
-      {
-        "id": "js-039",
-        "concept": {
-          "pt": "Delegação de Eventos",
-          "en": "Event Delegation"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Delegação de eventos usa um único listener no pai pra capturar eventos dos filhos via bubbling. Adicione um listener na lista que detecta cliques nos botões de delete.",
-          "en": "Event delegation uses a single listener on the parent to capture child events via bubbling. Add a listener on the list that detects clicks on delete buttons."
-        },
-        "code": "const list = document.querySelector('#todo-list');\n\nlist.addEventListener('click', (e) => {\n  const btn = e.target.closest('.delete-btn');\n  if (!btn) return;\n\n  const item = btn.closest('.todo-item');\n  item.remove();\n});"
-      },
-      {
-        "id": "js-040",
-        "concept": {
-          "pt": "createElement e appendChild",
-          "en": "createElement and appendChild"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "createElement cria um novo elemento DOM e appendChild o insere como filho. Crie uma função que adiciona um item de tarefa à lista dinamicamente.",
-          "en": "createElement creates a new DOM element and appendChild inserts it as a child. Create a function that dynamically adds a task item to the list."
-        },
-        "code": "function addTodo(text) {\n  const li = document.createElement('li');\n  li.className = 'todo-item';\n  li.innerHTML = `\n    <span>${text}</span>\n    <button class=\"delete-btn\">x</button>\n  `;\n  document.querySelector('#todo-list').appendChild(li);\n}"
-      },
-      {
-        "id": "js-041",
-        "concept": {
-          "pt": "classList",
-          "en": "classList"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "classList oferece métodos como add, remove e toggle pra manipular classes CSS de um elemento sem sobrescrever as existentes.",
-          "en": "classList provides methods like add, remove, and toggle to manipulate CSS classes on an element without overwriting existing ones."
-        },
-        "code": "const menu = document.querySelector('.sidebar');\n\ndocument.querySelector('#menu-toggle').addEventListener('click', () => {\n  menu.classList.toggle('open');\n});\n\nmenu.classList.add('animated');\nmenu.classList.remove('hidden');\nconsole.log(menu.classList.contains('open'));"
-      },
-      {
-        "id": "js-042",
-        "concept": {
-          "pt": "Dataset (data attributes)",
-          "en": "Dataset (data attributes)"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "O objeto dataset acessa atributos data-* do HTML como propriedades JavaScript em camelCase. Use dataset pra ler e escrever metadados nos elementos.",
-          "en": "The dataset object accesses HTML data-* attributes as camelCase JavaScript properties. Use dataset to read and write metadata on elements."
-        },
-        "code": "const card = document.querySelector('.product-card');\n\nconst productId = card.dataset.productId;\nconst category = card.dataset.category;\n\ncard.dataset.selected = 'true';\ncard.dataset.lastViewed = Date.now();\n\nconsole.log(productId, category);"
-      }
-    ]
-  },
+  "angular-pleno": {},
+  "angular-senior": {},
+  "dom": {},
   "templates": {
     "jinja": [
       {
@@ -11784,806 +4958,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
     ]
   },
   "algorithms": {
-    "cpp": [
-      {
-        "id": "cpp-042",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com operações em C++.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with C++ operations."
-        },
-        "code": "// O(1) -- acesso direto\nauto first = vec[0];\n\n// O(n) -- percorrer tudo\nbool contains(const std::vector<int>& v, int target) {\n    for (auto x : v) if (x == target) return true;\n    return false;\n}\n\n// O(n²) -- loop aninhado\nbool hasDuplicate(const std::vector<int>& v) {\n    for (size_t i = 0; i < v.size(); i++)\n        for (size_t j = i + 1; j < v.size(); j++)\n            if (v[i] == v[j]) return true;\n    return false;\n}"
-      },
-      {
-        "id": "cpp-043",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o vetor ordenado ao meio -- O(log n). Implemente de forma iterativa.",
-          "en": "Binary search halves a sorted vector -- O(log n). Implement it iteratively."
-        },
-        "code": "int binarySearch(const std::vector<int>& v, int target) {\n    int left = 0, right = v.size() - 1;\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (v[mid] == target) return mid;\n        if (v[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}"
-      },
-      {
-        "id": "cpp-044",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com std::swap e parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with std::swap and early stop."
-        },
-        "code": "void bubbleSort(std::vector<int>& v) {\n    for (size_t i = 0; i < v.size() - 1; i++) {\n        bool swapped = false;\n        for (size_t j = 0; j < v.size() - 1 - i; j++) {\n            if (v[j] > v[j + 1]) {\n                std::swap(v[j], v[j + 1]);\n                swapped = true;\n            }\n        }\n        if (!swapped) break;\n    }\n}"
-      },
-      {
-        "id": "cpp-045",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com vetores auxiliares.",
-          "en": "Merge Sort recursively splits and merges -- O(n log n). Implement with auxiliary vectors."
-        },
-        "code": "std::vector<int> mergeSort(std::vector<int> v) {\n    if (v.size() <= 1) return v;\n    auto mid = v.begin() + v.size() / 2;\n    auto left = mergeSort({v.begin(), mid});\n    auto right = mergeSort({mid, v.end()});\n    std::vector<int> result;\n    std::merge(left.begin(), left.end(),\n               right.begin(), right.end(),\n               std::back_inserter(result));\n    return result;\n}"
-      },
-      {
-        "id": "cpp-046",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente com iteradores.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average. Implement with iterators."
-        },
-        "code": "void quickSort(std::vector<int>& v, int lo, int hi) {\n    if (lo >= hi) return;\n    int pivot = v[hi], i = lo;\n    for (int j = lo; j < hi; j++) {\n        if (v[j] < pivot) std::swap(v[i++], v[j]);\n    }\n    std::swap(v[i], v[hi]);\n    quickSort(v, lo, i - 1);\n    quickSort(v, i + 1, hi);\n}"
-      },
-      {
-        "id": "cpp-047",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "std::stack oferece LIFO com push, top e pop. Use pra empilhar e desempilhar valores.",
-          "en": "std::stack provides LIFO with push, top, and pop. Use it to push and pop values."
-        },
-        "code": "std::stack<int> s;\ns.push(1);\ns.push(2);\ns.push(3);\n\nint top = s.top(); // 3\ns.pop();\nbool empty = s.empty();\nsize_t sz = s.size();"
-      }
-    ],
-    "typescript": [
-      {
-        "id": "ts-044",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com TypeScript tipado.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with typed TypeScript."
-        },
-        "code": "// O(1) -- acesso direto\nconst first: number = arr[0];\n\n// O(n) -- percorrer tudo\nfunction contains(arr: number[], target: number): boolean {\n  return arr.some(x => x === target);\n}\n\n// O(n²) -- loop aninhado\nfunction hasDuplicate(arr: number[]): boolean {\n  for (let i = 0; i < arr.length; i++)\n    for (let j = i + 1; j < arr.length; j++)\n      if (arr[i] === arr[j]) return true;\n  return false;\n}"
-      },
-      {
-        "id": "ts-045",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o array ordenado ao meio -- O(log n). Implemente com tipos explícitos.",
-          "en": "Binary search halves a sorted array -- O(log n). Implement with explicit types."
-        },
-        "code": "function binarySearch(arr: number[], target: number): number {\n  let left = 0;\n  let right = arr.length - 1;\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n    if (arr[mid] === target) return mid;\n    if (arr[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}"
-      },
-      {
-        "id": "ts-046",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com tipagem e parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with typing and early stop."
-        },
-        "code": "function bubbleSort(arr: number[]): number[] {\n  const a = [...arr];\n  for (let i = 0; i < a.length - 1; i++) {\n    let swapped = false;\n    for (let j = 0; j < a.length - 1 - i; j++) {\n      if (a[j] > a[j + 1]) {\n        [a[j], a[j + 1]] = [a[j + 1], a[j]];\n        swapped = true;\n      }\n    }\n    if (!swapped) break;\n  }\n  return a;\n}"
-      },
-      {
-        "id": "ts-047",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com tipagem forte.",
-          "en": "Merge Sort recursively splits and merges -- O(n log n). Implement with strong typing."
-        },
-        "code": "function mergeSort(arr: number[]): number[] {\n  if (arr.length <= 1) return arr;\n  const mid = Math.floor(arr.length / 2);\n  return merge(mergeSort(arr.slice(0, mid)), mergeSort(arr.slice(mid)));\n}\n\nfunction merge(a: number[], b: number[]): number[] {\n  const result: number[] = [];\n  let i = 0, j = 0;\n  while (i < a.length && j < b.length)\n    result.push(a[i] <= b[j] ? a[i++] : b[j++]);\n  return result.concat(a.slice(i), b.slice(j));\n}"
-      },
-      {
-        "id": "ts-048",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente com filter.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average. Implement with filter."
-        },
-        "code": "function quickSort(arr: number[]): number[] {\n  if (arr.length <= 1) return arr;\n  const pivot = arr[arr.length - 1];\n  const left = arr.slice(0, -1).filter(x => x < pivot);\n  const right = arr.slice(0, -1).filter(x => x >= pivot);\n  return [...quickSort(left), pivot, ...quickSort(right)];\n}"
-      },
-      {
-        "id": "ts-049",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Uma pilha genérica segue LIFO. Implemente Stack<T> com push, pop, peek e isEmpty.",
-          "en": "A generic stack follows LIFO. Implement Stack<T> with push, pop, peek, and isEmpty."
-        },
-        "code": "class Stack<T> {\n  private items: T[] = [];\n  push(item: T): void { this.items.push(item); }\n  pop(): T | undefined { return this.items.pop(); }\n  peek(): T | undefined { return this.items[this.items.length - 1]; }\n  isEmpty(): boolean { return this.items.length === 0; }\n  get size(): number { return this.items.length; }\n}"
-      }
-    ],
-    "python": [
-      {
-        "id": "py-040",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com exemplos Pythônicos.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with Pythonic examples."
-        },
-        "code": "# O(1) -- acesso direto\nfirst = arr[0]\n\n# O(n) -- percorrer tudo\ndef contains(arr: list[int], target: int) -> bool:\n    return any(x == target for x in arr)\n\n# O(n²) -- loop aninhado\ndef has_duplicate(arr: list[int]) -> bool:\n    for i in range(len(arr)):\n        for j in range(i + 1, len(arr)):\n            if arr[i] == arr[j]:\n                return True\n    return False"
-      },
-      {
-        "id": "py-041",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide a lista ordenada ao meio -- O(log n). Implemente de forma iterativa.",
-          "en": "Binary search halves a sorted list -- O(log n). Implement it iteratively."
-        },
-        "code": "def binary_search(arr: list[int], target: int) -> int:\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1"
-      },
-      {
-        "id": "py-042",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with early stop."
-        },
-        "code": "def bubble_sort(arr: list[int]) -> list[int]:\n    a = arr.copy()\n    for i in range(len(a) - 1):\n        swapped = False\n        for j in range(len(a) - 1 - i):\n            if a[j] > a[j + 1]:\n                a[j], a[j + 1] = a[j + 1], a[j]\n                swapped = True\n        if not swapped:\n            break\n    return a"
-      },
-      {
-        "id": "py-043",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com função merge auxiliar.",
-          "en": "Merge Sort recursively splits and merges -- O(n log n). Implement with a merge helper."
-        },
-        "code": "def merge_sort(arr: list[int]) -> list[int]:\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(a: list[int], b: list[int]) -> list[int]:\n    result, i, j = [], 0, 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i]); i += 1\n        else:\n            result.append(b[j]); j += 1\n    return result + a[i:] + b[j:]"
-      },
-      {
-        "id": "py-044",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort escolhe um pivô e particiona -- O(n log n) médio. Implemente com list comprehension.",
-          "en": "Quick Sort picks a pivot and partitions -- O(n log n) average. Implement with list comprehension."
-        },
-        "code": "def quick_sort(arr: list[int]) -> list[int]:\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[-1]\n    left = [x for x in arr[:-1] if x < pivot]\n    right = [x for x in arr[:-1] if x >= pivot]\n    return quick_sort(left) + [pivot] + quick_sort(right)"
-      },
-      {
-        "id": "py-045",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Python, uma lista funciona como pilha com append e pop. Implemente uma classe Stack.",
-          "en": "In Python, a list works as a stack with append and pop. Implement a Stack class."
-        },
-        "code": "class Stack:\n    def __init__(self):\n        self.items: list = []\n\n    def push(self, item):\n        self.items.append(item)\n\n    def pop(self):\n        return self.items.pop()\n\n    def peek(self):\n        return self.items[-1]\n\n    def is_empty(self) -> bool:\n        return len(self.items) == 0"
-      }
-    ],
-    "java": [
-      {
-        "id": "java-042",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) com operações comuns em Java.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) with common Java operations."
-        },
-        "code": "// O(1) -- acesso direto\nint first = arr[0];\n\n// O(n) -- percorrer tudo\nboolean contains(int[] arr, int target) {\n    for (int item : arr) {\n        if (item == target) return true;\n    }\n    return false;\n}\n\n// O(n²) -- loop aninhado\nboolean hasDuplicate(int[] arr) {\n    for (int i = 0; i < arr.length; i++)\n        for (int j = i + 1; j < arr.length; j++)\n            if (arr[i] == arr[j]) return true;\n    return false;\n}"
-      },
-      {
-        "id": "java-043",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o array ordenado ao meio a cada passo -- O(log n). Implemente de forma iterativa.",
-          "en": "Binary search halves a sorted array at each step -- O(log n). Implement it iteratively."
-        },
-        "code": "int binarySearch(int[] arr, int target) {\n    int left = 0, right = arr.length - 1;\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}"
-      },
-      {
-        "id": "java-044",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca se fora de ordem -- O(n²). Implemente com parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps if out of order -- O(n²). Implement with early stop."
-        },
-        "code": "void bubbleSort(int[] arr) {\n    for (int i = 0; i < arr.length - 1; i++) {\n        boolean swapped = false;\n        for (int j = 0; j < arr.length - 1 - i; j++) {\n            if (arr[j] > arr[j + 1]) {\n                int tmp = arr[j];\n                arr[j] = arr[j + 1];\n                arr[j + 1] = tmp;\n                swapped = true;\n            }\n        }\n        if (!swapped) break;\n    }\n}"
-      },
-      {
-        "id": "java-045",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala as metades ordenadas -- O(n log n). Implemente com método merge auxiliar.",
-          "en": "Merge Sort recursively splits and merges sorted halves -- O(n log n). Implement with a merge helper."
-        },
-        "code": "void mergeSort(int[] arr, int l, int r) {\n    if (l >= r) return;\n    int mid = (l + r) / 2;\n    mergeSort(arr, l, mid);\n    mergeSort(arr, mid + 1, r);\n    merge(arr, l, mid, r);\n}\n\nvoid merge(int[] arr, int l, int mid, int r) {\n    int[] left = Arrays.copyOfRange(arr, l, mid + 1);\n    int[] right = Arrays.copyOfRange(arr, mid + 1, r + 1);\n    int i = 0, j = 0, k = l;\n    while (i < left.length && j < right.length)\n        arr[k++] = left[i] <= right[j] ? left[i++] : right[j++];\n    while (i < left.length) arr[k++] = left[i++];\n    while (j < right.length) arr[k++] = right[j++];\n}"
-      },
-      {
-        "id": "java-046",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort escolhe um pivô e particiona o array -- O(n log n) médio. Implemente com partição Lomuto.",
-          "en": "Quick Sort picks a pivot and partitions the array -- O(n log n) average. Implement with Lomuto partition."
-        },
-        "code": "void quickSort(int[] arr, int lo, int hi) {\n    if (lo >= hi) return;\n    int pivot = arr[hi];\n    int i = lo;\n    for (int j = lo; j < hi; j++) {\n        if (arr[j] < pivot) {\n            int tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;\n            i++;\n        }\n    }\n    int tmp = arr[i]; arr[i] = arr[hi]; arr[hi] = tmp;\n    quickSort(arr, lo, i - 1);\n    quickSort(arr, i + 1, hi);\n}"
-      },
-      {
-        "id": "java-047",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Uma pilha segue LIFO. Em Java, ArrayDeque é a implementação recomendada. Use push, pop e peek.",
-          "en": "A stack follows LIFO. In Java, ArrayDeque is the recommended implementation. Use push, pop, and peek."
-        },
-        "code": "Deque<Integer> stack = new ArrayDeque<>();\nstack.push(1);\nstack.push(2);\nstack.push(3);\n\nint top = stack.peek();   // 3\nint removed = stack.pop(); // 3\nboolean empty = stack.isEmpty();"
-      }
-    ],
-    "rust": [
-      {
-        "id": "rs-044",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Rust.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Rust."
-        },
-        "code": "// O(1) -- acesso direto\nlet first = arr[0];\n\n// O(n) -- percorrer tudo\nfn contains(arr: &[i32], target: i32) -> bool {\n    arr.iter().any(|&x| x == target)\n}\n\n// O(n²) -- loop aninhado\nfn has_duplicate(arr: &[i32]) -> bool {\n    for i in 0..arr.len() {\n        for j in (i + 1)..arr.len() {\n            if arr[i] == arr[j] { return true; }\n        }\n    }\n    false\n}"
-      },
-      {
-        "id": "rs-045",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o slice ordenado ao meio -- O(log n). Implemente de forma iterativa.",
-          "en": "Binary search halves a sorted slice -- O(log n). Implement it iteratively."
-        },
-        "code": "fn binary_search(arr: &[i32], target: i32) -> Option<usize> {\n    let (mut left, mut right) = (0, arr.len());\n    while left < right {\n        let mid = left + (right - left) / 2;\n        match arr[mid].cmp(&target) {\n            std::cmp::Ordering::Equal => return Some(mid),\n            std::cmp::Ordering::Less => left = mid + 1,\n            std::cmp::Ordering::Greater => right = mid,\n        }\n    }\n    None\n}"
-      },
-      {
-        "id": "rs-046",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com swap e parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with swap and early stop."
-        },
-        "code": "fn bubble_sort(arr: &mut Vec<i32>) {\n    let n = arr.len();\n    for i in 0..n {\n        let mut swapped = false;\n        for j in 0..n - 1 - i {\n            if arr[j] > arr[j + 1] {\n                arr.swap(j, j + 1);\n                swapped = true;\n            }\n        }\n        if !swapped { break; }\n    }\n}"
-      },
-      {
-        "id": "rs-047",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com Vec.",
-          "en": "Merge Sort recursively splits and merges -- O(n log n). Implement with Vec."
-        },
-        "code": "fn merge_sort(arr: Vec<i32>) -> Vec<i32> {\n    if arr.len() <= 1 { return arr; }\n    let mid = arr.len() / 2;\n    let left = merge_sort(arr[..mid].to_vec());\n    let right = merge_sort(arr[mid..].to_vec());\n    merge(&left, &right)\n}\n\nfn merge(a: &[i32], b: &[i32]) -> Vec<i32> {\n    let (mut i, mut j) = (0, 0);\n    let mut result = Vec::with_capacity(a.len() + b.len());\n    while i < a.len() && j < b.len() {\n        if a[i] <= b[j] { result.push(a[i]); i += 1; }\n        else { result.push(b[j]); j += 1; }\n    }\n    result.extend_from_slice(&a[i..]);\n    result.extend_from_slice(&b[j..]);\n    result\n}"
-      },
-      {
-        "id": "rs-048",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente com slices.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average. Implement with slices."
-        },
-        "code": "fn quick_sort(arr: &mut [i32]) {\n    if arr.len() <= 1 { return; }\n    let pivot_idx = partition(arr);\n    let (left, right) = arr.split_at_mut(pivot_idx);\n    quick_sort(left);\n    quick_sort(&mut right[1..]);\n}\n\nfn partition(arr: &mut [i32]) -> usize {\n    let pivot = arr[arr.len() - 1];\n    let mut i = 0;\n    for j in 0..arr.len() - 1 {\n        if arr[j] < pivot { arr.swap(i, j); i += 1; }\n    }\n    arr.swap(i, arr.len() - 1);\n    i\n}"
-      },
-      {
-        "id": "rs-049",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Rust, Vec funciona como pilha com push, pop e last. Demonstre operações LIFO.",
-          "en": "In Rust, Vec works as a stack with push, pop, and last. Demonstrate LIFO operations."
-        },
-        "code": "let mut stack: Vec<i32> = Vec::new();\nstack.push(1);\nstack.push(2);\nstack.push(3);\n\nlet top = stack.last();      // Some(&3)\nlet removed = stack.pop();   // Some(3)\nlet is_empty = stack.is_empty();"
-      }
-    ],
-    "go": [
-      {
-        "id": "go-042",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Go.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Go."
-        },
-        "code": "// O(1) -- acesso direto\nfirst := arr[0]\n\n// O(n) -- percorrer tudo\nfunc contains(arr []int, target int) bool {\n    for _, v := range arr {\n        if v == target { return true }\n    }\n    return false\n}\n\n// O(n²) -- loop aninhado\nfunc hasDuplicate(arr []int) bool {\n    for i := 0; i < len(arr); i++ {\n        for j := i + 1; j < len(arr); j++ {\n            if arr[i] == arr[j] { return true }\n        }\n    }\n    return false\n}"
-      },
-      {
-        "id": "go-043",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o slice ordenado ao meio -- O(log n). Implemente de forma iterativa.",
-          "en": "Binary search halves a sorted slice -- O(log n). Implement it iteratively."
-        },
-        "code": "func binarySearch(arr []int, target int) int {\n    left, right := 0, len(arr)-1\n    for left <= right {\n        mid := left + (right-left)/2\n        if arr[mid] == target {\n            return mid\n        } else if arr[mid] < target {\n            left = mid + 1\n        } else {\n            right = mid - 1\n        }\n    }\n    return -1\n}"
-      },
-      {
-        "id": "go-044",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with early stop."
-        },
-        "code": "func bubbleSort(arr []int) []int {\n    a := make([]int, len(arr))\n    copy(a, arr)\n    for i := 0; i < len(a)-1; i++ {\n        swapped := false\n        for j := 0; j < len(a)-1-i; j++ {\n            if a[j] > a[j+1] {\n                a[j], a[j+1] = a[j+1], a[j]\n                swapped = true\n            }\n        }\n        if !swapped { break }\n    }\n    return a\n}"
-      },
-      {
-        "id": "go-045",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n). Implemente com slices.",
-          "en": "Merge Sort recursively splits and merges -- O(n log n). Implement with slices."
-        },
-        "code": "func mergeSort(arr []int) []int {\n    if len(arr) <= 1 { return arr }\n    mid := len(arr) / 2\n    left := mergeSort(arr[:mid])\n    right := mergeSort(arr[mid:])\n    return merge(left, right)\n}\n\nfunc merge(a, b []int) []int {\n    result := make([]int, 0, len(a)+len(b))\n    i, j := 0, 0\n    for i < len(a) && j < len(b) {\n        if a[i] <= b[j] { result = append(result, a[i]); i++ } else { result = append(result, b[j]); j++ }\n    }\n    result = append(result, a[i:]...)\n    result = append(result, b[j:]...)\n    return result\n}"
-      },
-      {
-        "id": "go-046",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio. Implemente in-place.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average. Implement in-place."
-        },
-        "code": "func quickSort(arr []int, lo, hi int) {\n    if lo >= hi { return }\n    pivot := arr[hi]\n    i := lo\n    for j := lo; j < hi; j++ {\n        if arr[j] < pivot {\n            arr[i], arr[j] = arr[j], arr[i]\n            i++\n        }\n    }\n    arr[i], arr[hi] = arr[hi], arr[i]\n    quickSort(arr, lo, i-1)\n    quickSort(arr, i+1, hi)\n}"
-      },
-      {
-        "id": "go-047",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Go, um slice funciona como pilha com append e reslicing. Implemente uma struct Stack.",
-          "en": "In Go, a slice works as a stack with append and reslicing. Implement a Stack struct."
-        },
-        "code": "type Stack struct {\n    items []int\n}\n\nfunc (s *Stack) Push(v int)    { s.items = append(s.items, v) }\nfunc (s *Stack) Pop() int      { v := s.items[len(s.items)-1]; s.items = s.items[:len(s.items)-1]; return v }\nfunc (s *Stack) Peek() int     { return s.items[len(s.items)-1] }\nfunc (s *Stack) IsEmpty() bool { return len(s.items) == 0 }"
-      }
-    ],
-    "kotlin": [
-      {
-        "id": "kotlin-043",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Kotlin.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Kotlin."
-        },
-        "code": "// O(1) -- acesso direto\nval first = arr[0]\n\n// O(n) -- percorrer tudo\nfun contains(arr: List<Int>, target: Int): Boolean =\n    arr.any { it == target }\n\n// O(n²) -- loop aninhado\nfun hasDuplicate(arr: List<Int>): Boolean {\n    for (i in arr.indices)\n        for (j in i + 1 until arr.size)\n            if (arr[i] == arr[j]) return true\n    return false\n}"
-      },
-      {
-        "id": "kotlin-044",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide a lista ordenada ao meio -- O(log n).",
-          "en": "Binary search halves a sorted list -- O(log n)."
-        },
-        "code": "fun binarySearch(arr: List<Int>, target: Int): Int {\n    var left = 0\n    var right = arr.size - 1\n    while (left <= right) {\n        val mid = left + (right - left) / 2\n        when {\n            arr[mid] == target -> return mid\n            arr[mid] < target -> left = mid + 1\n            else -> right = mid - 1\n        }\n    }\n    return -1\n}"
-      },
-      {
-        "id": "kotlin-045",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²).",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²)."
-        },
-        "code": "fun bubbleSort(arr: MutableList<Int>): List<Int> {\n    val a = arr.toMutableList()\n    for (i in 0 until a.size - 1) {\n        var swapped = false\n        for (j in 0 until a.size - 1 - i) {\n            if (a[j] > a[j + 1]) {\n                a[j] = a[j + 1].also { a[j + 1] = a[j] }\n                swapped = true\n            }\n        }\n        if (!swapped) break\n    }\n    return a\n}"
-      },
-      {
-        "id": "kotlin-046",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n).",
-          "en": "Merge Sort recursively splits and merges -- O(n log n)."
-        },
-        "code": "fun mergeSort(arr: List<Int>): List<Int> {\n    if (arr.size <= 1) return arr\n    val mid = arr.size / 2\n    val left = mergeSort(arr.subList(0, mid))\n    val right = mergeSort(arr.subList(mid, arr.size))\n    return merge(left, right)\n}\n\nfun merge(a: List<Int>, b: List<Int>): List<Int> {\n    val result = mutableListOf<Int>()\n    var i = 0; var j = 0\n    while (i < a.size && j < b.size)\n        if (a[i] <= b[j]) result.add(a[i++]) else result.add(b[j++])\n    result.addAll(a.subList(i, a.size))\n    result.addAll(b.subList(j, b.size))\n    return result\n}"
-      },
-      {
-        "id": "kotlin-047",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average."
-        },
-        "code": "fun quickSort(arr: List<Int>): List<Int> {\n    if (arr.size <= 1) return arr\n    val pivot = arr.last()\n    val rest = arr.dropLast(1)\n    val left = rest.filter { it < pivot }\n    val right = rest.filter { it >= pivot }\n    return quickSort(left) + pivot + quickSort(right)\n}"
-      },
-      {
-        "id": "kotlin-048",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "ArrayDeque funciona como pilha em Kotlin com addLast, removeLast e last.",
-          "en": "ArrayDeque works as a stack in Kotlin with addLast, removeLast, and last."
-        },
-        "code": "val stack = ArrayDeque<Int>()\nstack.addLast(1)\nstack.addLast(2)\nstack.addLast(3)\n\nval top = stack.last()\nval removed = stack.removeLast()\nval empty = stack.isEmpty()"
-      }
-    ],
-    "scala": [
-      {
-        "id": "scala-042",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Scala.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Scala."
-        },
-        "code": "// O(1) -- acesso direto\nval first = arr(0)\n\n// O(n) -- percorrer tudo\ndef contains(arr: List[Int], target: Int): Boolean =\n  arr.exists(_ == target)\n\n// O(n²) -- loop aninhado\ndef hasDuplicate(arr: List[Int]): Boolean =\n  arr.indices.exists(i =>\n    (i + 1 until arr.length).exists(j => arr(i) == arr(j)))"
-      },
-      {
-        "id": "scala-043",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o array ordenado ao meio -- O(log n).",
-          "en": "Binary search halves a sorted array -- O(log n)."
-        },
-        "code": "def binarySearch(arr: Array[Int], target: Int): Int = {\n  var left = 0\n  var right = arr.length - 1\n  while (left <= right) {\n    val mid = left + (right - left) / 2\n    if (arr(mid) == target) return mid\n    if (arr(mid) < target) left = mid + 1\n    else right = mid - 1\n  }\n  -1\n}"
-      },
-      {
-        "id": "scala-044",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²).",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²)."
-        },
-        "code": "def bubbleSort(arr: Array[Int]): Array[Int] = {\n  val a = arr.clone()\n  for (i <- 0 until a.length - 1) {\n    var swapped = false\n    for (j <- 0 until a.length - 1 - i) {\n      if (a(j) > a(j + 1)) {\n        val tmp = a(j); a(j) = a(j + 1); a(j + 1) = tmp\n        swapped = true\n      }\n    }\n    if (!swapped) return a\n  }\n  a\n}"
-      },
-      {
-        "id": "scala-045",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n). Use estilo funcional com List.",
-          "en": "Merge Sort recursively splits and merges -- O(n log n). Use functional style with List."
-        },
-        "code": "def mergeSort(xs: List[Int]): List[Int] = xs match {\n  case Nil | _ :: Nil => xs\n  case _ =>\n    val (left, right) = xs.splitAt(xs.length / 2)\n    merge(mergeSort(left), mergeSort(right))\n}\n\ndef merge(a: List[Int], b: List[Int]): List[Int] = (a, b) match {\n  case (Nil, _) => b\n  case (_, Nil) => a\n  case (x :: xs, y :: ys) =>\n    if (x <= y) x :: merge(xs, b) else y :: merge(a, ys)\n}"
-      },
-      {
-        "id": "scala-046",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average."
-        },
-        "code": "def quickSort(xs: List[Int]): List[Int] = xs match {\n  case Nil | _ :: Nil => xs\n  case _ =>\n    val pivot = xs.last\n    val rest = xs.init\n    val (left, right) = rest.partition(_ < pivot)\n    quickSort(left) ::: pivot :: quickSort(right)\n}"
-      },
-      {
-        "id": "scala-047",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "mutable.Stack oferece LIFO com push, pop e top em Scala.",
-          "en": "mutable.Stack provides LIFO with push, pop, and top in Scala."
-        },
-        "code": "import scala.collection.mutable\n\nval stack = mutable.Stack[Int]()\nstack.push(1)\nstack.push(2)\nstack.push(3)\n\nval top = stack.top  // 3\nval removed = stack.pop() // 3\nval empty = stack.isEmpty"
-      }
-    ],
-    "swift": [
-      {
-        "id": "swift-042",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Swift.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Swift."
-        },
-        "code": "// O(1) -- acesso direto\nlet first = arr[0]\n\n// O(n) -- percorrer tudo\nfunc contains(_ arr: [Int], _ target: Int) -> Bool {\n    arr.contains(target)\n}\n\n// O(n²) -- loop aninhado\nfunc hasDuplicate(_ arr: [Int]) -> Bool {\n    for i in 0..<arr.count {\n        for j in (i + 1)..<arr.count {\n            if arr[i] == arr[j] { return true }\n        }\n    }\n    return false\n}"
-      },
-      {
-        "id": "swift-043",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o array ordenado ao meio -- O(log n).",
-          "en": "Binary search halves a sorted array -- O(log n)."
-        },
-        "code": "func binarySearch(_ arr: [Int], _ target: Int) -> Int? {\n    var left = 0, right = arr.count - 1\n    while left <= right {\n        let mid = (left + right) / 2\n        if arr[mid] == target { return mid }\n        if arr[mid] < target { left = mid + 1 }\n        else { right = mid - 1 }\n    }\n    return nil\n}"
-      },
-      {
-        "id": "swift-044",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²).",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²)."
-        },
-        "code": "func bubbleSort(_ arr: [Int]) -> [Int] {\n    var a = arr\n    for i in 0..<a.count - 1 {\n        var swapped = false\n        for j in 0..<a.count - 1 - i {\n            if a[j] > a[j + 1] {\n                a.swapAt(j, j + 1)\n                swapped = true\n            }\n        }\n        if !swapped { break }\n    }\n    return a\n}"
-      },
-      {
-        "id": "swift-045",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n).",
-          "en": "Merge Sort recursively splits and merges -- O(n log n)."
-        },
-        "code": "func mergeSort(_ arr: [Int]) -> [Int] {\n    guard arr.count > 1 else { return arr }\n    let mid = arr.count / 2\n    return merge(mergeSort(Array(arr[..<mid])), mergeSort(Array(arr[mid...])))\n}\n\nfunc merge(_ a: [Int], _ b: [Int]) -> [Int] {\n    var result = [Int](), i = 0, j = 0\n    while i < a.count && j < b.count {\n        a[i] <= b[j] ? (result.append(a[i]); i += 1) : (result.append(b[j]); j += 1)\n    }\n    return result + Array(a[i...]) + Array(b[j...])\n}"
-      },
-      {
-        "id": "swift-046",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average."
-        },
-        "code": "func quickSort(_ arr: [Int]) -> [Int] {\n    guard arr.count > 1 else { return arr }\n    let pivot = arr.last!\n    let rest = arr.dropLast()\n    let left = rest.filter { $0 < pivot }\n    let right = rest.filter { $0 >= pivot }\n    return quickSort(left) + [pivot] + quickSort(right)\n}"
-      },
-      {
-        "id": "swift-047",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Uma pilha genérica em Swift com push, pop e peek.",
-          "en": "A generic stack in Swift with push, pop, and peek."
-        },
-        "code": "struct Stack<T> {\n    private var items: [T] = []\n    mutating func push(_ item: T) { items.append(item) }\n    mutating func pop() -> T? { items.popLast() }\n    func peek() -> T? { items.last }\n    var isEmpty: Bool { items.isEmpty }\n    var count: Int { items.count }\n}"
-      }
-    ],
-    "ruby": [
-      {
-        "id": "ruby-042",
-        "concept": {
-          "pt": "Notação Big O",
-          "en": "Big O Notation"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Big O descreve a complexidade de tempo. Demonstre O(1), O(n) e O(n²) em Ruby.",
-          "en": "Big O describes time complexity. Demonstrate O(1), O(n), and O(n²) in Ruby."
-        },
-        "code": "# O(1) -- acesso direto\nfirst = arr[0]\n\n# O(n) -- percorrer tudo\ndef contains?(arr, target)\n  arr.any? { |x| x == target }\nend\n\n# O(n²) -- loop aninhado\ndef has_duplicate?(arr)\n  (0...arr.length).each do |i|\n    ((i + 1)...arr.length).each do |j|\n      return true if arr[i] == arr[j]\n    end\n  end\n  false\nend"
-      },
-      {
-        "id": "ruby-043",
-        "concept": {
-          "pt": "Busca Binária",
-          "en": "Binary Search"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Busca binária divide o array ordenado ao meio -- O(log n). Implemente iterativamente.",
-          "en": "Binary search halves a sorted array -- O(log n). Implement it iteratively."
-        },
-        "code": "def binary_search(arr, target)\n  left, right = 0, arr.length - 1\n  while left <= right\n    mid = (left + right) / 2\n    return mid if arr[mid] == target\n    arr[mid] < target ? left = mid + 1 : right = mid - 1\n  end\n  -1\nend"
-      },
-      {
-        "id": "ruby-044",
-        "concept": {
-          "pt": "Bubble Sort",
-          "en": "Bubble Sort"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Bubble Sort compara pares adjacentes e troca -- O(n²). Implemente com parada antecipada.",
-          "en": "Bubble Sort compares adjacent pairs and swaps -- O(n²). Implement with early stop."
-        },
-        "code": "def bubble_sort(arr)\n  a = arr.dup\n  (a.length - 1).times do |i|\n    swapped = false\n    (a.length - 1 - i).times do |j|\n      if a[j] > a[j + 1]\n        a[j], a[j + 1] = a[j + 1], a[j]\n        swapped = true\n      end\n    end\n    break unless swapped\n  end\n  a\nend"
-      },
-      {
-        "id": "ruby-045",
-        "concept": {
-          "pt": "Merge Sort",
-          "en": "Merge Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Merge Sort divide recursivamente e intercala -- O(n log n).",
-          "en": "Merge Sort recursively splits and merges -- O(n log n)."
-        },
-        "code": "def merge_sort(arr)\n  return arr if arr.length <= 1\n  mid = arr.length / 2\n  merge(merge_sort(arr[0...mid]), merge_sort(arr[mid..]))\nend\n\ndef merge(a, b)\n  result, i, j = [], 0, 0\n  while i < a.length && j < b.length\n    a[i] <= b[j] ? (result << a[i]; i += 1) : (result << b[j]; j += 1)\n  end\n  result + a[i..] + b[j..]\nend"
-      },
-      {
-        "id": "ruby-046",
-        "concept": {
-          "pt": "Quick Sort",
-          "en": "Quick Sort"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Quick Sort particiona em torno de um pivô -- O(n log n) médio.",
-          "en": "Quick Sort partitions around a pivot -- O(n log n) average."
-        },
-        "code": "def quick_sort(arr)\n  return arr if arr.length <= 1\n  pivot = arr.last\n  rest = arr[0...-1]\n  left = rest.select { |x| x < pivot }\n  right = rest.select { |x| x >= pivot }\n  quick_sort(left) + [pivot] + quick_sort(right)\nend"
-      },
-      {
-        "id": "ruby-047",
-        "concept": {
-          "pt": "Pilha (Stack)",
-          "en": "Stack"
-        },
-        "difficulty": "easy",
-        "prompt": {
-          "pt": "Em Ruby, Array funciona como pilha com push, pop e last.",
-          "en": "In Ruby, Array works as a stack with push, pop, and last."
-        },
-        "code": "stack = []\nstack.push(1)\nstack.push(2)\nstack.push(3)\n\ntop = stack.last     # 3\nremoved = stack.pop  # 3\nempty = stack.empty?"
-      }
-    ],
     "algorithms": [
       {
         "id": "algo-001",
@@ -12762,34 +5136,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "def timer(func):\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        print(f\"Took {time.time() - start:.2f}s\")\n        return result\n    return wrapper",
         "slot": "adv-pattern"
-      },
-      {
-        "id": "py-038",
-        "concept": {
-          "pt": "Async/Await",
-          "en": "Async/Await"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "async/await permite código assíncrono em Python com asyncio. Defina uma função async que busca dados com aiohttp ou similar.",
-          "en": "async/await enables asynchronous code in Python with asyncio. Define an async function that fetches data with aiohttp or similar."
-        },
-        "code": "async def fetch_data(url: str) -> dict:\n    async with aiohttp.ClientSession() as session:\n        async with session.get(url) as resp:\n            return await resp.json()",
-        "slot": "adv-async"
-      },
-      {
-        "id": "py-039",
-        "concept": {
-          "pt": "Concorrência com gather",
-          "en": "Concurrency with gather"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "asyncio.gather executa várias coroutines em paralelo. Use-o pra buscar dados de múltiplas URLs simultaneamente.",
-          "en": "asyncio.gather runs multiple coroutines in parallel. Use it to fetch data from multiple URLs simultaneously."
-        },
-        "code": "async def fetch_all(urls: list[str]):\n    tasks = [fetch_data(url) for url in urls]\n    return await asyncio.gather(*tasks)",
-        "slot": "adv-concurrent"
       }
     ],
     "java": [
@@ -12820,34 +5166,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "Optional<User> user = findById(id);\nString name = user\n    .map(User::getName)\n    .orElse(\"Unknown\");",
         "slot": "err-result"
-      },
-      {
-        "id": "java-039",
-        "concept": {
-          "pt": "Async com CompletableFuture",
-          "en": "Async with CompletableFuture"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "CompletableFuture e o mecanismo async do Java. Encadeie operações assincronas com supplyAsync, thenApply e thenAccept.",
-          "en": "CompletableFuture is Java's async mechanism. Chain async operations with supplyAsync, thenApply, and thenAccept."
-        },
-        "code": "CompletableFuture.supplyAsync(() -> fetchUser(id))\n    .thenApply(User::getName)\n    .thenAccept(System.out::println)\n    .exceptionally(e -> { log.error(e); return null; });",
-        "slot": "adv-async"
-      },
-      {
-        "id": "java-041",
-        "concept": {
-          "pt": "Threads Virtuais",
-          "en": "Virtual Threads"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Virtual threads (Java 21+) sao threads leves gerenciadas pela JVM. Lance milhares delas com Executors.newVirtualThreadPerTaskExecutor.",
-          "en": "Virtual threads (Java 21+) are lightweight JVM-managed threads. Launch thousands with Executors.newVirtualThreadPerTaskExecutor."
-        },
-        "code": "try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {\n    for (String url : urls) {\n        executor.submit(() -> fetch(url));\n    }\n}",
-        "slot": "adv-concurrent"
       }
     ],
     "go": [
@@ -12864,48 +5182,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
         },
         "code": "func readFile(path string) ([]byte, error) {\n    f, err := os.Open(path)\n    if err != nil {\n        return nil, err\n    }\n    defer f.Close()\n    return io.ReadAll(f)\n}",
         "slot": "err-finally"
-      },
-      {
-        "id": "go-007",
-        "concept": {
-          "pt": "Tratamento de Erros",
-          "en": "Error Handling"
-        },
-        "difficulty": "medium",
-        "prompt": {
-          "pt": "Em Go, erro é um valor retornado -- a convenção é checar if err != nil na hora. Capture o erro de doSomething() e use fmt.Errorf com %w pra wrappear o erro original, preservando o contexto da falha.",
-          "en": "In Go, errors are returned values -- the convention is to check if err != nil immediately. Capture the error from doSomething() and use fmt.Errorf with %w to wrap the original error, preserving failure context."
-        },
-        "code": "result, err := doSomething()\nif err != nil {\n    return fmt.Errorf(\"failed: %w\", err)\n}",
-        "slot": "err-try-catch"
-      },
-      {
-        "id": "go-040",
-        "concept": {
-          "pt": "Async com Goroutine",
-          "en": "Async with Goroutine"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Go usa goroutines e channels pra concorrencia assincrona. Lance multiplas goroutines com WaitGroup pra esperar todas terminarem.",
-          "en": "Go uses goroutines and channels for async concurrency. Launch multiple goroutines with WaitGroup to wait for all to finish."
-        },
-        "code": "var wg sync.WaitGroup\nfor _, url := range urls {\n    wg.Add(1)\n    go func(u string) {\n        defer wg.Done()\n        fetch(u)\n    }(url)\n}\nwg.Wait()",
-        "slot": "adv-async"
-      },
-      {
-        "id": "go-041",
-        "concept": {
-          "pt": "Select com Channels",
-          "en": "Select with Channels"
-        },
-        "difficulty": "hard",
-        "prompt": {
-          "pt": "Select em Go e como um switch pra operações de channel -- espera o primeiro channel que estiver pronto. Use com time.After pra timeout.",
-          "en": "Select in Go is like a switch for channel operations -- waits for the first ready channel. Use it with time.After for a timeout."
-        },
-        "code": "select {\ncase msg := <-ch:\n    fmt.Println(\"received:\", msg)\ncase <-time.After(5 * time.Second):\n    fmt.Println(\"timeout\")\n}",
-        "slot": "adv-macro"
       }
     ],
     "ruby": [
@@ -12922,48 +5198,6 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
           "en": "Blocks are Ruby's most fundamental customization mechanism -- any method can accept a block with yield. Implement \"repeat\" using n.times and calling yield on each iteration to execute the provided block."
         },
         "code": "def repeat(n)\n  n.times { yield }\nend\n\nrepeat(3) { puts \"Hello!\" }"
-      },
-      {
-        "id": "ruby-007",
-        "concept": {
-          "pt": "Módulo e Mixin",
-          "en": "Module and Mixin"
-        },
-        "difficulty": "medium",
-        "slot": "obj-interface",
-        "prompt": {
-          "pt": "Modules dão namespacing e reuso de código via include (mixin). Crie Serializable com o método to_json usando instance_variables e inclua em User -- as instâncias de User ganham to_json sem precisar de herança.",
-          "en": "Modules provide namespacing and code reuse via include (mixin). Create Serializable with a to_json method that uses instance_variables and include it in User -- User instances gain to_json without inheritance."
-        },
-        "code": "module Serializable\n  def to_json\n    instance_variables.map { |v|\n      \"\\\"#{v.to_s.delete('@')}\\\": \\\"#{instance_variable_get(v)}\\\"\"\n    }.join(\", \")\n  end\nend\n\nclass User\n  include Serializable\n  attr_accessor :name\nend"
-      },
-      {
-        "id": "ruby-031",
-        "concept": {
-          "pt": "Try/Catch (begin/rescue)",
-          "en": "Try/Catch (begin/rescue)"
-        },
-        "difficulty": "medium",
-        "slot": "err-try-catch",
-        "prompt": {
-          "pt": "begin/rescue em Ruby captura exceções, equivalente a try/catch. Use rescue pra capturar um erro específico e tratar com uma mensagem.",
-          "en": "begin/rescue in Ruby catches exceptions, equivalent to try/catch. Use rescue to catch a specific error and handle it with a message."
-        },
-        "code": "begin\n  result = 10 / 0\nrescue ZeroDivisionError => e\n  puts \"Error: #{e.message}\"\nend"
-      },
-      {
-        "id": "ruby-035",
-        "concept": {
-          "pt": "Async com Thread",
-          "en": "Async with Thread"
-        },
-        "difficulty": "hard",
-        "slot": "adv-async",
-        "prompt": {
-          "pt": "Threads em Ruby rodam código concorrente. Crie threads que executam tarefas em paralelo e aguarde todas com .join.",
-          "en": "Ruby threads run concurrent code. Create threads that execute tasks in parallel and wait for all with .join."
-        },
-        "code": "threads = (1..3).map do |i|\n  Thread.new { sleep(0.1); \"Task #{i} done\" }\nend\n\nresults = threads.map(&:join).map(&:value)\nputs results"
       }
     ]
   },
@@ -15002,210 +7236,149 @@ export const freeTrackSnippetRegistry: Record<string, Record<string, Snippet[]>>
 export const trackSnippetTotalRegistry: Record<string, Record<string, number>> = {
   "conditionals": {
     "c": 4,
-    "cpp": 5,
     "csharp": 5,
-    "javascript": 5,
-    "typescript": 5,
-    "python": 5,
-    "java": 5,
-    "rust": 5,
-    "go": 5,
-    "kotlin": 5,
-    "scala": 5,
-    "swift": 5,
-    "ruby": 5,
-    "lua": 5,
-    "bash": 5
+    "typescript": 1,
+    "rust": 1,
+    "kotlin": 1,
+    "scala": 1,
+    "swift": 2,
+    "bash": 1
   },
   "variables": {
     "c": 5,
-    "cpp": 6,
+    "cpp": 1,
     "csharp": 6,
-    "javascript": 6,
-    "typescript": 6,
-    "python": 6,
-    "java": 6,
-    "rust": 6,
-    "go": 6,
-    "kotlin": 6,
-    "scala": 6,
-    "swift": 6,
-    "ruby": 6,
-    "lua": 6,
-    "bash": 5
+    "javascript": 1,
+    "kotlin": 1,
+    "scala": 2,
+    "swift": 2,
+    "ruby": 1,
+    "lua": 1,
+    "bash": 1
   },
   "functions": {
     "c": 2,
-    "cpp": 5,
+    "cpp": 1,
     "csharp": 5,
-    "javascript": 5,
-    "typescript": 5,
-    "python": 5,
-    "java": 5,
-    "rust": 5,
-    "go": 5,
-    "kotlin": 5,
-    "scala": 5,
-    "swift": 5,
-    "ruby": 5,
-    "lua": 5,
-    "bash": 5
+    "javascript": 1,
+    "python": 1,
+    "java": 1,
+    "rust": 1,
+    "go": 1,
+    "ruby": 2,
+    "lua": 2,
+    "bash": 1
   },
   "objects": {
     "c": 2,
-    "cpp": 4,
+    "cpp": 1,
     "csharp": 4,
-    "javascript": 3,
-    "typescript": 4,
-    "python": 4,
-    "java": 4,
-    "rust": 4,
-    "go": 4,
-    "kotlin": 4,
-    "scala": 4,
-    "swift": 4,
-    "ruby": 4,
-    "lua": 4,
-    "bash": 2
+    "typescript": 1,
+    "java": 1,
+    "rust": 1,
+    "go": 2,
+    "swift": 1,
+    "ruby": 1,
+    "lua": 1
   },
   "loops": {
     "c": 3,
-    "cpp": 5,
+    "cpp": 1,
     "csharp": 5,
-    "javascript": 5,
-    "typescript": 5,
-    "python": 5,
-    "java": 5,
-    "rust": 5,
-    "go": 5,
-    "kotlin": 5,
-    "scala": 5,
-    "swift": 5,
-    "ruby": 5,
-    "lua": 5,
-    "bash": 5
+    "javascript": 1,
+    "python": 1,
+    "java": 1,
+    "scala": 2,
+    "swift": 1,
+    "ruby": 1,
+    "lua": 1,
+    "bash": 2
   },
   "types": {
     "c": 4,
-    "cpp": 4,
+    "cpp": 1,
     "csharp": 3,
-    "typescript": 4,
-    "java": 4,
-    "rust": 4,
-    "go": 4,
-    "kotlin": 4,
-    "scala": 4,
-    "swift": 4,
-    "ruby": 4,
-    "lua": 4
+    "typescript": 3,
+    "java": 1,
+    "rust": 1,
+    "kotlin": 2
   },
   "errors": {
     "c": 3,
-    "cpp": 4,
     "csharp": 4,
-    "javascript": 3,
-    "typescript": 4,
-    "python": 4,
-    "java": 4,
-    "rust": 4,
-    "go": 4,
-    "kotlin": 4,
-    "scala": 4,
-    "swift": 4,
-    "ruby": 4,
-    "lua": 4,
-    "bash": 4
+    "python": 1,
+    "java": 1,
+    "rust": 1,
+    "go": 1
   },
   "classes": {
-    "cpp": 4,
     "csharp": 4,
-    "javascript": 4,
-    "typescript": 4,
-    "python": 4,
-    "java": 4,
-    "rust": 4,
-    "go": 4,
-    "kotlin": 4,
-    "scala": 4,
-    "swift": 4,
-    "ruby": 4,
-    "lua": 4
+    "python": 1,
+    "java": 1,
+    "kotlin": 1,
+    "scala": 1,
+    "ruby": 1,
+    "lua": 1
   },
   "advanced": {
     "c": 3,
-    "cpp": 4,
+    "cpp": 1,
     "csharp": 3,
-    "javascript": 3,
-    "typescript": 3,
-    "python": 3,
-    "java": 4,
-    "rust": 4,
-    "go": 4,
-    "kotlin": 4,
-    "scala": 4,
-    "swift": 4,
-    "ruby": 4,
-    "lua": 4,
-    "bash": 4
+    "javascript": 1,
+    "python": 1,
+    "go": 2,
+    "bash": 1
   },
   "web": {
-    "javascript": 4,
+    "javascript": 3,
     "typescript": 3,
     "html": 5,
     "css": 5
   },
   "scripting": {
-    "python": 4,
-    "ruby": 4,
+    "python": 3,
+    "ruby": 3,
     "lua": 3,
-    "bash": 6
+    "bash": 5
   },
   "mobile": {
-    "kotlin": 10,
-    "swift": 10
+    "kotlin": 6,
+    "swift": 6
   },
   "functional": {
-    "javascript": 3,
-    "python": 2,
-    "rust": 4,
-    "kotlin": 2,
-    "scala": 4,
-    "swift": 2
+    "javascript": 2,
+    "python": 1,
+    "rust": 3,
+    "scala": 2
   },
   "concurrency": {
     "javascript": 2,
-    "python": 1,
-    "java": 2,
-    "rust": 1,
-    "go": 3,
-    "kotlin": 1,
-    "swift": 1
+    "java": 1,
+    "go": 2
   },
   "devops": {
-    "bash": 2,
+    "bash": 1,
     "docker": 5,
     "git": 4,
-    "linux": 5,
-    "kubernetes": 12,
-    "terraform": 12,
-    "ansible": 12,
-    "cicd": 10
+    "linux": 3,
+    "kubernetes": 6,
+    "terraform": 6,
+    "ansible": 6,
+    "cicd": 6
   },
   "database": {
-    "sql": 10,
-    "mongodb": 10
+    "sql": 6,
+    "mongodb": 6
   },
   "strings": {
     "cpp": 1,
-    "javascript": 2,
-    "python": 1,
+    "javascript": 1,
     "kotlin": 1,
     "scala": 1,
     "swift": 1,
     "ruby": 1,
     "lua": 1,
-    "bash": 1,
-    "linux": 1
+    "bash": 1
   },
   "git": {
     "git": 20
@@ -15243,15 +7416,9 @@ export const trackSnippetTotalRegistry: Record<string, Record<string, number>> =
   "angular-junior": {
     "angular": 20
   },
-  "angular-pleno": {
-    "angular": 20
-  },
-  "angular-senior": {
-    "angular": 20
-  },
-  "dom": {
-    "javascript": 10
-  },
+  "angular-pleno": {},
+  "angular-senior": {},
+  "dom": {},
   "templates": {
     "jinja": 10
   },
@@ -15259,26 +7426,16 @@ export const trackSnippetTotalRegistry: Record<string, Record<string, number>> =
     "patterns": 12
   },
   "algorithms": {
-    "cpp": 12,
-    "typescript": 12,
-    "python": 12,
-    "java": 12,
-    "rust": 12,
-    "go": 12,
-    "kotlin": 12,
-    "scala": 12,
-    "swift": 12,
-    "ruby": 12,
-    "algorithms": 12
+    "algorithms": 132
   },
   "testing": {
     "testing": 10
   },
   "backend": {
-    "python": 3,
-    "java": 4,
-    "go": 4,
-    "ruby": 4
+    "python": 1,
+    "java": 2,
+    "go": 1,
+    "ruby": 1
   },
   "comece-aqui": {
     "text-typing": 20
