@@ -69,6 +69,9 @@ const demoLines = [
   '}',
 ]
 const demoCode = demoLines.join('\n')
+const demoLineStarts = demoLines.map((_, lineIndex) => (
+  demoLines.slice(0, lineIndex).reduce((offset, line) => offset + line.length + 1, 0)
+))
 
 function demoCharColor(index: number) {
   const char = demoCode[index]
@@ -93,8 +96,8 @@ function CodePreview() {
 
   useEffect(() => {
     if (reduceMotion) {
-      setVisibleLength(demoCode.length)
-      return
+      const frame = requestAnimationFrame(() => setVisibleLength(demoCode.length))
+      return () => cancelAnimationFrame(frame)
     }
 
     let index = 0
@@ -106,8 +109,6 @@ function CodePreview() {
 
     return () => window.clearInterval(interval)
   }, [reduceMotion])
-
-  let globalIndex = 0
 
   return (
     <motion.div
@@ -133,8 +134,7 @@ function CodePreview() {
       <div className="flex min-h-[265px] flex-col p-5 sm:p-6">
         <div className="font-mono text-[13px] leading-7 sm:text-sm">
           {demoLines.map((line, lineIndex) => {
-            const lineStart = globalIndex
-            globalIndex += line.length + (lineIndex < demoLines.length - 1 ? 1 : 0)
+            const lineStart = demoLineStarts[lineIndex]
             return (
               <div key={lineIndex} className="grid min-h-7 grid-cols-[24px_1fr] gap-3">
                 <span className="select-none text-right text-[10px]" style={{ color: 'var(--sub)', opacity: 0.45 }}>{lineIndex + 1}</span>
@@ -200,9 +200,12 @@ export default function PublicHomePage() {
   const masteryHref = profile ? '/tracks' : '/plus'
 
   useEffect(() => {
-    const preferredTheme = getThemePref()
-    setCurrentTheme(preferredTheme)
-    applyTheme(getTheme(preferredTheme))
+    const frame = requestAnimationFrame(() => {
+      const preferredTheme = getThemePref()
+      setCurrentTheme(preferredTheme)
+      applyTheme(getTheme(preferredTheme))
+    })
+    return () => cancelAnimationFrame(frame)
   }, [])
 
   useEffect(() => {
@@ -287,9 +290,9 @@ export default function PublicHomePage() {
           <div className="mx-auto w-full max-w-5xl">
             <div className="max-w-2xl"><h2 className="text-3xl font-bold sm:text-4xl" style={{ color: 'var(--text)' }}>{text.communityTitle}</h2><p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: 'var(--sub)' }}>{text.communityBody}</p></div>
             <div className="mt-7 grid gap-4 md:grid-cols-3">
-              {communityCards.map((card, index) => {
+              {communityCards.map((card) => {
                 const Icon = card.icon
-                return <motion.a key={card.key} href={card.href} target="_blank" rel="noopener noreferrer" transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }} whileHover={reduceMotion ? undefined : { y: -5 }} className="group relative overflow-hidden rounded-[24px] border p-5 backdrop-blur-sm" style={{ borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
+                return <motion.a key={card.key} href={card.href} target="_blank" rel="noopener noreferrer" transition={{ duration: 0.18, ease: 'easeOut' }} whileHover={reduceMotion ? undefined : { y: -5 }} className="group relative overflow-hidden rounded-[24px] border p-5 backdrop-blur-sm" style={{ borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
                   <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(circle at 25% 15%, color-mix(in srgb, var(--main) 12%, transparent), transparent 48%)' }} />
                   <span className="relative mb-4 inline-flex rounded-2xl p-3 transition-all duration-200 group-hover:scale-105" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}><Icon size={22} /></span>
                   <h3 className="relative text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
