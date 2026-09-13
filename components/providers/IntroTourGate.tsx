@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import VerificationRequiredModal from '@/components/auth/VerificationRequiredModal'
 import IntroTourModal, { type IntroTourMode } from '@/components/typing/IntroTourModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
@@ -12,12 +11,11 @@ import {
   shouldShowIntroTour,
   shouldShowKeyboardGuide,
 } from '@/lib/intro-tour'
+import { isStoredPendingVerificationEmail } from '@/lib/pending-verification'
 
 function getSuppressedSessionKey(mode: IntroTourMode) {
   return `sharktype-intro-tour-suppressed:${mode}:v${KEYBOARD_GUIDE_VERSION}`
 }
-
-const VERIFICATION_PROMPT_SESSION_KEY = 'sharktype-verification-prompt-dismissed'
 
 function getSessionSuppressed(mode: IntroTourMode): boolean {
   if (typeof window === 'undefined') return false
@@ -39,26 +37,6 @@ function setSessionSuppressed(mode: IntroTourMode) {
   }
 }
 
-function isVerificationPromptSuppressed(): boolean {
-  if (typeof window === 'undefined') return false
-
-  try {
-    return window.sessionStorage.getItem(VERIFICATION_PROMPT_SESSION_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-function suppressVerificationPrompt() {
-  if (typeof window === 'undefined') return
-
-  try {
-    window.sessionStorage.setItem(VERIFICATION_PROMPT_SESSION_KEY, '1')
-  } catch {
-    // ignore
-  }
-}
-
 function getTourMode(versionSeen: number | null | undefined): IntroTourMode | null {
   if (shouldShowIntroTour(versionSeen)) return 'full'
   if (shouldShowKeyboardGuide(versionSeen)) return 'keyboard-only'
@@ -70,26 +48,19 @@ export default function IntroTourGate() {
   const { locale } = useLocale()
   const [isOpen, setIsOpen] = useState(false)
   const [tourMode, setTourMode] = useState<IntroTourMode>('full')
-  const [showVerificationPrompt, setShowVerificationPrompt] = useState(false)
 
   useEffect(() => {
     if (isLoading) return
 
-    if (!user && pendingVerificationEmail) {
-      const pendingVersion = getPendingIntroTourVersion()
+    if (!user && pendingVerificationEmail && isStoredPendingVerificationEmail(pendingVerificationEmail)) {
+      const pendingVersion = getPendingIntroTourVersion(pendingVerificationEmail)
       const mode = getTourMode(pendingVersion)
 
       if (mode && !getSessionSuppressed(mode)) {
         queueMicrotask(() => {
           setTourMode(mode)
           setIsOpen(true)
-          setShowVerificationPrompt(false)
         })
-        return
-      }
-
-      if (!isVerificationPromptSuppressed()) {
-        queueMicrotask(() => setShowVerificationPrompt(true))
       }
       return
     }
@@ -105,18 +76,15 @@ export default function IntroTourGate() {
     })
   }, [isLoading, pendingVerificationEmail, profile, user])
 
-  useEffect(() => {
-    if (!pendingVerificationEmail || user) {
-      queueMicrotask(() => setShowVerificationPrompt(false))
-    }
-  }, [pendingVerificationEmail, user])
-
   async function handleTourClose() {
     setIsOpen(false)
 
-    if (!user && pendingVerificationEmail) {
-      setPendingIntroTourVersion(KEYBOARD_GUIDE_VERSION)
-      setShowVerificationPrompt(true)
+    if (
+      !user &&
+      pendingVerificationEmail &&
+      isStoredPendingVerificationEmail(pendingVerificationEmail)
+    ) {
+      setPendingIntroTourVersion(pendingVerificationEmail, KEYBOARD_GUIDE_VERSION)
       return
     }
 
@@ -126,28 +94,15 @@ export default function IntroTourGate() {
     }
   }
 
-  return (
-    <>
-      {isOpen ? (
-        <IntroTourModal
-          locale={locale}
-          mode={tourMode}
-          onClose={() => {
-            void handleTourClose()
-          }}
-        />
-      ) : null}
+  if (!isOpen) return null
 
-      {!isOpen && showVerificationPrompt && pendingVerificationEmail ? (
-        <VerificationRequiredModal
-          email={pendingVerificationEmail}
-          locale={locale}
-          onClose={() => {
-            suppressVerificationPrompt()
-            setShowVerificationPrompt(false)
-          }}
-        />
-      ) : null}
-    </>
+  return (
+    <IntroTourModal
+      locale={locale}
+      mode={tourMode}
+      onClose={() => {
+        void handleTourClose()
+      }}
+    />
   )
 }
