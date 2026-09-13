@@ -1,6 +1,9 @@
+import 'server-only'
+
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { getLevel, reconcileStreakOnLogin } from '@/lib/gamification'
 import { getRankFromScore, type RankState } from '@/lib/ranks'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserProgressSnapshot } from './progress-store'
 
 type DBClient = SupabaseClient<any>
@@ -47,20 +50,16 @@ export interface PublicProfile {
   isFollowedByMe: boolean
 }
 
-/**
- * Busca perfil publico por username.
- * Retorna null se nao existir.
- * `viewerId` opcional — se passado, popula `isFollowedByMe`.
- */
 export async function getPublicProfile(
-  supabase: DBClient,
+  _supabase: DBClient,
   username: string,
   viewerId?: string | null,
 ): Promise<PublicProfile | null> {
+  const db = createAdminClient() as unknown as DBClient
   const normalizedUsername = username.toLowerCase()
-  const { data: profile, error: profileErr } = await supabase
+  const { data: profile, error: profileErr } = await db
     .from('profiles')
-    .select('*')
+    .select('id,username,display_name,avatar_url,bio,created_at')
     .eq('username', normalizedUsername)
     .maybeSingle()
 
@@ -69,20 +68,18 @@ export async function getPublicProfile(
 
   const userId = profile.id
   const [snapshot, achievementsRes, followersRes, followingRes, isFollowedRes] = await Promise.all([
-    // A public profile request must never initialize or reconcile the owner's
-    // progress. Those operations write user-owned tables and are subject to RLS.
-    getUserProgressSnapshot(supabase, userId, { persistAggregates: false }),
-    safeSelect<{ achievement_id: string }>(supabase, 'user_achievements', q =>
+    getUserProgressSnapshot(db, userId, { persistAggregates: false }),
+    safeSelect<{ achievement_id: string }>(db, 'user_achievements', q =>
       q.select('achievement_id').eq('user_id', userId),
     ),
-    safeSelect<{ follower_id: string }>(supabase, 'follows', q =>
+    safeSelect<{ follower_id: string }>(db, 'follows', q =>
       q.select('follower_id').eq('following_id', userId),
     ),
-    safeSelect<{ following_id: string }>(supabase, 'follows', q =>
+    safeSelect<{ following_id: string }>(db, 'follows', q =>
       q.select('following_id').eq('follower_id', userId),
     ),
     viewerId
-      ? safeSelect<{ follower_id: string }>(supabase, 'follows', q =>
+      ? safeSelect<{ follower_id: string }>(db, 'follows', q =>
           q
             .select('follower_id')
             .eq('follower_id', viewerId)
@@ -135,10 +132,6 @@ export async function getPublicProfile(
   }
 }
 
-/**
- * Wrapper de select que devolve { data: [], error: null } se a tabela nao existir
- * (ex: migrations 004/005 ainda nao aplicadas). Evita 500 em ambientes parciais.
- */
 async function safeSelect<T>(
   supabase: DBClient,
   table: string,
@@ -147,7 +140,6 @@ async function safeSelect<T>(
   try {
     const res = await build(supabase.from(table))
     if (res.error) {
-      // 42P01 = undefined_table no Postgres
       if (isMissingTableError(res.error)) {
         return { data: [], error: null }
       }
