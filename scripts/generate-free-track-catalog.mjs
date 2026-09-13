@@ -1,11 +1,9 @@
-import { execFileSync } from 'node:child_process'
 import { mkdtemp, readFile, rm, writeFile, mkdir } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import * as ts from 'typescript'
 
-const SOURCE_COMMIT = process.env.SHARKTYPE_SOURCE_COMMIT ?? 'cdb34f8242e22417ee2484a062546c797c2650d5'
 const PUBLIC_LIMIT = 6
 const DEFAULT_ACCESS_POLICY = 'plus_after_limit'
 const outputPath = path.resolve('data/generated/free-track-snippets.ts')
@@ -24,17 +22,6 @@ async function importTypescriptSource(source, label) {
   const filePath = path.join(tempRoot, `${String(moduleCounter++).padStart(3, '0')}-${label}.mjs`)
   await writeFile(filePath, transpiled, 'utf8')
   return import(`${pathToFileURL(filePath).href}?v=${moduleCounter}`)
-}
-
-function historicalSource(relativePath) {
-  try {
-    return execFileSync('git', ['show', `${SOURCE_COMMIT}:${relativePath}`], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    })
-  } catch {
-    return null
-  }
 }
 
 function buildTrackSnippets(track, snippets) {
@@ -78,8 +65,7 @@ try {
     let modulePromise = moduleCache.get(sourcePath)
 
     if (!modulePromise) {
-      const oldSource = historicalSource(sourcePath)
-      const source = oldSource ?? await readFile(sourcePath, 'utf8')
+      const source = await readFile(sourcePath, 'utf8')
       modulePromise = importTypescriptSource(source, moduleName.replace(/[^a-z0-9-]/gi, '-'))
       moduleCache.set(sourcePath, modulePromise)
     }
@@ -120,6 +106,16 @@ try {
         ? trackSnippets
         : trackSnippets.slice(0, PUBLIC_LIMIT)
       totalsByLanguage[entry.id] = trackSnippets.length
+    }
+
+    // Dedicated tracks declare the complete exercise set in snippetIds. Premium
+    // snippet bodies intentionally live outside the public repository, so using
+    // only the public catalog would undercount totals after the public limit.
+    // For single-language tracks, snippetIds is safe metadata and remains the
+    // authoritative total without pulling any historical/private content.
+    const languageIds = Object.keys(freeByLanguage)
+    if (track.snippetIds.length > 0 && languageIds.length === 1) {
+      totalsByLanguage[languageIds[0]] = track.snippetIds.length
     }
 
     freeRegistry[track.id] = freeByLanguage
