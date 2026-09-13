@@ -80,13 +80,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
 
   useEffect(() => { if (!disabled) textareaRef.current?.focus() }, [disabled, code])
 
-  // Position the sliding cursor (+ auto-scroll for text mode)
   const updateCursorPos = useCallback(() => {
     const container = containerRef.current
     if (!container) return
     const charEl = container.querySelector(`[data-idx="${currentIndex}"]`) as HTMLElement | null
     if (charEl) {
-      // Auto-scroll to keep cursor visible (text mode + code default mode)
       if (isTextMode || !expandedView) {
         const charTop = charEl.offsetTop
         const charBottom = charTop + charEl.offsetHeight
@@ -115,15 +113,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
     updateCursorPos()
   }, [currentIndex, code, updateCursorPos])
 
-  // Also update on resize
   useEffect(() => {
     window.addEventListener('resize', updateCursorPos)
     return () => window.removeEventListener('resize', updateCursorPos)
   }, [updateCursorPos])
 
-  // Font scaling and late font loading can change character rectangles without
-  // changing the viewport size. Observe the rendered content as well so the
-  // caret remains aligned after those layout changes.
   useEffect(() => {
     if (typeof ResizeObserver === 'undefined') return
 
@@ -136,7 +130,6 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
     return () => observer.disconnect()
   }, [isTextMode, updateCursorPos])
 
-  // Detect if code overflows container
   useLayoutEffect(() => {
     const container = containerRef.current
     if (!container || isTextMode) return
@@ -145,7 +138,6 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
     })
   }, [code, isTextMode, expandedView])
 
-  // Reset scroll position on snippet change
   useEffect(() => {
     if (containerRef.current) containerRef.current.scrollTop = 0
   }, [code])
@@ -179,14 +171,24 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
     }
   }
 
-  function getCharStyle(status: CharStatus, index: number): React.CSSProperties {
+  function getCharStyle(status: CharStatus, index: number, char?: string): React.CSSProperties {
     switch (status) {
       case 'correct':
         if (!isTextMode && keywordMap[index]) return { color: 'var(--syntax-keyword)' }
         if (!isTextMode && stringMap[index]) return { color: 'var(--syntax-string)' }
         return { color: 'var(--text)' }
-      case 'incorrect':
-        return { color: 'var(--error)' }
+      case 'incorrect': {
+        const whitespace = char === ' ' || char === '\t' || char === '\n'
+        return {
+          color: 'var(--error)',
+          textDecorationLine: whitespace ? 'none' : 'underline',
+          textDecorationColor: 'var(--error-extra)',
+          textDecorationThickness: '0.09em',
+          textUnderlineOffset: '0.12em',
+          backgroundColor: whitespace ? 'color-mix(in srgb, var(--error) 20%, transparent)' : undefined,
+          borderRadius: whitespace ? 2 : undefined,
+        }
+      }
       case 'pending':
       default:
         return { color: 'var(--sub)' }
@@ -234,7 +236,6 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
       )}
 
       <div ref={containerRef} className={`relative scrollbar-hide ${isTextMode ? 'overflow-hidden max-h-[65px] sm:max-h-[101px] md:max-h-[144px]' : expandedView ? 'overflow-y-auto max-h-[70vh]' : 'overflow-y-auto max-h-[55vh]'}`}>
-        {/* Sliding cursor */}
         {cursorReady && (
           <div
             className="absolute pointer-events-none z-10"
@@ -259,7 +260,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
             style={{ overflowWrap: 'anywhere', wordBreak: 'normal', fontVariantLigatures: 'none', fontSize: `calc(2rem * var(--code-font-scale, 1))` }}
           >
             {code.split('').map((char, i) => (
-              <span key={i} data-idx={i} className="relative whitespace-pre" style={getCharStyle(charStatuses[i], i)}>
+              <span key={i} data-idx={i} className="relative whitespace-pre" style={getCharStyle(charStatuses[i], i, char)}>
                 {char}
               </span>
             ))}
@@ -275,12 +276,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
                   {line.text.split('').map((char, charIdx) => {
                     const globalIdx = line.startIndex + charIdx
                     return (
-                      <span key={globalIdx} data-idx={globalIdx} className="relative whitespace-pre" style={getCharStyle(charStatuses[globalIdx], globalIdx)}>
+                      <span key={globalIdx} data-idx={globalIdx} className="relative whitespace-pre" style={getCharStyle(charStatuses[globalIdx], globalIdx, char)}>
                         {char}
                       </span>
                     )
                   })}
-                  {/* Newline target for cursor positioning */}
                   {lineIdx < lines.length - 1 && (
                     <span data-idx={line.startIndex + line.text.length} className="relative whitespace-pre" style={{ color: 'var(--sub)' }}>{' '}</span>
                   )}
@@ -289,7 +289,6 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
             ))}
           </div>
         )}
-
       </div>
     </div>
   )
