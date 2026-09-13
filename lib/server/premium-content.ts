@@ -34,12 +34,10 @@ async function importConfiguredPremiumModule(specifier: string): Promise<Premium
     // Keep the package specifier visible to Next/Turbopack so the private package
     // is bundled/traced into the server runtime instead of only being present
     // during the prebuild verification step.
-    // @ts-ignore The package is installed by scripts/install-premium-package.mjs before next build.
+    // @ts-expect-error The package is installed by scripts/install-premium-package.mjs before next build.
     return import('@albavxs/sharktype-premium') as Promise<PremiumContentModule>
   }
 
-  // A custom module override is intended for local/debug use. Keep it dynamic so
-  // the production bundle always has a statically traceable default package.
   const dynamicImport = new Function('specifier', 'return import(specifier)') as (
     specifier: string
   ) => Promise<PremiumContentModule>
@@ -52,9 +50,9 @@ async function importPremiumModule(): Promise<PremiumContentModule | null> {
   const specifier = getPremiumModuleSpecifier()
   premiumModulePromise = (async () => {
     try {
-      const module = await importConfiguredPremiumModule(specifier)
+      const importedPremium = await importConfiguredPremiumModule(specifier)
       premiumModuleError = null
-      return module
+      return importedPremium
     } catch (error) {
       premiumModuleError = error instanceof Error ? error.message : String(error)
       console.error('[premium-content] private package unavailable:', premiumModuleError)
