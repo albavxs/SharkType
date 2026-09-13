@@ -6,10 +6,10 @@ import type { Database } from '@/lib/supabase/database'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { buildUsernameCandidate, isReservedUsername, sanitizeUsername } from '@/lib/usernames'
 
-type DBClient = SupabaseClient<any>
+type DBClient = SupabaseClient<Database>
 
 function adminDb(): DBClient {
-  return createAdminClient() as unknown as DBClient
+  return createAdminClient()
 }
 
 function inferProvider(user: User): string | null {
