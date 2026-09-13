@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserAccess } from '@/lib/server/access-control'
+import { rateLimit } from '@/lib/server/rate-limit'
 import {
   createAsaasRecurringCheckout,
   getAsaasConfig,
@@ -10,6 +11,8 @@ import {
   isPlusPlanKey,
   type PlusPlanKey,
 } from '@/lib/server/asaas'
+
+const CHECKOUT_REUSE_WINDOW_MS = 15 * 60_000
 
 function getCallbackBaseUrl(request: Request): string {
   const configured = process.env.APP_URL?.trim()
@@ -34,6 +37,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
+  const { success } = rateLimit(`plus-checkout:${user.id}`, 5, 10 * 60_000)
+  if (!success) {
+    return NextResponse.json({ error: 'Too many checkout attempts. Try again shortly.' }, { status: 429 })
+  }
+
   const requestedPlan = await readRequestedPlan(request)
   if (!requestedPlan) {
     return NextResponse.json({ error: 'Invalid Plus plan.' }, { status: 400 })
@@ -54,9 +62,45 @@ export async function POST(request: Request) {
     }
 
     const plan = getPlusPlan(requestedPlan)
+    const admin = createAdminClient()
+    const recentThreshold = new Date(Date.now() - CHECKOUT_REUSE_WINDOW_MS).toISOString()
+    const prefix = `sharktype:plus:${plan.key}:`
+
+    const { data: existingCheckout, error: existingError } = await admin
+      .from('billing_checkouts')
+      .select('checkout_url,status,amount,created_at,external_reference')
+      .eq('user_id', user.id)
+      .eq('provider', 'asaas')
+      .eq('purpose', 'plus_subscription')
+      .eq('sandbox', false)
+      .in('status', ['creating', 'active'])
+      .gte('created_at', recentThreshold)
+      .like('external_reference', `${prefix}%`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (existingError) throw existingError
+
+    if (existingCheckout?.status === 'active' && existingCheckout.checkout_url) {
+      return NextResponse.json({
+        checkoutUrl: existingCheckout.checkout_url,
+        plan: plan.key,
+        cycle: plan.cycle,
+        amount: Number(existingCheckout.amount),
+        reused: true,
+      })
+    }
+
+    if (existingCheckout?.status === 'creating') {
+      return NextResponse.json(
+        { error: 'A checkout is already being initialized. Try again shortly.' },
+        { status: 409 },
+      )
+    }
+
     const checkoutId = randomUUID()
-    const externalReference = `sharktype:plus:${plan.key}:${checkoutId}`
-    const admin = createAdminClient() as any
+    const externalReference = `${prefix}${checkoutId}`
 
     const { error: insertError } = await admin.from('billing_checkouts').insert({
       id: checkoutId,
@@ -96,6 +140,7 @@ export async function POST(request: Request) {
         plan: plan.key,
         cycle: plan.cycle,
         amount: plan.amount,
+        reused: false,
       })
     } catch (checkoutError) {
       await admin.from('billing_checkouts').update({ status: 'failed' }).eq('id', checkoutId)
@@ -104,7 +149,7 @@ export async function POST(request: Request) {
   } catch (checkoutError) {
     console.error('[billing] plus checkout failed:', checkoutError instanceof Error ? checkoutError.message : checkoutError)
     return NextResponse.json(
-      { error: checkoutError instanceof Error ? checkoutError.message : 'Could not start checkout.' },
+      { error: 'Could not start checkout.' },
       { status: 500 },
     )
   }
