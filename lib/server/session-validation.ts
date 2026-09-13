@@ -1,5 +1,8 @@
+import 'server-only'
+
 import { getAllLanguageMetas } from '@/data/metadata'
 import { MAX_HISTORY, createDefaultStreak, normalizeStreak, type SessionInput, type StreakState } from '@/lib/gamification'
+import { getBaseSnippetsForLanguage } from '@/lib/server/base-practice'
 import type { Difficulty } from '@/lib/types'
 
 const VALID_LANGUAGE_IDS = new Set(getAllLanguageMetas().map((language) => language.id))
@@ -87,14 +90,27 @@ export function isValidSessionInput(input: SessionInput): boolean {
     input.languageId.length > 0 &&
     input.snippetId.trim().length > 0 &&
     input.snippetId.length <= MAX_SNIPPET_ID_LENGTH &&
-    input.wpm >= 0 && input.wpm <= 250 &&
-    input.rawWpm >= 0 && input.rawWpm <= 300 &&
-    input.accuracy >= 0 && input.accuracy <= 100 &&
-    input.errors >= 0 && input.errors <= 10_000 &&
-    input.duration >= 1 && input.duration <= 600 &&
+    Number.isFinite(input.wpm) && input.wpm >= 0 && input.wpm <= 250 &&
+    Number.isFinite(input.rawWpm) && input.rawWpm >= 0 && input.rawWpm <= 300 &&
+    input.rawWpm >= input.wpm &&
+    Number.isFinite(input.accuracy) && input.accuracy >= 0 && input.accuracy <= 100 &&
+    Number.isFinite(input.errors) && input.errors >= 0 && input.errors <= 10_000 &&
+    Number.isFinite(input.duration) && input.duration >= 1 && input.duration <= 600 &&
     VALID_DIFFICULTIES.has(input.difficulty) &&
     VALID_LANGUAGE_IDS.has(input.languageId)
   )
+}
+
+export function isValidLiveSessionInput(input: SessionInput): boolean {
+  if (!isValidSessionInput(input)) return false
+
+  const snippet = getBaseSnippetsForLanguage(input.languageId)
+    .find((candidate) => candidate.id === input.snippetId)
+
+  if (!snippet) return false
+  if (snippet.difficulty !== input.difficulty) return false
+
+  return true
 }
 
 export function sanitizeImportedSessionRecord(value: unknown): ImportedSessionRecord | null {
