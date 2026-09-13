@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getWebhookToken } from '@/lib/server/asaas'
 
+const MAX_WEBHOOK_BYTES = 128 * 1024
+
 type AsaasWebhookPayload = {
   id?: string
   event?: string
@@ -55,6 +57,67 @@ function safeTokenEquals(received: string, expected: string): boolean {
   const a = Buffer.from(received)
   const b = Buffer.from(expected)
   return a.length === b.length && timingSafeEqual(a, b)
+}
+
+function storedWebhookPayload(payload: AsaasWebhookPayload) {
+  return {
+    id: payload.id ?? null,
+    event: payload.event ?? null,
+    checkout: payload.checkout
+      ? {
+          id: payload.checkout.id ?? null,
+          status: payload.checkout.status ?? null,
+          customer: payload.checkout.customer ?? null,
+        }
+      : null,
+    subscription: payload.subscription
+      ? {
+          id: payload.subscription.id ?? null,
+          customer: payload.subscription.customer ?? null,
+          status: payload.subscription.status ?? null,
+          cycle: payload.subscription.cycle ?? null,
+          value: payload.subscription.value ?? null,
+          nextDueDate: payload.subscription.nextDueDate ?? null,
+          externalReference: payload.subscription.externalReference ?? null,
+        }
+      : null,
+    payment: payload.payment
+      ? {
+          id: payload.payment.id ?? null,
+          customer: payload.payment.customer ?? null,
+          subscription: payload.payment.subscription ?? null,
+          status: payload.payment.status ?? null,
+          value: payload.payment.value ?? null,
+        }
+      : null,
+    authorization: payload.authorization
+      ? {
+          id: payload.authorization.id ?? null,
+          status: payload.authorization.status ?? null,
+          customerId: payload.authorization.customerId ?? null,
+          frequency: payload.authorization.frequency ?? null,
+          value: payload.authorization.value ?? null,
+          startDate: payload.authorization.startDate ?? null,
+          finishDate: payload.authorization.finishDate ?? null,
+          immediateQrCode: payload.authorization.immediateQrCode
+            ? {
+                conciliationIdentifier: payload.authorization.immediateQrCode.conciliationIdentifier ?? null,
+                expirationDate: payload.authorization.immediateQrCode.expirationDate ?? null,
+              }
+            : null,
+        }
+      : null,
+    paymentInstruction: payload.paymentInstruction
+      ? {
+          id: payload.paymentInstruction.id ?? null,
+          status: payload.paymentInstruction.status ?? null,
+          dueDate: payload.paymentInstruction.dueDate ?? null,
+          paymentId: payload.paymentInstruction.paymentId ?? null,
+          payment: payload.paymentInstruction.payment ?? null,
+          authorizationId: payload.paymentInstruction.authorization?.id ?? null,
+        }
+      : null,
+  }
 }
 
 function checkoutStatus(event: string): string | null {
@@ -320,6 +383,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
+  const contentLength = Number(request.headers.get('content-length') ?? '0')
+  if (Number.isFinite(contentLength) && contentLength > MAX_WEBHOOK_BYTES) {
+    return NextResponse.json({ error: 'Webhook payload is too large.' }, { status: 413 })
+  }
+
   let payload: AsaasWebhookPayload
   try {
     payload = (await request.json()) as AsaasWebhookPayload
@@ -327,8 +395,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON.' }, { status: 400 })
   }
 
-  if (!payload.id || !payload.event) {
-    return NextResponse.json({ error: 'Missing webhook event id or type.' }, { status: 400 })
+  if (
+    !payload.id ||
+    !payload.event ||
+    payload.id.length > 200 ||
+    payload.event.length > 160
+  ) {
+    return NextResponse.json({ error: 'Missing or invalid webhook event id/type.' }, { status: 400 })
   }
 
   const admin = createAdminClient() as any
@@ -338,7 +411,7 @@ export async function POST(request: Request) {
     provider: 'asaas',
     provider_event_id: payload.id,
     event_type: payload.event,
-    payload,
+    payload: storedWebhookPayload(payload),
   })
 
   if (insertError) {
@@ -384,7 +457,7 @@ export async function POST(request: Request) {
     console.error('[billing] webhook processing failed:', message)
     await admin
       .from('billing_events')
-      .update({ processing_error: message })
+      .update({ processing_error: message.slice(0, 1000) })
       .eq('provider', 'asaas')
       .eq('provider_event_id', payload.id)
     return NextResponse.json({ error: 'Webhook processing failed.' }, { status: 500 })
