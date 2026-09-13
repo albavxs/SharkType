@@ -31,7 +31,7 @@ function loadLocalPremiumToken() {
 loadLocalPremiumToken()
 
 const token = process.env.GITHUB_PACKAGES_TOKEN?.trim()
-const packageName = '@albavxs/sharktype-premium@0.2.0'
+const packageName = '@albavxs/sharktype-premium@0.2.1'
 const requirePrivateRuntime = process.env.SHARKTYPE_REQUIRE_PREMIUM_PACKAGE === 'true'
   || Boolean(process.env.VERCEL)
 
@@ -82,16 +82,17 @@ try {
   )
 
   const verifyScript = [
-    "Promise.all([import('@albavxs/sharktype-premium'), import('@albavxs/sharktype-premium/billing')]).then(async ([content, billing]) => {",
+    "Promise.all([import('@albavxs/sharktype-premium'), import('@albavxs/sharktype-premium/billing'), import('@albavxs/sharktype-premium/billing/webhook')]).then(async ([content, billing, webhook]) => {",
     "  if (typeof content.getPremiumSnippets !== 'function') throw new Error('getPremiumSnippets export is missing')",
     "  if (typeof billing.getPlusPlan !== 'function') throw new Error('private billing export is missing')",
+    "  if (typeof webhook.processAsaasWebhookEvent !== 'function') throw new Error('private webhook export is missing')",
     "  const expectations = { react: 6, git: 14 }",
     "  for (const [languageId, expected] of Object.entries(expectations)) {",
     "    const snippets = await content.getPremiumSnippets(languageId)",
     "    if (!Array.isArray(snippets)) throw new Error(`${languageId} premium payload is not an array`)",
     "    if (snippets.length !== expected) throw new Error(`${languageId} premium payload has ${snippets.length} snippets; expected ${expected}`)",
     "  }",
-    "  console.info('[private-runtime] content and billing exports verified')",
+    "  console.info('[private-runtime] content, billing and webhook exports verified')",
     "}).catch((error) => { console.error('[private-runtime] package verification failed:', error); process.exit(2) })",
   ].join('\n')
 
