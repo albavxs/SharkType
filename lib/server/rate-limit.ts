@@ -11,6 +11,29 @@ interface RateLimitResult {
   remaining: number
 }
 
+type ThrottleRpcRow = {
+  success?: unknown
+  remaining?: unknown
+}
+
+type ThrottleRpcError = {
+  message?: string
+}
+
+type ThrottleRpcClient = {
+  rpc: (
+    name: 'consume_request_throttle',
+    args: {
+      p_key: string
+      p_max_requests: number
+      p_window_seconds: number
+    }
+  ) => PromiseLike<{
+    data: ThrottleRpcRow[] | ThrottleRpcRow | null
+    error: ThrottleRpcError | null
+  }>
+}
+
 const memoryStore = new Map<string, RateLimitEntry>()
 let warnedAboutMemoryProductionFallback = false
 
@@ -57,7 +80,7 @@ export async function sharedRateLimit(
   windowMs: number
 ): Promise<RateLimitResult> {
   try {
-    const admin = createAdminClient() as any
+    const admin = createAdminClient() as unknown as ThrottleRpcClient
     const windowSeconds = Math.max(1, Math.ceil(windowMs / 1000))
     const { data, error } = await admin.rpc('consume_request_throttle', {
       p_key: key,
@@ -65,7 +88,7 @@ export async function sharedRateLimit(
       p_window_seconds: windowSeconds,
     })
 
-    if (error) throw error
+    if (error) throw new Error(error.message || 'Shared rate limit query failed.')
 
     const result = Array.isArray(data) ? data[0] : data
     if (!result || typeof result.success !== 'boolean') {
@@ -74,7 +97,9 @@ export async function sharedRateLimit(
 
     return {
       success: result.success,
-      remaining: typeof result.remaining === 'number' ? result.remaining : 0,
+      remaining: typeof result.remaining === 'number' && Number.isFinite(result.remaining)
+        ? result.remaining
+        : 0,
     }
   } catch (error) {
     console.error('[rateLimit] shared limiter unavailable:', error instanceof Error ? error.message : error)
