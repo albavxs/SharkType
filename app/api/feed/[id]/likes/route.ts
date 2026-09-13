@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const env = getSupabaseEnv()
@@ -12,63 +11,56 @@ export async function GET(
     return NextResponse.json(getSupabaseEnvErrorPayload(env), { status: 503 })
   }
 
-  const supabase = (await createClient()) as unknown as SupabaseClient<any>
+  const supabase = await createClient()
 
   try {
     const { id } = await params
-  const feedEventId = parseInt(id, 10)
-    if (isNaN(feedEventId)) {
+    const feedEventId = parseInt(id, 10)
+    if (Number.isNaN(feedEventId)) {
       return NextResponse.json({ error: 'Invalid feed event ID' }, { status: 400 })
     }
 
-    // Buscar likes com informacoes dos usuarios
     const likesRes = await supabase
       .from('feed_likes')
       .select('user_id, created_at')
       .eq('feed_event_id', feedEventId)
       .order('created_at', { ascending: false })
 
-    if (likesRes.error) {
-      throw likesRes.error
-    }
+    if (likesRes.error) throw likesRes.error
 
     const likes = likesRes.data ?? []
     if (likes.length === 0) {
       return NextResponse.json({ likes: [], count: 0 }, { status: 200 })
     }
 
-    // Hidrata com perfis
-    const userIds = likes.map((l: any) => l.user_id)
+    const userIds = likes.map((like) => like.user_id)
     const profilesRes = await supabase
       .from('profiles')
       .select('id, username, avatar_url')
       .in('id', userIds)
 
-    if (profilesRes.error) {
-      throw profilesRes.error
-    }
+    if (profilesRes.error) throw profilesRes.error
 
-    const profileMap = new Map<string, { username: string; avatar_url: string | null }>()
-    for (const p of profilesRes.data ?? []) {
-      profileMap.set((p as any).id, {
-        username: (p as any).username,
-        avatar_url: (p as any).avatar_url,
-      })
-    }
+    const profileMap = new Map(
+      (profilesRes.data ?? []).map((profile) => [
+        profile.id,
+        { username: profile.username, avatar_url: profile.avatar_url },
+      ] as const)
+    )
 
-    const enrichedLikes = likes.map((l: any) => {
-      const profile = profileMap.get(l.user_id)
+    const enrichedLikes = likes.map((like) => {
+      const profile = profileMap.get(like.user_id)
       return {
-        userId: l.user_id,
+        userId: like.user_id,
         username: profile?.username ?? 'unknown',
         avatarUrl: profile?.avatar_url ?? null,
-        createdAt: l.created_at,
+        createdAt: like.created_at,
       }
     })
 
     return NextResponse.json({ likes: enrichedLikes, count: enrichedLikes.length }, { status: 200 })
   } catch (err) {
-    console.error('Error fetching likes:', err)
+    console.error('[feed-likes] load failed:', err)
     return NextResponse.json({ error: 'Failed to fetch likes', likes: [], count: 0 }, { status: 500 })
   }
 }
