@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv } from '@/lib/supabase/env'
 import { getUserProgressSnapshot, buildProgressAggregate } from '@/lib/server/progress-store'
 import { collectProgressUnlocks } from '@/lib/server/achievements'
 import { recordFeedEvent } from '@/lib/server/feed-store'
 import { getTrackById } from '@/data/tracks'
+import { listTrackBaseSummary } from '@/lib/server/track-store'
 
 export async function POST(request: Request) {
   const env = getSupabaseEnv()
@@ -12,7 +14,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
   }
 
-  const { trackId } = await request.json()
+  const body = await request.json().catch(() => null) as { trackId?: unknown } | null
+  const trackId = typeof body?.trackId === 'string' ? body.trackId : ''
   if (!trackId) {
     return NextResponse.json({ error: 'Missing trackId' }, { status: 400 })
   }
@@ -29,32 +32,43 @@ export async function POST(request: Request) {
   }
 
   try {
-    const progressBefore = await getUserProgressSnapshot(supabase, user.id)
-    
-    // Se ja completou, nao faz nada mas retorna ok
+    const admin = createAdminClient()
+    const progressBefore = await getUserProgressSnapshot(admin, user.id)
+
     if (progressBefore.completedTrackIds?.includes(trackId)) {
       return NextResponse.json({ ok: true, alreadyCompleted: true })
     }
 
-    // Adiciona trilha concluida
+    const baseSummary = listTrackBaseSummary()[trackId]
+    const completedSnippetIds = new Set(
+      Object.values(progressBefore.languages).flatMap((language) => language.completedSnippetIds)
+    )
+    const hasCompletedEveryUnit = Boolean(baseSummary?.totalUnits) && baseSummary.units.every(
+      (unit) => unit.snippetIds.some((snippetId) => completedSnippetIds.has(snippetId))
+    )
+
+    if (!hasCompletedEveryUnit) {
+      return NextResponse.json(
+        { error: 'Track completion requirements are not met.', code: 'TRACK_NOT_COMPLETED' },
+        { status: 409 }
+      )
+    }
+
     const progressAfter = {
       ...progressBefore,
       completedTrackIds: [...(progressBefore.completedTrackIds || []), trackId],
     }
 
-    // Salva no banco
     const aggregate = buildProgressAggregate(user.id, progressAfter)
-    const { error: updateError } = await supabase
+    const { error: updateError } = await admin
       .from('user_progress')
       .upsert(aggregate, { onConflict: 'user_id' })
 
     if (updateError) throw updateError
 
-    // Hooks: achievements + feed events
-    const newlyUnlocked = await collectProgressUnlocks(supabase, user.id, progressBefore, progressAfter)
-    
-    // Registra evento de trilha concluida no feed
-    await recordFeedEvent(supabase, user.id, 'track_completed', {
+    const newlyUnlocked = await collectProgressUnlocks(admin, user.id, progressBefore, progressAfter)
+
+    await recordFeedEvent(admin, user.id, 'track_completed', {
       trackId,
       name: track.name,
     })
@@ -64,7 +78,7 @@ export async function POST(request: Request) {
       newlyUnlocked,
     })
   } catch (err) {
-    console.error('[track-complete] error:', err)
+    console.error('[track-complete] error:', err instanceof Error ? err.message : err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
