@@ -33,7 +33,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (isLoading) return
     if (user) {
-      router.replace('/')
+      router.replace('/home')
     }
   }, [isLoading, router, user])
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
             {t('authNeedAccount', locale)}
           </Link>
           <div>
-            <Link href="/" className="inline-block cursor-pointer text-xs transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" style={{ color: 'var(--sub)' }}>
+            <Link href="/home" className="inline-block cursor-pointer text-xs transition-all duration-150 hover:opacity-80 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" style={{ color: 'var(--sub)' }}>
               {t('authContinueGuest', locale)}
             </Link>
           </div>

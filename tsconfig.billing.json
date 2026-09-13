@@ -13,6 +13,7 @@
     "lib/supabase/env.ts",
     "lib/supabase/database.ts",
     "app/api/me/access/route.ts",
+    "app/api/me/billing/route.ts",
     "app/api/billing/plus/offer/route.ts",
     "app/api/billing/plus/checkout/route.ts",
     "app/api/billing/asaas/test-checkout/route.ts",

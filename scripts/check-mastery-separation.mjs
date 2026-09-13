@@ -1,0 +1,65 @@
+import fs from 'node:fs'
+
+function read(path) {
+  return fs.readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+}
+
+function assert(condition, message) {
+  if (!condition) {
+    console.error(`Mastery separation check failed: ${message}`)
+    process.exit(1)
+  }
+}
+
+const tracksPage = read('app/tracks/page.tsx')
+const categorySection = read('components/tracks/CategorySection.tsx')
+const masteryRail = read('components/plus/MasteryRail.tsx')
+const globals = read('app/globals.css')
+const catalogRoute = read('app/api/tracks/catalog/route.ts')
+const quickPracticeRoute = read('app/api/practice/quick/route.ts')
+const languagePracticeRoute = read('app/api/languages/[language]/practice/route.ts')
+const publicHomePage = read('app/page.tsx')
+const quickPracticePage = read('app/home/page.tsx')
+const toolbar = read('components/typing/Toolbar.tsx')
+const basePracticeStore = read('lib/server/base-practice.ts')
+const trackStore = read('lib/server/track-store.ts')
+const plusPage = read('app/plus/page.tsx')
+const billingPage = read('app/settings/billing/page.tsx')
+
+assert(!tracksPage.includes('trackAccessFreePlus'), 'base track cards must not render FREE + PLUS')
+assert(!tracksPage.includes('trackAccessSummary'), '/tracks must consume separated Base/Mastery summaries')
+assert(tracksPage.includes('trackBaseSummary'), '/tracks must consume Base metadata')
+assert(tracksPage.includes('trackMasterySummary'), '/tracks must consume Mastery metadata')
+assert(!tracksPage.includes('track.snippetIds.length'), 'base progress must not use full track snippet count')
+assert(!tracksPage.includes('track.slots.length'), 'base progress must not use raw slot count')
+assert(categorySection.includes('-translate-x-full'), 'Base pane must slide laterally out of view')
+assert(categorySection.includes('translate-x-full'), 'Mastery pane must slide laterally into view')
+assert(categorySection.includes('absolute inset-x-0 top-0'), 'inactive lateral pane must be removed from document height')
+assert(categorySection.includes('Trilhas base'), 'Mastery navigation must restore the Base return control')
+assert(categorySection.includes('Mais trilhas com Plus'), 'Free Mastery CTA must use the simplified Plus copy')
+assert(!categorySection.includes('desafios Mastery'), 'Free Mastery CTA must not expose aggregate challenge counts')
+assert(categorySection.includes('onOpenMastery'), 'Mastery cards must navigate through the Mastery route')
+assert(!masteryRail.includes('romanLevel'), 'Mastery cards must not show synthetic roman levels')
+assert(!masteryRail.includes('Mastery {romanLevel'), 'Mastery cards must not show numbered Mastery subtitles')
+assert(globals.includes('button:not(:disabled)'), 'enabled buttons must receive the global pointer cursor rule')
+assert(globals.includes('button:disabled'), 'disabled buttons must receive the global not-allowed cursor rule')
+assert(catalogRoute.includes('trackBaseSummary:'), 'public track catalog must expose Base metadata')
+assert(catalogRoute.includes('trackMasterySummary:'), 'public track catalog must expose safe Mastery metadata')
+assert(!catalogRoute.includes('trackAccessSummary:'), 'public track catalog must not expose the legacy mixed Base/Plus summary')
+assert(publicHomePage.includes('id="community"'), 'public / must include the community section')
+assert(!publicHomePage.includes('loadLanguageById'), 'public / must not import quick-practice loaders')
+assert(!publicHomePage.includes('generateChallengeSequence'), 'public / must not generate practice snippets')
+assert(quickPracticePage.includes('/api/practice/quick'), '/home must load quick practice through the safe server API')
+assert(!quickPracticePage.includes('loadLanguageById'), '/home must not load language catalogs directly')
+assert(quickPracticeRoute.includes('getQuickPracticePayload'), 'quick practice API must use the server-side Base helper')
+assert(basePracticeStore.includes('freeTrackSnippetRegistry'), 'Base practice helper must use the free track snippet registry')
+assert(languagePracticeRoute.includes('getLanguagePracticePayload'), 'legacy language practice route must go through the shared server payload helper')
+assert(trackStore.includes('getBaseSnippetsForLanguage(language.id)'), 'language practice payload must stay Base-only for Free and Plus')
+assert(!trackStore.includes('if (access.isPlus) {\n    if (premiumCount > 0)'), 'normal language practice must not expand to premium snippets for Plus')
+assert(toolbar.includes('href="/home"'), 'internal toolbar logo must navigate to /home')
+assert(!toolbar.includes('onHomeClick'), 'toolbar logo must not be wired as a caller-defined reset action')
+assert(plusPage.includes("router.replace('/settings/billing')"), 'Plus users must redirect from /plus to billing settings')
+assert(billingPage.includes('href="/settings"'), 'billing back control must return to Settings')
+assert(billingPage.includes("'Configurações'"), 'billing back control must be labeled Configurações in Portuguese')
+
+console.log('Mastery separation checks passed.')

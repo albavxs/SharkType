@@ -55,7 +55,7 @@ export default function PlusAdminPage() {
   useEffect(() => {
     if (isLoading) return
     if (!profile?.isSuperUser) {
-      router.replace('/')
+      router.replace('/home')
       return
     }
     void loadRows().catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Could not load Plus users.'))
@@ -104,20 +104,20 @@ export default function PlusAdminPage() {
     <main className="min-h-screen px-4 py-8 sm:px-6" style={{ color: 'var(--text)' }}>
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <button onClick={() => router.push('/')} className="text-sm" style={{ color: 'var(--sub)' }}>
+          <button onClick={() => router.push('/home')} className="text-sm cursor-pointer" style={{ color: 'var(--sub)' }}>
             {t('back', locale)}
           </button>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => router.push('/admin/premium')}
-              className="rounded-lg px-3 py-2 text-xs font-semibold"
+              className="rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer"
               style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
             >
               {locale === 'pt' ? 'Diagnóstico Premium' : 'Premium diagnostics'}
             </button>
             <button
               onClick={() => router.push('/admin/billing')}
-              className="rounded-lg px-3 py-2 text-xs font-semibold"
+              className="rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer"
               style={{ border: '1px solid var(--sub)', color: 'var(--text)' }}
             >
               {locale === 'pt' ? 'Abrir painel Asaas' : 'Open Asaas panel'}
@@ -151,7 +151,7 @@ export default function PlusAdminPage() {
             <button
               disabled={pending || username.trim().length === 0}
               onClick={() => submit('grant')}
-              className="rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50"
+              className="rounded-lg px-4 py-2 text-sm font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
               style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}
             >
               {locale === 'pt' ? 'Dar Plus vitalício' : 'Grant lifetime Plus'}
@@ -180,7 +180,7 @@ export default function PlusAdminPage() {
                   <button
                     disabled={pending}
                     onClick={() => submit('revoke', rowUsername)}
-                    className="rounded-lg px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+                    className="rounded-lg px-3 py-1.5 text-xs font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ backgroundColor: 'color-mix(in srgb, var(--error) 16%, transparent)', color: 'var(--error)' }}
                   >
                     {locale === 'pt' ? 'Revogar' : 'Revoke'}

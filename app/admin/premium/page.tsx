@@ -57,7 +57,7 @@ export default function PremiumAdminPage() {
   useEffect(() => {
     if (isLoading) return
     if (!profile?.isSuperUser) {
-      router.replace('/')
+      router.replace('/home')
       return
     }
     void loadHealth()
@@ -76,13 +76,13 @@ export default function PremiumAdminPage() {
     <main className="min-h-screen px-4 py-8 sm:px-6" style={{ color: 'var(--text)' }}>
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button onClick={() => router.push('/admin/plus')} className="text-sm" style={{ color: 'var(--sub)' }}>
+          <button onClick={() => router.push('/admin/plus')} className="text-sm cursor-pointer" style={{ color: 'var(--sub)' }}>
             {t('back', locale)}
           </button>
           <button
             onClick={() => void loadHealth()}
             disabled={pending}
-            className="rounded-lg px-3 py-2 text-xs font-semibold disabled:opacity-50"
+            className="rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
             style={{ border: '1px solid var(--sub)' }}
           >
             {pending ? t('authWorking', locale) : locale === 'pt' ? 'Executar diagnóstico' : 'Run diagnostics'}
