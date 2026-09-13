@@ -64,6 +64,12 @@ export default function ParticleField({
 
     if (landing && !reducedMotion) {
       const pointerStrength = layer === 'near' ? 0.42 : 0.14
+      const scrollProgress = typeof window === 'undefined'
+        ? 0
+        : Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1.6)
+      const scrollY = layer === 'near' ? -scrollProgress * 0.9 : -scrollProgress * 0.28
+      const scrollZ = layer === 'near' ? scrollProgress * 0.22 : scrollProgress * 0.06
+
       meshRef.current.position.x = THREE.MathUtils.damp(
         meshRef.current.position.x,
         state.pointer.x * pointerStrength,
@@ -72,8 +78,14 @@ export default function ParticleField({
       )
       meshRef.current.position.y = THREE.MathUtils.damp(
         meshRef.current.position.y,
-        state.pointer.y * pointerStrength * 0.68,
+        state.pointer.y * pointerStrength * 0.68 + scrollY,
         3.5,
+        delta,
+      )
+      meshRef.current.position.z = THREE.MathUtils.damp(
+        meshRef.current.position.z,
+        scrollZ,
+        3,
         delta,
       )
       meshRef.current.rotation.z = Math.sin(time * 0.08) * (layer === 'near' ? 0.008 : 0.003)
