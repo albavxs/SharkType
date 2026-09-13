@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { ensureProfileForUser, updateProfileIdentity } from '@/lib/server/auth-profile'
 import { ensureUserSocialBackfill } from '@/lib/server/progress-store'
 import { isReservedUsername, isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 const MAX_BIO_LENGTH = 256
+
+async function runSocialBackfill(userId: string) {
+  try {
+    const admin = createAdminClient()
+    await ensureUserSocialBackfill(admin, userId)
+  } catch (backfillError) {
+    console.error('[profile] social backfill failed (non-fatal):', backfillError)
+  }
+}
 
 export async function GET() {
   const env = getSupabaseEnv()
@@ -26,9 +36,7 @@ export async function GET() {
 
   try {
     const profile = await ensureProfileForUser(supabase, user)
-    ensureUserSocialBackfill(supabase, user.id).catch((backfillError) => {
-      console.error('[profile] social backfill failed (non-fatal):', backfillError)
-    })
+    void runSocialBackfill(user.id)
     return NextResponse.json({ profile })
   } catch (profileError) {
     console.error('[profile] load failed:', profileError)
