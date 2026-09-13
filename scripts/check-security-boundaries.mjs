@@ -74,6 +74,26 @@ for (const file of sensitiveServerModules) {
   assert(source.includes("import 'server-only'"), `${file} must stay server-only`)
 }
 
+const asaasFacade = await text('lib/server/asaas.ts')
+assert(
+  asaasFacade.includes("@albavxs/sharktype-premium/billing"),
+  'Asaas commercial runtime must remain delegated to the private package',
+)
+assert(
+  !asaasFacade.includes('api.asaas.com') && !asaasFacade.includes('api-sandbox.asaas.com'),
+  'public Asaas facade must not contain provider implementation details',
+)
+
+const webhookRoute = await text('app/api/billing/asaas/webhook/route.ts')
+assert(
+  webhookRoute.includes("@albavxs/sharktype-premium/billing/webhook"),
+  'Asaas webhook business rules must remain delegated to the private package',
+)
+assert(
+  !webhookRoute.includes('upsertPlusEntitlement') && !webhookRoute.includes('processCheckoutEvent'),
+  'public webhook route must stay a thin persistence/transport shell',
+)
+
 const sharedLimitedRoutes = [
   'app/api/auth/resend-code/route.ts',
   'app/api/billing/plus/checkout/route.ts',
