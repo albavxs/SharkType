@@ -1,0 +1,3 @@
+-- Legacy migration version retained for Supabase migration-history compatibility.
+-- The original entitlement experiment was rolled back and is superseded by
+-- 202609100001_asaas_billing.sql. Intentionally no-op on fresh environments.

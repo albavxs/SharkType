@@ -1,0 +1,196 @@
+'use client'
+
+import Link from 'next/link'
+import { t, type Locale } from '@/lib/i18n'
+import { getLanguageMetaById } from '@/data/metadata'
+import LikeButton from './LikeButton'
+import type {
+  AchievementFeedEvent,
+  FeedEvent,
+  FollowFeedEvent,
+  FeedLevelUpPayload,
+  FeedManualPostPayload,
+  FeedSessionPayload,
+  ManualPostCategory,
+  TrackCompletedFeedEvent,
+} from '@/lib/server/feed-store'
+
+interface FeedItemProps {
+  event: FeedEvent
+  locale: Locale
+  currentUserId?: string | null
+}
+
+type AchievementLikeEvent = AchievementFeedEvent | TrackCompletedFeedEvent
+
+function getManualCategoryLabel(category: ManualPostCategory, locale: Locale): string {
+  if (category === 'ranked_tip') return t('feedCategoryRankedTip', locale)
+  if (category === 'language_fact') return t('feedCategoryLanguageFact', locale)
+  return t('feedCategoryAnnouncement', locale)
+}
+
+function getLocalizedText(value: { pt: string; en: string }, locale: Locale): string {
+  return value[locale] || value.en || value.pt
+}
+
+function truncateText(value: string, maxLength: number): string {
+  if (value.length <= maxLength) return value
+  return `${value.slice(0, maxLength - 1).trimEnd()}…`
+}
+
+function timeAgo(iso: string, locale: Locale): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const minutes = Math.floor(diffMs / 60000)
+  if (minutes < 1) return locale === 'pt' ? 'agora' : 'now'
+  if (minutes < 60) return `${minutes}m`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h`
+  const days = Math.floor(hours / 24)
+  return `${days}d`
+}
+
+export default function FeedItem({ event, locale, currentUserId = null }: FeedItemProps) {
+  const username = event.username
+  const displayName = event.displayName ?? event.username
+  const time = timeAgo(event.createdAt, locale)
+
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border p-4"
+      style={{
+        borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)',
+        backgroundColor: 'color-mix(in srgb, var(--sub-alt) 60%, transparent)',
+      }}
+    >
+      <Link href={`/profile/${username}`}
+        className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-semibold"
+        style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+      >
+        {event.avatarUrl ? (
+          <img src={event.avatarUrl} alt={username} className="h-full w-full object-cover" />
+        ) : (
+          username.slice(0, 1).toUpperCase()
+        )}
+      </Link>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <Link href={`/profile/${username}`} className="text-sm font-semibold hover:underline" style={{ color: 'var(--text)' }}>
+            {displayName}
+          </Link>
+          <span className="text-xs" style={{ color: 'var(--sub)' }}>@{username}</span>
+          <span className="ml-auto text-xs tabular-nums" style={{ color: 'var(--sub)' }}>{time}</span>
+        </div>
+
+        {event.eventType === 'session' && (
+          <FeedSessionBody payload={event.payload} locale={locale} />
+        )}
+        {(event.eventType === 'achievement' || event.eventType === 'track_completed') && (
+          <FeedAchievementBody event={event} locale={locale} />
+        )}
+        {event.eventType === 'level_up' && (
+          <FeedLevelUpBody payload={event.payload} locale={locale} />
+        )}
+        {event.eventType === 'follow' && (
+          <FeedFollowBody event={event} locale={locale} />
+        )}
+        {event.eventType === 'manual_post' && (
+          <FeedManualPostBody payload={event.payload} locale={locale} />
+        )}
+        <LikeButton feedEventId={event.id} currentUserId={currentUserId} />
+      </div>
+    </div>
+  )
+}
+
+function FeedSessionBody({ payload, locale }: { payload: FeedSessionPayload; locale: Locale }) {
+  const lang = getLanguageMetaById(payload.languageId)
+  return (
+    <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
+      {t('feedSessionTitle', locale)}
+      {' • '}
+      <span style={{ color: lang?.color ?? 'var(--text)' }} className="font-semibold">{lang?.label ?? payload.languageId}</span>
+      {' • '}
+      <span className="tabular-nums" style={{ color: 'var(--main)' }}>{payload.wpm} wpm</span>
+      {' • '}
+      <span className="tabular-nums">{payload.accuracy}%</span>
+    </div>
+  )
+}
+
+function FeedAchievementBody({ event, locale }: { event: AchievementLikeEvent; locale: Locale }) {
+  const isTrack = event.eventType === 'track_completed'
+  const titleKey = isTrack ? 'feedTrackCompletedTitle' : 'feedAchievementTitle'
+  const fallbackId = isTrack ? event.payload.trackId : event.payload.achievementId
+  const name = event.payload.name[locale] || fallbackId
+  const xp = event.payload.xp ?? 0
+
+  return (
+    <div className="mt-2 rounded-lg p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 10%, transparent)' }}>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{isTrack ? '🗺️' : '🏆'}</span>
+        <div className="flex-1">
+          <p className="text-xs" style={{ color: 'var(--sub)' }}>
+            {t(titleKey, locale)}
+          </p>
+          <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+            {name}
+          </p>
+          {xp > 0 && (
+            <p className="text-xs" style={{ color: 'var(--main)' }}>
+              +{xp} XP
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function FeedLevelUpBody({ payload, locale }: { payload: FeedLevelUpPayload; locale: Locale }) {
+  return (
+    <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
+      ⬆️ {t('feedLevelUpTitle', locale)}{' '}
+      <span className="font-semibold tabular-nums" style={{ color: 'var(--main)' }}>{payload.level}</span>
+    </div>
+  )
+}
+
+function FeedFollowBody({ event, locale }: { event: FollowFeedEvent; locale: Locale }) {
+  return (
+    <div className="mt-1 text-sm" style={{ color: 'var(--sub)' }}>
+      {t('feedFollowTitle', locale)}
+      {' • '}
+      <span className="font-semibold" style={{ color: 'var(--text)' }}>
+        @{event.payload.targetUsername}
+      </span>
+    </div>
+  )
+}
+
+function FeedManualPostBody({ payload, locale }: { payload: FeedManualPostPayload; locale: Locale }) {
+  const title = getLocalizedText(payload.title, locale)
+  const body = truncateText(getLocalizedText(payload.body, locale), 220)
+  const categoryLabel = getManualCategoryLabel(payload.category, locale)
+
+  return (
+    <div className="mt-2 rounded-xl p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 9%, transparent)' }}>
+      <div className="mb-2 flex items-center gap-2">
+        <span
+          className="rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+          style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
+        >
+          {categoryLabel}
+        </span>
+        <span className="text-xs" style={{ color: 'var(--sub)' }}>
+          {t('feedManualPostTitle', locale)}
+        </span>
+      </div>
+      <p className="text-sm font-semibold" style={{ color: 'var(--text)' }}>
+        {title}
+      </p>
+      <p className="mt-2 text-sm leading-relaxed" style={{ color: 'var(--sub)' }}>
+        {body}
+      </p>
+    </div>
+  )
+}

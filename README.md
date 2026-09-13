@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🦈 SharkType
 
-## Getting Started
+🇧🇷 PT-BR | 🇺🇸 EN
 
-First, run the development server:
+---
+
+# 🇧🇷 Português
+
+## Sobre o Projeto
+
+O **SharkType** é uma aplicação interativa de prática de digitação focada em melhorar velocidade, precisão e consistência através de snippets de código e textos dinâmicos.
+
+A proposta é oferecer uma experiência moderna para desenvolvedores e entusiastas de tecnologia treinarem digitação em cenários mais próximos do dia a dia de programação.
+
+---
+
+## ✨ Funcionalidades
+
+* ⚡ Testes de velocidade e precisão
+* 💻 Prática com snippets de código
+* 📊 Feedback instantâneo de desempenho
+* 🎨 Interface moderna e responsiva
+* 🔐 Sistema de autenticação
+
+---
+
+## 🛠️ Stack Tecnológica
+
+| Tecnologia  | Descrição              |
+| ----------- | ---------------------- |
+| Next.js     | Framework principal    |
+| React       | Interface da aplicação |
+| TailwindCSS | Estilização            |
+| TypeScript  | Linguagem principal    |
+| Supabase    | Backend e autenticação |
+
+---
+
+## 🚀 Rodando Localmente
+
+### Clone o repositório
+
+```bash
+git clone <repo-url>
+```
+
+### Entre na pasta do projeto
+
+```bash
+cd sharktype
+```
+
+### Instale as dependências
+
+```bash
+npm install
+```
+
+### Inicie o projeto
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Abra no navegador
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🤝 Contribuindo
 
-To learn more about Next.js, take a look at the following resources:
+Para detalhes técnicos sobre a arquitetura, estrutura de arquivos e como contribuir, acesse o nosso **[Guia de Contribuição](docs/contributing/CONTRIBUTING.pt-br.md)**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 📄 Licença
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Este projeto está sob a licença MIT.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+# 🇺🇸 English
+
+## About
+
+**SharkType** is an interactive typing practice application focused on improving typing speed, accuracy, and consistency through dynamic texts and code snippets.
+
+The project aims to provide a modern experience for developers and tech enthusiasts who want to practice typing in programming-oriented scenarios.
+
+---
+
+## ✨ Features
+
+* ⚡ Speed and accuracy tests
+* 💻 Code snippet typing practice
+* 📊 Instant performance feedback
+* 🎨 Modern and responsive UI
+* 🔐 Authentication system
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology  | Purpose                  |
+| ----------- | ------------------------ |
+| Next.js     | Main framework           |
+| React       | Frontend library         |
+| TailwindCSS | Styling                  |
+| TypeScript  | Main language            |
+| Supabase    | Backend & authentication |
+
+---
+
+## 🚀 Running Locally
+
+### Clone the repository
+
+```bash
+git clone <repo-url>
+```
+
+### Open the project folder
+
+```bash
+cd sharktype
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Start the development server
+
+```bash
+npm run dev
+```
+
+### Open in your browser
+
+```bash
+http://localhost:3000
+```
+
+---
+
+## 🤝 Contributing
+
+For technical details about the architecture, file structure, and how to contribute, please check our **[Contributing Guide](docs/contributing/CONTRIBUTING.en.md)**.
+
+---
+
+
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

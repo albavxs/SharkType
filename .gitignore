@@ -5,11 +5,16 @@
 /.pnp
 .pnp.*
 .yarn/*
+# this project uses npm — ignore other package managers' locks/configs
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock
+.yarnrc.yml
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+.claude
 # testing
 /coverage
 
@@ -32,10 +37,17 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-
+!.env.example
+!.env.local.example
+.sql
 # vercel
 .vercel
+
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.supabase
+supabase/*
+!supabase/migrations
+!supabase/migrations/**

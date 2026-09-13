@@ -1,65 +1,332 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import dynamic from 'next/dynamic'
+import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import Footer from '@/components/typing/Footer'
+import SharkTitleMark from '@/components/landing/SharkTitleMark'
+import { ArrowRightIcon, BookIcon, ChartIcon, DiscordIcon, GithubIcon, ShieldIcon } from '@/components/icons'
+import { useAuth } from '@/hooks/useAuth'
+import { useLocale } from '@/hooks/useLocale'
+import { DEFAULT_THEME, applyTheme, getTheme, getThemePref } from '@/lib/themes'
+import { COMMUNITY_LINKS } from '@/lib/community'
+
+const ThemeSelector = dynamic(() => import('@/components/typing/ThemeSelector'))
+const HelpModal = dynamic(() => import('@/components/typing/HelpModal'))
+const SceneWrapper = dynamic(() => import('@/components/three/SceneWrapper'), { ssr: false })
+
+const copy = {
+  pt: {
+    navTracks: 'Trilhas', navPlus: 'Plus', navLogin: 'Entrar', tagline: 'Aprenda. Digite. Domine.',
+    body: 'Pratique código real, desenvolva memória muscular e avance por trilhas até os desafios Mastery.',
+    start: 'Começar agora', continue: 'Continuar praticando', explore: 'Explorar trilhas',
+    communityTitle: 'Comunidade SharkType', communityBody: 'Aprender é melhor quando não acontece sozinho.',
+    discordTitle: 'Discord', discordBody: 'Converse, peça ajuda e compartilhe progresso.',
+    githubTitle: 'GitHub', githubBody: 'Acompanhe o desenvolvimento e contribua.',
+    companyTitle: 'Conheça a Few Company', companyBody: 'Conheça a Few Company, seus projetos e o ecossistema por trás de produtos como o SharkType.', open: 'Abrir',
+    productTitle: 'Pratique. Evolua. Domine.',
+    productBody: 'Entre pela prática Base, evolua pelas trilhas e avance para Mastery quando quiser desafios premium separados.',
+    practiceTitle: 'Prática Base', practiceBody: 'Sessões rápidas com snippets Base para aquecer e manter ritmo.',
+    tracksTitle: 'Trilhas', tracksBody: 'Fundamentos organizados por linguagem, conceito e stack.',
+    masteryTitle: 'Mastery', masteryBody: 'Desafios avançados, estrelas e progressão premium sem misturar com Base.',
+    scroll: 'Descobrir',
+  },
+  en: {
+    navTracks: 'Tracks', navPlus: 'Plus', navLogin: 'Sign in', tagline: 'Learn. Type. Master.',
+    body: 'Practice real code, build muscle memory, and progress through tracks into advanced Mastery challenges.',
+    start: 'Start now', continue: 'Continue practicing', explore: 'Explore tracks',
+    communityTitle: 'SharkType Community', communityBody: 'Learning is better when it does not happen alone.',
+    discordTitle: 'Discord', discordBody: 'Talk, ask for help, and share progress.',
+    githubTitle: 'GitHub', githubBody: 'Follow development and contribute.',
+    companyTitle: 'Meet Few Company', companyBody: 'Meet Few Company, its projects, and the ecosystem behind products like SharkType.', open: 'Open',
+    productTitle: 'Practice. Progress. Master.',
+    productBody: 'Start with Base practice, progress through structured tracks, and move into separate premium Mastery challenges.',
+    practiceTitle: 'Base Practice', practiceBody: 'Fast sessions with Base snippets for warmups and steady rhythm.',
+    tracksTitle: 'Tracks', tracksBody: 'Fundamentals organized by language, concept, and stack.',
+    masteryTitle: 'Mastery', masteryBody: 'Advanced challenges, stars, and premium progression without mixing into Base.',
+    scroll: 'Discover',
+  },
+} as const
+
+const communityCards = [
+  { key: 'discord', href: COMMUNITY_LINKS.discord, icon: DiscordIcon, title: 'discordTitle', body: 'discordBody' },
+  { key: 'github', href: COMMUNITY_LINKS.github, icon: GithubIcon, title: 'githubTitle', body: 'githubBody' },
+  { key: 'company', href: COMMUNITY_LINKS.website, icon: ShieldIcon, title: 'companyTitle', body: 'companyBody' },
+] as const
+
+const productCards = [
+  { key: 'practice', icon: ShieldIcon, title: 'practiceTitle', body: 'practiceBody', href: '/home' },
+  { key: 'tracks', icon: BookIcon, title: 'tracksTitle', body: 'tracksBody', href: '/tracks' },
+  { key: 'mastery', icon: ChartIcon, title: 'masteryTitle', body: 'masteryBody', href: null },
+] as const
+
+const demoLines = [
+  'const sharktype = {',
+  '  language: "TypeScript",',
+  '  streak: 14,',
+  '  mastery: true,',
+  '}',
+]
+const demoCode = demoLines.join('\n')
+const demoLineStarts = demoLines.map((_, lineIndex) => (
+  demoLines.slice(0, lineIndex).reduce((offset, line) => offset + line.length + 1, 0)
+))
+
+function demoCharColor(index: number) {
+  const char = demoCode[index]
+  if (index >= 0 && index < 5) return 'var(--syntax-keyword)'
+
+  const stringStart = demoCode.indexOf('"TypeScript"')
+  if (index >= stringStart && index < stringStart + '"TypeScript"'.length) return 'var(--syntax-string)'
+
+  const numberStart = demoCode.indexOf('14')
+  if (index >= numberStart && index < numberStart + 2) return 'var(--syntax-number)'
+
+  const booleanStart = demoCode.indexOf('true')
+  if (index >= booleanStart && index < booleanStart + 4) return 'var(--syntax-keyword)'
+
+  if (char === '{' || char === '}' || char === ':' || char === ',') return 'var(--sub)'
+  return 'var(--text)'
+}
+
+function CodePreview() {
+  const reduceMotion = useReducedMotion()
+  const [visibleLength, setVisibleLength] = useState(reduceMotion ? demoCode.length : 0)
+
+  useEffect(() => {
+    if (reduceMotion) {
+      const frame = requestAnimationFrame(() => setVisibleLength(demoCode.length))
+      return () => cancelAnimationFrame(frame)
+    }
+
+    let index = 0
+    const interval = window.setInterval(() => {
+      index += 1
+      setVisibleLength(index)
+      if (index >= demoCode.length) window.clearInterval(interval)
+    }, 95)
+
+    return () => window.clearInterval(interval)
+  }, [reduceMotion])
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 20, rotateX: -3 }}
+      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={reduceMotion ? undefined : { y: -4, rotateX: 1, rotateY: -1.2 }}
+      className="relative z-20 w-full max-w-[540px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
+      style={{
+        borderColor: 'color-mix(in srgb, var(--main) 24%, color-mix(in srgb, var(--sub) 24%, transparent))',
+        backgroundColor: 'color-mix(in srgb, var(--bg) 90%, transparent)',
+        boxShadow: '0 24px 80px color-mix(in srgb, var(--main) 9%, transparent)',
+        transformStyle: 'preserve-3d',
+      }}
+    >
+      <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
+        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#ff625f' }} />
+        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#ffbe3f' }} />
+        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#2bcf65' }} />
+        <span className="ml-auto font-mono text-[10px] tracking-wide" style={{ color: 'var(--sub)' }}>practice.ts · TypeScript</span>
+      </div>
+
+      <div className="flex min-h-[265px] flex-col p-5 sm:p-6">
+        <div className="font-mono text-[13px] leading-7 sm:text-sm">
+          {demoLines.map((line, lineIndex) => {
+            const lineStart = demoLineStarts[lineIndex]
+            return (
+              <div key={lineIndex} className="grid min-h-7 grid-cols-[24px_1fr] gap-3">
+                <span className="select-none text-right text-[10px]" style={{ color: 'var(--sub)', opacity: 0.45 }}>{lineIndex + 1}</span>
+                <pre className="whitespace-pre-wrap">
+                  {line.split('').map((char, charIndex) => {
+                    const absoluteIndex = lineStart + charIndex
+                    const visible = absoluteIndex < visibleLength
+                    const isCaret = absoluteIndex === visibleLength && visibleLength < demoCode.length
+                    return (
+                      <span key={absoluteIndex} style={{ color: visible ? demoCharColor(absoluteIndex) : 'transparent' }}>
+                        {visible ? char : isCaret ? <span className="animate-pulse" style={{ color: 'var(--caret)' }}>▌</span> : char}
+                      </span>
+                    )
+                  })}
+                </pre>
+              </div>
+            )
+          })}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mt-auto flex flex-wrap items-center gap-3 pt-6 text-xs">
+          <span className="rounded-full px-3 py-1.5 font-semibold" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}>72 WPM</span>
+          <span style={{ color: 'var(--sub)' }}>98% accuracy</span>
+          <span style={{ color: 'var(--sub)' }}>0 errors</span>
         </div>
-      </main>
-    </div>
-  );
+      </div>
+    </motion.div>
+  )
+}
+
+export default function PublicHomePage() {
+  const { profile, isLoading } = useAuth()
+  const { locale, toggleLocale } = useLocale()
+  const [currentTheme, setCurrentTheme] = useState(DEFAULT_THEME)
+  const [showThemeSelector, setShowThemeSelector] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const heroRef = useRef<HTMLElement>(null)
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+
+  const heroTextY = useTransform(heroProgress, [0, 0.35, 1], [0, 0, reduceMotion ? 0 : -72])
+  const heroTextOpacity = useTransform(heroProgress, [0, 0.28, 0.72, 1], [1, 1, reduceMotion ? 1 : 0.34, reduceMotion ? 1 : 0.05])
+  const heroTextScale = useTransform(heroProgress, [0, 1], [1, reduceMotion ? 1 : 0.94])
+  const heroTextBlur = useTransform(heroProgress, [0, 0.34, 1], [0, 0, reduceMotion ? 0 : 6])
+  const heroTextFilter = useTransform(heroTextBlur, value => `blur(${value}px)`)
+
+  const heroVisualY = useTransform(heroProgress, [0, 0.42, 1], [0, 0, reduceMotion ? 0 : -124])
+  const heroVisualOpacity = useTransform(heroProgress, [0, 0.46, 0.82, 1], [1, 1, reduceMotion ? 1 : 0.5, reduceMotion ? 1 : 0.1])
+  const heroVisualScale = useTransform(heroProgress, [0, 1], [1, reduceMotion ? 1 : 0.97])
+  const heroVisualBlur = useTransform(heroProgress, [0, 0.5, 1], [0, 0, reduceMotion ? 0 : 3])
+  const heroVisualFilter = useTransform(heroVisualBlur, value => `blur(${value}px)`)
+
+  const cueOpacity = useTransform(heroProgress, [0, 0.1], [1, 0])
+  const communityOpacity = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 1 : 0, 1])
+  const communityY = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 0 : 54, 0])
+  const communityScale = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 1 : 0.97, 1])
+  const communityBlur = useTransform(heroProgress, [0.48, 0.9], [reduceMotion ? 0 : 7, 0])
+  const communityFilter = useTransform(communityBlur, value => `blur(${value}px)`)
+
+  const text = copy[locale]
+  const primaryHref = profile ? '/home' : '/signup'
+  const primaryLabel = profile ? text.continue : text.start
+  const masteryHref = profile ? '/tracks' : '/plus'
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const preferredTheme = getThemePref()
+      setCurrentTheme(preferredTheme)
+      applyTheme(getTheme(preferredTheme))
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  useEffect(() => {
+    applyTheme(getTheme(currentTheme))
+  }, [currentTheme])
+
+  const reveal = reduceMotion ? {} : {
+    initial: { opacity: 0, y: 26 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
+  }
+
+  return (
+    <main className="relative min-h-screen overflow-hidden">
+      <SceneWrapper variant="landing" />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <header className="absolute inset-x-0 top-0 z-40 mx-auto flex w-full max-w-6xl items-center justify-end px-4 py-5 sm:px-6 sm:py-6">
+          <nav className="flex items-center gap-2 sm:gap-3">
+            <Link href="/tracks" className="rounded-full px-3 py-2 text-xs font-medium transition-all hover:opacity-80 sm:text-sm" style={{ color: 'var(--text)' }}>{text.navTracks}</Link>
+            <Link href="/plus" className="rounded-full px-4 py-2 text-xs font-bold transition-all hover:scale-[1.04] hover:brightness-110 sm:text-sm" style={{ backgroundColor: 'var(--main)', color: 'var(--bg)', boxShadow: '0 0 24px color-mix(in srgb, var(--main) 18%, transparent)' }}>{text.navPlus}</Link>
+            <button onClick={toggleLocale} className="rounded-full px-3 py-2 text-xs font-mono font-medium transition-all hover:brightness-110" style={{ border: '1px solid color-mix(in srgb, var(--sub) 32%, transparent)', color: 'var(--text)', backgroundColor: 'color-mix(in srgb, var(--bg) 60%, transparent)' }}>{locale === 'pt' ? 'PT' : 'EN'}</button>
+            {!profile && !isLoading ? <Link href="/login" className="hidden rounded-full px-3 py-2 text-sm font-medium transition-opacity hover:opacity-80 md:inline-flex" style={{ color: 'var(--text)' }}>{text.navLogin}</Link> : null}
+          </nav>
+        </header>
+
+        <motion.section ref={heroRef} className="relative min-h-[118svh] sm:min-h-[124svh] lg:min-h-[130vh]">
+          <div className="sticky top-0 flex min-h-[100svh] items-center px-4 pb-12 pt-24 sm:px-6 lg:pb-16 lg:pt-28">
+            <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:gap-14">
+              <motion.div
+                style={{ y: heroTextY, opacity: heroTextOpacity, scale: heroTextScale, filter: heroTextFilter }}
+                className="relative z-20 max-w-xl origin-left"
+              >
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, x: -30, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative"
+                >
+                  <div className="absolute -top-16 left-0 origin-bottom-left scale-75 sm:right-full sm:left-auto sm:top-1/2 sm:mr-3 sm:-translate-y-1/2 sm:scale-100">
+                    <SharkTitleMark />
+                  </div>
+                  <h1 className="text-5xl font-black leading-[0.94] tracking-[-0.055em] font-[family-name:var(--font-geist-mono)] sm:text-6xl lg:text-7xl xl:text-[5.35rem]" style={{ color: 'var(--text)' }}>
+                    Shark<span style={{ color: 'var(--main)' }}>Type</span>
+                  </h1>
+                </motion.div>
+
+                <motion.p initial={reduceMotion ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.24 }} className="mt-6 text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl" style={{ color: 'var(--text)' }}>{text.tagline}</motion.p>
+                <motion.p initial={reduceMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.34 }} className="mt-5 max-w-lg text-sm leading-7 sm:text-base sm:leading-8" style={{ color: 'var(--sub)' }}>{text.body}</motion.p>
+                <motion.div initial={reduceMotion ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.44 }} className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link href={primaryHref} className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-transform hover:scale-[1.03]" style={{ backgroundColor: 'var(--main)', color: 'var(--bg)' }}>{primaryLabel}<ArrowRightIcon size={16} /></Link>
+                  <Link href="/tracks" className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold backdrop-blur-sm transition-all hover:brightness-110" style={{ border: '1px solid color-mix(in srgb, var(--sub) 36%, transparent)', color: 'var(--text)', backgroundColor: 'color-mix(in srgb, var(--bg) 44%, transparent)' }}>{text.explore}</Link>
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                style={{ y: heroVisualY, opacity: heroVisualOpacity, scale: heroVisualScale, filter: heroVisualFilter }}
+                className="relative z-20 flex min-h-[360px] origin-center items-center justify-center lg:min-h-[480px] lg:justify-end"
+              >
+                <div className="pointer-events-none absolute inset-[-14%_-12%] rounded-full opacity-70 blur-3xl" style={{ background: 'radial-gradient(circle, color-mix(in srgb, var(--main) 10%, transparent), transparent 64%)' }} />
+                <CodePreview />
+              </motion.div>
+            </div>
+
+            <motion.a
+              href="#community"
+              style={{ opacity: cueOpacity, color: 'var(--sub)' }}
+              animate={{ y: reduceMotion ? 0 : [0, 7, 0] }}
+              transition={reduceMotion ? { duration: 0.3 } : { y: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }}
+              className="absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-medium uppercase tracking-[0.18em]"
+            >
+              <span>{text.scroll}</span><span className="text-2xl leading-none">⌄</span>
+            </motion.a>
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="community"
+          style={{ opacity: communityOpacity, y: communityY, scale: communityScale, filter: communityFilter }}
+          className="relative z-20 -mt-[10svh] scroll-mt-10 px-4 pb-16 pt-10 sm:-mt-[8svh] sm:px-6 sm:pb-20 sm:pt-14 lg:-mt-[6vh] lg:pt-16"
+        >
+          <div className="mx-auto w-full max-w-5xl">
+            <div className="max-w-2xl"><h2 className="text-3xl font-bold sm:text-4xl" style={{ color: 'var(--text)' }}>{text.communityTitle}</h2><p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: 'var(--sub)' }}>{text.communityBody}</p></div>
+            <div className="mt-7 grid gap-4 md:grid-cols-3">
+              {communityCards.map((card) => {
+                const Icon = card.icon
+                return <motion.a key={card.key} href={card.href} target="_blank" rel="noopener noreferrer" transition={{ duration: 0.18, ease: 'easeOut' }} whileHover={reduceMotion ? undefined : { y: -5 }} className="group relative overflow-hidden rounded-[24px] border p-5 backdrop-blur-sm" style={{ borderColor: 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 78%, transparent)' }}>
+                  <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: 'radial-gradient(circle at 25% 15%, color-mix(in srgb, var(--main) 12%, transparent), transparent 48%)' }} />
+                  <span className="relative mb-4 inline-flex rounded-2xl p-3 transition-all duration-200 group-hover:scale-105" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 14%, transparent)', color: 'var(--main)' }}><Icon size={22} /></span>
+                  <h3 className="relative text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
+                  <p className="relative mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text[card.body]}</p>
+                  <span className="relative mt-5 inline-flex items-center gap-2 text-sm font-medium" style={{ color: 'var(--main)' }}>{text.open}<span className="transition-transform duration-200 group-hover:translate-x-1"><ArrowRightIcon size={14} /></span></span>
+                </motion.a>
+              })}
+            </div>
+          </div>
+        </motion.section>
+
+        <section className="px-4 py-12 sm:px-6 sm:py-16">
+          <motion.div {...reveal} className="mx-auto w-full max-w-5xl rounded-[28px] border p-5 backdrop-blur-sm sm:p-7" style={{ borderColor: 'color-mix(in srgb, var(--sub) 18%, transparent)', backgroundColor: 'color-mix(in srgb, var(--sub-alt) 70%, transparent)' }}>
+            <div className="max-w-2xl"><h2 className="text-3xl font-bold sm:text-4xl" style={{ color: 'var(--text)' }}>{text.productTitle}</h2><p className="mt-3 text-sm leading-7 sm:text-base" style={{ color: 'var(--sub)' }}>{text.productBody}</p></div>
+            <div className="mt-7 grid gap-4 md:grid-cols-3">
+              {productCards.map((card) => {
+                const Icon = card.icon
+                const href = card.key === 'mastery' ? masteryHref : card.href
+                return <motion.div key={card.key} whileHover={reduceMotion ? undefined : { y: -4 }}><Link href={href ?? '/'} className="group block h-full rounded-[22px] border p-5 transition-all hover:brightness-110" style={{ borderColor: card.key === 'mastery' ? 'color-mix(in srgb, var(--main) 35%, transparent)' : 'color-mix(in srgb, var(--sub) 22%, transparent)', backgroundColor: 'color-mix(in srgb, var(--bg) 32%, transparent)' }}>
+                  <span className="inline-flex rounded-2xl p-3" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}><Icon size={20} /></span>
+                  <h3 className="mt-4 text-lg font-semibold" style={{ color: 'var(--text)' }}>{text[card.title]}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{ color: 'var(--sub)' }}>{text[card.body]}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium" style={{ color: 'var(--main)' }}>{card.key === 'tracks' ? text.explore : text.open}<span className="transition-transform group-hover:translate-x-1"><ArrowRightIcon size={14} /></span></span>
+                </Link></motion.div>
+              })}
+            </div>
+          </motion.div>
+        </section>
+
+        <Footer onHelpClick={() => setShowHelp(true)} onThemeClick={() => setShowThemeSelector(true)} currentThemeName={currentTheme} locale={locale} />
+      </div>
+
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} locale={locale} />}
+      {showThemeSelector && <ThemeSelector currentTheme={currentTheme} onSelect={setCurrentTheme} onClose={() => setShowThemeSelector(false)} />}
+    </main>
+  )
 }
