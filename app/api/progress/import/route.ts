@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv, getSupabaseEnvErrorPayload } from '@/lib/supabase/env'
 import { importLocalProgress } from '@/lib/server/progress-store'
 import { rateLimit } from '@/lib/server/rate-limit'
@@ -30,14 +31,16 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { progress?: unknown }
     const progress = sanitizeImportedProgressSnapshot(body.progress)
-    const result = await importLocalProgress(supabase, user, progress)
+    const admin = createAdminClient()
+    const result = await importLocalProgress(admin, user, progress)
     return NextResponse.json(result)
   } catch (importError) {
     if (importError instanceof SyntaxError) {
       return NextResponse.json({ error: 'Invalid JSON payload.' }, { status: 400 })
     }
+    console.error('[progress-import] failed:', importError instanceof Error ? importError.message : importError)
     return NextResponse.json(
-      { error: importError instanceof Error ? importError.message : 'Could not import progress.' },
+      { error: 'Could not import progress.' },
       { status: 500 }
     )
   }
