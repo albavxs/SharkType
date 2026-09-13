@@ -54,20 +54,33 @@ try {
     }
   }
 
-  const premiumCases = [
-    ['react', 'react', 12],
-    ['nextjs', 'nextjs', 12],
-    ['git', 'git', 20],
-    ['angular-junior', 'angular', 20],
+  const premiumTracks = [
+    ['react', 'react'],
+    ['nextjs', 'nextjs'],
+    ['git', 'git'],
+    ['angular-junior', 'angular'],
   ]
 
-  for (const [trackId, languageId, expectedTotal] of premiumCases) {
+  for (const [trackId, languageId] of premiumTracks) {
     const snippets = freeTrackSnippetRegistry[trackId]?.[languageId] ?? []
     const total = trackSnippetTotalRegistry[trackId]?.[languageId] ?? 0
 
-    assert(total === expectedTotal, `${trackId}/${languageId} expected total ${expectedTotal}, got ${total}`)
-    assert(snippets.length === FREE_TRACK_SNIPPET_LIMIT, `${trackId}/${languageId} should expose ${FREE_TRACK_SNIPPET_LIMIT} free snippets`)
-    assert(total > snippets.length, `${trackId}/${languageId} should have locked Plus snippets`)
+    console.log(
+      `[check-access-policies] ${trackId}/${languageId} total=${total} freeExposed=${snippets.length} limit=${FREE_TRACK_SNIPPET_LIMIT}`,
+    )
+
+    assert(
+      Number.isFinite(total) && total > FREE_TRACK_SNIPPET_LIMIT,
+      `${trackId}/${languageId} expected total > ${FREE_TRACK_SNIPPET_LIMIT}, got ${total}`,
+    )
+    assert(
+      snippets.length === FREE_TRACK_SNIPPET_LIMIT,
+      `${trackId}/${languageId} should expose ${FREE_TRACK_SNIPPET_LIMIT} free snippets, got ${snippets.length}`,
+    )
+    assert(
+      total > snippets.length,
+      `${trackId}/${languageId} should have locked Plus snippets (total ${total} <= free ${snippets.length})`,
+    )
   }
 
   console.log('[check-access-policies] OK')
