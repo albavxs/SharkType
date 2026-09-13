@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserAccess } from '@/lib/server/access-control'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 import {
   createAsaasRecurringCheckout,
   getAsaasConfig,
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const { success } = rateLimit(`plus-checkout:${user.id}`, 5, 10 * 60_000)
+  const { success } = await sharedRateLimit(`plus-checkout:${user.id}`, 5, 10 * 60_000)
   if (!success) {
     return NextResponse.json({ error: 'Too many checkout attempts. Try again shortly.' }, { status: 429 })
   }
