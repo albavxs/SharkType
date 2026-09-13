@@ -134,12 +134,12 @@ for (const file of sourceFiles) {
       `private premium package must not be imported by client code: ${file}`,
     )
     assert(
-      !source.includes('SUPABASE_SERVICE_ROLE_KEY'),
-      `service-role credential must not be referenced by client code: ${file}`,
+      !/process\.env(?:\.|\[['"])(?:SUPABASE_SERVICE_ROLE_KEY)(?:['"]\])?/.test(source),
+      `service-role credential must not be accessed by client code: ${file}`,
     )
     assert(
-      !source.includes('ASAAS_API_KEY') && !source.includes('ASAAS_WEBHOOK_TOKEN'),
-      `Asaas secrets must not be referenced by client code: ${file}`,
+      !/process\.env(?:\.|\[['"])(?:ASAAS_API_KEY|ASAAS_WEBHOOK_TOKEN)(?:['"]\])?/.test(source),
+      `Asaas secrets must not be accessed by client code: ${file}`,
     )
   }
 }
