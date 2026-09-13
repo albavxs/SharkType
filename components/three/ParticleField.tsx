@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -14,6 +14,49 @@ interface ParticleFieldProps {
   reducedMotion?: boolean
 }
 
+type ParticleData = {
+  positions: Float32Array
+  velocities: Float32Array
+  scales: Float32Array
+}
+
+function seededUnit(index: number, salt: number) {
+  const value = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453
+  return value - Math.floor(value)
+}
+
+function createParticleData(count: number, variant: SceneVariant, layer: ParticleLayer): ParticleData {
+  const positions = new Float32Array(count * 3)
+  const velocities = new Float32Array(count * 3)
+  const scales = new Float32Array(count)
+  const landing = variant === 'landing'
+  const spreadX = landing ? 23 : 20
+  const spreadY = landing ? 14 : 12
+  const spreadZ = landing ? 10 : 8
+
+  for (let i = 0; i < count; i++) {
+    const concentration = landing && i % 3 !== 0 ? 0.72 : 1
+    positions[i * 3] = (seededUnit(i, 1) - 0.5) * spreadX * concentration
+    positions[i * 3 + 1] = (seededUnit(i, 2) - 0.5) * spreadY * concentration
+    positions[i * 3 + 2] = (seededUnit(i, 3) - 0.5) * spreadZ
+
+    const speed = landing
+      ? layer === 'near' ? 0.0028 : 0.00145
+      : 0.002
+    velocities[i * 3] = (seededUnit(i, 4) - 0.5) * speed
+    velocities[i * 3 + 1] = (seededUnit(i, 5) - 0.5) * speed
+    velocities[i * 3 + 2] = (seededUnit(i, 6) - 0.5) * speed * 0.55
+
+    scales[i] = landing
+      ? layer === 'near'
+        ? 0.018 + seededUnit(i, 7) * 0.015
+        : 0.009 + seededUnit(i, 8) * 0.009
+      : 0.015
+  }
+
+  return { positions, velocities, scales }
+}
+
 export default function ParticleField({
   color = '#6366f1',
   variant = 'default',
@@ -24,41 +67,15 @@ export default function ParticleField({
   const count = variant === 'landing'
     ? layer === 'near' ? 420 : 760
     : 600
-
-  const { positions, velocities, scales } = useMemo(() => {
-    const pos = new Float32Array(count * 3)
-    const vel = new Float32Array(count * 3)
-    const particleScales = new Float32Array(count)
-    const landing = variant === 'landing'
-    const spreadX = landing ? 23 : 20
-    const spreadY = landing ? 14 : 12
-    const spreadZ = landing ? 10 : 8
-
-    for (let i = 0; i < count; i++) {
-      const concentration = landing && i % 3 !== 0 ? 0.72 : 1
-      pos[i * 3] = (Math.random() - 0.5) * spreadX * concentration
-      pos[i * 3 + 1] = (Math.random() - 0.5) * spreadY * concentration
-      pos[i * 3 + 2] = (Math.random() - 0.5) * spreadZ
-
-      const speed = landing
-        ? layer === 'near' ? 0.0028 : 0.00145
-        : 0.002
-      vel[i * 3] = (Math.random() - 0.5) * speed
-      vel[i * 3 + 1] = (Math.random() - 0.5) * speed
-      vel[i * 3 + 2] = (Math.random() - 0.5) * speed * 0.55
-
-      particleScales[i] = landing
-        ? layer === 'near' ? 0.018 + Math.random() * 0.015 : 0.009 + Math.random() * 0.009
-        : 0.015
-    }
-
-    return { positions: pos, velocities: vel, scales: particleScales }
-  }, [count, layer, variant])
-
-  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const particleDataRef = useRef<ParticleData>(createParticleData(count, variant, layer))
+  const dummyRef = useRef(new THREE.Object3D())
 
   useFrame((state, delta) => {
-    if (!meshRef.current) return
+    const mesh = meshRef.current
+    if (!mesh) return
+
+    const { positions, velocities, scales } = particleDataRef.current
+    const dummy = dummyRef.current
     const time = state.clock.elapsedTime
     const landing = variant === 'landing'
 
@@ -68,7 +85,7 @@ export default function ParticleField({
 
       if (typeof window !== 'undefined') {
         const community = document.getElementById('community')
-        const heroEnd = community?.offsetTop ?? window.innerHeight * 1.48
+        const heroEnd = community?.offsetTop ?? window.innerHeight * 1.3
         const scrollRange = Math.max(heroEnd - window.innerHeight, 1)
         scrollProgress = THREE.MathUtils.clamp(window.scrollY / scrollRange, 0, 1)
       }
@@ -76,25 +93,15 @@ export default function ParticleField({
       const scrollY = layer === 'near' ? -scrollProgress * 1.15 : -scrollProgress * 0.32
       const scrollZ = layer === 'near' ? scrollProgress * 0.3 : scrollProgress * 0.07
 
-      meshRef.current.position.x = THREE.MathUtils.damp(
-        meshRef.current.position.x,
-        state.pointer.x * pointerStrength,
-        3.5,
-        delta,
-      )
-      meshRef.current.position.y = THREE.MathUtils.damp(
-        meshRef.current.position.y,
+      mesh.position.x = THREE.MathUtils.damp(mesh.position.x, state.pointer.x * pointerStrength, 3.5, delta)
+      mesh.position.y = THREE.MathUtils.damp(
+        mesh.position.y,
         state.pointer.y * pointerStrength * 0.68 + scrollY,
         3.5,
         delta,
       )
-      meshRef.current.position.z = THREE.MathUtils.damp(
-        meshRef.current.position.z,
-        scrollZ,
-        3,
-        delta,
-      )
-      meshRef.current.rotation.z = Math.sin(time * 0.08) * (layer === 'near' ? 0.008 : 0.003)
+      mesh.position.z = THREE.MathUtils.damp(mesh.position.z, scrollZ, 3, delta)
+      mesh.rotation.z = Math.sin(time * 0.08) * (layer === 'near' ? 0.008 : 0.003)
     }
 
     for (let i = 0; i < count; i++) {
@@ -118,10 +125,10 @@ export default function ParticleField({
       dummy.position.set(positions[ix], positions[iy], positions[iz])
       dummy.scale.setScalar(scales[i])
       dummy.updateMatrix()
-      meshRef.current.setMatrixAt(i, dummy.matrix)
+      mesh.setMatrixAt(i, dummy.matrix)
     }
 
-    meshRef.current.instanceMatrix.needsUpdate = true
+    mesh.instanceMatrix.needsUpdate = true
   })
 
   const opacity = variant === 'landing'
