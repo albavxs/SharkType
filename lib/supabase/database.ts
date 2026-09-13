@@ -250,6 +250,47 @@ export interface Database {
         Update: never
         Relationships: []
       }
+      feed_likes: {
+        Row: {
+          id: string
+          feed_event_id: number
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          feed_event_id: number
+          user_id: string
+          created_at?: string
+        }
+        Update: never
+        Relationships: []
+      }
+      track_completions: {
+        Row: {
+          id: string
+          user_id: string
+          track_slug: string
+          completed_at: string
+          best_wpm: number | null
+          accuracy: number | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          track_slug: string
+          completed_at?: string
+          best_wpm?: number | null
+          accuracy?: number | null
+        }
+        Update: {
+          track_slug?: string
+          completed_at?: string
+          best_wpm?: number | null
+          accuracy?: number | null
+        }
+        Relationships: []
+      }
       billing_checkouts: {
         Row: {
           id: string
@@ -463,7 +504,7 @@ export interface Database {
           user_id: string
           username: string
           display_name: string | null
-          avatar_url: string | null
+          avatar_url: string
           total_xp: number
           best_wpm: number
           avg_wpm: number
