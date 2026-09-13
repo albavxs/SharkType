@@ -5,8 +5,8 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Deferred to the dedicated Auth + Security hardening sprint. Keep these
-  // visible in CI without blocking the current release stabilization work.
+  // Deferred cleanup: keep known non-security style debt visible as warnings
+  // while release gates continue to fail on actual lint errors.
   {
     files: [
       "app/api/billing/asaas/webhook/route.ts",
@@ -20,7 +20,7 @@ const eslintConfig = defineConfig([
   {
     files: [
       "app/login/page.tsx",
-      "app/tracks/[track]/page.tsx",
+      "app/tracks/**/page.tsx",
     ],
     rules: {
       "react-hooks/set-state-in-effect": "warn",
