@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserAccess } from '@/lib/server/access-control'
-import { rateLimit } from '@/lib/server/rate-limit'
+import { sharedRateLimit } from '@/lib/server/rate-limit'
 import {
   createAsaasPixAutomaticAuthorization,
   getPlusPlan,
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 })
   }
 
-  const { success } = rateLimit(`plus-pix-automatic:${user.id}`, 3, 10 * 60_000)
+  const { success } = await sharedRateLimit(`plus-pix-automatic:${user.id}`, 3, 10 * 60_000)
   if (!success) {
     return NextResponse.json({ error: 'Too many Pix attempts. Try again shortly.' }, { status: 429 })
   }
@@ -81,8 +81,6 @@ export async function POST(request: Request) {
       description: `SharkType Plus — ${plan.key}`,
     })
 
-    // Keep this cast until lib/supabase/database.ts is regenerated from the
-    // production schema that already contains billing_pix_authorizations.
     const admin = createAdminClient() as any
     const qrExpiration = authorization.qrCode.expirationDate
       ? new Date(authorization.qrCode.expirationDate.replace(' ', 'T') + (authorization.qrCode.expirationDate.includes('Z') ? '' : '-03:00')).toISOString()
