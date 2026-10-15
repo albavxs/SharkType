@@ -5,6 +5,7 @@ import IntroTourGate from './IntroTourGate'
 import PendingSignupStateReconciler from './PendingSignupStateReconciler'
 import PendingVerificationGate from './PendingVerificationGate'
 import { AuthProvider } from './AuthProvider'
+import EmailLinkHandler from './EmailLinkHandler'
 import { PlayerProgressProvider } from './PlayerProgressProvider'
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           <PendingSignupStateReconciler />
           <IntroTourGate />
           <PendingVerificationGate />
+          <EmailLinkHandler />
         </PlayerProgressProvider>
       </AuthProvider>
     </LocaleProvider>
