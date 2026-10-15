@@ -23,6 +23,14 @@ function setRedirectLocation(response: NextResponse, origin: string, pathname: s
   return response
 }
 
+// A sign-up confirmation link opened in another browser: Supabase already
+// confirmed the email in /verify, but the PKCE verifier cookie lives in the
+// browser that signed up, so the code exchange cannot finish here.
+function isMissingCodeVerifier(error: unknown): boolean {
+  const code = (error as { code?: unknown } | null)?.code
+  return code === 'pkce_code_verifier_not_found' || code === 'bad_code_verifier'
+}
+
 function logAuthFailure(
   stage: AuthCallbackStage,
   errorId: string,
@@ -42,6 +50,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const oauthCode = searchParams.get('code')
   const oauthError = searchParams.get('error')
+  const isSignupLink = searchParams.get('flow') === 'signup'
   let next = normalizeNext(searchParams.get('next'))
 
   if (oauthError) {
@@ -87,12 +96,13 @@ export async function GET(request: Request) {
 
   try {
     const { error } = await supabase.auth.exchangeCodeForSession(oauthCode)
-    if (error) {
-      const errorId = createErrorId()
-      logAuthFailure('exchange_code', errorId, next, getSafeErrorDetails(error))
-      return setRedirectLocation(callbackResponse, origin, `/login?oauth_error=1&error_id=${errorId}`)
-    }
+    if (error) throw error
   } catch (error) {
+    if (isSignupLink && isMissingCodeVerifier(error)) {
+      logStructuredInfo('auth.signup_link_without_verifier', { next: next.split('?')[0].slice(0, 200) })
+      return setRedirectLocation(callbackResponse, origin, '/login?email_confirmed=1')
+    }
+
     const errorId = createErrorId()
     logAuthFailure('exchange_code', errorId, next, getSafeErrorDetails(error))
     return setRedirectLocation(callbackResponse, origin, `/login?oauth_error=1&error_id=${errorId}`)

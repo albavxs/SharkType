@@ -268,7 +268,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             username,
             display_name: username,
           },
-          emailRedirectTo: getAuthCallbackUrl('/home'),
+          emailRedirectTo: getAuthCallbackUrl('/home', { flow: 'signup' }),
         },
       })
 

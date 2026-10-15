@@ -35,6 +35,11 @@ export default function LoginPage() {
       setNotice(locale === 'pt' ? 'Senha atualizada. Entre com sua nova senha.' : 'Password updated. Sign in with your new password.')
       window.history.replaceState({}, '', window.location.pathname)
     }
+
+    if (params.get('email_confirmed') === '1') {
+      setNotice(locale === 'pt' ? 'E-mail confirmado. Entre com sua senha.' : 'Email confirmed. Sign in with your password.')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
   }, [locale])
 
   useEffect(() => {
