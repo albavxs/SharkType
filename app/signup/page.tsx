@@ -58,11 +58,10 @@ export default function SignupPage() {
       return
     }
 
-    if (result.needsVerification) {
-      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)
-      return
-    }
-
+    // When email confirmation is enabled Supabase intentionally does not create
+    // an authenticated session yet. We still let the user enter SharkType in
+    // guest/local mode; IntroTourGate will explain the verification step after
+    // the initial tutorial and offer the OTP screen.
     router.push('/home')
   }
 

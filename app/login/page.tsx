@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [oauthErrorId, setOauthErrorId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -26,6 +27,12 @@ export default function LoginPage() {
       setError(t('authOAuthError', locale))
       const errorId = params.get('error_id')
       setOauthErrorId(errorId ? errorId.slice(0, 8) : null)
+      window.history.replaceState({}, '', window.location.pathname)
+      return
+    }
+
+    if (params.get('password_reset') === '1') {
+      setNotice(locale === 'pt' ? 'Senha atualizada. Entre com sua nova senha.' : 'Password updated. Sign in with your new password.')
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [locale])
@@ -41,6 +48,7 @@ export default function LoginPage() {
     event.preventDefault()
     setIsSubmitting(true)
     setError(null)
+    setNotice(null)
     setOauthErrorId(null)
 
     const result = await signInWithPassword(email, password)
@@ -54,6 +62,7 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setError(null)
+    setNotice(null)
     setOauthErrorId(null)
     setIsSubmitting(true)
     const result = await signInWithGoogle()
@@ -66,6 +75,7 @@ export default function LoginPage() {
 
   async function handleGitHubLogin() {
     setError(null)
+    setNotice(null)
     setOauthErrorId(null)
     setIsSubmitting(true)
     const result = await signInWithGitHub()
@@ -142,43 +152,54 @@ export default function LoginPage() {
             </div>
           </label>
 
-          <label className="block space-y-1.5">
-            <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
-              {t('authPassword', locale)}
-            </span>
-            <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{
-              borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
-              backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
-            }}>
-              <input
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                type={showPassword ? 'text' : 'password'}
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-                style={{ color: 'var(--text)' }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((visible) => !visible)}
-                aria-pressed={showPassword}
-                aria-label={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
-                title={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
-                className="shrink-0 rounded-lg p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{ color: 'var(--sub)' }}
-              >
-                {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
-              </button>
-            </div>
-          </label>
+          <div className="space-y-1.5">
+            <label className="block space-y-1.5">
+              <span className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--sub)' }}>
+                {t('authPassword', locale)}
+              </span>
+              <div className="flex items-center gap-2 rounded-2xl border px-3 py-3" style={{
+                borderColor: 'color-mix(in srgb, var(--sub) 24%, transparent)',
+                backgroundColor: 'color-mix(in srgb, var(--sub-alt) 84%, transparent)',
+              }}>
+                <input
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                  style={{ color: 'var(--text)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-pressed={showPassword}
+                  aria-label={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
+                  title={t(showPassword ? 'authHidePassword' : 'authShowPassword', locale)}
+                  className="shrink-0 rounded-lg p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{ color: 'var(--sub)' }}
+                >
+                  {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+                </button>
+              </div>
+            </label>
+            <Link href="/forgot-password" className="inline-block text-xs transition-opacity hover:opacity-80" style={{ color: 'var(--main)' }}>
+              {locale === 'pt' ? 'Esqueci minha senha' : 'Forgot password?'}
+            </Link>
+          </div>
 
           {error ? (
             <div role="alert" className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--error) 14%, transparent)', color: 'var(--error)' }}>
               <p>{error}</p>
               {oauthErrorId ? <p className="mt-1 text-xs opacity-80">Ref: {oauthErrorId}</p> : null}
             </div>
+          ) : null}
+
+          {notice ? (
+            <p className="rounded-2xl px-3 py-2 text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', color: 'var(--main)' }}>
+              {notice}
+            </p>
           ) : null}
 
           {!supabaseConfigured ? (

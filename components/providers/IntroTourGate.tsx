@@ -1,10 +1,17 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import IntroTourModal, { type IntroTourMode } from '@/components/typing/IntroTourModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
-import { shouldShowIntroTour, shouldShowKeyboardGuide, KEYBOARD_GUIDE_VERSION } from '@/lib/intro-tour'
-import IntroTourModal, { type IntroTourMode } from '@/components/typing/IntroTourModal'
+import {
+  getPendingIntroTourVersion,
+  KEYBOARD_GUIDE_VERSION,
+  setPendingIntroTourVersion,
+  shouldShowIntroTour,
+  shouldShowKeyboardGuide,
+} from '@/lib/intro-tour'
+import { isStoredPendingVerificationEmail } from '@/lib/pending-verification'
 
 function getSuppressedSessionKey(mode: IntroTourMode) {
   return `sharktype-intro-tour-suppressed:${mode}:v${KEYBOARD_GUIDE_VERSION}`
@@ -37,37 +44,55 @@ function getTourMode(versionSeen: number | null | undefined): IntroTourMode | nu
 }
 
 export default function IntroTourGate() {
-  const { user, profile, isLoading, markIntroTourSeen } = useAuth()
+  const { user, profile, isLoading, markIntroTourSeen, pendingVerificationEmail } = useAuth()
   const { locale } = useLocale()
   const [isOpen, setIsOpen] = useState(false)
   const [tourMode, setTourMode] = useState<IntroTourMode>('full')
-  const markAttemptedRef = useRef(false)
 
   useEffect(() => {
-    markAttemptedRef.current = false
-  }, [user?.id])
+    if (isLoading) return
 
-  useEffect(() => {
-    if (isLoading || !user || !profile) return
+    if (!user && pendingVerificationEmail && isStoredPendingVerificationEmail(pendingVerificationEmail)) {
+      const pendingVersion = getPendingIntroTourVersion(pendingVerificationEmail)
+      const mode = getTourMode(pendingVersion)
+
+      if (mode && !getSessionSuppressed(mode)) {
+        queueMicrotask(() => {
+          setTourMode(mode)
+          setIsOpen(true)
+        })
+      }
+      return
+    }
+
+    if (!user || !profile) return
+
     const mode = getTourMode(profile.introTourVersionSeen)
     if (!mode || getSessionSuppressed(mode)) return
+
     queueMicrotask(() => {
       setTourMode(mode)
       setIsOpen(true)
     })
-  }, [isLoading, profile, user])
+  }, [isLoading, pendingVerificationEmail, profile, user])
 
-  useEffect(() => {
-    if (!isOpen || markAttemptedRef.current) return
+  async function handleTourClose() {
+    setIsOpen(false)
 
-    markAttemptedRef.current = true
+    if (
+      !user &&
+      pendingVerificationEmail &&
+      isStoredPendingVerificationEmail(pendingVerificationEmail)
+    ) {
+      setPendingIntroTourVersion(pendingVerificationEmail, KEYBOARD_GUIDE_VERSION)
+      return
+    }
 
-    void markIntroTourSeen(KEYBOARD_GUIDE_VERSION).then((result) => {
-      if (result.error) {
-        setSessionSuppressed(tourMode)
-      }
-    })
-  }, [isOpen, markIntroTourSeen, tourMode])
+    const result = await markIntroTourSeen(KEYBOARD_GUIDE_VERSION)
+    if (result.error) {
+      setSessionSuppressed(tourMode)
+    }
+  }
 
   if (!isOpen) return null
 
@@ -76,7 +101,7 @@ export default function IntroTourGate() {
       locale={locale}
       mode={tourMode}
       onClose={() => {
-        setIsOpen(false)
+        void handleTourClose()
       }}
     />
   )

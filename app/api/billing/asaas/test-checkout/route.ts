@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     const checkoutId = randomUUID()
     const externalReference = `sharktype:sandbox-test:${checkoutId}`
-    const admin = createAdminClient() as any
+    const admin = createAdminClient()
 
     const { error: insertError } = await admin.from('billing_checkouts').insert({
       id: checkoutId,
