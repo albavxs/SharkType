@@ -17,10 +17,6 @@ import {
   getSupabaseEnvErrorMessage,
   type SupabaseEnvVarName,
 } from '@/lib/supabase/env'
-import {
-  clearPendingIntroTourVersion,
-  getPendingIntroTourVersion,
-} from '@/lib/intro-tour'
 import { isValidUsername, sanitizeUsername } from '@/lib/usernames'
 
 interface AuthContextValue {
@@ -310,23 +306,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       await refreshProfile()
-
-      const pendingIntroTourVersion = getPendingIntroTourVersion()
-      if (pendingIntroTourVersion > 0) {
-        const response = await fetch('/api/me/profile/intro-tour', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ versionSeen: pendingIntroTourVersion }),
-        })
-
-        if (response.ok) {
-          const payload = (await response.json()) as { profile: AuthProfile }
-          setProfile(payload.profile)
-          clearPendingIntroTourVersion()
-        }
-      }
 
       return { error: null }
     } catch (error) {

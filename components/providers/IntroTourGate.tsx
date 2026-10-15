@@ -4,14 +4,7 @@ import { useEffect, useState } from 'react'
 import IntroTourModal, { type IntroTourMode } from '@/components/typing/IntroTourModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
-import {
-  getPendingIntroTourVersion,
-  KEYBOARD_GUIDE_VERSION,
-  setPendingIntroTourVersion,
-  shouldShowIntroTour,
-  shouldShowKeyboardGuide,
-} from '@/lib/intro-tour'
-import { isStoredPendingVerificationEmail } from '@/lib/pending-verification'
+import { KEYBOARD_GUIDE_VERSION, shouldShowIntroTour, shouldShowKeyboardGuide } from '@/lib/intro-tour'
 
 function getSuppressedSessionKey(mode: IntroTourMode) {
   return `sharktype-intro-tour-suppressed:${mode}:v${KEYBOARD_GUIDE_VERSION}`
@@ -44,28 +37,15 @@ function getTourMode(versionSeen: number | null | undefined): IntroTourMode | nu
 }
 
 export default function IntroTourGate() {
-  const { user, profile, isLoading, markIntroTourSeen, pendingVerificationEmail } = useAuth()
+  const { user, profile, isLoading, markIntroTourSeen } = useAuth()
   const { locale } = useLocale()
   const [isOpen, setIsOpen] = useState(false)
   const [tourMode, setTourMode] = useState<IntroTourMode>('full')
 
+  // Signed-in users only: the version seen is saved on their profile, so each
+  // account sees the tour once, on any device.
   useEffect(() => {
-    if (isLoading) return
-
-    if (!user && pendingVerificationEmail && isStoredPendingVerificationEmail(pendingVerificationEmail)) {
-      const pendingVersion = getPendingIntroTourVersion(pendingVerificationEmail)
-      const mode = getTourMode(pendingVersion)
-
-      if (mode && !getSessionSuppressed(mode)) {
-        queueMicrotask(() => {
-          setTourMode(mode)
-          setIsOpen(true)
-        })
-      }
-      return
-    }
-
-    if (!user || !profile) return
+    if (isLoading || !user || !profile) return
 
     const mode = getTourMode(profile.introTourVersionSeen)
     if (!mode || getSessionSuppressed(mode)) return
@@ -74,19 +54,10 @@ export default function IntroTourGate() {
       setTourMode(mode)
       setIsOpen(true)
     })
-  }, [isLoading, pendingVerificationEmail, profile, user])
+  }, [isLoading, profile, user])
 
   async function handleTourClose() {
     setIsOpen(false)
-
-    if (
-      !user &&
-      pendingVerificationEmail &&
-      isStoredPendingVerificationEmail(pendingVerificationEmail)
-    ) {
-      setPendingIntroTourVersion(pendingVerificationEmail, KEYBOARD_GUIDE_VERSION)
-      return
-    }
 
     const result = await markIntroTourSeen(KEYBOARD_GUIDE_VERSION)
     if (result.error) {
@@ -94,7 +65,7 @@ export default function IntroTourGate() {
     }
   }
 
-  if (!isOpen) return null
+  if (!isOpen || !user) return null
 
   return (
     <IntroTourModal
