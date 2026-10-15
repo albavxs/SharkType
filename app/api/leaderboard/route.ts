@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getSupabaseEnv } from '@/lib/supabase/env'
-import { createPublicClient } from '@/lib/supabase/public'
 import { listLeaderboard } from '@/lib/server/progress-store'
 
 export async function GET() {
@@ -11,7 +11,11 @@ export async function GET() {
   }
 
   try {
-    const supabase = createPublicClient()
+    // The leaderboard views run with the caller's privileges, and user_progress
+    // is no longer readable by anon (privacy hardening). Read the ranking with
+    // the service role on the server; listLeaderboard only returns public
+    // fields (name, avatar, XP, WPM, streak, score).
+    const supabase = createAdminClient()
     const entries = await listLeaderboard(supabase)
     return NextResponse.json(
       { entries },
