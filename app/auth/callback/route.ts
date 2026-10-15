@@ -2,21 +2,10 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseAuthCookieName, getSupabaseEnv } from '@/lib/supabase/env'
 import { ensureProfileForUser } from '@/lib/server/auth-profile'
+import { normalizeNext } from '@/lib/auth-redirect'
 import { getSafeErrorDetails, logStructuredError, logStructuredInfo } from '@/lib/server/safe-logging'
 
 type AuthCallbackStage = 'provider' | 'env' | 'client_init' | 'exchange_code' | 'get_user' | 'ensure_profile' | 'missing_code'
-
-function normalizeNext(value: string | null): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || value.includes('\\')) return '/'
-
-  try {
-    const candidate = new URL(value, 'https://sharktype-callback.invalid')
-    if (candidate.origin !== 'https://sharktype-callback.invalid') return '/'
-    return `${candidate.pathname}${candidate.search}`
-  } catch {
-    return '/'
-  }
-}
 
 function createErrorId(): string {
   return crypto.randomUUID()
