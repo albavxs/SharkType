@@ -91,8 +91,9 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
         const visibleTop = container.scrollTop
         const visibleBottom = visibleTop + container.clientHeight
         const lineH = charEl.offsetHeight
-        if (charBottom > visibleBottom) {
-          container.scrollTop = charBottom - container.clientHeight + lineH
+        const targetBottom = isTextMode ? charBottom + lineH : charBottom
+        if (targetBottom > visibleBottom) {
+          container.scrollTop = targetBottom - container.clientHeight
         } else if (charTop < visibleTop) {
           container.scrollTop = Math.max(0, charTop - lineH)
         }
@@ -121,7 +122,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
   useEffect(() => {
     if (typeof ResizeObserver === 'undefined') return
 
-    const observer = new ResizeObserver(() => updateCursorPos())
+    const observer = new ResizeObserver(() => {
+      updateCursorPos()
+      const container = containerRef.current
+      if (container) setIsOverflowing(container.scrollHeight > container.clientHeight + 1)
+    })
     const container = containerRef.current
     const textContent = textContentRef.current
     if (container) observer.observe(container)
@@ -132,10 +137,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
 
   useLayoutEffect(() => {
     const container = containerRef.current
-    if (!container || isTextMode) return
-    requestAnimationFrame(() => {
-      setIsOverflowing(container.scrollHeight > container.clientHeight)
+    if (!container) return
+    const frame = requestAnimationFrame(() => {
+      setIsOverflowing(container.scrollHeight > container.clientHeight + 1)
     })
+    return () => cancelAnimationFrame(frame)
   }, [code, isTextMode, expandedView])
 
   useEffect(() => {
@@ -235,7 +241,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
         </div>
       )}
 
-      <div ref={containerRef} className={`relative scrollbar-hide ${isTextMode ? 'overflow-hidden max-h-[65px] sm:max-h-[101px] md:max-h-[144px]' : expandedView ? 'overflow-y-auto max-h-[70vh]' : 'overflow-y-auto max-h-[55vh]'}`}>
+      <div ref={containerRef} className={`relative scrollbar-hide ${isTextMode ? 'overflow-y-auto overflow-x-hidden max-h-[min(42dvh,22rem)]' : expandedView ? 'overflow-y-auto max-h-[70vh]' : 'overflow-y-auto max-h-[55vh]'}`}>
         {cursorReady && (
           <div
             className="absolute pointer-events-none z-10"
@@ -260,7 +266,7 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
             style={{ overflowWrap: 'anywhere', wordBreak: 'normal', fontVariantLigatures: 'none', fontSize: `calc(2rem * var(--code-font-scale, 1))` }}
           >
             {code.split('').map((char, i) => (
-              <span key={i} data-idx={i} className="relative whitespace-pre" style={getCharStyle(charStatuses[i], i, char)}>
+              <span key={i} data-idx={i} className="relative" style={getCharStyle(charStatuses[i], i, char)}>
                 {char}
               </span>
             ))}
@@ -290,6 +296,11 @@ export default function TypingArea({ code, charStatuses, currentIndex, onKey, on
           </div>
         )}
       </div>
+      {isTextMode && isOverflowing && isIdle && (
+        <p className="mt-2 text-center text-xs" style={{ color: 'var(--sub)' }}>
+          {locale === 'pt' ? 'Role para ler o texto completo. O cursor acompanha a digitação.' : 'Scroll to read the full text. The cursor follows your typing.'}
+        </p>
+      )}
     </div>
   )
 }

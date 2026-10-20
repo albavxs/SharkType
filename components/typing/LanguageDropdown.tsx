@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { codeLanguageMetas, textLanguageMetas } from '@/data/metadata'
 import { LanguageMeta } from '@/lib/types'
@@ -24,6 +24,7 @@ interface LanguageDropdownProps {
 
 export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }: LanguageDropdownProps) {
   const [open, setOpen] = useState(false)
+  const menuId = useId()
   const btnRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const [pos, setPos] = useState({ top: 0, left: 0 })
@@ -36,8 +37,14 @@ export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }
     const maxLeft = window.innerWidth - MENU_MARGIN - menuWidth / 2
     const centeredLeft = r.left + r.width / 2
 
+    const menuHeight = Math.min(menuRef.current?.scrollHeight ?? 400, window.innerHeight * 0.7)
+    const below = window.innerHeight - r.bottom - MENU_MARGIN
+    const above = r.top - MENU_MARGIN
+    const showAbove = below < Math.min(menuHeight, 240) && above > below
+    const top = showAbove ? Math.max(MENU_MARGIN, r.top - menuHeight - 4) : r.bottom + 4
+
     setPos({
-      top: r.bottom + 4,
+      top,
       left: Math.min(Math.max(centeredLeft, minLeft), maxLeft),
     })
   }
@@ -45,6 +52,37 @@ export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }
   function handleToggle() {
     if (!open) updatePosition()
     setOpen(value => !value)
+  }
+
+  useEffect(() => {
+    if (!open) return
+    const frame = requestAnimationFrame(() => {
+      updatePosition()
+      const selectedOption = menuRef.current?.querySelector<HTMLButtonElement>('[aria-selected="true"]') ??
+        menuRef.current?.querySelector<HTMLButtonElement>('[role="option"]')
+      selectedOption?.focus()
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [open])
+
+  function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      setOpen(false)
+      btnRef.current?.focus()
+      return
+    }
+
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
+    event.preventDefault()
+    const options = Array.from(menuRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? [])
+    if (options.length === 0) return
+    const index = options.indexOf(document.activeElement as HTMLButtonElement)
+    const nextIndex = event.key === 'Home' ? 0
+      : event.key === 'End' ? options.length - 1
+      : event.key === 'ArrowDown' ? (index + 1) % options.length
+      : (index - 1 + options.length) % options.length
+    options[nextIndex]?.focus()
   }
 
   useEffect(() => {
@@ -71,7 +109,7 @@ export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }
 
   function renderItem(lang: LanguageMeta) {
     return (
-      <button key={lang.id} onClick={() => { onSelect(lang); setOpen(false) }}
+      <button key={lang.id} role="option" aria-selected={lang.id === selectedId} onClick={() => { onSelect(lang); setOpen(false); btnRef.current?.focus() }}
         className="w-full flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 hover:scale-[1.02] active:scale-95"
         style={{ color: 'var(--text)', opacity: lang.id === selectedId ? 1 : 0.7, backgroundColor: lang.id === selectedId ? 'var(--sub-alt)' : 'transparent' }}>
         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: lang.color }} />
@@ -88,7 +126,7 @@ export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }
 
   return (
     <>
-      <button ref={btnRef} type="button" onClick={handleToggle}
+      <button ref={btnRef} type="button" onClick={handleToggle} aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? menuId : undefined}
         className="relative z-30 flex items-center gap-1.5 px-2 py-1 rounded text-sm cursor-pointer pointer-events-auto transition-all duration-150 hover:scale-105 active:scale-95"
         style={{ color: 'var(--text)' }}>
         <span>{selected?.label ?? selectedId}</span>
@@ -98,7 +136,8 @@ export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }
       {open && createPortal(
         <>
           <div className="fixed inset-0 z-[9998]" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onMouseDown={() => setOpen(false)} />
-          <div ref={menuRef}
+          <div ref={menuRef} id={menuId} role="listbox" aria-label={locale === 'pt' ? 'Selecionar linguagem ou idioma' : 'Select language'}
+            onKeyDown={handleMenuKeyDown}
             className="fixed z-[10000] w-44 sm:w-48 py-1 rounded-lg shadow-2xl max-h-[70vh] overflow-y-auto"
             onMouseDown={(e) => e.stopPropagation()}
             style={{

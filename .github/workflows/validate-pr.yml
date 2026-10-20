@@ -27,6 +27,9 @@ jobs:
       - name: Validate diff
         run: git diff --check origin/master...HEAD
 
+      - name: Reject tracked backup and audit artifacts
+        run: node scripts/check-repository-hygiene.mjs
+
       - name: Typecheck track and Mastery runtime
         run: npx tsc -p tsconfig.track-catalog.json --pretty false
 

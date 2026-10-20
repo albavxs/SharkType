@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { LocaleProvider } from '@/components/LocaleProvider'
 import IntroTourGate from './IntroTourGate'
 import PendingSignupStateReconciler from './PendingSignupStateReconciler'
@@ -16,7 +17,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           {children}
           <PendingSignupStateReconciler />
           <IntroTourGate />
-          <PendingVerificationGate />
+          <Suspense fallback={null}>
+            <PendingVerificationGate />
+          </Suspense>
           <EmailLinkHandler />
         </PlayerProgressProvider>
       </AuthProvider>

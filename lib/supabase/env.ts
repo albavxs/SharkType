@@ -105,6 +105,12 @@ export function getBaseUrl(): string {
   // Nunca use o domínio de produção para callbacks gerados no servidor local.
   if (process.env.NODE_ENV !== 'production') return 'http://localhost:3000'
 
+  // Keep preview authentication callbacks on the preview host.
+  if (process.env.VERCEL_ENV === 'preview') {
+    const previewHost = process.env.VERCEL_BRANCH_URL || process.env.VERCEL_URL
+    if (previewHost) return `https://${previewHost.replace(/^https?:\/\//, '')}`
+  }
+
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim()
   if (explicit) return explicit
 
