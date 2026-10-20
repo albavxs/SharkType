@@ -120,10 +120,10 @@ export function getBaseUrl(): string {
   return 'http://localhost:3000'
 }
 
-export function getAuthCallbackUrl(next: string = '/', options: { flow?: 'signup' } = {}): string {
+export function getAuthCallbackUrl(next: string = '/home', options: { flow?: 'signup' } = {}): string {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : getBaseUrl()
   const url = new URL('/auth/callback', baseUrl)
-  url.searchParams.set('next', next.startsWith('/') ? next : '/')
+  url.searchParams.set('next', next.startsWith('/') && !next.startsWith('//') ? next : '/home')
   if (options.flow) url.searchParams.set('flow', options.flow)
   return url.toString()
 }
