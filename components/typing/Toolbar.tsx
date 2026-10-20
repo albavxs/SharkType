@@ -81,9 +81,9 @@ export default function Toolbar({
         <CommunityTicker locale={locale} className={`mb-3 transition-all duration-300 ${hide}`} />
       )}
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-x-3 2xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] 2xl:items-center">
       {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
-      <div className="flex flex-col gap-2 shrink-0 sm:flex-row sm:items-center sm:gap-4">
+      <div className="flex min-w-0 flex-col gap-2 sm:col-start-1 sm:row-start-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
         <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
           <Link href="/home" className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
             <BrandLogo size={30} textSizeClassName="text-lg sm:text-2xl" />
@@ -237,9 +237,9 @@ export default function Toolbar({
         </div>
       </div>}
 
-      {/* Center (desktop): language + difficulty — absolutely centered */}
-      {showControls && <div className={`absolute left-1/2 -translate-x-1/2 hidden sm:block transition-all duration-300 ${hide}`}>
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full"
+      {/* Center controls use a dedicated row until the wide three-column layout fits */}
+      {showControls && <div className={`hidden sm:col-span-2 sm:row-start-2 sm:flex sm:min-w-0 sm:justify-self-center transition-all duration-300 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1 ${hide}`}>
+        <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full"
           style={{ backgroundColor: 'var(--sub-alt)' }}>
           {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
           <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
@@ -257,7 +257,7 @@ export default function Toolbar({
       </div>}
 
       {/* Right (desktop): locale toggle + level + streak */}
-      <div className={`ml-auto hidden sm:flex items-center gap-2 lg:gap-4 shrink-0 transition-all duration-300 ${hide}`}>
+      <div className={`hidden sm:col-start-2 sm:row-start-1 sm:flex sm:items-center sm:justify-self-end sm:gap-2 lg:gap-4 2xl:col-start-3 2xl:row-start-1 transition-all duration-300 ${hide}`}>
         {onLocaleToggle && (
           <button onClick={onLocaleToggle}
             className="text-sm font-mono font-medium px-2 py-0.5 rounded transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95 cursor-pointer"

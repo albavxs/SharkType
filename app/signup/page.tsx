@@ -58,11 +58,9 @@ export default function SignupPage() {
       return
     }
 
-    // When email confirmation is enabled Supabase intentionally does not create
-    // an authenticated session yet. We still let the user enter SharkType in
-    // guest/local mode; PendingVerificationGate offers the OTP screen, and the
-    // intro tour starts once the account is confirmed and signed in.
-    router.push('/home')
+    // Email signup may leave the user in local guest mode until verification.
+    // Show the reminder only on this post-signup visit to the home page.
+    router.push(result.needsVerification ? '/home?verifyEmail=1' : '/home')
   }
 
   return (

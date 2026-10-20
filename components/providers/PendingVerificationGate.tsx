@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { MailIcon } from '@/components/icons'
 import { useAuth } from '@/hooks/useAuth'
 import { useLocale } from '@/hooks/useLocale'
@@ -9,6 +9,7 @@ import { isStoredPendingVerificationEmail } from '@/lib/pending-verification'
 
 export default function PendingVerificationGate() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { user, isLoading, pendingVerificationEmail } = useAuth()
   const { locale } = useLocale()
 
@@ -17,7 +18,8 @@ export default function PendingVerificationGate() {
     user ||
     !pendingVerificationEmail ||
     !isStoredPendingVerificationEmail(pendingVerificationEmail) ||
-    pathname !== '/home'
+    pathname !== '/home' ||
+    searchParams.get('verifyEmail') !== '1'
   ) {
     return null
   }
