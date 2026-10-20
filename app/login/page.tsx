@@ -63,6 +63,9 @@ export default function LoginPage() {
       setError(result.error)
       return
     }
+
+    // Do not depend solely on the auth context event to complete navigation.
+    router.replace('/home')
   }
 
   async function handleGoogleLogin() {

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSupabaseAuthCookieName, getSupabaseEnv } from '@/lib/supabase/env'
 import { ensureProfileForUser } from '@/lib/server/auth-profile'
-import { normalizeNext } from '@/lib/auth-redirect'
+import { normalizePostAuthNext } from '@/lib/auth-redirect'
 import { getSafeErrorDetails, logStructuredError, logStructuredInfo } from '@/lib/server/safe-logging'
 
 type AuthCallbackStage = 'provider' | 'env' | 'client_init' | 'exchange_code' | 'get_user' | 'ensure_profile' | 'missing_code'
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
   const oauthCode = searchParams.get('code')
   const oauthError = searchParams.get('error')
   const isSignupLink = searchParams.get('flow') === 'signup'
-  let next = normalizeNext(searchParams.get('next'))
+  const next = normalizePostAuthNext(searchParams.get('next'))
 
   if (oauthError) {
     const errorId = createErrorId()
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
     return redirectToLogin(origin, errorId)
   }
 
-  const callbackResponse = NextResponse.redirect(new URL('/', origin))
+  const callbackResponse = NextResponse.redirect(new URL('/home', origin))
   let supabase: Awaited<ReturnType<typeof createClient>>
 
   try {
@@ -144,8 +144,9 @@ export async function GET(request: Request) {
     }
 
     try {
-      const profile = await ensureProfileForUser(supabase, user)
-      if (!profile.onboardingCompleted) next = '/profile'
+      // Profile creation must succeed, but onboarding does not override the
+      // destination requested by the authenticated user.
+      await ensureProfileForUser(supabase, user)
     } catch (error) {
       const errorId = createErrorId()
       logAuthFailure('ensure_profile', errorId, next, getSafeErrorDetails(error))

@@ -9,3 +9,10 @@ export function normalizeNext(value: string | null, fallback: string = '/'): str
     return fallback
   }
 }
+
+// Successful sign-in should never fall back to the public landing page.
+// Preserve explicit internal destinations such as /reset-password or /tracks.
+export function normalizePostAuthNext(value: string | null): string {
+  const destination = normalizeNext(value, '/home')
+  return destination === '/' || destination.startsWith('/?') ? '/home' : destination
+}

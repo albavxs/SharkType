@@ -42,6 +42,9 @@ jobs:
       - name: Typecheck app
         run: npx tsc --noEmit --pretty false
 
+      - name: Validate post-login redirects
+        run: node scripts/check-login-redirects.mjs
+
       - name: Validate content policies
         run: |
           npm run check:pt-content
