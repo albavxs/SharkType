@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LanguageMeta, Difficulty, PracticeWall } from '@/lib/types'
-import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, UserIcon, ChartIcon, MailIcon, ShieldIcon } from '@/components/icons'
+import { BookIcon, HelpIcon, SlidersIcon, TrophyIcon, FlameIcon, ClockIcon, LogOutIcon, ChartIcon, MailIcon, ShieldIcon } from '@/components/icons'
 import Link from 'next/link'
 import { t, Locale } from '@/lib/i18n'
 import { formatTime } from '@/lib/utils'
@@ -75,247 +75,189 @@ export default function Toolbar({
     ? locale === 'pt' ? 'Gerenciar Plus' : 'Manage Plus'
     : locale === 'pt' ? 'Assinar Plus' : 'Subscribe Plus'
 
+  const [moreOpen, setMoreOpen] = useState(false)
+  const moreRef = useRef<HTMLDivElement>(null)
+  const moreButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!moreOpen) return
+
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (!moreRef.current?.contains(event.target as Node)) setMoreOpen(false)
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return
+      setMoreOpen(false)
+      moreButtonRef.current?.focus()
+    }
+
+    document.addEventListener('mousedown', closeOnOutsideClick)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('mousedown', closeOnOutsideClick)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [moreOpen])
+
+  const navIconClass = 'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-[var(--sub-alt)] focus-visible:outline-2 focus-visible:outline-offset-2'
+  const menuItemClass = 'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[var(--sub-alt)] focus-visible:outline-2 focus-visible:outline-offset-2'
+
   return (
     <div className="relative z-20 px-3 pt-3 pb-1 sm:px-6 sm:py-2">
       {showCommunityBanner && (
-        <CommunityTicker locale={locale} className={`mb-3 transition-all duration-300 ${hide}`} />
+        <CommunityTicker locale={locale} className={'mb-3 transition-opacity duration-300 ' + hide} />
       )}
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start sm:gap-x-3 2xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] 2xl:items-center">
-      {/* Row 1 (mobile) / Left (desktop): Logo + nav icons */}
-      <div className="flex min-w-0 flex-col gap-2 sm:col-start-1 sm:row-start-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
-        <div className="flex items-center justify-between gap-2 sm:justify-start sm:gap-4">
-          <Link href="/home" className={`text-lg sm:text-2xl font-bold font-[family-name:var(--font-geist-mono)] whitespace-nowrap cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-80 ${isTyping ? 'sm:opacity-100 opacity-0 pointer-events-none sm:pointer-events-auto' : ''}`} style={{ color: 'var(--text)' }}>
-            <BrandLogo size={30} textSizeClassName="text-lg sm:text-2xl" />
+      {/* Left navigation and right account actions always share row 1 and the same vertical center.
+          The typing controls enter that same row on wide screens, or row 2 below on smaller ones. */}
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+        <div className="col-start-1 row-start-1 flex min-w-0 items-center gap-2 sm:gap-3">
+          <Link href="/home" className="inline-flex shrink-0 items-center transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2" aria-label="SharkType — Home">
+            <span className="sm:hidden"><BrandLogo compact size={28} /></span>
+            <span className="hidden sm:inline-flex"><BrandLogo size={30} textSizeClassName="text-lg lg:text-xl" /></span>
           </Link>
 
-          {/* Right side on mobile (locale + level + streak) */}
-          <div className={`flex items-center gap-2 shrink-0 transition-all duration-300 sm:hidden ${hide}`}>
-            {onLocaleToggle && (
-              <button onClick={onLocaleToggle}
-                className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded transition-all duration-150 hover:scale-105 active:scale-95"
-                style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}>
-                {locale === 'pt' ? 'PT' : 'EN'}
-              </button>
+          <nav aria-label={locale === 'pt' ? 'Navegação principal' : 'Main navigation'}
+            className={'hidden min-w-0 items-center gap-1 transition-opacity duration-300 md:flex ' + hide}>
+            <Link href="/tracks" className={navIconClass} style={{ color: 'var(--text)' }} title={t('navTracks', locale)} aria-label={t('navTracks', locale)}>
+              <BookIcon size={19} />
+            </Link>
+            <Link href="/leaderboard" className={navIconClass} style={{ color: 'var(--text)' }} title={t('navRanking', locale)} aria-label={t('navRanking', locale)}>
+              <TrophyIcon size={19} />
+            </Link>
+          </nav>
+
+          <div ref={moreRef} className={'relative shrink-0 transition-opacity duration-300 ' + hide}>
+            <button ref={moreButtonRef} type="button" onClick={() => setMoreOpen(value => !value)}
+              aria-haspopup="true" aria-controls="toolbar-more-navigation" aria-expanded={moreOpen}
+              aria-label={locale === 'pt' ? 'Mais opções de navegação' : 'More navigation options'}
+              title={locale === 'pt' ? 'Mais opções' : 'More options'}
+              className={navIconClass} style={{ color: 'var(--text)' }}>
+              <SlidersIcon size={19} />
+            </button>
+            {moreOpen && (
+              <nav id="toolbar-more-navigation"
+                aria-label={locale === 'pt' ? 'Mais opções' : 'More options'}
+                className="absolute left-0 top-full z-[80] mt-2 w-56 rounded-xl border p-1.5 shadow-xl"
+                style={{ borderColor: 'var(--sub)', backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
+                <Link href="/tracks" className={menuItemClass + ' md:hidden'} onClick={() => setMoreOpen(false)}>
+                  <BookIcon size={17} />{t('navTracks', locale)}
+                </Link>
+                <Link href="/leaderboard" className={menuItemClass + ' md:hidden'} onClick={() => setMoreOpen(false)}>
+                  <TrophyIcon size={17} />{t('navRanking', locale)}
+                </Link>
+                <Link href="/feed" className={menuItemClass} onClick={() => setMoreOpen(false)}>
+                  <ChartIcon size={17} />{t('navFeed', locale)}
+                </Link>
+                <Link href="/community" className={menuItemClass} onClick={() => setMoreOpen(false)}>
+                  <MailIcon size={17} />{t('navCommunity', locale)}
+                </Link>
+                <button type="button" className={menuItemClass} onClick={() => { setMoreOpen(false); onHelpClick() }}>
+                  <HelpIcon size={17} />{t('navHelp', locale)}
+                </button>
+                <Link href="/settings" className={menuItemClass} onClick={() => setMoreOpen(false)}>
+                  <SlidersIcon size={17} />{t('navSettings', locale)}
+                </Link>
+                {profile?.isSuperUser && (
+                  <Link href="/admin/plus" className={menuItemClass} onClick={() => setMoreOpen(false)}>
+                    <ShieldIcon size={17} />{locale === 'pt' ? 'Administrar Plus' : 'Manage Plus'}
+                  </Link>
+                )}
+                {profile && (
+                  <button type="button" className={menuItemClass + ' sm:hidden'}
+                    onClick={() => { setMoreOpen(false); void handleSignOut() }}>
+                    <LogOutIcon size={17} />{t('authSignOut', locale)}
+                  </button>
+                )}
+              </nav>
             )}
-            {profile ? (
-              <Link
-                href="/profile"
-                className="flex items-center gap-1 rounded-full px-2 py-1 text-[10px] transition-all duration-150 hover:scale-105 active:scale-95"
-                style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
-                title={locale === 'pt' ? 'Perfil' : 'Profile'}
-              >
-                <span
-                  className="flex h-5 w-5 items-center justify-center overflow-hidden rounded-full text-[10px] font-semibold"
-                  style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
-                >
-                  {profile.avatarUrl ? (
-                    <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
-                  ) : (
-                    profile.username.slice(0, 1).toUpperCase()
-                  )}
-                </span>
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="rounded-full px-2 py-1 text-[10px] font-medium transition-all duration-150 hover:scale-105 active:scale-95"
-                style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
-              >
-                {t('authSignInShort', locale)}
-              </Link>
-            )}
-            {level && <span className="text-[10px] font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
-            <span className="flex items-center gap-0.5 text-[10px]" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
-                <FlameIcon size={12} />{streak}d
+          </div>
+        </div>
+
+        {/* Right side always stays on the same top row as the left navigation. */}
+        <div className={'col-start-2 row-start-1 flex min-w-0 items-center justify-self-end gap-1.5 transition-opacity duration-300 sm:gap-2 xl:col-start-3 ' + hide}>
+          {onLocaleToggle && (
+            <button type="button" onClick={onLocaleToggle}
+              className="shrink-0 rounded-lg border px-2 py-1 text-xs font-medium transition-colors hover:bg-[var(--sub-alt)] focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ borderColor: 'var(--sub)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}
+              title={t('toggleLocale', locale)}>
+              {locale === 'pt' ? 'PT' : 'EN'}
+            </button>
+          )}
+          {profile && (
+            <Link href={plusHref}
+              className="inline-flex shrink-0 items-center rounded-full px-2.5 py-1.5 text-[11px] font-semibold transition-colors hover:brightness-110 sm:px-3"
+              style={{ backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)', color: 'var(--main)' }}
+              title={plusTitle}>
+              <span className="sm:hidden">Plus</span>
+              <span className="hidden sm:inline">{plusLabel}</span>
+            </Link>
+          )}
+          {profile ? (
+            <Link href="/profile" aria-label={locale === 'pt' ? 'Meu perfil' : 'My profile'}
+              className="inline-flex min-w-0 shrink-0 items-center gap-2 rounded-full px-1.5 py-1 transition-colors hover:bg-[var(--sub-alt)] sm:px-2"
+              title={locale === 'pt' ? 'Meu perfil' : 'My profile'} style={{ color: 'var(--text)' }}>
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}>
+                {profile.avatarUrl
+                  ? <img src={profile.avatarUrl} alt="" className="h-full w-full object-cover" />
+                  : profile.username.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="hidden max-w-20 truncate text-xs 2xl:inline" style={{ color: 'var(--text)' }}>
+                {profile.username}
+              </span>
+            </Link>
+          ) : (
+            <Link href="/login" className="shrink-0 rounded-full px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-[var(--sub-alt)]"
+              style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}>
+              {t('authSignInShort', locale)}
+            </Link>
+          )}
+          {profile && (
+            <button type="button" onClick={handleSignOut}
+              className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-[var(--sub-alt)] sm:inline-flex"
+              style={{ color: 'var(--sub)' }} title={t('authSignOut', locale)} aria-label={t('authSignOut', locale)}>
+              <LogOutIcon size={16} />
+            </button>
+          )}
+          <div className="hidden shrink-0 items-center gap-2 2xl:flex">
+            {Boolean(level) && <span className="text-xs font-medium" style={{ color: 'var(--text)' }}>{'Lv ' + level}</span>}
+            <span className="inline-flex items-center gap-0.5 text-xs"
+              style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
+              <FlameIcon size={15} />{streak}d
             </span>
           </div>
         </div>
 
-        <div className={`hidden items-center gap-3 transition-all duration-300 sm:flex ${hide}`}>
-          <Link href="/tracks" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navTracks', locale)}>
-            <BookIcon size={18} />
-          </Link>
-          <Link href="/leaderboard" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
-            <TrophyIcon size={18} />
-          </Link>
-          <Link href="/feed" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
-            <ChartIcon size={18} />
-          </Link>
-          <Link href="/community" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navCommunity', locale)}>
-            <MailIcon size={18} />
-          </Link>
-          {profile && (
-            <Link href="/profile" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={locale === 'pt' ? 'Perfil' : 'Profile'}>
-              <UserIcon size={18} />
-            </Link>
-          )}
-          {profile?.isSuperUser ? (
-            <Link href="/admin/plus" className="p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
-              <ShieldIcon size={20} />
-            </Link>
-          ) : null}
-          {profile ? (
-            <Link
-              href={plusHref}
-              className="hidden items-center rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] transition-all duration-150 hover:scale-105 hover:brightness-110 active:scale-95 cursor-pointer lg:inline-flex"
-              style={{
-                backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)',
-                border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
-                color: 'var(--main)',
-              }}
-              title={plusTitle}
-            >
-              {plusLabel}
-            </Link>
-          ) : null}
-          <button onClick={onHelpClick} className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
-            <HelpIcon size={22} />
-          </button>
-          <Link href="/settings" className="hidden lg:block p-2 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
-            <SlidersIcon size={22} />
-          </Link>
-        </div>
-
-        <div className={`flex flex-wrap items-center gap-1 transition-all duration-300 sm:hidden ${hide}`}>
-          <Link href="/tracks" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navTracks', locale)}>
-            <BookIcon size={18} />
-          </Link>
-          <Link href="/leaderboard" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navRanking', locale)}>
-            <TrophyIcon size={18} />
-          </Link>
-          <Link href="/feed" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navFeed', locale)}>
-            <ChartIcon size={18} />
-          </Link>
-          <Link href="/community" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90" style={{ color: 'var(--text)' }} title={t('navCommunity', locale)}>
-            <MailIcon size={18} />
-          </Link>
-          {profile?.isSuperUser ? (
-            <Link href="/admin/plus" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--main)' }} title={locale === 'pt' ? 'Administrar SharkType Plus' : 'Manage SharkType Plus'}>
-              <ShieldIcon size={18} />
-            </Link>
-          ) : null}
-          {profile ? (
-            <Link
-              href={plusHref}
-              className="rounded-full px-2 py-1 text-[10px] font-semibold transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer"
-              style={{
-                backgroundColor: 'color-mix(in srgb, var(--main) 12%, transparent)',
-                color: 'var(--main)',
-                border: '1px solid color-mix(in srgb, var(--main) 28%, transparent)',
-              }}
-              title={plusTitle}
-            >
-              Plus
-            </Link>
-          ) : null}
-          <button onClick={onHelpClick} className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navHelp', locale)}>
-            <HelpIcon size={18} />
-          </button>
-          <Link href="/settings" className="p-1.5 rounded transition-all duration-150 hover:scale-110 hover:brightness-125 active:scale-90 cursor-pointer" style={{ color: 'var(--text)' }} title={t('navSettings', locale)}>
-            <SlidersIcon size={18} />
-          </Link>
-        </div>
-      </div>
-
-      {/* Row 2 (mobile): controls centered */}
-      {showControls && <div className={`sm:hidden flex justify-center transition-all duration-300 ${hide}`}>
-        <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 px-3 py-1 rounded-2xl text-xs"
-          style={{ backgroundColor: 'var(--sub-alt)' }}>
-          {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
-          <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
-          <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
-          {(isTimerRunning || seconds > 0) && (
-            <>
-              <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span>
-              <div className="flex items-center gap-1">
-                <ClockIcon size={12} className="opacity-60" />
-                <span className="tabular-nums font-medium" style={{ color: 'var(--main)' }}>{formatTime(seconds)}</span>
-              </div>
-            </>
-          )}
-        </div>
-      </div>}
-
-      {/* Center controls use a dedicated row until the wide three-column layout fits */}
-      {showControls && <div className={`hidden sm:col-span-2 sm:row-start-2 sm:flex sm:min-w-0 sm:justify-self-center transition-all duration-300 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1 ${hide}`}>
-        <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full"
-          style={{ backgroundColor: 'var(--sub-alt)' }}>
-          {showLanguage && <><LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
-          <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span></>}
-          <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
-          {(isTimerRunning || seconds > 0) && (
-            <>
-              <span style={{ color: 'var(--sub)', opacity: 0.3 }}>|</span>
-              <div className="flex items-center gap-1 text-sm">
-                <ClockIcon size={14} className="opacity-60" />
-                <span className="tabular-nums font-medium" style={{ color: 'var(--main)' }}>{formatTime(seconds)}</span>
-              </div>
-            </>
-          )}
-        </div>
-      </div>}
-
-      {/* Right (desktop): locale toggle + level + streak */}
-      <div className={`hidden sm:col-start-2 sm:row-start-1 sm:flex sm:items-center sm:justify-self-end sm:gap-2 lg:gap-4 2xl:col-start-3 2xl:row-start-1 transition-all duration-300 ${hide}`}>
-        {onLocaleToggle && (
-          <button onClick={onLocaleToggle}
-            className="text-sm font-mono font-medium px-2 py-0.5 rounded transition-all duration-150 hover:scale-105 hover:brightness-125 active:scale-95 cursor-pointer"
-            style={{ border: '1px solid var(--text)', color: locale === 'en' ? 'var(--main)' : 'var(--text)' }}
-            title={t('toggleLocale', locale)}>
-            {locale === 'pt' ? 'PT' : 'EN'}
-          </button>
-        )}
-        {profile ? (
-          <div className="flex items-center gap-2">
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 rounded-full px-2 py-1 transition-all duration-150 hover:scale-105 active:scale-95"
-              style={{ backgroundColor: 'var(--sub-alt)' }}
-              title={locale === 'pt' ? 'Perfil' : 'Profile'}
-            >
-              <span
-                className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full text-xs font-semibold"
-                style={{ backgroundColor: 'color-mix(in srgb, var(--main) 16%, transparent)', color: 'var(--main)' }}
-              >
-                {profile.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt={profile.username} className="h-full w-full object-cover" />
-                ) : (
-                  profile.username.slice(0, 1).toUpperCase()
-                )}
-              </span>
-              <span className="hidden lg:inline-block max-w-24 truncate text-sm" style={{ color: 'var(--text)' }}>
-                {profile.username}
-              </span>
-            </Link>
-            <button
-              onClick={handleSignOut}
-              className="rounded-full p-2 transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer"
-              style={{ color: 'var(--sub)' }}
-              title={t('authSignOut', locale)}
-            >
-              <LogOutIcon size={16} />
-            </button>
+        {/* One intentional second row below xl; never use absolute centering or flex wrapping. */}
+        {showControls && (
+          <div className={'col-span-2 col-start-1 row-start-2 flex min-w-0 max-w-full justify-self-center transition-opacity duration-300 xl:col-span-1 xl:col-start-2 xl:row-start-1 ' + hide}>
+            <div className="flex max-w-full min-w-0 items-center gap-1 overflow-x-auto whitespace-nowrap rounded-full px-2 py-1.5 text-xs sm:gap-2 sm:px-3"
+              style={{ backgroundColor: 'var(--sub-alt)', scrollbarWidth: 'thin' }}>
+              {showLanguage && (
+                <>
+                  <LanguageDropdown selectedId={language.id} onSelect={onLanguageChange} locale={locale} />
+                  <span aria-hidden="true" className="shrink-0 opacity-40" style={{ color: 'var(--sub)' }}>|</span>
+                </>
+              )}
+              <DifficultySelector selected={difficulty} onChange={onDifficultyChange} locale={locale} />
+              {(isTimerRunning || seconds > 0) && (
+                <>
+                  <span aria-hidden="true" className="shrink-0 opacity-40" style={{ color: 'var(--sub)' }}>|</span>
+                  <div className="flex shrink-0 items-center gap-1 text-xs tabular-nums" style={{ color: 'var(--main)' }}>
+                    <ClockIcon size={14} />
+                    <span>{formatTime(seconds)}</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        ) : (
-          <Link
-            href="/login"
-            className="rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150 hover:scale-105 active:scale-95"
-            style={{ backgroundColor: 'var(--sub-alt)', color: 'var(--text)' }}
-          >
-            {t('authSignIn', locale)}
-          </Link>
         )}
-        {level && <span className="text-xs lg:text-sm font-medium" style={{ color: 'var(--text)' }}>Lv {level}</span>}
-        <span className="flex items-center gap-1 text-xs lg:text-sm" style={{ color: streak > 0 ? 'var(--main)' : 'var(--sub)' }}>
-          <FlameIcon size={16} />{streak}d
-        </span>
-      </div>
       </div>
 
-      {showLanguage && !isTyping ? (
+      {showLanguage && !isTyping && (
         <PracticePlusWall wall={language.wall} locale={locale ?? 'pt'} scope="language" />
-      ) : null}
+      )}
     </div>
   )
 }

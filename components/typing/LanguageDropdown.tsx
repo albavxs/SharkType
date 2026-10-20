@@ -127,9 +127,9 @@ export default function LanguageDropdown({ selectedId, onSelect, locale = 'pt' }
   return (
     <>
       <button ref={btnRef} type="button" onClick={handleToggle} aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? menuId : undefined}
-        className="relative z-30 flex items-center gap-1.5 px-2 py-1 rounded text-sm cursor-pointer pointer-events-auto transition-all duration-150 hover:scale-105 active:scale-95"
+        className="relative z-30 flex min-w-0 max-w-[7.5rem] shrink-0 items-center gap-1 rounded px-1.5 py-1 text-xs cursor-pointer pointer-events-auto transition-all duration-150 hover:scale-105 active:scale-95 sm:max-w-44 sm:gap-1.5 sm:px-2 sm:text-sm"
         style={{ color: 'var(--text)' }}>
-        <span>{selected?.label ?? selectedId}</span>
+        <span className="min-w-0 truncate" title={selected?.label ?? selectedId}>{selected?.label ?? selectedId}</span>
         <ChevronDownIcon size={12} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
