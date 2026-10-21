@@ -45,6 +45,9 @@ jobs:
       - name: Validate post-login redirects
         run: node scripts/check-login-redirects.mjs
 
+      - name: Validate statistics layout
+        run: node scripts/check-stats-layout.mjs
+
       - name: Validate content policies
         run: |
           npm run check:pt-content
