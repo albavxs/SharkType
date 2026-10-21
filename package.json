@@ -18,9 +18,10 @@
     "prebuild": "node scripts/install-premium-package.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "npm run check:pt-content && npm run check:access-policies && npm run check:mastery-separation && npm run check:themes && npm run check:security-boundaries && npm run check:repository-hygiene && node scripts/run-eslint.mjs && node scripts/check-responsive-typing.mjs && npm run check:login-redirects",
+    "lint": "npm run check:pt-content && npm run check:access-policies && npm run check:mastery-separation && npm run check:themes && npm run check:security-boundaries && npm run check:repository-hygiene && node scripts/run-eslint.mjs && node scripts/check-responsive-typing.mjs && npm run check:login-redirects && npm run check:stats-layout",
     "check:repository-hygiene": "node scripts/check-repository-hygiene.mjs",
-    "check:login-redirects": "node scripts/check-login-redirects.mjs"
+    "check:login-redirects": "node scripts/check-login-redirects.mjs",
+    "check:stats-layout": "node scripts/check-stats-layout.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
